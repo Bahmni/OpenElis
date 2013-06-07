@@ -20,13 +20,17 @@
 
     <target name="compile" depends="init"
             description="compile the source ">
-        <javac srcdir="${src}" destdir="${target}" encoding="iso-8859-1"  classpathref="lib"/>
+        <javac srcdir="${src}" destdir="${target}" encoding="iso-8859-1" classpathref="lib"/>
     </target>
 
     <target name="dist" depends="compile"
             description="generate the distribution">
         <mkdir dir="${dist}/lib"/>
         <jar jarfile="${dist}/lib/OpenElis_v3.1_r2013_02_21-${DSTAMP}.jar" basedir="${target}"/>
+        <war destfile="${dist}/openelis.war">
+            <fileset dir="${web}"/>
+            <lib dir="${dist}/lib" />
+        </war>
     </target>
 
     <target name="clean"
