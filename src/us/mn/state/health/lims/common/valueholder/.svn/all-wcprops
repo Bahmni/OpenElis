@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/valueholder
+END
+EnumValueItem.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/valueholder/EnumValueItem.java
+END
+DatabaseChangeLog.hbm.xml
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/valueholder/DatabaseChangeLog.hbm.xml
+END
+BaseObject.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/valueholder/BaseObject.java
+END
+SimpleBaseEntity.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/valueholder/SimpleBaseEntity.java
+END
+EnumValue.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/valueholder/EnumValue.java
+END
+BaseTestComparator.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/valueholder/BaseTestComparator.java
+END
+EnumValueItemImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/valueholder/EnumValueItemImpl.java
+END
+EnumValueImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/valueholder/EnumValueImpl.java
+END
+ValueHolder.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/valueholder/ValueHolder.java
+END
+ValueHolderInterface.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/valueholder/ValueHolderInterface.java
+END
+EnumComparator.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/valueholder/EnumComparator.java
+END
+DatabaseChangeLog.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/valueholder/DatabaseChangeLog.java
+END

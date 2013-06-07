@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/servlet/data
+END
+AjaxServlet.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/servlet/data/AjaxServlet.java
+END
+AjaxXMLServlet.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/servlet/data/AjaxXMLServlet.java
+END
+AjaxTextServlet.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/servlet/data/AjaxTextServlet.java
+END

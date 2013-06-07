@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/dataexchange/resultreporting/beans
+END
+ResultXmit.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/dataexchange/resultreporting/beans/ResultXmit.java
+END
+ReportingConfiguration.java
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/dataexchange/resultreporting/beans/ReportingConfiguration.java
+END
+TestResultsXmit.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/dataexchange/resultreporting/beans/TestResultsXmit.java
+END
+ResultReportXmit.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/dataexchange/resultreporting/beans/ResultReportXmit.java
+END
+CodedValueXmit.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/dataexchange/resultreporting/beans/CodedValueXmit.java
+END
+TestRangeXmit.java
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/dataexchange/resultreporting/beans/TestRangeXmit.java
+END

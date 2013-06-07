@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/provider/popup
+END
+PopupProviderFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/provider/popup/PopupProviderFactory.java
+END
+HumanSampleCityStateZipPopupProvider.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/provider/popup/HumanSampleCityStateZipPopupProvider.java
+END
+BasePopupProvider.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/provider/popup/BasePopupProvider.java
+END

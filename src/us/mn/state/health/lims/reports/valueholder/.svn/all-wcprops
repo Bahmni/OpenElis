@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/valueholder
+END
+DocumentType.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/valueholder/DocumentType.java
+END
+DocumentTrack.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/valueholder/DocumentTrack.java
+END
+DocumentType.hbm.xml
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/valueholder/DocumentType.hbm.xml
+END
+DocumentTrack.hbm.xml
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/valueholder/DocumentTrack.hbm.xml
+END

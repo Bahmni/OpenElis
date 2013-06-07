@@ -1,0 +1,161 @@
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/reportBeans
+END
+INDColumnBuilder.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/reportBeans/INDColumnBuilder.java
+END
+ICSVColumnCustomStrategy.java
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/reportBeans/ICSVColumnCustomStrategy.java
+END
+ResourceTranslator.java
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/reportBeans/ResourceTranslator.java
+END
+FollowupRequiredData.java
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/reportBeans/FollowupRequiredData.java
+END
+ARVFollowupColumnBuilder.java
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/reportBeans/ARVFollowupColumnBuilder.java
+END
+ARVFollowupInitalHIVStrategy.java
+K 25
+svn:wc:ra_dav:version-url
+V 156
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/reportBeans/ARVFollowupInitalHIVStrategy.java
+END
+HaitiClinicalPatientData.java
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/reportBeans/HaitiClinicalPatientData.java
+END
+ARVColumnBuilder.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/reportBeans/ARVColumnBuilder.java
+END
+HaitiHIVSummaryData.java
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/reportBeans/HaitiHIVSummaryData.java
+END
+ARVReportData.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/reportBeans/ARVReportData.java
+END
+IndeterminateReportData.java
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/reportBeans/IndeterminateReportData.java
+END
+SectionPerformanceData.java
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/reportBeans/SectionPerformanceData.java
+END
+CIColumnBuilder.java
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/reportBeans/CIColumnBuilder.java
+END
+CSVColumnBuilder.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/reportBeans/CSVColumnBuilder.java
+END
+TestSiteYearReport.java
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/reportBeans/TestSiteYearReport.java
+END
+ErrorMessages.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/reportBeans/ErrorMessages.java
+END
+ConfirmationData.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/reportBeans/ConfirmationData.java
+END
+HaitiClinicalPatientDataColFormat.java
+K 25
+svn:wc:ra_dav:version-url
+V 161
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/reportBeans/HaitiClinicalPatientDataColFormat.java
+END
+HaitiColumnBuilder.java
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/reportBeans/HaitiColumnBuilder.java
+END
+EIDColumnBuilder.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/reportBeans/EIDColumnBuilder.java
+END
+ARVInitialColumnBuilder.java
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/reportBeans/ARVInitialColumnBuilder.java
+END
+EIDReportData.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/reportBeans/EIDReportData.java
+END
+RTNColumnBuilder.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/reportBeans/RTNColumnBuilder.java
+END
+NonConformityReportData.java
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/reportBeans/NonConformityReportData.java
+END
+HaitiAggregateReportData.java
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/reportBeans/HaitiAggregateReportData.java
+END
+EIDTypeOfClinicStrategy.java
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/reportBeans/EIDTypeOfClinicStrategy.java
+END

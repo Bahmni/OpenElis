@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/WebContent/pages/patient/CI
+END
+arvFollowupStudy.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/WebContent/pages/patient/CI/arvFollowupStudy.jsp
+END
+eidStudy.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/WebContent/pages/patient/CI/eidStudy.jsp
+END
+arvInitialStudy.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/WebContent/pages/patient/CI/arvInitialStudy.jsp
+END
+rtnStudy.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/WebContent/pages/patient/CI/rtnStudy.jsp
+END

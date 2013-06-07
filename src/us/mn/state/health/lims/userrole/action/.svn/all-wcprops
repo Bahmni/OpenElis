@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/userrole/action
+END
+UserRoleUpdateAction.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/userrole/action/UserRoleUpdateAction.java
+END
+UserRoleDeleteAction.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/userrole/action/UserRoleDeleteAction.java
+END
+UserRoleMenuAction.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/userrole/action/UserRoleMenuAction.java
+END
+UserRoleNextPreviousAction.java
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/userrole/action/UserRoleNextPreviousAction.java
+END
+UserRoleAction.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/userrole/action/UserRoleAction.java
+END

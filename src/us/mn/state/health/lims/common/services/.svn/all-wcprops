@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/services
+END
+ReportTrackingService.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/services/ReportTrackingService.java
+END
+ResultService.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/services/ResultService.java
+END
+QAService.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/services/QAService.java
+END
+SampleService.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/services/SampleService.java
+END
+DisplayListService.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/services/DisplayListService.java
+END
+PatientService.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/services/PatientService.java
+END
+IResultSaveService.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/services/IResultSaveService.java
+END
+LabIdentificationService.java
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/services/LabIdentificationService.java
+END
+TestIdentityService.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/services/TestIdentityService.java
+END
+ExchangeConfigurationService.java
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/services/ExchangeConfigurationService.java
+END
+IdToNameMappingService.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/common/services/IdToNameMappingService.java
+END

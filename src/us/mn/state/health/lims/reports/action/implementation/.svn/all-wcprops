@@ -1,0 +1,317 @@
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation
+END
+PatientIndeterminateVersion1Report.java
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/PatientIndeterminateVersion1Report.java
+END
+ReferredOutHaitiReport.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/ReferredOutHaitiReport.java
+END
+HaitiConfirmationReport.java
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/HaitiConfirmationReport.java
+END
+RetroCIPatientCollectionReport.java
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/RetroCIPatientCollectionReport.java
+END
+HaitiLNSPFollowupRequiredByLocation.java
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/HaitiLNSPFollowupRequiredByLocation.java
+END
+ReportImplementationFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/ReportImplementationFactory.java
+END
+PatientEIDVersion2Report.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/PatientEIDVersion2Report.java
+END
+PatientARVInitialVersion2Report.java
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/PatientARVInitialVersion2Report.java
+END
+Report.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/Report.java
+END
+DateRangeParameters.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/DateRangeParameters.java
+END
+HaitiPatientReport.java
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/HaitiPatientReport.java
+END
+IndicatorSectionPerformanceReport.java
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/IndicatorSectionPerformanceReport.java
+END
+PatientEIDReport.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/PatientEIDReport.java
+END
+PatientHaitiClinical.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/PatientHaitiClinical.java
+END
+RetroCINonConformityBySectionReason.java
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/RetroCINonConformityBySectionReason.java
+END
+RetroCIPatientReport.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/RetroCIPatientReport.java
+END
+PatientARVFollowupVersion1Report.java
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/PatientARVFollowupVersion1Report.java
+END
+CSVSampleExportReport.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/CSVSampleExportReport.java
+END
+HaitiExportReport.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/HaitiExportReport.java
+END
+PatientIndeterminateByLocationReport.java
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/PatientIndeterminateByLocationReport.java
+END
+NonConformityByDate.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/NonConformityByDate.java
+END
+NonConformityBy.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/NonConformityBy.java
+END
+IndicatorHaitiHIVLNSP.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/IndicatorHaitiHIVLNSP.java
+END
+IndicatorCDIHIVLNSP.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/IndicatorCDIHIVLNSP.java
+END
+IndicatorHaitiHIVClinical.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/IndicatorHaitiHIVClinical.java
+END
+ExportProjectByDate.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/ExportProjectByDate.java
+END
+PatientIndeterminateVersion2Report.java
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/PatientIndeterminateVersion2Report.java
+END
+RetroCIReport.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/RetroCIReport.java
+END
+RetroCINonConformityNotification.java
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/RetroCINonConformityNotification.java
+END
+IReportCreator.java
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/IReportCreator.java
+END
+LabNumberRangeParameters.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/LabNumberRangeParameters.java
+END
+PatientARVReport.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/PatientARVReport.java
+END
+PatientIndeterminateReport.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/PatientIndeterminateReport.java
+END
+PatientEIDVersion1Report.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/PatientEIDVersion1Report.java
+END
+PatientARVInitialVersion1Report.java
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/PatientARVInitialVersion1Report.java
+END
+PatientSpecialRequestReport.java
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/PatientSpecialRequestReport.java
+END
+HaitiNonConformityBySectionReason.java
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/HaitiNonConformityBySectionReason.java
+END
+PatientCILNSPClinical.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/PatientCILNSPClinical.java
+END
+IReportParameterSetter.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/IReportParameterSetter.java
+END
+HaitiNonConformityByDate.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/HaitiNonConformityByDate.java
+END
+IndicatorAllTestHaitiLNSP.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/IndicatorAllTestHaitiLNSP.java
+END
+IndicatorAllTestHaitiClinical.java
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/IndicatorAllTestHaitiClinical.java
+END
+RetroCIFollowupRequiredByLocation.java
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/RetroCIFollowupRequiredByLocation.java
+END
+IndicatorAllTestHaiti.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/IndicatorAllTestHaiti.java
+END
+IndicatorHaitiSiteTestCountReport.java
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/IndicatorHaitiSiteTestCountReport.java
+END
+RetroCINonConformityByDate.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/RetroCINonConformityByDate.java
+END
+HaitiIndicatorReport.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/HaitiIndicatorReport.java
+END
+CollectionReport.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/CollectionReport.java
+END
+RetroCIPatientAssociatedReport.java
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/RetroCIPatientAssociatedReport.java
+END
+CSVExportReport.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/CSVExportReport.java
+END
+PatientARVFollowupVersion2Report.java
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/PatientARVFollowupVersion2Report.java
+END
+NonConformityBySectionReason.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/action/implementation/NonConformityBySectionReason.java
+END

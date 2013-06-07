@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/WebContent/pages/patient
+END
+patient.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/WebContent/pages/patient/patient.jsp
+END
+patientMenu.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/WebContent/pages/patient/patientMenu.jsp
+END
+patientSearch.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/WebContent/pages/patient/patientSearch.jsp
+END
+retroCIEntryByProject.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/WebContent/pages/patient/retroCIEntryByProject.jsp
+END
+patientEditByProject.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/WebContent/pages/patient/patientEditByProject.jsp
+END
+patientClinicalInfo.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/WebContent/pages/patient/patientClinicalInfo.jsp
+END
+patientManagement.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/WebContent/pages/patient/patientManagement.jsp
+END

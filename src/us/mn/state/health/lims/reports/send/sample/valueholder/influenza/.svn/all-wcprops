@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/send/sample/valueholder/influenza
+END
+ResultXmit.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/send/sample/valueholder/influenza/ResultXmit.java
+END
+MNPHLXmit.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/send/sample/valueholder/influenza/MNPHLXmit.java
+END
+TestXmit.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/send/sample/valueholder/influenza/TestXmit.java
+END
+TestNameXmit.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/send/sample/valueholder/influenza/TestNameXmit.java
+END
+SampleXmit.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/send/sample/valueholder/influenza/SampleXmit.java
+END
+MessageXmit.java
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/send/sample/valueholder/influenza/MessageXmit.java
+END
+PatientXmit.java
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/send/sample/valueholder/influenza/PatientXmit.java
+END
+SampleCastorMapping.xml
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/send/sample/valueholder/influenza/SampleCastorMapping.xml
+END
+BatchMessageXmit.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/send/sample/valueholder/influenza/BatchMessageXmit.java
+END
+InfluenzaSampleXMLBySampleHelper.java
+K 25
+svn:wc:ra_dav:version-url
+V 160
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/send/sample/valueholder/influenza/InfluenzaSampleXMLBySampleHelper.java
+END
+ProviderXmit.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/reports/send/sample/valueholder/influenza/ProviderXmit.java
+END

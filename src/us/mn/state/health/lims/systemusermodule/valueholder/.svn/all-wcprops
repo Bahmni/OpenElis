@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/systemusermodule/valueholder
+END
+SystemRoleModule.hbm.xml
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/systemusermodule/valueholder/SystemRoleModule.hbm.xml
+END
+SystemUserModuleComparator.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/systemusermodule/valueholder/SystemUserModuleComparator.java
+END
+RoleModule.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/systemusermodule/valueholder/RoleModule.java
+END
+PermissionAgent.java
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/systemusermodule/valueholder/PermissionAgent.java
+END
+SystemUserModule.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/systemusermodule/valueholder/SystemUserModule.java
+END
+SystemUserModule.hbm.xml
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/systemusermodule/valueholder/SystemUserModule.hbm.xml
+END
+PermissionModule.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/!svn/ver/120/branches/OpenElis_v3.1_r2013_02_21/src/us/mn/state/health/lims/systemusermodule/valueholder/PermissionModule.java
+END
