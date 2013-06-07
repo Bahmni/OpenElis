@@ -1,0 +1,37 @@
+<project name="OpenElis_v3.1_r2013_02_21" default="dist" basedir=".">
+    <description>
+        OpenElis_v3.1_r2013_02_21 build file
+    </description>
+    <property name="src" location="src"/>
+    <property name="target" location="target"/>
+    <property name="dist" location="dist"/>
+    <property name="web" location="WebContent"/>
+
+    <target name="init">
+        <tstamp/>
+        <mkdir dir="${target}"/>
+    </target>
+
+    <path id="lib">
+        <fileset dir="${web}/WEB-INF/lib">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="compile" depends="init"
+            description="compile the source ">
+        <javac srcdir="${src}" destdir="${target}" encoding="iso-8859-1"  classpathref="lib"/>
+    </target>
+
+    <target name="dist" depends="compile"
+            description="generate the distribution">
+        <mkdir dir="${dist}/lib"/>
+        <jar jarfile="${dist}/lib/OpenElis_v3.1_r2013_02_21-${DSTAMP}.jar" basedir="${target}"/>
+    </target>
+
+    <target name="clean"
+            description="clean up">
+        <delete dir="${target}"/>
+        <delete dir="${dist}"/>
+    </target>
+</project>
