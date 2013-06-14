@@ -20,14 +20,20 @@
 
     <target name="compile" depends="init"
             description="compile the source ">
-        <javac srcdir="${src}" destdir="${target}" encoding="iso-8859-1" classpathref="lib"/>
+        <javac srcdir="${src}" destdir="${target}" encoding="iso-8859-1" classpathref="lib" target="1.6"/>
     </target>
 
     <target name="dist" depends="compile"
             description="generate the distribution">
         <mkdir dir="${dist}/lib"/>
-        <jar jarfile="${dist}/lib/OpenElis_v3.1_r2013_02_21-${DSTAMP}.jar" basedir="${target}"/>
+        <copy todir="${target}" >
+            <fileset dir="${src}" includes="**/*.xml"/>
+        </copy>
+        <copy todir="${target}" >
+            <fileset dir="${src}" includes="**/*.properties"/>
+        </copy>
         <war destfile="${dist}/openelis.war">
+            <classes dir="${target}"/>
             <fileset dir="${web}"/>
             <lib dir="${dist}/lib" />
         </war>
@@ -38,4 +44,5 @@
         <delete dir="${target}"/>
         <delete dir="${dist}"/>
     </target>
+
 </project>
