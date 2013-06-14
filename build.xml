@@ -1,0 +1,66 @@
+<project name="OpenElis_v3.1_r2013_02_21" default="dist" basedir=".">
+    <description>
+        OpenElis_v3.1_r2013_02_21 build file
+    </description>
+    <property name="src" location="openelis/src"/>
+    <property name="target" location="openelis/target"/>
+    <property name="dist" location="openelis/dist"/>
+    <property name="web" location="openelis/WebContent"/>
+    <property name="liquibase" location="liquibase"/>
+
+    <target name="init">
+        <tstamp/>
+        <mkdir dir="${target}"/>
+    </target>
+
+    <path id="lib">
+        <fileset dir="${web}/WEB-INF/lib">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="compile" depends="init"
+            description="compile the source ">
+        <javac srcdir="${src}" destdir="${target}" encoding="iso-8859-1" classpathref="lib" target="1.6"/>
+    </target>
+
+    <target name="dist" depends="compile"
+            description="generate the distribution">
+        <mkdir dir="${dist}/lib"/>
+        <copy todir="${target}">
+            <fileset dir="${src}" includes="**/*.xml"/>
+        </copy>
+        <copy todir="${target}">
+            <fileset dir="${src}" includes="**/*.properties"/>
+        </copy>
+        <war destfile="${dist}/openelis.war">
+            <classes dir="${target}"/>
+            <fileset dir="${web}"/>
+            <lib dir="${dist}/lib"/>
+        </war>
+    </target>
+
+    <target name="clean" description="clean up">
+        <delete dir="${target}"/>
+        <delete dir="${dist}"/>
+    </target>
+
+    <target name="setupDB">
+        <exec executable="dropDB" failonerror="true">
+            <env key="PGPASSWORD" value="password"/>
+            <arg line="-U postgres clinlims"/>
+        </exec>
+        <exec executable="psql" failonerror="true">
+            <env key="PGPASSWORD" value="password"/>
+            <arg line="-U postgres -f scripts/setupDB.sql"/>
+        </exec>
+        <exec executable="pg_restore">
+            <env key="PGPASSWORD" value="password"/>
+            <arg line="-U postgres -d clinlims db_backup/haitiClinical.backup"/>
+        </exec>
+        <exec executable="java" failonerror="true" dir="${liquibase}">
+            <arg line="-jar -Dfile.encoding=utf-8 lib/liquibase-1.9.5.jar --defaultsFile=liquibase.properties  --contexts=haiti --url=jdbc:postgresql://localhost:5432/clinlims update"/>
+        </exec>
+    </target>
+
+</project>

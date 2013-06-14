@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project basedir="." default="help" name="openElisGlobal">
+<project basedir="openelis" default="help" name="openElisGlobal">
     <property environment="env"/>
     <property name="checkout" value="${basedir}/buildRoot"/>
     <property name="config_checkout" value="${basedir}/configRoot"/>
