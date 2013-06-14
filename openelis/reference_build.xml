@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="help" name="openElisGlobal">
+    <property environment="env"/>
+    <property name="checkout" value="${basedir}/buildRoot"/>
+    <property name="config_checkout" value="${basedir}/configRoot"/>
+    <property name="wardir" value="${basedir}/warRoot"/>
+    <property name="projectroot" value="${checkout}/openElisGlobal"/>
+    <property name="db_root" value="${basedir}/dbRoot"/>
+    <property name="junit.output.dir" value="junit"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="debug" value="true"/>
+    <property name="target" value="1.5"/>
+    <property name="source" value="1.5"/>
+    <path id="Web App Libraries.libraryclasspath">
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/ajaxtags-1.2-beta3.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/antlr-2.7.5H3.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/antlr.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/asm-attrs.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/asm.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/barbecue-1.0.6b.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/castor-1.0.5-xml.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/castor-1.0.5.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/cglib-2.1.3.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/commons-beanutils.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/commons-codec-1.3.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/commons-collections-2.1.1.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/commons-collections-2.1.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/commons-digester.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/commons-fileupload.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/commons-httpclient-3.1.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/commons-javaflow-20060411.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/commons-lang-2.1.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/commons-logging.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/commons-validator-1.3.1.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/commons-validator.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/crypto.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/dom4j-1.6.1.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/ehcache-1.1.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/hamcrest-core-1.1.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/hamcrest-library-1.1.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/hibernate-3.1.3.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/iText-2.1.7.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/jakarta-oro.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/jasperreports-3.7.2-applet.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/jasperreports-3.7.2.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/jdbc-se2.0.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/jdt-compiler-3.1.1.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/jmock-2.5.1.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/jmock-junit4-2.5.1.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/jta.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/jta1.0.1.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/junit-4.6.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/lims.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/log4j-1.2.8.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/ojdbc14.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/servlet.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/standard.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/struts.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/struts2-core-2.0.9.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/struts2-spring-plugin-2.0.6.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/xerces.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/commons-fileupload-1.2.1.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/jcommon-1.0.16.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/jfreechart-1.0.13.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/quartz-all-2.0.1.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/slf4j-api-1.6.1.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/slf4j-simple-1.6.1.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/json_simple-1.1.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/mockito-all-1.9.5.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/commons-io-2.4.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/hapi-base-2.1.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/hapi-hl7overhttp-2.1.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/hapi-structures-v21-2.1.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/hapi-structures-v22-2.1.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/hapi-structures-v23-2.1.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/hapi-structures-v231-2.1.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/hapi-structures-v24-2.1.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/hapi-structures-v25-2.1.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/hapi-structures-v251-2.1.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/hapi-structures-v26-2.1.jar"/>
+    </path>
+    <path id="openElisGlobal.classpath">
+        <pathelement location="${projectroot}/WebContent/WEB-INF/classes"/>
+        <path refid="Web App Libraries.libraryclasspath"/>
+    </path>
+    <target name="initBuild">
+        <mkdir dir="${projectroot}/WebContent/WEB-INF/classes"/>
+        <mkdir dir="${wardir}"/>
+        <copy includeemptydirs="false" todir="${projectroot}/WebContent/WEB-INF/classes">
+            <fileset dir="${projectroot}/src">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy includeemptydirs="false" todir="${projectroot}/WebContent/WEB-INF/classes">
+            <fileset dir="${projectroot}/test">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="versionNumber" depends="checkout">
+        <echo message="finding build number"/>
+        <exec outputproperty="build.current.revision" executable="svnversion">
+            <arg line="-n -c ${checkout}"/>
+            <redirector>
+                <outputfilterchain>
+                    <tokenfilter>
+                        <replaceregex pattern="^[0-9]*:?" replace="" flags="g"/>
+                    </tokenfilter>
+                </outputfilterchain>
+            </redirector>
+        </exec>
+        <echo message="build number: ${build.current.revision} "/>
+        <replaceregexp file="${checkout}/openElisGlobal/src/build.properties"
+                       match="build=.*"
+                       replace="build=${build.current.revision}"
+                       byline="true"/>
+    </target>
+    <target name="checkout">
+        <echo message="Checking out openElis"/>
+        <delete dir="${checkout}"/>
+        <delete dir="${config_checkout}"/>
+        <mkdir dir="${config_checkout}"/>
+        <exec executable="svn">
+            <arg line="checkout .../openElisGlobal/trunk  ${checkout}"/>
+        </exec>
+    </target>
+    <target name="checkoutDB" description="checkout the files needed to do DB updates">
+        <delete dir="${db_root}"/>
+        <exec executable="svn">
+            <arg line="export .../database/trunk/liquibase  ${db_root}"/>
+        </exec>
+    </target>
+    <target name="updateDB" description="Installs changes to DB using liquibase" depends="checkoutDB">
+        <echo message="Updating CDIOpenElis database"/>
+        <exec executable="java" dir="${db_root}">
+            <arg line="-jar  ./lib/liquibase-1.9.5.jar --defaultsFile=./liquibase.properties  --contexts=CDIRetroCI --password=... --url=jdbc:postgresql://localhost:5432/cdielis update"/>
+        </exec>
+        <echo message="Updating CDIOpenElisTraining database"/>
+        <exec executable="java" dir="${db_root}">
+            <arg line="-jar  ./lib/liquibase-1.9.5.jar --defaultsFile=./liquibase.properties --contexts=CDIRetroCI  --password=... --url=jdbc:postgresql://localhost:5432/trainingcdielis update"/>
+        </exec>
+        <echo message="Updating haitiOpenELIS database"/>
+        <exec executable="java" dir="${db_root}">
+            <arg line="-jar  ./lib/liquibase-1.9.5.jar --defaultsFile=./liquibase.properties --contexts=haiti --password=... --url=jdbc:postgresql://localhost:5432/clinlims update"/>
+        </exec>
+        <echo message="Updating LNSP_HaitiOpenElis database"/>
+        <exec executable="java" dir="${db_root}">
+            <arg line="-jar  ./lib/liquibase-1.9.5.jar --defaultsFile=./liquibase.properties  --contexts=haitiLNSP --password=... --url=jdbc:postgresql://localhost:5432/lnsphaiti update"/>
+        </exec>
+        <echo message="Updating CI_LNSPOpenElis database"/>
+        <exec executable="java" dir="${db_root}">
+            <arg line="-jar  ./lib/liquibase-1.9.5.jar --defaultsFile=./liquibase.properties  --contexts=ciLNSP --password=... --url=jdbc:postgresql://localhost:5432/cilnsp update"/>
+        </exec>
+        <echo message="Updating CI_IPCIOpenElis database"/>
+        <exec executable="java" dir="${db_root}">
+            <arg line="-jar  ./lib/liquibase-1.9.5.jar --defaultsFile=./liquibase.properties  --contexts=CI_IPCI --password=... --url=jdbc:postgresql://localhost:5432/ci_ipci update"/>
+        </exec>
+        <echo message="Updating CDI_RegLabOpenElis database"/>
+        <exec executable="java" dir="${db_root}">
+            <arg line="-jar  ./lib/liquibase-1.9.5.jar --defaultsFile=./liquibase.properties  --contexts=ci_regional --password=... --url=jdbc:postgresql://localhost:5432/ci_reg_lab update"/>
+        </exec>
+    </target>
+    <target name="clean">
+        <delete dir="${projectroot}/WebContent/WEB-INF/classes"/>
+    </target>
+    <target depends="checkout, versionNumber, initBuild" description="builds application and tests" name="build">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="${debug}" debuglevel="${debuglevel}" destdir="${projectroot}/WebContent/WEB-INF/classes"
+               source="${source}" target="${target}">
+            <src path="${projectroot}/src"/>
+            <classpath refid="openElisGlobal.classpath"/>
+        </javac>
+        <javac debug="${debug}" debuglevel="${debuglevel}" destdir="${projectroot}/WebContent/WEB-INF/classes"
+               source="${source}" target="${target}">
+            <src path="${projectroot}/test"/>
+            <classpath refid="openElisGlobal.classpath"/>
+        </javac>
+    </target>
+    <target name="buildpackage"
+            description="builds and packages all of the current implementations using the .properties files"
+            depends="build">
+        <echo message="Packaging war file ..."/>
+        <delete file="${wardir}/openElis.war"/>
+        <jar jarfile="${wardir}/openElis.war">
+            <fileset dir="${projectroot}/WebContent" includes="**"/>
+        </jar>
+    </target>
+    <target name="ResultsLoadUtilityTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="test.us.mn.state.health.lims.result.action.ResultsLoadUtilityTest" todir="${junit.output.dir}"/>
+            <classpath refid="haitiOpenElis.classpath"/>
+            <bootclasspath>
+                <path refid="run.ResultsLoadUtilityTest.bootclasspath"/>
+                <fileset dir="${java.home}/lib" includes="*.jar"/>
+            </bootclasspath>
+        </junit>
+    </target>
+    <target name="junitreport">
+        <junitreport todir="${junit.output.dir}">
+            <fileset dir="${junit.output.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${junit.output.dir}"/>
+        </junitreport>
+    </target>
+    <target name="help">
+        <echo message="Available targets:"/>
+        <echo message="    updateDB -- updates Haiti, LNSP_Haiti, CDI and CI_LNSP databases"/>
+        <echo message="    checkout -- just checks out the code for OpenElis"/>
+        <echo message="    build -- checks out and builds the code for OpenElis"/>
+        <echo message="    buildpackage -- checks out, builds and builds war files for Haiti, LNSP_Haiti, CDI and CI_LNSP "/>
+    </target>
+</project>
