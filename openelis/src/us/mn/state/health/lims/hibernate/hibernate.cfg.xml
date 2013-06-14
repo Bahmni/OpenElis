@@ -8,17 +8,32 @@
 <session-factory>
 	<!--  ENABLE FOR DATASOURCE -->
 	<!--bugzilla 1908 modified for Vietnam: added prefix java:comp/env/-->
-	<property name="connection.datasource">
-		java:comp/env/jdbc/LimsDS
-	</property>
+
+    <!-- going green -->
+    <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+    <property name="hibernate.connection.username">clinlims</property>
+    <property name="hibernate.connection.password">clinlims</property>
+    <property name="hibernate.connection.url">dbc:postgresql://localhost:5432/clinlims</property>
+
+    <!--<property name="transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>-->
+
+    <!-- SQL dialect - generate SQL for a particular database -->
+    <property name="dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+
+    <!-- /going green -->
+
+
+    <!--<property name="connection.datasource">-->
+		<!--java:comp/env/jdbc/LimsDS-->
+	<!--</property>-->
 	<property name="hibernate.default_schema">clinlims</property>
 	<!--
 		<property name="dialect">org.hibernate.dialect.Oracle9Dialect</property>
 	-->
 	<!-- use in Vietnam -->
-	<property name="dialect">
-		org.hibernate.dialect.PostgreSQLDialect
-	</property>
+	<!--<property name="dialect">-->
+		<!--org.hibernate.dialect.PostgreSQLDialect-->
+	<!--</property>-->
 	<!--  ENABLE FOR JDBC TESTCASE -->
 	<!--
 		<property name="connection.username">CLINLIMS</property>
