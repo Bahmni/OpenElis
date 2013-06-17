@@ -21,7 +21,7 @@
 
     <target name="compile" depends="init"
             description="compile the source ">
-        <javac srcdir="${src}" destdir="${target}" encoding="iso-8859-1" classpathref="lib" target="1.6"/>
+        <javac srcdir="${src}" destdir="${target}" encoding="iso-8859-1" classpathref="lib" target="1.7"/>
     </target>
 
     <target name="dist" depends="compile"
