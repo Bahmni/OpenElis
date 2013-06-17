@@ -46,7 +46,7 @@
     </target>
 
     <target name="setupDB">
-        <exec executable="dropDB" failonerror="true">
+        <exec executable="dropdb">
             <env key="PGPASSWORD" value="password"/>
             <arg line="-U postgres clinlims"/>
         </exec>
