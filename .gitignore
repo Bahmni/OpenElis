@@ -10,3 +10,4 @@ dist
 .gradle
 *.DS_Store
 *.class
+junit

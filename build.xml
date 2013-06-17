@@ -3,10 +3,13 @@
         OpenElis_v3.1_r2013_02_21 build file
     </description>
     <property name="src" location="openelis/src"/>
+    <property name="test.src" location="openelis/test"/>
     <property name="target" location="openelis/target"/>
+    <property name="test.target" location="openelis/test/target"/>
     <property name="dist" location="openelis/dist"/>
     <property name="web" location="openelis/WebContent"/>
     <property name="liquibase" location="liquibase"/>
+    <property name="junit.output.dir" value="junit"/>
 
     <target name="init">
         <tstamp/>
@@ -21,15 +24,16 @@
 
     <target name="compile" depends="init"
             description="compile the source ">
-        <javac srcdir="${src}" destdir="${target}" encoding="iso-8859-1" classpathref="lib" target="1.7"/>
-    </target>
-
-    <target name="dist" depends="compile"
-            description="generate the distribution">
-        <mkdir dir="${dist}/lib"/>
+        <mkdir dir="${target}"/>
+        <javac srcdir="${src}" destdir="${target}" encoding="iso-8859-1" classpathref="lib" target="1.7" debug="on"/>
         <copy todir="${target}">
             <fileset dir="${src}" includes="**/*.xml"/>
         </copy>
+    </target>
+
+    <target name="dist" depends="compile, test"
+            description="generate the distribution">
+        <mkdir dir="${dist}/lib"/>
         <copy todir="${target}">
             <fileset dir="${src}" includes="**/*.properties"/>
         </copy>
@@ -43,6 +47,8 @@
     <target name="clean" description="clean up">
         <delete dir="${target}"/>
         <delete dir="${dist}"/>
+        <delete dir="${junit.output.dir}"/>
+        <delete dir="${test.target}"/>
     </target>
 
     <target name="setupDB">
@@ -63,4 +69,33 @@
         </exec>
     </target>
 
+    <target name="test">
+        <mkdir dir="${junit.output.dir}"/>
+        <mkdir dir="${test.target}"/>
+        <javac srcdir="${test.src}" classpathref="lib" destdir="${test.target}" encoding="iso-8859-1" debug="on">
+            <classpath>
+                <dirset dir="${target}"/>
+            </classpath>
+        </javac>
+        <junit printsummary="yes" haltonerror="false" haltonfailure="false" showoutput="true" failureproperty="test.failed">
+            <classpath>
+                <fileset dir="${web}/WEB-INF/lib">
+                    <include name="*.jar"/>
+                </fileset>
+                <fileset dir="${liquibase}/lib">
+                    <include name="*.jar"/>
+                </fileset>
+                <pathelement location="${target}"/>
+                <pathelement location="${test.target}"/>
+            </classpath>
+            <batchtest todir="${junit.output.dir}">
+                <formatter type="xml"/>
+                <fileset dir="${test.src}">
+                    <include name="**/*Test*.java"/>
+                    <exclude name="**/All*Tests.java"/>
+                </fileset>
+            </batchtest>
+        </junit>
+        <fail message="Test failure detected, check test results." if="test.failed" />
+    </target>
 </project>
