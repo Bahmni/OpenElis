@@ -77,7 +77,8 @@
                 <dirset dir="${target}"/>
             </classpath>
         </javac>
-        <junit printsummary="yes" haltonerror="false" haltonfailure="false" showoutput="true" failureproperty="test.failed">
+        <junit printsummary="yes" haltonerror="false" haltonfailure="false"
+               showoutput="true" failureproperty="test.failed">
             <classpath>
                 <fileset dir="${web}/WEB-INF/lib">
                     <include name="*.jar"/>
