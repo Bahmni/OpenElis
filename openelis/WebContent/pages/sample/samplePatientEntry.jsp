@@ -481,11 +481,71 @@ function capitalizeValue( text){
 
 <div id=sampleEntryPage <%= (orderTypeList == null || orderTypeList.size() == 0)? "" : "style='display:none'"  %>>
 
+<!-- patient  -->
+<html:hidden name="<%=formName%>" property="patientPK" styleId="patientPK"/>
+
+<table style="width:100%">
+	<tr>
+		<td width="15%" align="left">
+			<html:button property="showPatient" onclick="showHideSection(this, 'patientInfo');" >+</html:button>
+			<bean:message key="sample.entry.patient" />:
+			<% if ( patientRequired ) { %><span class="requiredlabel">*</span><% } %>
+		</td>
+		<td width="15%" id="firstName"><b>&nbsp;</b></td>
+		<td width="15%">
+			<% if(useMothersName){ %><bean:message key="patient.mother.name"/>:<% } %>
+		</td>
+		<td width="15%" id="mother"><b>&nbsp;</b></td>
+		<td width="10%">
+			<% if( useSTNumber){ %><bean:message key="patient.ST.number"/>:<% } %>
+		</td>
+		<td width="15%" id="st"><b>&nbsp;</b></td>
+		<td width="5%">&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td id="lastName"><b>&nbsp;</b></td>
+		<td>
+			<bean:message key="patient.birthDate"/>:
+		</td>
+		<td id="dob"><b>&nbsp;</b></td>
+		<td>
+			<%=StringUtil.getContextualMessageForKey("patient.NationalID") %>:
+		</td>
+		<td id="national"><b>&nbsp;</b></td>
+		<td>
+			<bean:message key="patient.gender"/>:
+		</td>
+		<td id="gender"><b>&nbsp;</b></td>
+	</tr>
+</table>
+
+<div id="patientInfo"  style="display:none;" >
+	<tiles:insert attribute="patientInfo" />
+	<tiles:insert attribute="patientClinicalInfo" />
+</div>
+
+
+
+<hr style="width: 100%; height: 5px" />
+
+<html:button property="showHide" value="+" onclick="showHideSection(this, 'samplesDisplay');" />
+<%= StringUtil.getContextualMessageForKey("sample.entry.sampleList.label") %>
+<span class="requiredlabel">*</span>
+
+<div id="samplesDisplay" class="colorFill" style="display:none;" >
+	<tiles:insert attribute="addSample"/>
+</div>
+
+<br />
+
+<hr style="width: 100%; height: 5px" />
+
 <html:button property="showHide" value="-" onclick="showHideSection(this, 'orderDisplay');" />
 <%= StringUtil.getContextualMessageForKey("sample.entry.order.label") %>
 <span class="requiredlabel">*</span>
 
-<div id=orderDisplay >
+<div id="orderDisplay" >
 <table  style="width:90%" >
 
 	<tr>
@@ -503,7 +563,7 @@ function capitalizeValue( text){
 							onchange="checkAccessionNumber(this);makeDirty();"
 							styleClass="text"
 							styleId="labNo" />
-				
+
 						<bean:message key="sample.entry.scanner.instructions"/>
 						<html:button property="generate"
 									 styleClass="textButton"
@@ -516,11 +576,11 @@ function capitalizeValue( text){
 					<tr>
 						<td><bean:message key="sample.entry.requestDate" />:
 						<span class="requiredlabel">*</span><font size="1"><bean:message key="sample.date.format" /></font></td>
-						<td><html:text name='<%=formName %>' 
-						               property="requestDate" 
+						<td><html:text name='<%=formName %>'
+						               property="requestDate"
 						               styleId="requestDate"
-						               onchange="makeDirty();checkValidEntryDate(this, 'past')" 
-						               onkeyup="addDateSlashes(this, event);" 
+						               onchange="makeDirty();checkValidEntryDate(this, 'past')"
+						               onkeyup="addDateSlashes(this, event);"
 						               maxlength="10"/>
 					</tr>
 					<% } %>
@@ -533,18 +593,18 @@ function capitalizeValue( text){
 						</font>
 					</td>
 				    <td colspan="2">
-						<app:text name="<%=formName%>" 
+						<app:text name="<%=formName%>"
 						    property="receivedDateForDisplay"
 							onchange="checkValidEntryDate(this, 'past');makeDirty();"
-							onkeyup="addDateSlashes(this, event);" 
+							onkeyup="addDateSlashes(this, event);"
 							maxlength="10"
 							styleClass="text"
 							styleId="receivedDateForDisplay" />
-					
+
 					<% if( FormFields.getInstance().useField(Field.SampleEntryUseReceptionHour)){ %>
 					    <bean:message key="sample.receptionTime" />:
 							<html:text name="<%=formName %>" property="recievedTime" onchange="makeDirty(); checkValidTime(this)"/>
-					
+
 					<% } %>
 						</td>
 				</tr>
@@ -553,9 +613,9 @@ function capitalizeValue( text){
 					<td><bean:message key="sample.entry.nextVisit.date" />&nbsp;<font size="1"><bean:message key="sample.date.format" /></font>:</td>
 					<td>
 						<html:text name='<%= formName %>'
-						           property="nextVisitDate" 
+						           property="nextVisitDate"
 						           onchange="makeDirty();checkValidEntryDate(this, 'future')"
-						           onkeyup="addDateSlashes(this, event);" 
+						           onkeyup="addDateSlashes(this, event);"
 						           styleId="nextVisitDate"
 						           maxlength="10"/>
 					</td>
@@ -594,7 +654,7 @@ function capitalizeValue( text){
 						<html:select styleId="requesterId"
 								     name="<%=formName%>"
 								     property="referringSiteId"
-								     onchange="makeDirty();siteListChanged(this);setSave();" 
+								     onchange="makeDirty();siteListChanged(this);setSave();"
 								     onkeyup="capitalizeValue( this.value );"
 								     >
 							<option value=""></option>
@@ -608,7 +668,7 @@ function capitalizeValue( text){
 					<td >
 					    <bean:message key="sample.entry.referringSite.code" />
 					</td>
-					<td>    
+					<td>
 						<html:text styleId="requesterCodeId"
 								     name="<%=formName%>"
 								     property="referringSiteCode"
@@ -692,36 +752,36 @@ function capitalizeValue( text){
 				</tr>
 				<tr>
 					<td>&nbsp;&nbsp;<bean:message key="sample.entry.facility.street"/>
-					<td>	
+					<td>
 					<html:text name='<%=formName %>'
-							   property="facilityAddressStreet" 
+							   property="facilityAddressStreet"
 							   styleClass="text"
 							   onchange="makeDirty()"/>
-					</td>		     
+					</td>
 				</tr>
 				<tr>
-					<td>&nbsp;&nbsp;<bean:message key="sample.entry.facility.commune"/>:<td>	
+					<td>&nbsp;&nbsp;<bean:message key="sample.entry.facility.commune"/>:<td>
 					<html:text name='<%=formName %>'
-							   property="facilityAddressCommune" 
+							   property="facilityAddressCommune"
 							   styleClass="text"
 							   onchange="makeDirty()"/>
-					</td>  
+					</td>
 				</tr>
 				<tr>
-					<td><bean:message key="sample.entry.facility.phone"/>:<td>	
+					<td><bean:message key="sample.entry.facility.phone"/>:<td>
 					<html:text name='<%=formName %>'
-							   property="facilityPhone" 
+							   property="facilityPhone"
 							   styleClass="text"
 							   onchange="makeDirty()"/>
-					</td>  
+					</td>
 				</tr>
 				<tr>
-					<td><bean:message key="sample.entry.facility.fax"/>:<td>	
+					<td><bean:message key="sample.entry.facility.fax"/>:<td>
 					<html:text name='<%=formName %>'
-							   property="facilityFax" 
+							   property="facilityFax"
 							   styleClass="text"
 							   onchange="makeDirty()"/>
-					</td>  
+					</td>
 				</tr>
 				<% } %>
 				<tr><td>&nbsp;</td></tr>
@@ -729,7 +789,7 @@ function capitalizeValue( text){
 				<tr>
 					<td><bean:message key="sample.entry.patientPayment"/>: </td>
 					<td>
-						
+
 					<html:select name="<%=formName %>" property="paymentOptionSelection" >
 								<option value='' ></option>
 					<logic:iterate id="optionValue" name='<%=formName%>' property="paymentOptions" type="IdValuePair" >
@@ -745,10 +805,10 @@ function capitalizeValue( text){
 				<tr >
 					<td><bean:message key="sample.entry.sample.period"/>:</td>
 					<td>
-						<html:select name="<%=formName %>" 
-						             property="followupPeriodOrderType" 
-						             onchange="makeDirty(); labPeriodChanged( this, '8' )" 
-						             styleId="followupLabOrderPeriodId" 
+						<html:select name="<%=formName %>"
+						             property="followupPeriodOrderType"
+						             onchange="makeDirty(); labPeriodChanged( this, '8' )"
+						             styleId="followupLabOrderPeriodId"
 						             style="display:none">
 						<option value='' ></option>
 						<logic:iterate id="optionValue" name='<%=formName%>' property="followupPeriodOrderTypes" type="IdValuePair" >
@@ -757,10 +817,10 @@ function capitalizeValue( text){
 						</option>
 						</logic:iterate>
 						</html:select>
-						<html:select name="<%=formName %>" 
-						             property="initialPeriodOrderType" 
-						             onchange="makeDirty(); labPeriodChanged( this, '2' )" 
-						             styleId="initialLabOrderPeriodId" 
+						<html:select name="<%=formName %>"
+						             property="initialPeriodOrderType"
+						             onchange="makeDirty(); labPeriodChanged( this, '2' )"
+						             styleId="initialLabOrderPeriodId"
 						             style="display:none">
 						<option value='' ></option>
 						<logic:iterate id="optionValue" name='<%=formName%>' property="initialPeriodOrderTypes" type="IdValuePair" >
@@ -770,11 +830,11 @@ function capitalizeValue( text){
 						</logic:iterate>
 						</html:select>
 						&nbsp;
-						<html:text name='<%= formName %>' 
-						           property="otherPeriodOrder" 
-						           styleId="labOrderPeriodOtherId" 
+						<html:text name='<%= formName %>'
+						           property="otherPeriodOrder"
+						           styleId="labOrderPeriodOtherId"
 						           style="display:none" />
-					</td>							
+					</td>
 				</tr>
 				<% } %>
 				<tr>
@@ -786,60 +846,8 @@ function capitalizeValue( text){
 		</td>
 	</tr>
 </table>
-</div>		
-<hr style="width: 100%; height: 5px" />
-<html:button property="showHide" value="+" onclick="showHideSection(this, 'samplesDisplay');" />
-<%= StringUtil.getContextualMessageForKey("sample.entry.sampleList.label") %>
-<span class="requiredlabel">*</span>
-
-<div id="samplesDisplay" class="colorFill" style="display:none;" >
-	<tiles:insert attribute="addSample"/>
 </div>
 
-<br />
-<hr style="width: 100%; height: 5px" />
-<html:hidden name="<%=formName%>" property="patientPK" styleId="patientPK"/>
-
-<table style="width:100%">
-	<tr>
-		<td width="15%" align="left">
-			<html:button property="showPatient" onclick="showHideSection(this, 'patientInfo');" >+</html:button>
-			<bean:message key="sample.entry.patient" />:
-			<% if ( patientRequired ) { %><span class="requiredlabel">*</span><% } %>
-		</td>
-		<td width="15%" id="firstName"><b>&nbsp;</b></td>
-		<td width="15%">
-			<% if(useMothersName){ %><bean:message key="patient.mother.name"/>:<% } %>
-		</td>
-		<td width="15%" id="mother"><b>&nbsp;</b></td>
-		<td width="10%">
-			<% if( useSTNumber){ %><bean:message key="patient.ST.number"/>:<% } %>
-		</td>
-		<td width="15%" id="st"><b>&nbsp;</b></td>
-		<td width="5%">&nbsp;</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td id="lastName"><b>&nbsp;</b></td>
-		<td>
-			<bean:message key="patient.birthDate"/>:
-		</td>
-		<td id="dob"><b>&nbsp;</b></td>
-		<td>
-			<%=StringUtil.getContextualMessageForKey("patient.NationalID") %>:
-		</td>
-		<td id="national"><b>&nbsp;</b></td>
-		<td>
-			<bean:message key="patient.gender"/>:
-		</td>
-		<td id="gender"><b>&nbsp;</b></td>
-	</tr>
-</table>
-
-<div id="patientInfo"  style="display:none;" >
-	<tiles:insert attribute="patientInfo" />
-	<tiles:insert attribute="patientClinicalInfo" />
-</div>
 </div>
 <script type="text/javascript" >
 
