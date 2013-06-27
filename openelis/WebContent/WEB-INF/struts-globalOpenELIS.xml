@@ -53,6 +53,7 @@
 			<form-property name="initialPeriodOrderType" type="java.lang.String" initial=""/>
 			<form-property name="otherPeriodOrder"  type="java.lang.String" initial="" />
 			<form-property name="testSectionList"  type="java.util.Collection" />
+			<form-property name="sampleEntryFieldsetOrder"  type="java.util.List" />
 		</form-bean>
 
 		<form-bean name="SampleConfirmationEntryForm" type="us.mn.state.health.lims.common.action.BaseActionForm">

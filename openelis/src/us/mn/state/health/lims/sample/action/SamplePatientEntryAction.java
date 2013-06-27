@@ -33,6 +33,11 @@ import us.mn.state.health.lims.common.util.ConfigurationProperties;
 import us.mn.state.health.lims.common.util.ConfigurationProperties.Property;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.patient.action.bean.PatientManagmentInfo;
+import us.mn.state.health.lims.siteinformation.dao.SiteInformationDAO;
+import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
+import us.mn.state.health.lims.siteinformation.valueholder.SiteInformation;
+
+import java.util.Arrays;
 
 /**
  * The SampleEntryAction class represents the initial Action for the SampleEntry
@@ -41,9 +46,10 @@ import us.mn.state.health.lims.patient.action.bean.PatientManagmentInfo;
  */
 public class SamplePatientEntryAction extends BaseSampleEntryAction {
 
-	protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
+    protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 
+        String[] fieldsetOrder  ={"order","samples","patient"};
 		String forward = "success";
 
 		request.getSession().setAttribute(IActionConstants.SAVE_DISABLED, IActionConstants.TRUE);
@@ -57,13 +63,20 @@ public class SamplePatientEntryAction extends BaseSampleEntryAction {
 		//Date today = Calendar.getInstance().getTime();
 		String dateAsText = DateUtil.getCurrentDateAsText();
 		PropertyUtils.setProperty(form, "currentDate", dateAsText);
-		
 
 		boolean needRequesterList = FormFields.getInstance().useField(FormFields.Field.RequesterSiteList);
 		boolean needSampleInitialConditionList = FormFields.getInstance().useField(FormFields.Field.InitialSampleCondition);
 		boolean needPaymentOptions = ConfigurationProperties.getInstance().isPropertyValueEqual(Property.trackPatientPayment, "true");
 
-		PropertyUtils.setProperty(dynaForm, "receivedDateForDisplay", dateAsText);
+        SiteInformationDAO siteInfo = new SiteInformationDAOImpl();
+        SiteInformation sampleEntryFieldsetOrder = siteInfo.getSiteInformationByName("SampleEntryFieldsetOrder");
+        if(sampleEntryFieldsetOrder != null &&
+                sampleEntryFieldsetOrder.getValue() != null &&
+                !sampleEntryFieldsetOrder.getValue().isEmpty() ){
+            fieldsetOrder = sampleEntryFieldsetOrder.getValue().split("\\|");
+        }
+
+        PropertyUtils.setProperty(dynaForm, "receivedDateForDisplay", dateAsText);
 		PropertyUtils.setProperty(dynaForm, "requestDate", dateAsText);
 		PropertyUtils.setProperty(dynaForm, "patientProperties", new PatientManagmentInfo());
 		PropertyUtils.setProperty(dynaForm, "sampleTypes", DisplayListService.getList(ListType.SAMPLE_TYPE));
@@ -72,6 +85,7 @@ public class SamplePatientEntryAction extends BaseSampleEntryAction {
 		PropertyUtils.setProperty(dynaForm, "initialPeriodOrderTypes", DisplayListService.getList(ListType.SAMPLE_PATIENT_INITIAL_PERIOD_ORDER_TYPE));
 		PropertyUtils.setProperty(dynaForm, "testSectionList", DisplayListService.getList(ListType.TEST_SECTION));
 		PropertyUtils.setProperty(dynaForm, "labNo", "");
+		PropertyUtils.setProperty(dynaForm, "sampleEntryFieldsetOrder", Arrays.asList(fieldsetOrder));
 
 		addProjectList(dynaForm);
 
