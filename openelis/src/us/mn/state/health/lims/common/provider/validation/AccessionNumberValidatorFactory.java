@@ -42,6 +42,8 @@ public class AccessionNumberValidatorFactory {
 			return getYearNumValidator(7, '-');
 		}if( accessionFormat.equals("YEARNUM_SEVEN")){
 			return getYearNumValidator(7, null);
+		}if( accessionFormat.equals("DATENUM")){
+			return getDateNumValidator();
 		}
 
 		throw new LIMSInvalidConfigurationException("AccessionNumberValidatorFactory: Unable to find validator for " + accessionFormat);
@@ -91,4 +93,11 @@ public class AccessionNumberValidatorFactory {
 	}
 
 
+    public IAccessionNumberValidator getDateNumValidator() {
+        if( validator == null){
+            validator = new DateNumAccessionValidator();
+        }
+
+        return validator;
+    }
 }
