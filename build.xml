@@ -1,7 +1,10 @@
-<project name="OpenElis_v3.1_r2013_02_21" default="dist" basedir=".">
+<project name="OpenElis" default="dist" basedir=".">
     <description>
-        OpenElis_v3.1_r2013_02_21 build file
+        OpenElis build file
     </description>
+    <presetdef name="javac">
+        <javac includeantruntime="false" />
+    </presetdef>
     <property name="src" location="openelis/src"/>
     <property name="test.src" location="openelis/test"/>
     <property name="target" location="openelis/target"/>
@@ -25,13 +28,13 @@
     <target name="compile" depends="init"
             description="compile the source ">
         <mkdir dir="${target}"/>
-        <javac srcdir="${src}" destdir="${target}" encoding="iso-8859-1" classpathref="lib" target="1.7" debug="on"/>
+        <javac srcdir="${src}" destdir="${target}" encoding="iso-8859-1" classpathref="lib" source="1.7" target="1.7" debug="on"/>
         <copy todir="${target}">
             <fileset dir="${src}" includes="**/*.xml"/>
         </copy>
     </target>
 
-    <target name="dist" depends="compile, test"
+    <target name="dist" depends="clean, compile"
             description="generate the distribution">
         <mkdir dir="${dist}/lib"/>
         <copy todir="${target}">
@@ -42,6 +45,10 @@
             <fileset dir="${web}"/>
             <lib dir="${dist}/lib"/>
         </war>
+    </target>
+
+    <target name="build" depends="clean, compile, test, dist"
+            description="run test and generate the distribution">
     </target>
 
     <target name="clean" description="clean up">
