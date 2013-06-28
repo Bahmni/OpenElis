@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+    <!--Add change tags here-->
+    <changeSet id="1" author="tw" context="jss" runOnChange="true">
+        <comment>Adds JSS specific configuration to SiteInfo</comment>
+        <update schemaName="clinlims" tableName="site_information">
+            <column name="value" value="DATENUM"/>
+            <where>name='acessionFormat'</where>
+        </update>
+        <insert schemaName="clinlims" tableName="site_information">
+            <column name="id" valueNumeric=" nextVal( 'site_information_seq' ) "/>
+            <column name="name" value="SampleEntryFieldsetOrder"/>
+            <column name="description" value="Configures the order in which each section appears in the Add Sample Entry form. Eg: value: patient|samples|order"/>
+            <column name="value" value="patient|samples|order"/>
+            <column name="lastupdated" valueDate=" now() "/>
+        </insert>
+
+    </changeSet>
+</databaseChangeLog>
