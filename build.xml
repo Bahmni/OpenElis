@@ -5,14 +5,8 @@
     <presetdef name="javac">
         <javac includeantruntime="false" />
     </presetdef>
-    <property name="src" location="openelis/src"/>
-    <property name="test.src" location="openelis/test"/>
-    <property name="target" location="openelis/target"/>
-    <property name="test.target" location="openelis/test/target"/>
-    <property name="dist" location="openelis/dist"/>
-    <property name="web" location="openelis/WebContent"/>
-    <property name="liquibase" location="liquibase"/>
-    <property name="junit.output.dir" value="junit"/>
+    <property file="build.properties" />
+
 
     <target name="init">
         <tstamp/>
@@ -62,16 +56,16 @@
 
     <target name="initDB">
         <exec executable="dropdb">
-            <env key="PGPASSWORD" value="password"/>
-            <arg line="-U postgres clinlims"/>
+            <env key="PGPASSWORD" value="${password}"/>
+            <arg line="-U postgres -h ${hostname} clinlims"/>
         </exec>
         <exec executable="psql" failonerror="true">
-            <env key="PGPASSWORD" value="password"/>
-            <arg line="-U postgres -f scripts/setupDB.sql"/>
+            <env key="PGPASSWORD" value="${password}"/>
+            <arg line="-U postgres -h ${hostname}  -f scripts/setupDB.sql"/>
         </exec>
         <exec executable="pg_restore">
-            <env key="PGPASSWORD" value="password"/>
-            <arg line="-U postgres -d clinlims db_backup/haitiClinical.backup"/>
+            <env key="PGPASSWORD" value="${password}"/>
+            <arg line="-U postgres -h ${hostname} -d clinlims db_backup/haitiClinical.backup"/>
         </exec>
     </target>
 
