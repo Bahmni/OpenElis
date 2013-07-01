@@ -73,6 +73,9 @@
         <exec executable="java" failonerror="true" dir="${liquibase}">
             <arg line="-jar -Dfile.encoding=utf-8 lib/liquibase-1.9.5.jar --defaultsFile=liquibase.properties  --contexts=haiti --url=jdbc:postgresql://localhost:5432/clinlims update"/>
         </exec>
+        <exec executable="java" failonerror="true" dir="${liquibase}">
+            <arg line="-jar -Dfile.encoding=utf-8 lib/liquibase-1.9.5.jar --defaultsFile=liquibase.properties  --contexts=jss --url=jdbc:postgresql://localhost:5432/clinlims update"/>
+        </exec>
     </target>
 
     <target name="test" depends="clean, compile">
