@@ -58,7 +58,9 @@
         <delete dir="${test.target}"/>
     </target>
 
-    <target name="setupDB">
+    <target name="setupDB" depends="initDB, updateDB"></target>
+
+    <target name="initDB">
         <exec executable="dropdb">
             <env key="PGPASSWORD" value="password"/>
             <arg line="-U postgres clinlims"/>
@@ -71,6 +73,9 @@
             <env key="PGPASSWORD" value="password"/>
             <arg line="-U postgres -d clinlims db_backup/haitiClinical.backup"/>
         </exec>
+    </target>
+
+    <target name="updateDB">
         <exec executable="java" failonerror="true" dir="${liquibase}">
             <arg line="-jar -Dfile.encoding=utf-8 lib/liquibase-1.9.5.jar --defaultsFile=liquibase.properties  --contexts=haiti --url=jdbc:postgresql://localhost:5432/clinlims update"/>
         </exec>
