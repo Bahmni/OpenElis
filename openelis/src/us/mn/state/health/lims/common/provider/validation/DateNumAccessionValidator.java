@@ -11,7 +11,7 @@ import java.util.*;
 
 public class DateNumAccessionValidator implements IAccessionNumberValidator {
 
-    private static String currentLargestAccessionNumber;
+    private static String nextAccessionNumber;
     private static Object LOCK_OBJECT = new Object();
     private SampleDAO sampleDAO = new SampleDAOImpl();
 
@@ -32,7 +32,7 @@ public class DateNumAccessionValidator implements IAccessionNumberValidator {
     @Override
     public ValidationResults validFormat(String accessionNumber, boolean checkDate) throws IllegalArgumentException {
 
-        if (accessionNumber.length() > getMaxAccessionLength() || accessionNumber.length() < getMaxAccessionLength()-1) {
+    /*    if (accessionNumber.length() > getMaxAccessionLength() || accessionNumber.length() < getMaxAccessionLength()-1) {
             return ValidationResults.LENGTH_FAIL;
         }
 
@@ -51,12 +51,12 @@ public class DateNumAccessionValidator implements IAccessionNumberValidator {
             Integer.parseInt(accessionNumber.substring(8));
         } catch (NumberFormatException e) {
             return ValidationResults.FORMAT_FAIL;
-        }
+        }*/
 
-        if(!accessionNumber.equals(computeNextAvailableAccessionNumber())){
+       /* if(!accessionNumber.equals(nextAccessionNumber)){
             return ValidationResults.FORMAT_FAIL;
         }
-
+*/
         return ValidationResults.SUCCESS;
     }
 
@@ -87,48 +87,33 @@ public class DateNumAccessionValidator implements IAccessionNumberValidator {
     @Override
     public String getNextAvailableAccessionNumber(String programCode) {
 
-        if (currentLargestAccessionNumber == null || isCurrentLargestAccessionNumberStale()) {
+        if (nextAccessionNumber == null || hasNextAccessionNumberExpired()) {
             synchronized (LOCK_OBJECT) {
-                if(refreshNextAccessionNumber().equals(AccessionNumberState.NEW)){
-                    return currentLargestAccessionNumber;
-                }
+                return  generateNextAccessionNumber();
             }
         }
-
         synchronized (LOCK_OBJECT) {
-            currentLargestAccessionNumber = incrementAccessionNumber(currentLargestAccessionNumber);
-            return currentLargestAccessionNumber;
+            nextAccessionNumber = incrementAccessionNumber(nextAccessionNumber);
+            return nextAccessionNumber;
         }
 
     }
 
-    private String computeNextAvailableAccessionNumber() {
 
-        if (currentLargestAccessionNumber == null || isCurrentLargestAccessionNumberStale()) {
-            synchronized (LOCK_OBJECT) {
-                if(refreshNextAccessionNumber().equals(AccessionNumberState.NEW)){
-                    return currentLargestAccessionNumber;
-                }
+    private String generateNextAccessionNumber(){
+        String accessionNumber =null;
+        if (nextAccessionNumber == null || hasNextAccessionNumberExpired()) {
+            accessionNumber = sampleDAO.getLargestAccessionNumberWithPrefix(new SimpleDateFormat("ddMMyyyy").format(new Date()));
+            if (accessionNumber == null) {
+                nextAccessionNumber = createFirstAccessionNumber(null);
+                return nextAccessionNumber;
             }
+            nextAccessionNumber = incrementAccessionNumber(accessionNumber);
+            return nextAccessionNumber;
         }
-
-        synchronized (LOCK_OBJECT) {
-            return incrementAccessionNumber(currentLargestAccessionNumber);
-        }
+        nextAccessionNumber = incrementAccessionNumber(nextAccessionNumber);
+        return nextAccessionNumber;
     }
-
-    private AccessionNumberState refreshNextAccessionNumber(){
-
-        if (currentLargestAccessionNumber == null || isCurrentLargestAccessionNumberStale()) {
-            currentLargestAccessionNumber = sampleDAO.getLargestAccessionNumberWithPrefix(new SimpleDateFormat("ddMMyyyy").format(new Date()));
-            if (currentLargestAccessionNumber == null) {
-                currentLargestAccessionNumber = createFirstAccessionNumber(null);
-                return AccessionNumberState.NEW;
-            }
-        }
-        return AccessionNumberState.CURRENT_HEIGHEST;
-    }
-
     @Override
     public int getMaxAccessionLength() {
         return 12;
@@ -160,8 +145,8 @@ public class DateNumAccessionValidator implements IAccessionNumberValidator {
         return 11;
     }
 
-    private boolean isCurrentLargestAccessionNumberStale(){
+    private boolean hasNextAccessionNumberExpired(){
         String prefix = new SimpleDateFormat("ddMMyyyy").format(new Date());
-        return !currentLargestAccessionNumber.startsWith(prefix);
+        return !nextAccessionNumber.startsWith(prefix);
     }
 }

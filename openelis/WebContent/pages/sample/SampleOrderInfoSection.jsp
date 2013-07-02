@@ -82,7 +82,7 @@
         <bean:message key="sample.entry.scanner.instructions"/>
         <html:button property="generate"
                      styleClass="textButton"
-                     onclick="getNextAccessionNumber(); makeDirty();" >
+                     onclick="getNextAccessionNumber(); setSampleFieldValid('labNo');makeDirty();" >
             <bean:message key="sample.entry.scanner.generate"/>
         </html:button>
     </td>
