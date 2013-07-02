@@ -55,19 +55,21 @@
     <target name="setupDB" depends="initDB, updateDB"></target>
 
     <target name="initDB">
+        <exec executable="scripts/initDB.sh"/>
+    </target>
+
+	<target name="dropDB">
         <exec executable="dropdb">
-            <env key="PGPASSWORD" value="${password}"/>
-            <arg line="-U postgres -h ${hostname} clinlims"/>
-        </exec>
-        <exec executable="psql" failonerror="true">
-            <env key="PGPASSWORD" value="${password}"/>
-            <arg line="-U postgres -h ${hostname}  -f scripts/setupDB.sql"/>
-        </exec>
-        <exec executable="pg_restore">
-            <env key="PGPASSWORD" value="${password}"/>
-            <arg line="-U postgres -h ${hostname} -d clinlims db_backup/haitiClinical.backup"/>
+            <arg line="-U postgres clinlims"/>
         </exec>
     </target>
+
+    <target name="resetDB">
+		<antcall target="dropDB"/>
+		<antcall target="initDB"/>
+		<antcall target="updateDB"/>
+    </target>
+
 
     <target name="updateDB">
         <exec executable="java" failonerror="true" dir="${liquibase}">
