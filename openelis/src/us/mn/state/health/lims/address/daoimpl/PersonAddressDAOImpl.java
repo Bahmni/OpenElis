@@ -21,6 +21,7 @@ import java.util.List;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 
+import org.hibernate.Session;
 import us.mn.state.health.lims.address.dao.PersonAddressDAO;
 import us.mn.state.health.lims.address.valueholder.PersonAddress;
 import us.mn.state.health.lims.analyte.valueholder.Analyte;
@@ -32,6 +33,7 @@ import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
+import us.mn.state.health.lims.person.valueholder.Person;
 
 public class PersonAddressDAOImpl extends BaseDAOImpl implements PersonAddressDAO {
 
@@ -113,4 +115,17 @@ public class PersonAddressDAOImpl extends BaseDAOImpl implements PersonAddressDA
 
 		return null;
 	}
+
+    @Override
+    public void deleteAddressOfPerson(Person person) {
+        try {
+            List<PersonAddress> addressParts = getAddressPartsByPersonId(person.getId());
+            Session session = HibernateUtil.getSession();
+            for (PersonAddress personAddress : addressParts) {
+                session.delete(personAddress);
+            }
+        } catch (HibernateException e) {
+            handleException(e, "getByPersonIdAndPartId");
+        }
+    }
 }

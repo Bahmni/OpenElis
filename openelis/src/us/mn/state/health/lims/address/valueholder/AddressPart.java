@@ -25,6 +25,7 @@ public class AddressPart extends BaseObject {
 	private String id;
 	private String partName;
 	private String displayOrder;
+    private String type;
 
 	public String getId() {
 		return id;
@@ -45,4 +46,11 @@ public class AddressPart extends BaseObject {
 		this.displayOrder = displayOrder;
 	}
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 }

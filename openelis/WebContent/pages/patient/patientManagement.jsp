@@ -5,7 +5,8 @@
                  us.mn.state.health.lims.common.formfields.FormFields.Field,
                  us.mn.state.health.lims.common.util.StringUtil,
                  us.mn.state.health.lims.common.util.Versioning,
-                 us.mn.state.health.lims.patient.action.bean.PatientManagmentInfo" %>
+                 us.mn.state.health.lims.patient.action.bean.PatientManagmentInfo,
+                 us.mn.state.health.lims.patient.action.bean.AddressPartForm" %>
 
 
 <%@ taglib uri="/tags/struts-bean"		prefix="bean" %>
@@ -15,7 +16,9 @@
 <%@ taglib uri="/tags/struts-nested"	prefix="nested" %>
 <%@ taglib uri="/tags/labdev-view"		prefix="app" %>
 <%@ taglib uri="/tags/sourceforge-ajax" prefix="ajax"%>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/xml_rt" %>
+<%@ taglib prefix="p" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 
 
 <bean:define id="formName"		value='<%=(String) request.getAttribute(IActionConstants.FORM_NAME)%>' />
@@ -40,6 +43,7 @@
 	boolean patientNamesRequired = true;
 	boolean patientAgeRequired = true;
 	boolean patientGenderRequired = true;
+    boolean supportDynamicAddresses = false;
  %>
 <%
 	String path = request.getContextPath();
@@ -56,6 +60,7 @@
 	supportCommune = FormFields.getInstance().useField(Field.Commune);
 	supportMothersInitial = FormFields.getInstance().useField(Field.MotherInitial);
 	supportAddressDepartment = FormFields.getInstance().useField(Field.AddressDepartment );
+    supportDynamicAddresses = FormFields.getInstance().useField(Field.DynamicAddress);
 	
 	if("SampleConfirmationEntryForm".equals( formName )){
 		patientIDRequired = FormFields.getInstance().useField(Field.PatientIDRequired_SampleConfirmation);
@@ -102,6 +107,7 @@ var supportPatientNationality = <%= FormFields.getInstance().useField(Field.Pati
 var supportMaritialStatus = <%= FormFields.getInstance().useField(Field.PatientMarriageStatus) %>;
 var supportHealthRegion = <%= FormFields.getInstance().useField(Field.PatientHealthRegion) %>;
 var supportHealthDistrict = <%= FormFields.getInstance().useField(Field.PatientHealthDistrict) %>;
+
 
 var pt_invalidElements = [];
 var pt_requiredFields = new Array( );
@@ -498,6 +504,7 @@ function  /*void*/ processSearchPopulateSuccess(xhr)
 	var healthRegion = getSelectIndexByTextFor( "healthRegionID", getXMLValue(response, "healthRegion"));
 	var healthDistrict = getXMLValue(response, "healthDistrict");
 
+
 	setPatientInfo( nationalIDValue,
 					STValue,
 					subjectNumberValue,
@@ -524,6 +531,21 @@ function  /*void*/ processSearchPopulateSuccess(xhr)
 					healthRegion,
 					healthDistrict );
 
+    setPatientAddress(response);
+
+}
+
+function setPatientAddress(response) {
+
+    var forEach = Array.prototype.forEach;
+    var addressLines = response.getElementsByTagName("addressline");
+
+    forEach.call(addressLines, function(line){
+        var value = line.getElementsByTagName('value')[0].firstChild.nodeValue;
+        var index = line.getElementsByTagName('index')[0].firstChild.nodeValue;
+//        var x =  'input[name="patientProperties.addressParts.addressPartForms["' + index + '"].value"]';
+        jQuery('input[name="patientProperties.addressParts.addressPartForms[' + index + '].value"]')[0].value = value;
+    });
 }
 
 function /*string*/ getXMLValue( response, key )
@@ -572,7 +594,7 @@ function  /*void*/ setPatientInfo(nationalID, ST_ID, subjectNumber, lastName, fi
 	if(supportAKA){$("akaID").value = aka == undefined ? "" : aka; }
 	if(supportMothersName){$("motherID").value = mother == undefined ? "" : mother; }
 	if(supportMothersInitial){$("motherInitialID").value = (motherInitial == undefined ? "" : motherInitial); }
-	$("streetID").value = street == undefined ? "" : street;
+    $("streetID").value = street == undefined ? "" : street;
 	if(supportCity){$("cityID").value = city == undefined ? "" : city; }
 	if(supportCommune){$("communeID").value = commune == undefined ? "" : commune; }
 	if(supportInsurance){$("insuranceID").value = insurance == undefined ? "" : insurance; }
@@ -664,6 +686,7 @@ function /*void*/ makeDirty(){
 
 function  /*void*/  addPatient(){
 	clearPatientInfo();
+    clearDynamicAddresses();
 	clearErrors();
 	if(supportSTNumber){$("ST_ID").disabled = false;}
 	if(supportSubjectNumber){$("subjectNumberID").disabled = false;}
@@ -673,6 +696,10 @@ function  /*void*/  addPatient(){
 	for(var i = 0; i < patientInfoChangeListeners.length; i++){
 			patientInfoChangeListeners[i]("", "", "", "", "", "", "", "", "");
 		}
+}
+
+function clearDynamicAddresses(){
+    jQuery('input[name^="patientProperties.addressParts"]').val("");
 }
 
 function  /*void*/ savePage()
@@ -894,7 +921,9 @@ function healthDistrictSuccess( xhr ){
 		</td>
 	</tr>
 	<%} %>
-	<tr ><td colspan="2">&nbsp;</td></tr>
+
+    <%  if(!supportDynamicAddresses){ %>
+    <tr ><td colspan="2">&nbsp;</td></tr>
 	<tr>
 		<td >
 			<bean:message  key="person.streetAddress" />
@@ -911,6 +940,34 @@ function healthDistrictSuccess( xhr ){
 					  size="70" />
 		</td>
 	</tr>
+    <%} else {%>
+        <input type="hidden" name="patientProperties.streetAddress" id="streetID"  value=""/>
+    <% } %>
+
+    <tr ><td colspan="2">&nbsp;</td></tr>
+
+
+    <%  if(supportDynamicAddresses){ %>
+    <tr>
+        <td>
+            <bean:message  key="person.streetAddress" />
+        </td>
+    <logic:iterate name="<%=formName%>" property="patientProperties.addressParts.addressPartForms"
+                   id="addressPart"
+                   indexId="index">
+            <td  align="right">
+                <bean:message  name="addressPart" property="nameKey"/>
+            </td>
+            <td>
+                <input name="patientProperties.addressParts.addressPartForms[<bean:write name='index'/>].value" value="<%= ((AddressPartForm)addressPart).getValue()  %>" size="60"/>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+    </logic:iterate>
+        </tr>
+    <% } %>
+
 	<% if( FormFields.getInstance().useField(Field.AddressVillage)) { %>
 	<tr>
 		<td></td>
@@ -970,6 +1027,8 @@ function healthDistrictSuccess( xhr ){
 			</td>
 		</tr>
 	<% } %>
+
+
 	<tr ><td >&nbsp;</td></tr>
 	<% if( FormFields.getInstance().useField(Field.PatientHealthRegion)){ %>
 	<tr>

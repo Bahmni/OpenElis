@@ -16,7 +16,6 @@
             <column name="value" value="patient|samples|order"/>
             <column name="lastupdated" valueDate=" now() "/>
         </insert>
-
     </changeSet>
 
     <changeSet id="2" author="tw" context="jss" runOnChange="true">
@@ -28,6 +27,76 @@
         <update schemaName="clinlims" tableName="site_information">
             <column name="value" value="en-GB"/>
             <where>name='default date locale'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="3" author="tw" context="jss" runOnChange="true">
+        <update schemaName="clinlims" tableName="site_information">
+            <column name="value" value="JSS"/>
+            <where>name='setFieldForm'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="4" author="tw" context="jss" runOnChange="true">
+        <comment>Create address fields for JSS</comment>
+        <update schemaName="clinlims" tableName="site_information">
+            <column name="value" value="JSS"/>
+            <where>name='setFieldForm'</where>
+        </update>
+        <delete schemaName="clinlims" tableName="person_address"></delete>
+        <delete schemaName="clinlims" tableName="address_part"></delete>
+        <insert schemaName="clinlims" tableName="address_part">
+            <column name="id" valueNumeric=" nextVal( 'address_part_seq' ) "/>
+            <column name="part_name" value="houseNumber"/>
+            <column name="display_order" value="1"/>
+            <column name="display_key" value="address.houseNumber"/>
+        </insert>
+        <insert schemaName="clinlims" tableName="address_part">
+            <column name="id" valueNumeric=" nextVal( 'address_part_seq' ) "/>
+            <column name="part_name" value="village"/>
+            <column name="display_order" value="2"/>
+            <column name="display_key" value="address.village"/>
+        </insert>
+        <insert schemaName="clinlims" tableName="address_part">
+            <column name="id" valueNumeric=" nextVal( 'address_part_seq' ) "/>
+            <column name="part_name" value="gramPanchayat"/>
+            <column name="display_order" value="3"/>
+            <column name="display_key" value="address.gPanchayat"/>
+        </insert>
+        <insert schemaName="clinlims" tableName="address_part">
+            <column name="id" valueNumeric=" nextVal( 'address_part_seq' ) "/>
+            <column name="part_name" value="tehsil"/>
+            <column name="display_order" value="4"/>
+            <column name="display_key" value="address.tehsil"/>
+        </insert>
+        <insert schemaName="clinlims" tableName="address_part">
+            <column name="id" valueNumeric=" nextVal( 'address_part_seq' ) "/>
+            <column name="part_name" value="district"/>
+            <column name="display_order" value="5"/>
+            <column name="display_key" value="address.district"/>
+        </insert>
+        <insert schemaName="clinlims" tableName="address_part">
+            <column name="id" valueNumeric=" nextVal( 'address_part_seq' ) "/>
+            <column name="part_name" value="state"/>
+            <column name="display_order" value="6"/>
+             <column name="display_key" value="address.state"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="5" author="tw" runOnChange="true">
+        <comment>Add type to address_part table</comment>
+            <addColumn schemaName="clinlims"  tableName="address_part">
+            <column name="type" type="character(1)" defaultValue="T">
+                <constraints  nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="6" author="tw" runOnChange="true" context="haiti,haitiLNSP">
+        <comment>Set address part type to D for department</comment>
+        <update schemaName="clinlims" tableName="address_part">
+            <column name="type" value="D"/>
+            <where>part_name='department'</where>
         </update>
     </changeSet>
 </databaseChangeLog>

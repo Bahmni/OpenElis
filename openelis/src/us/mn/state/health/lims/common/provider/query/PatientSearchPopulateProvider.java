@@ -118,86 +118,11 @@ public class PatientSearchPopulateProvider extends BaseQueryProvider {
 	}
 
 	private void createReturnXML(Patient patient, StringBuilder xml) {
-
-		Person person = patient.getPerson();
-
-		PatientIdentityTypeMap identityMap = PatientIdentityTypeMap.getInstance();
-
-		List<PatientIdentity> identityList = PatientUtil.getIdentityListForPatient(patient.getId());
-
-		XMLUtil.appendKeyValue("ID", patient.getId(), xml);
-		XMLUtil.appendKeyValue("nationalID", patient.getNationalId(), xml);
-		XMLUtil.appendKeyValue("ST_ID", identityMap.getIdentityValue(identityList, "ST"), xml);
-		XMLUtil.appendKeyValue("subjectNumber", identityMap.getIdentityValue(identityList, "SUBJECT"), xml);
-		XMLUtil.appendKeyValue("lastName", getLastNameForResponse(person), xml);
-		XMLUtil.appendKeyValue("firstName", person.getFirstName(), xml);
-		XMLUtil.appendKeyValue("mother", identityMap.getIdentityValue(identityList, "MOTHER"), xml);
-		XMLUtil.appendKeyValue("aka", identityMap.getIdentityValue(identityList, "AKA"), xml);
-		XMLUtil.appendKeyValue("street", person.getStreetAddress(), xml);
-		XMLUtil.appendKeyValue("city", getAddress(person, ADDRESS_PART_VILLAGE_ID), xml);
-        XMLUtil.appendKeyValue("birthplace", patient.getBirthPlace(), xml);
-		XMLUtil.appendKeyValue("faxNumber", person.getFax(), xml);
-        XMLUtil.appendKeyValue("phoneNumber", person.getHomePhone(), xml);
-        XMLUtil.appendKeyValue("email", person.getEmail(), xml);
-		XMLUtil.appendKeyValue("gender", patient.getGender(), xml);
-		XMLUtil.appendKeyValue("patientType", getPatientType(patient), xml);
-		XMLUtil.appendKeyValue("insurance", identityMap.getIdentityValue(identityList, "INSURANCE"),xml);
-		XMLUtil.appendKeyValue("occupation", identityMap.getIdentityValue(identityList, "OCCUPATION"), xml);
-		XMLUtil.appendKeyValue("dob", patient.getBirthDateForDisplay(), xml);
-		XMLUtil.appendKeyValue("commune", getAddress(person, ADDRESS_PART_COMMUNE_ID), xml);
-		XMLUtil.appendKeyValue("addressDept", getAddress(person, ADDRESS_PART_DEPT_ID), xml);
-		XMLUtil.appendKeyValue("motherInitial", identityMap.getIdentityValue(identityList, "MOTHERS_INITIAL"), xml);
-		XMLUtil.appendKeyValue("externalID", patient.getExternalId(), xml);		
-		XMLUtil.appendKeyValue("education", identityMap.getIdentityValue(identityList, "EDUCATION"), xml);
-		XMLUtil.appendKeyValue("maritialStatus", identityMap.getIdentityValue(identityList, "MARITIAL"), xml);
-		XMLUtil.appendKeyValue("nationality", identityMap.getIdentityValue(identityList, "NATIONALITY"), xml);
-		XMLUtil.appendKeyValue("otherNationality", identityMap.getIdentityValue(identityList, "OTHER NATIONALITY"), xml);
-		XMLUtil.appendKeyValue("healthDistrict", identityMap.getIdentityValue(identityList, "HEALTH DISTRICT"), xml);
-		XMLUtil.appendKeyValue("healthRegion", identityMap.getIdentityValue(identityList, "HEALTH REGION"), xml);
-
-	
-
-
-		if (patient.getLastupdated() != null) {
-			String updateAsString = patient.getLastupdated().toString();
-			XMLUtil.appendKeyValue("patientUpdated", updateAsString, xml);
-		}
-
-		if (person.getLastupdated() != null) {
-			String updateAsString = person.getLastupdated().toString();
-			XMLUtil.appendKeyValue("personUpdated", updateAsString, xml);
-		}
+          new PatientXmlCreator().createXml(patient, xml);
 	}
 
-	private String getAddress(Person person, String addressPartId) {
-	    if (GenericValidator.isBlankOrNull(addressPartId)) {
-	        return "";
-	    }
-		PersonAddress address = addressDAO.getByPersonIdAndPartId( person.getId(), addressPartId);
 
-		return address != null ? address.getValue() : "";
-	}
 
-	/**
-	 * Fake the unknown patient by never return whatever happens to be in last name field.
-     * @param person
-     * @return
-     */
-    private String getLastNameForResponse(Person person) {
-        if (PatientUtil.getUnknownPerson().getId().equals(person.getId())) {
-            return null;
-        } else {
-            return person.getLastName();
-        }
-    }
-
-    private String getPatientType(Patient patient) {
-		PatientPatientTypeDAO patientPatientTypeDAO = new PatientPatientTypeDAOImpl();
-
-		PatientType patientType =patientPatientTypeDAO.getPatientTypeForPatient(patient.getId());
-
-		return patientType != null ? patientType.getType() : null;
-	}
 
 
 }

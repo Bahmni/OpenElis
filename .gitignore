@@ -11,3 +11,5 @@ dist
 *.DS_Store
 *.class
 junit
+build.sh
+.svn/

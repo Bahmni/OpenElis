@@ -97,8 +97,9 @@ public class FormFields {
 		PatientMarriageStatus,
 		PatientEducation,
 		SampleEntryPatientClinical,
-		QA_DOCUMENT_NUMBER
-	}
+		QA_DOCUMENT_NUMBER,
+        DynamicAddress
+    }
 
 	private static FormFields instance = null;
 

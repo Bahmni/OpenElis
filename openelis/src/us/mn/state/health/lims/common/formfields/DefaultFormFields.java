@@ -107,7 +107,8 @@ public class DefaultFormFields extends AFormFields {
 		setFieldFalse(Field.QA_DOCUMENT_NUMBER);
 		setFieldFalse(Field.QASubjectNumber);
 		setFieldFalse(Field.QATimeWithDate);
-	}
+        setFieldFalse(Field.DynamicAddress);
+    }
 
 	@Override
 	protected HashMap<Field, Boolean> getDefaultAttributes() {
@@ -136,6 +137,8 @@ public class DefaultFormFields extends AFormFields {
 			return new RETROCIFormFields().getImplementationAttributes();
 		}else if(IActionConstants.FORM_FIELD_SET_CI_IPCI.equals(fieldSet)){
 			return new CI_IPCIFormFields().getImplementationAttributes();
+		}else if(IActionConstants.FORM_FIELD_SET_JSS.equals(fieldSet)){
+			return new JSSFormFields().getImplementationAttributes();
 		}
 
 		return null;

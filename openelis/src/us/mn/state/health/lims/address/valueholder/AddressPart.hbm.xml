@@ -13,8 +13,9 @@
 
 		<property name="partName" column="part_name" type="string" />
 		<property name="displayOrder" column="display_order" type="us.mn.state.health.lims.hibernate.resources.usertype.LIMSStringNumberUserType" />
- 		<property name="nameKey" type="java.lang.String">
+        <property name="nameKey" type="java.lang.String">
             <column name="display_key" length="60" not-null="false" />
         </property>
+        <property name="type" column="type" type="string" />
     </class>
 </hibernate-mapping>

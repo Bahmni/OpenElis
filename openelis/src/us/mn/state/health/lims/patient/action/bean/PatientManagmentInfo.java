@@ -17,8 +17,12 @@
 package us.mn.state.health.lims.patient.action.bean;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
+import us.mn.state.health.lims.address.dao.AddressPartDAO;
+import us.mn.state.health.lims.address.daoimpl.AddressPartDAOImpl;
+import us.mn.state.health.lims.address.valueholder.AddressPart;
 import us.mn.state.health.lims.common.services.DisplayListService;
 import us.mn.state.health.lims.common.services.DisplayListService.ListType;
 import us.mn.state.health.lims.common.util.IdValuePair;
@@ -61,6 +65,7 @@ public class PatientManagmentInfo implements Serializable {
 	private String nationality;
 	private String healthDistrict;
 	private String otherNationality;
+    private AddressParts addressParts;
 	private static List<IdValuePair> genders;
 	private static List<Dictionary> addressDepartments;
 	private static List<IdValuePair> healthRegions;
@@ -68,7 +73,12 @@ public class PatientManagmentInfo implements Serializable {
 	private static List<IdValuePair> maritialList;
 	private static List<IdValuePair> nationalityList;
 
-	
+    public PatientManagmentInfo(){
+        AddressPartDAO addressPartDAO = new AddressPartDAOImpl();
+        addressParts = map(addressPartDAO.getAll());
+    }
+
+
 	public String getCurrentDate() {
 		return currentDate;
 	}
@@ -313,4 +323,33 @@ public class PatientManagmentInfo implements Serializable {
 		this.nationality = naionality;
 	}
 
+    public AddressParts getAddressParts() {
+        return addressParts;
+    }
+
+    private AddressParts map(List<AddressPart> addressParts) {
+        List<AddressPartForm> list = new ArrayList<AddressPartForm>();
+
+        for (AddressPart addressPart : addressParts) {
+            AddressPartForm addressPartForm = createAddressPartForm(addressPart);
+            list.add(addressPartForm);
+        }
+
+        AddressParts parts = new AddressParts();
+        parts.setAddressPartForms(list);
+        return parts;
+    }
+
+    private AddressPartForm createAddressPartForm(AddressPart addressPart) {
+        AddressPartForm addressPartForm = new AddressPartForm();
+        addressPartForm.setName(addressPart.getPartName());
+        addressPartForm.setType(addressPart.getType());
+        addressPartForm.setNameKey(addressPart.getNameKey());
+        addressPartForm.setId(addressPart.getId());
+        return addressPartForm;
+    }
+
+    public void setAddressParts(AddressParts addressParts) {
+        this.addressParts = addressParts;
+    }
 }
