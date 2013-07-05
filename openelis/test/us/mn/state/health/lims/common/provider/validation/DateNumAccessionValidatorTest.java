@@ -39,10 +39,10 @@ public class DateNumAccessionValidatorTest {
 
     @Test
     public void shouldTestNextAccessionNumber() {
-        when(sampleDAO.getLargestAccessionNumberWithPrefix(any(String.class))).thenReturn("02022012004");
+        when(sampleDAO.getLargestAccessionNumberWithPrefix(any(String.class))).thenReturn("02022012-004");
         dateNumAccessionValidator.setSampleDAO(sampleDAO);
         String nextNumber = dateNumAccessionValidator.getNextAvailableAccessionNumber(null);
-        assertEquals("02022012005",nextNumber);
+        assertEquals("02022012-005",nextNumber);
     }
 
     @Test
@@ -58,9 +58,13 @@ public class DateNumAccessionValidatorTest {
     public void shouldTestIfAccessionNumberIsValid() {
         when(sampleDAO.getLargestAccessionNumberWithPrefix(any(String.class))).thenReturn(null);
         dateNumAccessionValidator.setSampleDAO(sampleDAO);
-        String accNo = new SimpleDateFormat("ddMMyyyy").format(new Date()) + "001";
+        String accNo = getDatePrefix() + "001";
         IAccessionNumberValidator.ValidationResults validAccessionNumber = dateNumAccessionValidator.validFormat(accNo, false);
         assertEquals(IAccessionNumberValidator.ValidationResults.SUCCESS, validAccessionNumber );
+    }
+
+    private String getDatePrefix(){
+        return  new SimpleDateFormat("ddMMyyyy").format(new Date()) +"-";
     }
 
   /*  @Test
@@ -77,8 +81,8 @@ public class DateNumAccessionValidatorTest {
 */
     @Test
     public void shouldAssertIncrementAssertionNumber() {
-        String nextAssertionNumber = dateNumAccessionValidator.incrementAccessionNumber("02022012004");
-        assertEquals(nextAssertionNumber,"02022012005");
+        String nextAssertionNumber = dateNumAccessionValidator.incrementAccessionNumber("02022012-004");
+        assertEquals(nextAssertionNumber,"02022012-005");
     }
 
     @Test

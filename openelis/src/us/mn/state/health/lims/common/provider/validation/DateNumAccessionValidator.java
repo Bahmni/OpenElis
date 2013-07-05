@@ -72,7 +72,7 @@ public class DateNumAccessionValidator implements IAccessionNumberValidator {
 
     @Override
     public String createFirstAccessionNumber(String programCode) {
-        return new SimpleDateFormat("ddMMyyyy").format(new Date()) + "001";
+        return getDatePrefix()+ "001";
     }
 
     @Override
@@ -80,8 +80,8 @@ public class DateNumAccessionValidator implements IAccessionNumberValidator {
         if (currentHighAccessionNumber == null || currentHighAccessionNumber.isEmpty()) {
             return null;
         }
-        int nextIndex = Integer.parseInt(currentHighAccessionNumber.substring(8)) + 1;
-        return String.format(currentHighAccessionNumber.substring(0, 8) + "%03d", nextIndex);
+        int nextIndex = Integer.parseInt(currentHighAccessionNumber.substring(9)) + 1;
+        return String.format(currentHighAccessionNumber.substring(0, 9) + "%03d", nextIndex);
     }
 
     @Override
@@ -103,7 +103,7 @@ public class DateNumAccessionValidator implements IAccessionNumberValidator {
     private String generateNextAccessionNumber(){
         String accessionNumber =null;
         if (nextAccessionNumber == null || hasNextAccessionNumberExpired()) {
-            accessionNumber = sampleDAO.getLargestAccessionNumberWithPrefix(new SimpleDateFormat("ddMMyyyy").format(new Date()));
+            accessionNumber = sampleDAO.getLargestAccessionNumberWithPrefix(getDatePrefix());
             if (accessionNumber == null) {
                 nextAccessionNumber = createFirstAccessionNumber(null);
                 return nextAccessionNumber;
@@ -116,7 +116,7 @@ public class DateNumAccessionValidator implements IAccessionNumberValidator {
     }
     @Override
     public int getMaxAccessionLength() {
-        return 12;
+        return 13;
     }
 
     @Override
@@ -145,8 +145,12 @@ public class DateNumAccessionValidator implements IAccessionNumberValidator {
         return 11;
     }
 
+
+    private String getDatePrefix(){
+        return  new SimpleDateFormat("ddMMyyyy").format(new Date()) +"-";
+    }
     private boolean hasNextAccessionNumberExpired(){
-        String prefix = new SimpleDateFormat("ddMMyyyy").format(new Date());
+        String prefix = getDatePrefix();
         return !nextAccessionNumber.startsWith(prefix);
     }
 }
