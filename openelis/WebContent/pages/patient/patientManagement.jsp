@@ -536,15 +536,19 @@ function  /*void*/ processSearchPopulateSuccess(xhr)
 }
 
 function setPatientAddress(response) {
+    clearDynamicAddresses();
 
     var forEach = Array.prototype.forEach;
     var addressLines = response.getElementsByTagName("addressline");
-
+    function getValue(node, key) {
+        return node.getElementsByTagName(key)[0].firstChild;
+    }
     forEach.call(addressLines, function(line){
-        var value = line.getElementsByTagName('value')[0].firstChild.nodeValue;
-        var index = line.getElementsByTagName('index')[0].firstChild.nodeValue;
-//        var x =  'input[name="patientProperties.addressParts.addressPartForms["' + index + '"].value"]';
-        jQuery('input[name="patientProperties.addressParts.addressPartForms[' + index + '].value"]')[0].value = value;
+
+        var value = getValue(line, 'value');
+        var index = getValue(line, 'index');
+        if (value && index)
+        jQuery('input[name="patientProperties.addressParts.addressPartForms[' + index.nodeValue + '].value"]')[0].value = value.nodeValue;
     });
 }
 
