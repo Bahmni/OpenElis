@@ -1,0 +1,56 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <changeSet context="setup" author="ict4h" id="100">
+        <createTable tableName="markers" schemaName="atomfeed">
+            <column name="feed_uri" type="varchar(255)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="last_read_entry_id" type="varchar(255)"/>
+            <column name="feed_uri_for_last_read_entry" type="varchar(255)"/>
+        </createTable>
+
+        <createTable tableName="failed_events" schemaName="public">
+            <column name="id" type="serial">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="feed_uri" type="varchar(255)"/>
+            <column name="failed_at" type="timestamp"/>
+            <!-- TODO: change to CLOB -->
+            <column name="error_message" type="varchar(4000)"/>
+            <column name="event_id" type="varchar(255)"/>
+            <!-- TODO: change to CLOB -->
+            <column name="event_content" type="varchar(4000)"/>
+        </createTable>
+    </changeSet>
+    <!--<changeSet id="101" author="ict4h" >-->
+        <!--<createTable tableName="chunking_history" schemaName="public">-->
+            <!--<column name="id" type="int">-->
+                <!--<constraints nullable="false" primaryKey="true"/>-->
+            <!--</column>-->
+            <!--<column name="chunk_length" type="BIGINT"/>-->
+            <!--<column name="start" type="BIGINT">-->
+                <!--<constraints nullable="false"/>-->
+            <!--</column>-->
+        <!--</createTable>-->
+
+        <!--&lt;!&ndash;<modifyDataType tableName="chunking_history" columnName="id" newDataType="int"/>&ndash;&gt;-->
+        <!--<addAutoIncrement tableName="chunking_history" columnName="id" columnDataType="int"/>-->
+        <!--&lt;!&ndash;<modifyDataType tableName="event_records" columnName="id" newDataType="int"/>&ndash;&gt;-->
+        <!--&lt;!&ndash;<addAutoIncrement tableName="event_records" columnName="id" columnDataType="int"/>&ndash;&gt;-->
+    <!--</changeSet>-->
+    <!--<changeSet id="102" author="ict4h">-->
+        <!--<insert tableName="chunking_history" schemaName="public">-->
+            <!--<column name="chunk_length" valueNumeric="5"></column>-->
+            <!--<column name="start" valueNumeric="1"></column>-->
+        <!--</insert>-->
+    <!--</changeSet>-->
+    <!--<changeSet id="103" author="ict4h">-->
+        <!--<addColumn tableName="event_records" schemaName="atomfeed">-->
+            <!--<column name="category" type="varchar(255)"></column>-->
+        <!--</addColumn>-->
+    <!--</changeSet>-->
+
+</databaseChangeLog>

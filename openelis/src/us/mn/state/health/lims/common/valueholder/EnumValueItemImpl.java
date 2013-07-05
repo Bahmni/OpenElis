@@ -53,7 +53,7 @@ public class EnumValueItemImpl extends BaseObject implements EnumValueItem {
 	}
 
 	public void setName(String pName) {
-		this.name = name;
+		this.name = pName;
 	}
 
 	// enumValueItem sortorder
@@ -62,7 +62,7 @@ public class EnumValueItemImpl extends BaseObject implements EnumValueItem {
 	}
 
 	public void setSortOrder(String pSortorder) {
-		this.sortOrder = sortOrder;
+		this.sortOrder = pSortorder;
 	}
 
 	
