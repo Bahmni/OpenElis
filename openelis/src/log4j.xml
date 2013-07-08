@@ -9,7 +9,7 @@
 
 
     <appender name="fileAppender" class="org.apache.log4j.RollingFileAppender">
-        <param name="File" value="/logs/openelis-feed-service.log"/>
+        <param name="File" value="logs/openelis-feed-service.log"/>
         <param name="MaxFileSize" value="10MB"/>
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d %-5p [%c] %m%n"/>
