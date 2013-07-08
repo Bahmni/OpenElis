@@ -1,5 +1,7 @@
 package org.bahmni.feed.openelis.event.objects.impl;
 
+import org.junit.Test;
+
 /**
  * Created with IntelliJ IDEA.
  * User: indraneel
@@ -9,4 +11,8 @@ package org.bahmni.feed.openelis.event.objects.impl;
  */
 public class LabTestTest {
 
+    @Test
+    public void test(){
+
+    }
 }
