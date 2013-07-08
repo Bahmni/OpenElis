@@ -12,12 +12,12 @@ public class OpenelisAtomfeedClientServiceEventWorkerTest {
     OpenelisAtomfeedClientServiceEventWorker eventWorker;
     @Before
     public void setUp(){
-   //     eventWorker = new OpenelisAtomfeedClientServiceEventWorker("hosts/feed/recent");
+        eventWorker = new OpenelisAtomfeedClientServiceEventWorker("hosts/feed/recent");
     }
 
     @Test
     public void testProcess() throws Exception {
-        eventWorker.process(createEvent());
+  //      eventWorker.process(createEvent());
     }
 
     private Event createEvent(){
