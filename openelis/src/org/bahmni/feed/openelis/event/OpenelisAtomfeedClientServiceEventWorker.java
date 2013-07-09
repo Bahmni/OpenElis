@@ -22,10 +22,8 @@ public class OpenelisAtomfeedClientServiceEventWorker implements EventWorker {
 
     public void process(Event event) {
         try {
-            EventObject eventObject = EventObjectFactory.getEventObjectInstance(getCategory(event), new AtomFeedProperties());
+            EventObject eventObject =  EventObjectFactory.getEventObjectInstance(getCategory(event), new AtomFeedProperties());;
             eventObject.save(event);
-
-            throw new IOException();
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
@@ -33,10 +31,7 @@ public class OpenelisAtomfeedClientServiceEventWorker implements EventWorker {
     }
 
     private String getCategory(Event event) throws IOException {
-        Panel panel = new us.mn.state.health.lims.panel.valueholder.Panel();
         HashMap<String,Object> paramMap = new ObjectMapper().readValue(event.getContent(), HashMap.class) ;
-
-
         return (String) paramMap.get("category");
     }
     /*private OpenERPRequest mapRequest(Event event) throws IOException {
