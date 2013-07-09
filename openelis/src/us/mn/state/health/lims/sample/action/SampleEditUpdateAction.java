@@ -268,10 +268,10 @@ public class SampleEditUpdateAction extends BaseAction {
 			Document sampleDom = DocumentHelper.parseText(sampleXML);
 			int sampleItemIdIndex = 0;
 			
-			if( !GenericValidator.isBlankOrNull(maxAccessionNumber)){		
-				sampleItemIdIndex = Integer.parseInt(maxAccessionNumber.split("-")[2]);
+			if( !GenericValidator.isBlankOrNull(maxAccessionNumber)){
+                sampleItemIdIndex = AccessionNumberUtil.getSortOrder(maxAccessionNumber);
 			}
-			
+
 			for (@SuppressWarnings("rawtypes")
 			Iterator i = sampleDom.getRootElement().elementIterator("sample"); i.hasNext();) {
 				sampleItemIdIndex++;
@@ -332,7 +332,7 @@ public class SampleEditUpdateAction extends BaseAction {
 		return sampleItemsTests;
 	}
 
-	private String getPatientIdForSample(Sample sample) {
+    private String getPatientIdForSample(Sample sample) {
 		return new SampleHumanDAOImpl().getPatientForSample(sample).getId();
 	}
 
