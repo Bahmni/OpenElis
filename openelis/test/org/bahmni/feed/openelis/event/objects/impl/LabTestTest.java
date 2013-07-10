@@ -11,6 +11,8 @@ import us.mn.state.health.lims.panel.valueholder.Panel;
 import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.valueholder.Test;
 
+import java.io.IOException;
+
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -53,7 +55,7 @@ public class LabTestTest {
     }
 
     @org.junit.Test
-    public void shouldUpdateIfExternalReferenceFound(){
+    public void shouldUpdateIfExternalReferenceFound() throws IOException {
         ExternalReference reference = new ExternalReference();
         reference.setItemId("293");
         reference.setExternalId("193");
@@ -67,7 +69,7 @@ public class LabTestTest {
 
         Event event = new Event("554433221",EVENT_CONTENT);
 
-        labTest.save(event);
+        labTest.saveEvent(event);
 
         verify(testDao).updateData(test);
     }

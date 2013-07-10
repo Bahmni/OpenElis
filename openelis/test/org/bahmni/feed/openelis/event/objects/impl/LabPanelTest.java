@@ -10,6 +10,8 @@ import org.mockito.Mock;
 import us.mn.state.health.lims.panel.dao.PanelDAO;
 import us.mn.state.health.lims.panel.valueholder.Panel;
 
+import java.io.IOException;
+
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -37,7 +39,7 @@ public class LabPanelTest {
     }
 
     @Test
-    public void shouldInsertNewIfExternalReferenceNotFound(){
+    public void shouldInsertNewIfExternalReferenceNotFound() throws IOException {
         when(externalReferenceDao.getData(anyString())).thenReturn(null);
 
         Event event = new Event("554433221",EVENT_CONTENT);
@@ -46,7 +48,7 @@ public class LabPanelTest {
         panel.setDescription("Test Panel");
 
 
-        labPanel.save(event);
+        labPanel.saveEvent(event);
 
         verify(panelDAO).insertData(panel);
     }
