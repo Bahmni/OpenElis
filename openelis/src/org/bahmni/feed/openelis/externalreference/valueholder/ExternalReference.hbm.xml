@@ -4,7 +4,7 @@
 
 <hibernate-mapping package="org.bahmni.feed.openelis.externalreference.valueholder">
     <class name="ExternalReference" table="external_reference" optimistic-lock="version" dynamic-update="true">
-		<id name="id" type="us.mn.state.health.lims.hibernate.resources.usertype.LIMSStringNumberUserType">
+		<id name="id" type="long">
             <column name="ID" />
             <!--<generator class="sequence">-->
                <!--<param name="sequence">login_user_seq</param>-->
@@ -18,7 +18,7 @@
             <column name="ITEM_ID" />
         </property>
         <property name="type" type="java.lang.String">
-            <column name="type"  />
+            <column name="TYPE"  />
         </property>
 
     </class>

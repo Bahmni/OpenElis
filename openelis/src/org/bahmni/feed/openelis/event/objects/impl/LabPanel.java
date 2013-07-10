@@ -1,14 +1,14 @@
 package org.bahmni.feed.openelis.event.objects.impl;
 
 import org.bahmni.feed.openelis.event.objects.EventObject;
+import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
+import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoImpl;
+import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.hibernate.Session;
 import org.ict4h.atomfeed.client.domain.Event;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.panel.dao.PanelDAO;
 import us.mn.state.health.lims.panel.daoimpl.PanelDAOImpl;
 import us.mn.state.health.lims.panel.valueholder.Panel;
-import org.hibernate.Transaction;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -16,18 +16,41 @@ import java.util.HashMap;
 
 public class LabPanel extends TransactionalEventObject  implements EventObject {
 
-    private PanelDAO panel = new PanelDAOImpl();
+    private PanelDAO panelDAO = new PanelDAOImpl();
+    private ExternalReferenceDao externalReferenceDao = new ExternalReferenceDaoImpl();
 
     private String sysUserId;
+    private String externalId;
 
     public LabPanel(String sysUserId){
         this.sysUserId = sysUserId;
     }
 
-    protected void saveEvent(Event event) throws IOException {
-        panel.insertData(mapToPanel(event));
+    LabPanel(PanelDAO panelDAO, ExternalReferenceDao externalReferenceDao) {
+        this.panelDAO = panelDAO;
+        this.externalReferenceDao = externalReferenceDao;
     }
 
+    protected void saveEvent(Event event) throws IOException {
+        Panel panel = mapToPanel(event);
+        ExternalReference data = externalReferenceDao.getData(externalId);
+        if(data ==null)
+            panelDAO.insertData(panel);
+        if(data !=null) {
+            Panel panelById = panelDAO.getPanelById(data.getItemId());
+            updatePanelFieldsIfNotEmpty(panel, panelById);
+            panelDAO.updateData(panelById);
+        }
+    }
+
+    private void updatePanelFieldsIfNotEmpty(Panel panel, Panel panelById) {
+        if(panel.getName() != null && !panel.getName().isEmpty()){
+            panelById.setName(panel.getName());
+        }
+        if(panel.getDescription() != null && !panel.getDescription().isEmpty()){
+            panelById.setDescription(panel.getDescription());
+        }
+    }
 
     private Panel mapToPanel(Event event) throws IOException {
         Panel panel = new us.mn.state.health.lims.panel.valueholder.Panel();
@@ -39,7 +62,7 @@ public class LabPanel extends TransactionalEventObject  implements EventObject {
             desc = (String) paramMap.get("name");
         }
         panel.setDescription(desc);
-        panel.setId(String.valueOf(paramMap.get("id")));
+        externalId = String.valueOf(paramMap.get("id"));
         panel.setSysUserId(sysUserId);
 
         return panel;

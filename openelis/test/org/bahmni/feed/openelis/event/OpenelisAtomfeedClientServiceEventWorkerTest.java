@@ -1,6 +1,5 @@
 package org.bahmni.feed.openelis.event;
 
-import org.bahmni.feed.openelis.event.objects.impl.LabPanel;
 import org.bahmni.feed.openelis.utils.AtomfeedClientUtils;
 import org.hibernate.Transaction;
 import org.ict4h.atomfeed.client.domain.Event;
@@ -17,16 +16,14 @@ import us.mn.state.health.lims.panel.valueholder.Panel;
 import us.mn.state.health.lims.siteinformation.dao.SiteInformationDAO;
 import us.mn.state.health.lims.siteinformation.valueholder.SiteInformation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-import java.util.ArrayList;
-import java.util.List;
 
-//import org.springframework.test.context.ContextConfiguration;
-
-//@ContextConfiguration(locations = {"classpath*:applicationContext-openelisTest.xml"})
 public class OpenelisAtomfeedClientServiceEventWorkerTest {
     static final String EVENT_CONTENT = " {\"category\": \"panel\", \"list_price\": \"0.0\", \"name\": \"ECHO\", \"type\": \"service\", \"standard_price\": \"0.0\", \"uom_id\": 1, \"uom_po_id\": 1, \"categ_id\": 33, \"id\": 193}";
 

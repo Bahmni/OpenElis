@@ -1,26 +1,28 @@
 package org.bahmni.feed.openelis.externalreference.valueholder;
 
 
-public class ExternalReference {
+import us.mn.state.health.lims.common.valueholder.BaseObject;
 
-    private int id;
-    private int itemId;
+public class ExternalReference extends BaseObject{
+
+    private String id;
+    private String itemId;
     private String externalId;
     private String type;
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public int getItemId() {
+    public String getItemId() {
         return itemId;
     }
 
-    public void setItemId(int itemId) {
+    public void setItemId(String itemId) {
         this.itemId = itemId;
     }
 

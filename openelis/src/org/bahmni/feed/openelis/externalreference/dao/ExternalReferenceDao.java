@@ -1,14 +1,12 @@
 package org.bahmni.feed.openelis.externalreference.dao;
 
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
+import us.mn.state.health.lims.common.dao.BaseDAO;
+import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 
-/**
- * Created with IntelliJ IDEA.
- * User: indraneel
- * Date: 9/7/13
- * Time: 3:05 PM
- * To change this template use File | Settings | File Templates.
- */
-public interface ExternalReferenceDao {
-    public void insert(ExternalReference externalReference);
+public interface ExternalReferenceDao extends BaseDAO {
+
+    ExternalReference getData(String externalReferenceId) throws LIMSRuntimeException;
+
+    boolean insertData(ExternalReference externalReference) throws LIMSRuntimeException;
 }
