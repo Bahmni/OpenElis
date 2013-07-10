@@ -41,7 +41,7 @@
         </war>
     </target>
 
-    <target name="build" depends="clean, compile, test, dist"
+    <target name="build" depends="clean, compile, test, report, dist"
             description="run test and generate the distribution">
     </target>
 
