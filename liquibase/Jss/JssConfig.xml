@@ -146,7 +146,15 @@
 			<constraints nullable="false"/>
 		</column>
     	</createTable>
+    </changeSet>
 
+    <changeSet id="9" author="tw" runOnChange="true" context="jss">
+	<addUniqueConstraint 
+            columnNames="item_id,type"
+            constraintName="unique_ids"
+            schemaName="clinlims"
+            tableName="external_reference"
+	/>
     </changeSet>
 
     

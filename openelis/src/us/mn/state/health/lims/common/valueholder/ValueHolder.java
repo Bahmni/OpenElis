@@ -39,11 +39,29 @@ public class ValueHolder implements ValueHolderInterface, Cloneable, Serializabl
         super();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ValueHolder that = (ValueHolder) o;
+
+        if (value != null ? !value.equals(that.value) : that.value != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return value != null ? value.hashCode() : 0;
+    }
+
     /**
      * PUBLIC:
      * Initialize the holder with an object.
      */
     public ValueHolder(Object value) {
+
         this.value = value;
     }
 

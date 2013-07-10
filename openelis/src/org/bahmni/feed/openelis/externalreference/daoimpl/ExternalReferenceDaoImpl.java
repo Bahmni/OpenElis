@@ -6,10 +6,14 @@ import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import org.hibernate.HibernateException;
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
 import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.daoimpl.BaseDAOImpl;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
+import us.mn.state.health.lims.patient.valueholder.Patient;
+
+import java.util.List;
 
 public class ExternalReferenceDaoImpl extends BaseDAOImpl implements ExternalReferenceDao {
 
@@ -19,8 +23,6 @@ public class ExternalReferenceDaoImpl extends BaseDAOImpl implements ExternalRef
         try {
             String id = (String) HibernateUtil.getSession().save(externalReference);
             externalReference.setId(id);
-
-            auditSave(externalReference);
 
             HibernateUtil.getSession().flush();
             HibernateUtil.getSession().clear();
@@ -32,12 +34,7 @@ public class ExternalReferenceDaoImpl extends BaseDAOImpl implements ExternalRef
         return true;
     }
 
-    private void auditSave(ExternalReference externalReference) {
-        AuditTrailDAO auditDAO = new AuditTrailDAOImpl();
-        String sysUserId = externalReference.getSysUserId();
-        String tableName = "EXTERNAL_REFERENCE";
-        auditDAO.saveNewHistory(externalReference,sysUserId,tableName);
-    }
+
 
     @Override
     public ExternalReference getData(String externalReferenceId) throws LIMSRuntimeException {
@@ -51,5 +48,12 @@ public class ExternalReferenceDaoImpl extends BaseDAOImpl implements ExternalRef
 
         return null;
     }
+
+    public void deleteData(ExternalReference data) throws LIMSRuntimeException {
+                data = (ExternalReference)getData(data.getId());
+                HibernateUtil.getSession().delete(data);
+                HibernateUtil.getSession().flush();
+                HibernateUtil.getSession().clear();
+            }
 
  }

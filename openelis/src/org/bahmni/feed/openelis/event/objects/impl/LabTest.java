@@ -7,7 +7,6 @@ import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoIm
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.ict4h.atomfeed.client.domain.Event;
-import us.mn.state.health.lims.panel.valueholder.Panel;
 import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 import us.mn.state.health.lims.test.valueholder.Test;
@@ -26,6 +25,11 @@ public class LabTest extends TransactionalEventObject {
         this.sysUserId = sysUserId;
     }
 
+    LabTest(TestDAO testDao, ExternalReferenceDao externalReferenceDao) {
+        testDAO = testDao;
+        this.externalReferenceDao = externalReferenceDao;
+    }
+
     @Override
     protected void saveEvent(Event event) throws IOException {
         Test test = mapToTest(event);
@@ -42,13 +46,13 @@ public class LabTest extends TransactionalEventObject {
     private Test mapToTest(Event event) throws IOException {
         HashMap<String,Object> paramMap = new ObjectMapper().readValue(event.getContent(), HashMap.class) ;
         Test test = new Test();
-        test.setName((String) paramMap.get("name"));
+        test.setTestName((String) paramMap.get("name"));
         String desc = (String) paramMap.get("description");
         if(desc == null || desc.isEmpty()){
             desc = (String) paramMap.get("name");
         }
         test.setDescription(desc);
-        test.setId(String.valueOf( paramMap.get("id")));
+        externalId = String.valueOf( paramMap.get("id"));
         test.setSysUserId(sysUserId);
         return test;
     }

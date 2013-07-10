@@ -6,9 +6,9 @@
     <class name="ExternalReference" table="external_reference" optimistic-lock="version" dynamic-update="true">
 		<id name="id" type="long">
             <column name="ID" />
-            <!--<generator class="sequence">-->
-               <!--<param name="sequence">login_user_seq</param>-->
-            <!--</generator>   -->
+            <generator class="sequence">
+                <param name="sequence">external_reference_id_seq</param>
+            </generator>
         </id>      		
         
 		<property name="externalId" type="java.lang.String">

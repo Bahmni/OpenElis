@@ -48,7 +48,8 @@ public class Test extends EnumValueItemImpl {
 
 	private String testTrailerName;
 
-	private ValueHolderInterface testTrailer;
+
+    private ValueHolderInterface testTrailer;
 
 	private String testSectionName;
 
@@ -465,4 +466,99 @@ public class Test extends EnumValueItemImpl {
 	public void setOrderable(Boolean orderable) {
 		this.orderable = orderable;
 	}
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Test test = (Test) o;
+
+        if (activeBeginDate != null ? !activeBeginDate.equals(test.activeBeginDate) : test.activeBeginDate != null)
+            return false;
+        if (activeBeginDateForDisplay != null ? !activeBeginDateForDisplay.equals(test.activeBeginDateForDisplay) : test.activeBeginDateForDisplay != null)
+            return false;
+        if (activeEndDate != null ? !activeEndDate.equals(test.activeEndDate) : test.activeEndDate != null)
+            return false;
+        if (activeEndDateForDisplay != null ? !activeEndDateForDisplay.equals(test.activeEndDateForDisplay) : test.activeEndDateForDisplay != null)
+            return false;
+        if (alternateTestDisplayValue != null ? !alternateTestDisplayValue.equals(test.alternateTestDisplayValue) : test.alternateTestDisplayValue != null)
+            return false;
+        if (description != null ? !description.equals(test.description) : test.description != null) return false;
+        if (id != null ? !id.equals(test.id) : test.id != null) return false;
+        if (isReportable != null ? !isReportable.equals(test.isReportable) : test.isReportable != null) return false;
+        if (label != null ? !label.equals(test.label) : test.label != null) return false;
+        if (labelName != null ? !labelName.equals(test.labelName) : test.labelName != null) return false;
+        if (labelQuantity != null ? !labelQuantity.equals(test.labelQuantity) : test.labelQuantity != null)
+            return false;
+        if (localAbbrev != null ? !localAbbrev.equals(test.localAbbrev) : test.localAbbrev != null) return false;
+        if (loinc != null ? !loinc.equals(test.loinc) : test.loinc != null) return false;
+        if (method != null ? !method.equals(test.method) : test.method != null) return false;
+        if (methodName != null ? !methodName.equals(test.methodName) : test.methodName != null) return false;
+        if (orderable != null ? !orderable.equals(test.orderable) : test.orderable != null) return false;
+        if (reportingDescription != null ? !reportingDescription.equals(test.reportingDescription) : test.reportingDescription != null)
+            return false;
+        if (scriptlet != null ? !scriptlet.equals(test.scriptlet) : test.scriptlet != null) return false;
+        if (scriptletName != null ? !scriptletName.equals(test.scriptletName) : test.scriptletName != null)
+            return false;
+        if (sortOrder != null ? !sortOrder.equals(test.sortOrder) : test.sortOrder != null) return false;
+        if (stickerRequiredFlag != null ? !stickerRequiredFlag.equals(test.stickerRequiredFlag) : test.stickerRequiredFlag != null)
+            return false;
+        if (!testName.equals(test.testName)) return false;
+        if (testSection != null ? !testSection.equals(test.testSection) : test.testSection != null) return false;
+        if (testSectionName != null ? !testSectionName.equals(test.testSectionName) : test.testSectionName != null)
+            return false;
+        if (testTrailer != null ? !testTrailer.equals(test.testTrailer) : test.testTrailer != null) return false;
+        if (testTrailerName != null ? !testTrailerName.equals(test.testTrailerName) : test.testTrailerName != null)
+            return false;
+        if (timeAverage != null ? !timeAverage.equals(test.timeAverage) : test.timeAverage != null) return false;
+        if (timeHolding != null ? !timeHolding.equals(test.timeHolding) : test.timeHolding != null) return false;
+        if (timeMax != null ? !timeMax.equals(test.timeMax) : test.timeMax != null) return false;
+        if (timeWait != null ? !timeWait.equals(test.timeWait) : test.timeWait != null) return false;
+        if (timeWarning != null ? !timeWarning.equals(test.timeWarning) : test.timeWarning != null) return false;
+        if (unitOfMeasure != null ? !unitOfMeasure.equals(test.unitOfMeasure) : test.unitOfMeasure != null)
+            return false;
+        if (unitOfMeasureId != null ? !unitOfMeasureId.equals(test.unitOfMeasureId) : test.unitOfMeasureId != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (methodName != null ? methodName.hashCode() : 0);
+        result = 31 * result + (method != null ? method.hashCode() : 0);
+        result = 31 * result + (labelName != null ? labelName.hashCode() : 0);
+        result = 31 * result + (label != null ? label.hashCode() : 0);
+        result = 31 * result + (testTrailerName != null ? testTrailerName.hashCode() : 0);
+        result = 31 * result + (testTrailer != null ? testTrailer.hashCode() : 0);
+        result = 31 * result + (testSectionName != null ? testSectionName.hashCode() : 0);
+        result = 31 * result + (testSection != null ? testSection.hashCode() : 0);
+        result = 31 * result + (scriptletName != null ? scriptletName.hashCode() : 0);
+        result = 31 * result + (scriptlet != null ? scriptlet.hashCode() : 0);
+        result = 31 * result + (unitOfMeasureId != null ? unitOfMeasureId.hashCode() : 0);
+        result = 31 * result + testName.hashCode();
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (loinc != null ? loinc.hashCode() : 0);
+        result = 31 * result + (reportingDescription != null ? reportingDescription.hashCode() : 0);
+        result = 31 * result + (stickerRequiredFlag != null ? stickerRequiredFlag.hashCode() : 0);
+        result = 31 * result + (alternateTestDisplayValue != null ? alternateTestDisplayValue.hashCode() : 0);
+        result = 31 * result + (activeBeginDate != null ? activeBeginDate.hashCode() : 0);
+        result = 31 * result + (activeBeginDateForDisplay != null ? activeBeginDateForDisplay.hashCode() : 0);
+        result = 31 * result + (activeEndDate != null ? activeEndDate.hashCode() : 0);
+        result = 31 * result + (activeEndDateForDisplay != null ? activeEndDateForDisplay.hashCode() : 0);
+        result = 31 * result + (isReportable != null ? isReportable.hashCode() : 0);
+        result = 31 * result + (timeHolding != null ? timeHolding.hashCode() : 0);
+        result = 31 * result + (timeWait != null ? timeWait.hashCode() : 0);
+        result = 31 * result + (timeAverage != null ? timeAverage.hashCode() : 0);
+        result = 31 * result + (timeWarning != null ? timeWarning.hashCode() : 0);
+        result = 31 * result + (timeMax != null ? timeMax.hashCode() : 0);
+        result = 31 * result + (labelQuantity != null ? labelQuantity.hashCode() : 0);
+        result = 31 * result + (unitOfMeasure != null ? unitOfMeasure.hashCode() : 0);
+        result = 31 * result + (sortOrder != null ? sortOrder.hashCode() : 0);
+        result = 31 * result + (localAbbrev != null ? localAbbrev.hashCode() : 0);
+        result = 31 * result + (orderable != null ? orderable.hashCode() : 0);
+        return result;
+    }
 }

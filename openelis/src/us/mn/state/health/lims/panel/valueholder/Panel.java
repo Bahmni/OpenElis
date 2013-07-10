@@ -67,5 +67,26 @@ public class Panel extends EnumValueItemImpl {
 	public void setSortOrderInt(int sortOrderInt) {
 		this.sortOrderInt = sortOrderInt;
 	}
-	
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Panel panel = (Panel) o;
+
+        if (description != null ? !description.equals(panel.description) : panel.description != null) return false;
+        if (id != null ? !id.equals(panel.id) : panel.id != null) return false;
+        if (!panelName.equals(panel.panelName)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + panelName.hashCode();
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        return result;
+    }
 }

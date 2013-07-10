@@ -1,6 +1,7 @@
 package org.bahmni.feed.openelis.event.objects.impl;
 
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
+import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import org.ict4h.atomfeed.client.domain.Event;
 import org.junit.After;
 import org.junit.Before;
@@ -41,12 +42,32 @@ public class LabPanelTest {
 
         Event event = new Event("554433221",EVENT_CONTENT);
         Panel panel = new Panel();
-        panel.setName("ECHO");
+        panel.setPanelName("ECHO");
         panel.setDescription("Test Panel");
 
 
         labPanel.save(event);
 
         verify(panelDAO).insertData(panel);
+    }
+
+    @Test
+    public void shouldUpdateIfExternalReferenceFound(){
+        ExternalReference reference = new ExternalReference();
+        reference.setItemId("293");
+        reference.setExternalId("193");
+
+        Panel panel = new Panel();
+        panel.setPanelName("ECHO");
+        panel.setDescription("Test Panel");
+
+        when(externalReferenceDao.getData("193")).thenReturn(reference);
+        when(panelDAO.getPanelById("293")).thenReturn(panel);
+
+        Event event = new Event("554433221",EVENT_CONTENT);
+
+        labPanel.save(event);
+
+        verify(panelDAO).updateData(panel);
     }
 }

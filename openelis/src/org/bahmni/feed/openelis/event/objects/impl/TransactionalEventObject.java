@@ -21,7 +21,7 @@ public abstract class TransactionalEventObject implements EventObject{
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
-            LogEvent.logError("LabPanel Event", "save", e.toString());
+            LogEvent.logError(" Event", "save", e.toString());
             throw new LIMSRuntimeException("Error in LabPanel event save", e);
         }finally {
             session.flush();
