@@ -40,7 +40,7 @@ public class LabTestTest {
     }
 
     @org.junit.Test
-    public void shouldInsertNewIfExternalReferenceNotFound(){
+    public void shouldInsertNewIfExternalReferenceNotFound() throws IOException {
         when(externalReferenceDao.getData(anyString())).thenReturn(null);
 
         Event event = new Event("554433221",EVENT_CONTENT);
@@ -49,7 +49,8 @@ public class LabTestTest {
         test.setDescription("Test Panel");
 
 
-        labTest.save(event);
+        labTest.saveEvent(event);
+
 
         verify(testDao).insertData(test);
     }

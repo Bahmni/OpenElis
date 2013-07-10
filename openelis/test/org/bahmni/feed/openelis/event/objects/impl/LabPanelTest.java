@@ -54,7 +54,7 @@ public class LabPanelTest {
     }
 
     @Test
-    public void shouldUpdateIfExternalReferenceFound(){
+    public void shouldUpdateIfExternalReferenceFound() throws IOException {
         ExternalReference reference = new ExternalReference();
         reference.setItemId("293");
         reference.setExternalId("193");
@@ -68,7 +68,7 @@ public class LabPanelTest {
 
         Event event = new Event("554433221",EVENT_CONTENT);
 
-        labPanel.save(event);
+        labPanel.saveEvent(event);
 
         verify(panelDAO).updateData(panel);
     }
