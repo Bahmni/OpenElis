@@ -17,18 +17,14 @@
 */
 package us.mn.state.health.lims.common.util;
 
-import static java.util.Calendar.DAY_OF_YEAR;
-import static java.util.Calendar.DECEMBER;
-import static java.util.Calendar.FEBRUARY;
-import static java.util.Calendar.HOUR_OF_DAY;
-import static java.util.Calendar.JANUARY;
-import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import org.junit.Before;
-import org.junit.Test;
+import static java.util.Calendar.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author pahill (pahill@uw.edu)
@@ -41,8 +37,16 @@ public class DateUtilTest {
 
     @Before
     public void setup() {
-        end.set(HOUR_OF_DAY, 0);
-        start.set(HOUR_OF_DAY, 0);        
+        setTime(end);
+        setTime(start);
+    }
+
+    private void setTime(Calendar calendar) {
+        // Not setting the milliseconds fails the tests randomly.
+        calendar.set(HOUR_OF_DAY, 0);
+        calendar.set(MINUTE, 0);
+        calendar.set(SECOND, 0);
+        calendar.set(MILLISECOND, 0);
     }
 
     @Test
