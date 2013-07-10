@@ -274,7 +274,7 @@ public interface IActionConstants {
 	public static final String FORM_FIELD_SET_LNSP_CI = "LNSP_CI";
 	public static final String FORM_FIELD_SET_CDI = "CDI";
 	public static final String FORM_FIELD_SET_CI_IPCI = "CI_IPCI";
-	public static final String FORM_FIELD_SET_JSS = "JSS";
+	public static final String FORM_FIELD_SET_BAHMNI = "BAHMNI";
 
 	public static final String ACTION_REFINEMENT_SEPARATOR = ":";
 

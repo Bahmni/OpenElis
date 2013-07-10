@@ -137,8 +137,8 @@ public class DefaultFormFields extends AFormFields {
 			return new RETROCIFormFields().getImplementationAttributes();
 		}else if(IActionConstants.FORM_FIELD_SET_CI_IPCI.equals(fieldSet)){
 			return new CI_IPCIFormFields().getImplementationAttributes();
-		}else if(IActionConstants.FORM_FIELD_SET_JSS.equals(fieldSet)){
-			return new JSSFormFields().getImplementationAttributes();
+		}else if(IActionConstants.FORM_FIELD_SET_BAHMNI.equals(fieldSet)){
+			return new BahmniFormFields().getImplementationAttributes();
 		}
 
 		return null;

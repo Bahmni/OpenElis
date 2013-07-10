@@ -21,7 +21,7 @@ import us.mn.state.health.lims.common.formfields.FormFields.Field;
 
 import java.util.HashMap;
 
-public class JSSFormFields implements IFormFieldsForImplementation {
+public class BahmniFormFields implements IFormFieldsForImplementation {
 
 	public HashMap<Field, Boolean> getImplementationAttributes() {
 		HashMap<Field, Boolean> settings = new HashMap<Field, Boolean>();

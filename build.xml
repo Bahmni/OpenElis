@@ -1,12 +1,11 @@
-<project name="OpenElis" default="dist" basedir=".">
+<project name="OpenElis" default="test" basedir=".">
     <description>
         OpenElis build file
     </description>
     <presetdef name="javac">
-        <javac includeantruntime="false" />
+        <javac includeantruntime="false"/>
     </presetdef>
-    <property file="build.properties" />
-
+    <property file="build.properties"/>
 
     <target name="init">
         <tstamp/>
@@ -45,44 +44,39 @@
             description="run test and generate the distribution">
     </target>
 
-    <target name="clean" description="clean up">
+    <target name="clean">
         <delete dir="${target}"/>
         <delete dir="${dist}"/>
         <delete dir="${junit.output.dir}"/>
         <delete dir="${test.target}"/>
     </target>
 
-    <target name="setupDB" depends="initDB, updateDB"></target>
+    <target name="setupDB" depends="initDB, updateDB"/>
 
     <target name="initDB">
         <exec executable="scripts/initDB.sh"/>
     </target>
 
-	<target name="dropDB">
+    <target name="dropDB">
         <exec executable="dropdb">
             <arg line="-U postgres clinlims"/>
         </exec>
     </target>
 
-    <target name="resetDB">
-		<antcall target="dropDB"/>
-		<antcall target="initDB"/>
-		<antcall target="updateDB"/>
-    </target>
-
+    <target name="resetDB" depends="dropDB, initDB, updateDB"/>
 
     <target name="updateDB">
         <echo message="Running migration for contexts : Haiti"/>
-		<exec executable="java" failonerror="true" dir="${liquibase}">
-            <arg line="-jar -Dfile.encoding=utf-8 lib/liquibase-1.9.5.jar --defaultsFile=liquibase.properties  --contexts=haiti --url=jdbc:postgresql://localhost:5432/clinlims update"/>
+        <exec executable="java" failonerror="true" dir="${liquibase}">
+            <arg line="-jar -Dfile.encoding=utf-8 lib/liquibase-1.9.5.jar --defaultsFile=liquibase.properties --contexts=haiti --url=jdbc:postgresql://localhost:5432/clinlims update"/>
         </exec>
         <echo message="Running migration for contexts : JSS"/>
         <exec executable="java" failonerror="true" dir="${liquibase}">
-            <arg line="-jar -Dfile.encoding=utf-8 lib/liquibase-1.9.5.jar --defaultsFile=liquibase.properties  --contexts=jss --url=jdbc:postgresql://localhost:5432/clinlims update"/>
+            <arg line="-jar -Dfile.encoding=utf-8 lib/liquibase-1.9.5.jar --defaultsFile=liquibase.properties --contexts=jss --url=jdbc:postgresql://localhost:5432/clinlims update"/>
         </exec>
     </target>
 
-    <target name="test" depends="clean, compile">
+    <target name="test" depends="clean, compile, updateDB">
         <mkdir dir="${junit.output.dir}"/>
         <mkdir dir="${test.target}"/>
         <javac srcdir="${test.src}" classpathref="lib" destdir="${test.target}" encoding="iso-8859-1" debug="on">
@@ -110,7 +104,7 @@
                 </fileset>
             </batchtest>
         </junit>
-        <fail message="Test failure detected, check test results." if="test.failed" />
+        <fail message="Test failure detected, check test results." if="test.failed"/>
     </target>
 
     <target name="report" depends="test">
@@ -122,5 +116,4 @@
             <report todir="${junit.output.dir}/html"/>
         </junitreport>
     </target>
-
 </project>
