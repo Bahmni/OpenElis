@@ -112,4 +112,15 @@
         </junit>
         <fail message="Test failure detected, check test results." if="test.failed" />
     </target>
+
+    <target name="report" depends="test">
+        <mkdir dir="${junit.output.dir}/html"/>
+        <junitreport todir="${junit.output.dir}">
+            <fileset dir="${junit.output.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report todir="${junit.output.dir}/html"/>
+        </junitreport>
+    </target>
+
 </project>
