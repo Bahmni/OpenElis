@@ -39,6 +39,7 @@ public class DateNumAccessionValidatorTest {
 
     @Test
     public void shouldTestNextAccessionNumber() {
+        DateNumAccessionValidator.resetAccessionNumber();
         when(sampleDAO.getLargestAccessionNumberWithPrefix(any(String.class))).thenReturn("02022012-004");
         dateNumAccessionValidator.setSampleDAO(sampleDAO);
         String nextNumber = dateNumAccessionValidator.getNextAvailableAccessionNumber(null);
@@ -90,6 +91,7 @@ public class DateNumAccessionValidatorTest {
         String firstAccessionNumber = dateNumAccessionValidator.createFirstAccessionNumber(null);
         assertTrue(firstAccessionNumber.endsWith("001"));
     }
+
 
 
 

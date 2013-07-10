@@ -1,5 +1,6 @@
 package us.mn.state.health.lims.common.provider.validation;
 
+import org.hibernate.criterion.Restrictions;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
@@ -152,5 +153,9 @@ public class DateNumAccessionValidator implements IAccessionNumberValidator {
     private boolean hasNextAccessionNumberExpired(){
         String prefix = getDatePrefix();
         return !nextAccessionNumber.startsWith(prefix);
+    }
+
+    static void resetAccessionNumber(){
+        nextAccessionNumber = null;
     }
 }
