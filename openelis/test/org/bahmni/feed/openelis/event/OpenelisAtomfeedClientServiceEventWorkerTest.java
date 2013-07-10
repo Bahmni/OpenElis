@@ -8,7 +8,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.springframework.test.context.ContextConfiguration;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.dao.LoginDAO;
 import us.mn.state.health.lims.login.valueholder.Login;
@@ -27,7 +26,7 @@ import java.util.List;
 
 //import org.springframework.test.context.ContextConfiguration;
 
-@ContextConfiguration(locations = {"classpath*:applicationContext-openelisTest.xml"})
+//@ContextConfiguration(locations = {"classpath*:applicationContext-openelisTest.xml"})
 public class OpenelisAtomfeedClientServiceEventWorkerTest {
     static final String EVENT_CONTENT = " {\"category\": \"panel\", \"list_price\": \"0.0\", \"name\": \"ECHO\", \"type\": \"service\", \"standard_price\": \"0.0\", \"uom_id\": 1, \"uom_po_id\": 1, \"categ_id\": 33, \"id\": 193}";
 
