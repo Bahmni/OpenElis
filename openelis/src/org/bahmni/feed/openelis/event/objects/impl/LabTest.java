@@ -1,7 +1,6 @@
 package org.bahmni.feed.openelis.event.objects.impl;
 
 
-import org.bahmni.feed.openelis.event.objects.EventObject;
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoImpl;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
@@ -37,7 +36,7 @@ public class LabTest extends TransactionalEventObject {
         if(data ==null)
             testDAO.insertData(test);
         if(data !=null) {
-            Test activeTestById = testDAO.getActiveTestById(new Integer(data.getItemId()));
+            Test activeTestById = testDAO.getActiveTestById((int)data.getItemId());
             test.setId(activeTestById.getId());
             testDAO.updateData(test);
         }

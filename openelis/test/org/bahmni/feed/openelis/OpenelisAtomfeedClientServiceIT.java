@@ -18,7 +18,6 @@ import org.ict4h.atomfeed.jdbc.PropertiesJdbcConnectionProvider;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -124,9 +123,9 @@ public class OpenelisAtomfeedClientServiceIT {
         when(allFeedsMock.getFor(firstFeedUri)).thenReturn(first);
 
 
-        OpenelisAtomfeedClientService feedClientService = new OpenelisAtomfeedClientService(atomFeedProperties,atomFeedClient,new EventWorkerFactory());
-        feedClientService.setFeedName("openerp.labtest.feed.generator.uri");
-        feedClientService.processFeed();
+        OpeneERPLabTestFeedClient feedClient = new OpeneERPLabTestFeedClient(atomFeedProperties,atomFeedClient,new EventWorkerFactory());
+        feedClient.setFeedName("openerp.labtest.feed.generator.uri");
+        feedClient.processFeed();
 
         Marker marker = allMarkersJdbc.get(notificationsUri);
         assertThat(marker.getLastReadEntryId(), is("9") );

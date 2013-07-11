@@ -10,13 +10,13 @@
             <column name="value" value="DATENUM"/>
             <where>name='acessionFormat'</where>
         </update>
-        <insert schemaName="clinlims" tableName="site_information">
+        <!--insert schemaName="clinlims" tableName="site_information">
             <column name="id" valueNumeric=" nextVal( 'site_information_seq' ) "/>
             <column name="name" value="SampleEntryFieldsetOrder"/>
             <column name="description" value="Configures the order in which each section appears in the Add Sample Entry form. Eg: value: patient|samples|order"/>
             <column name="value" value="patient|samples|order"/>
             <column name="lastupdated" valueDate=" now() "/>
-        </insert>
+        </insert-->
     </changeSet>
 
     <changeSet id="2" author="tw" context="bahmni" runOnChange="true">
@@ -84,7 +84,7 @@
         </insert>
     </changeSet>
 
-    <changeSet id="5" author="tw" runOnChange="true">
+    <changeSet id="5" author="tw" context="bahmni" runOnChange="true">
         <comment>Add type to address_part table</comment>
         <addColumn schemaName="clinlims" tableName="address_part">
             <column name="type" type="character(1)" defaultValue="T">
@@ -116,7 +116,7 @@
             <column name="failed_at" type="timestamp(6) without time zone"/>
     	</createTable>
 
-	    <createTable schemaName="clinlims" tableName="markers">
+	    <createTable schemaName="clinlims" tableName="markers" context="bahmni">
             <column name="id" type="numeric(10,0)" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -131,7 +131,7 @@
             </column>
     	</createTable>
 
-	    <createTable schemaName="clinlims" tableName="external_reference">
+	    <createTable schemaName="clinlims" tableName="external_reference" context="bahmni">
             <column name="id" type="numeric(10,0)" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -147,7 +147,7 @@
     	</createTable>
     </changeSet>
 
-    <changeSet id="8" author="tw" runOnChange="true" context="jss">
+    <changeSet id="8" author="tw" runOnChange="true" context="bahmni">
         <addUniqueConstraint
                 columnNames="item_id,type"
                 constraintName="unique_ids"

@@ -18,7 +18,7 @@ import java.util.Arrays;
 
 import static org.mockito.Mockito.*;
 
-public class OpenelisAtomfeedClientServiceTest {
+public class OpeneERPLabTestFeedClientServiceTest {
 
     private AtomFeedClient atomFeedClient;
     private String feedLink = "feedLink";

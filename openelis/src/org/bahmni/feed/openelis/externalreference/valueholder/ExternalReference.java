@@ -4,7 +4,7 @@ package org.bahmni.feed.openelis.externalreference.valueholder;
 public class ExternalReference {
 
     private String id;
-    private String itemId;
+    private long itemId;
     private String externalId;
     private String type;
 
@@ -16,11 +16,11 @@ public class ExternalReference {
         this.id = id;
     }
 
-    public String getItemId() {
+    public long getItemId() {
         return itemId;
     }
 
-    public void setItemId(String itemId) {
+    public void setItemId(long itemId) {
         this.itemId = itemId;
     }
 

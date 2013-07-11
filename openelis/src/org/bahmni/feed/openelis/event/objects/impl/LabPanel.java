@@ -36,20 +36,24 @@ public class LabPanel extends TransactionalEventObject  implements EventObject {
         ExternalReference data = externalReferenceDao.getData(externalId);
         if(data ==null)
             panelDAO.insertData(panel);
-        if(data !=null) {
-            Panel panelById = panelDAO.getPanelById(data.getItemId());
+        else {
+            Panel panelById = panelDAO.getPanelById(String.valueOf(data.getItemId()));
             updatePanelFieldsIfNotEmpty(panel, panelById);
             panelDAO.updateData(panelById);
         }
     }
 
     private void updatePanelFieldsIfNotEmpty(Panel panel, Panel panelById) {
-        if(panel.getName() != null && !panel.getName().isEmpty()){
+        if(isEmpty(panel.getName())){
             panelById.setName(panel.getName());
         }
-        if(panel.getDescription() != null && !panel.getDescription().isEmpty()){
+        if(isEmpty(panel.getDescription())){
             panelById.setDescription(panel.getDescription());
         }
+    }
+
+    private boolean isEmpty(String value){
+       return value != null && !value.isEmpty();
     }
 
     private Panel mapToPanel(Event event) throws IOException {

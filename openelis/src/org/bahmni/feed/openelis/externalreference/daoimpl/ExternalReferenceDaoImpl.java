@@ -3,15 +3,10 @@ package org.bahmni.feed.openelis.externalreference.daoimpl;
 
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
-import org.hibernate.HibernateException;
-import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
-import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
-import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.daoimpl.BaseDAOImpl;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
-import us.mn.state.health.lims.patient.valueholder.Patient;
 
 import java.util.List;
 
@@ -34,26 +29,28 @@ public class ExternalReferenceDaoImpl extends BaseDAOImpl implements ExternalRef
         return true;
     }
 
-
-
     @Override
     public ExternalReference getData(String externalReferenceId) throws LIMSRuntimeException {
-        try{
-            ExternalReference reference = (ExternalReference) HibernateUtil.getSession().get(	ExternalReference.class, externalReferenceId );
-            closeSession();
-            return reference;
-        }catch(HibernateException e){
-            handleException(e, "getData(externalReferenceId)");
-        }
+            String sql = "from ExternalReference e where e.externalId =:param ";
+            org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
+            query.setParameter("param", externalReferenceId);
 
-        return null;
+            List refs = query.list();
+            HibernateUtil.getSession().flush();
+            HibernateUtil.getSession().clear();
+            if(!refs.isEmpty())
+                 return (ExternalReference)refs.get(0);
+            return null;
+
     }
 
     public void deleteData(ExternalReference data) throws LIMSRuntimeException {
-                data = (ExternalReference)getData(data.getId());
+            data = getData(data.getId());
+            if(data != null) {
                 HibernateUtil.getSession().delete(data);
                 HibernateUtil.getSession().flush();
                 HibernateUtil.getSession().clear();
             }
+    }
 
  }

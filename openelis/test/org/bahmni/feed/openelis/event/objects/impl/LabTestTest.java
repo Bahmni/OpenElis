@@ -5,9 +5,7 @@ import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import org.ict4h.atomfeed.client.domain.Event;
 import org.junit.After;
 import org.junit.Before;
-
 import org.mockito.Mock;
-import us.mn.state.health.lims.panel.valueholder.Panel;
 import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.valueholder.Test;
 
@@ -58,7 +56,7 @@ public class LabTestTest {
     @org.junit.Test
     public void shouldUpdateIfExternalReferenceFound() throws IOException {
         ExternalReference reference = new ExternalReference();
-        reference.setItemId("293");
+        reference.setItemId(293);
         reference.setExternalId("193");
 
         Test test = new Test();

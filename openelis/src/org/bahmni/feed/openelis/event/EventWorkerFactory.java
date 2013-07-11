@@ -5,11 +5,10 @@ import org.ict4h.atomfeed.client.service.EventWorker;
 
 public class EventWorkerFactory {
     private AtomFeedProperties atomFeedProperties;
+    public static final String OPENERP_ATOMFEED_WORKER =  "openerp.lab.tests.worker";
 
-
-    public static final String OPENELIS_ATOMFEED_SERVICE =  "openelis.openerp.sync.objects";
     public EventWorker getWorker(String workerName, String feedUrl) {
-        if(workerName.equals(OPENELIS_ATOMFEED_SERVICE))
+        if(workerName.equals(OPENERP_ATOMFEED_WORKER))
             return new OpenelisAtomfeedClientServiceEventWorker(feedUrl);
         return new EmptyWorker();
     }

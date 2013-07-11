@@ -56,7 +56,7 @@ public class LabPanelTest {
     @Test
     public void shouldUpdateIfExternalReferenceFound() throws IOException {
         ExternalReference reference = new ExternalReference();
-        reference.setItemId("293");
+        reference.setItemId(293);
         reference.setExternalId("193");
 
         Panel panel = new Panel();
