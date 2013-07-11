@@ -1,17 +1,15 @@
-package org.bahmni.feed.openelis.event.object;
+package org.bahmni.feed.openelis.feed.domain;
 
-/**
- * Created with IntelliJ IDEA.
- * User: indraneel
- * Date: 11/7/13
- * Time: 3:15 PM
- * To change this template use File | Settings | File Templates.
- */
 public class LabObject {
     private String externalId;
     private String name;
     private String description;
     private String sysUserId;
+    private String category;
+
+    public String getCategory() {
+        return category;
+    }
 
     public String getSysUserId() {
         return sysUserId;
@@ -52,5 +50,9 @@ public class LabObject {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 }

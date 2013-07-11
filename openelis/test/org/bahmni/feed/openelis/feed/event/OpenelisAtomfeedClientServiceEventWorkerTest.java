@@ -1,5 +1,7 @@
-package org.bahmni.feed.openelis.event;
+package org.bahmni.feed.openelis.feed.event;
 
+import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoImpl;
+import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import org.bahmni.feed.openelis.utils.AtomfeedClientUtils;
 import org.hibernate.Transaction;
 import org.ict4h.atomfeed.client.domain.Event;
@@ -33,12 +35,15 @@ public class OpenelisAtomfeedClientServiceEventWorkerTest {
     @Mock
     SiteInformationDAO siteInformationDAO;
 
+    ExternalReferenceDaoImpl externalReferenceDao;
+
 
     OpenelisAtomfeedClientServiceEventWorker eventWorker;
     @Before
     public void setUp(){
         initMocks(this);
         eventWorker = new OpenelisAtomfeedClientServiceEventWorker("hosts/feed/recent");
+        externalReferenceDao = new ExternalReferenceDaoImpl();
     }
 
     @Test
@@ -60,7 +65,11 @@ public class OpenelisAtomfeedClientServiceEventWorkerTest {
 
         Transaction transaction = HibernateUtil.getSession().beginTransaction();
         panelDao.deleteData(panels);
+        ExternalReference externalReference = externalReferenceDao.getData("193");
+        externalReferenceDao.deleteData(externalReference);
+
         transaction.commit();
+
 
         panel = panelDao.getPanelByName("ECHO");
         Assert.assertNull(panel);

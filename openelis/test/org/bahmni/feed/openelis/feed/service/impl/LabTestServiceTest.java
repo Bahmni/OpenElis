@@ -1,10 +1,8 @@
-package org.bahmni.feed.openelis.event.service.impl;
+package org.bahmni.feed.openelis.feed.service.impl;
 
-import org.bahmni.feed.openelis.event.object.LabObject;
-import org.bahmni.feed.openelis.event.service.impl.LabTestService;
+import org.bahmni.feed.openelis.feed.domain.LabObject;
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
-import org.ict4h.atomfeed.client.domain.Event;
 import org.junit.After;
 import org.junit.Before;
 import org.mockito.Mock;
@@ -18,7 +16,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class LabTestTest {
+public class LabTestServiceTest {
 
     @Mock
     TestDAO testDao;
@@ -49,7 +47,7 @@ public class LabTestTest {
         test.setDescription("lab test desc");
 
 
-        labTest.saveEvent(labObject);
+        labTest.saveLabObject(labObject);
 
 
         verify(testDao).insertData(test);
@@ -72,7 +70,7 @@ public class LabTestTest {
 
 
 
-        labTest.saveEvent(labObject);
+        labTest.saveLabObject(labObject);
 
         verify(testDao).updateData(test);
     }

@@ -1,21 +1,18 @@
-package org.bahmni.feed.openelis.event.service.impl;
+package org.bahmni.feed.openelis.feed.service.impl;
 
 
 import org.bahmni.feed.openelis.AtomFeedProperties;
-import org.bahmni.feed.openelis.event.object.LabObject;
+import org.bahmni.feed.openelis.feed.domain.LabObject;
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoImpl;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.ict4h.atomfeed.client.domain.Event;
 import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 import us.mn.state.health.lims.test.valueholder.Test;
 
 import java.io.IOException;
-import java.util.HashMap;
 
-public class LabTestService extends TransactionalLabService {
+public class LabTestService extends TransactionalService {
 
     private TestDAO testDAO = new TestDAOImpl() ;
     private ExternalReferenceDao externalReferenceDao = new ExternalReferenceDaoImpl();
@@ -31,7 +28,7 @@ public class LabTestService extends TransactionalLabService {
     }
 
     @Override
-    protected void saveEvent(LabObject labObject) throws IOException {
+    protected void saveLabObject(LabObject labObject) throws IOException {
         Test test = mapToTest(labObject);
         ExternalReference data = externalReferenceDao.getData(labObject.getExternalId());
         if(data ==null) {

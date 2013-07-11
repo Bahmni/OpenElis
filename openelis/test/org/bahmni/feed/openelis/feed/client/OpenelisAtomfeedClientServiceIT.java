@@ -1,14 +1,12 @@
-package org.bahmni.feed.openelis;
+package org.bahmni.feed.openelis.feed.client;
 
 import com.sun.syndication.feed.atom.Content;
 import com.sun.syndication.feed.atom.Entry;
 import com.sun.syndication.feed.atom.Feed;
 import com.sun.syndication.feed.atom.Link;
-import org.bahmni.feed.openelis.event.EventWorkerFactory;
-import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
+import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoImpl;
-import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
-import org.hibernate.Transaction;
+import org.bahmni.feed.openelis.feed.event.EventWorkerFactory;
 import org.ict4h.atomfeed.Configuration;
 import org.ict4h.atomfeed.client.domain.Marker;
 import org.ict4h.atomfeed.client.repository.AllFeeds;
@@ -20,10 +18,8 @@ import org.ict4h.atomfeed.jdbc.JdbcConnectionProvider;
 import org.ict4h.atomfeed.jdbc.JdbcUtils;
 import org.ict4h.atomfeed.jdbc.PropertiesJdbcConnectionProvider;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -35,7 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -97,12 +93,12 @@ public class OpenelisAtomfeedClientServiceIT {
     @After
     public void tearDown() throws Exception {
         allMarkersJdbc.delete(notificationsUri);
-        ExternalReference reference = externalReferenceDao.getData("1123456");
-        Assert.assertNotNull(reference);
-
-        Transaction transaction = HibernateUtil.getSession().beginTransaction();
-        externalReferenceDao.deleteData(reference);
-        transaction.commit();
+//        ExternalReference reference = externalReferenceDao.getData("1123456");
+//        Assert.assertNotNull(reference);
+//
+//        Transaction transaction = HibernateUtil.getSession().beginTransaction();
+//        externalReferenceDao.deleteData(reference);
+//        transaction.commit();
 
     }
 
@@ -135,7 +131,7 @@ public class OpenelisAtomfeedClientServiceIT {
 
     @Test
     public void shouldCreate() throws URISyntaxException {
-  /*      when(atomFeedProperties.getFeedUri("openerp.labtest.feed.generator.uri")).thenReturn("http://host/patients/notifications");
+        when(atomFeedProperties.getFeedUri("openerp.labtest.feed.generator.uri")).thenReturn("http://host/patients/notifications");
         when(allFeedsMock.getFor(notificationsUri)).thenReturn(last);
         when(allFeedsMock.getFor(recentFeedUri)).thenReturn(last);
         when(allFeedsMock.getFor(secondFeedUri)).thenReturn(second);
@@ -148,7 +144,7 @@ public class OpenelisAtomfeedClientServiceIT {
 
         Marker marker = allMarkersJdbc.get(notificationsUri);
         assertThat(marker.getLastReadEntryId(), is("9") );
-    */
+
     }
 
     private Entry createEntry(String eventContent) {

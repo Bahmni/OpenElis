@@ -26,7 +26,7 @@ public class AtomfeedClientUtils {
             }
             Login userProfile = loginDao.getUserProfile(adminUserName);
             if (userProfile != null) {
-                return userProfile.getId();
+                return userProfile.getSysUserId();
             }
         }
         return null;

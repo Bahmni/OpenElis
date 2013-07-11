@@ -1,9 +1,9 @@
-package org.bahmni.feed.openelis;
+package org.bahmni.feed.openelis.feed.client;
 
 
 import org.apache.log4j.Logger;
-import org.bahmni.feed.openelis.event.EventWorkerFactory;
-import org.ict4h.atomfeed.client.factory.AtomClientFactory;
+import org.bahmni.feed.openelis.AtomFeedProperties;
+import org.bahmni.feed.openelis.feed.event.EventWorkerFactory;
 import org.ict4h.atomfeed.client.repository.AllFeeds;
 import org.ict4h.atomfeed.client.repository.datasource.WebClient;
 import org.ict4h.atomfeed.client.repository.jdbc.AllFailedEventsJdbcImpl;
@@ -54,10 +54,10 @@ public class OpeneERPLabTestFeedClient implements Job {
     public void processFeed()  {
         EventWorker eventWorker = workerFactory.getWorker(EventWorkerFactory.OPENERP_ATOMFEED_WORKER, atomFeedProperties.getFeedUri(feedName));
         try {
-            logger.info("Processing Customer Feed "+ DateTime.now());
+            logger.info("Processing Lab test Feed "+ DateTime.now());
             atomFeedClient.processEvents(new URI(atomFeedProperties.getFeedUri(feedName)), eventWorker);
         } catch (Exception e) {
-            logger.error("failed customer feed execution " + e);
+            logger.error("failed lab test feed execution " + e);
         }
     }
 

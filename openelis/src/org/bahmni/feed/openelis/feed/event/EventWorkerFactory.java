@@ -1,4 +1,4 @@
-package org.bahmni.feed.openelis.event;
+package org.bahmni.feed.openelis.feed.event;
 
 import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.ict4h.atomfeed.client.service.EventWorker;

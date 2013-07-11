@@ -1,10 +1,8 @@
-package org.bahmni.feed.openelis.event.service.impl;
+package org.bahmni.feed.openelis.feed.service.impl;
 
-import org.bahmni.feed.openelis.event.object.LabObject;
-import org.bahmni.feed.openelis.event.service.impl.LabPanelService;
+import org.bahmni.feed.openelis.feed.domain.LabObject;
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
-import org.ict4h.atomfeed.client.domain.Event;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +17,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class LabPanelTest {
+public class LabPanelServiceTest {
 
     @Mock
     PanelDAO panelDAO;
@@ -50,7 +48,7 @@ public class LabPanelTest {
         panel.setDescription("lab panel desc");
 
 
-        labPanelService.saveEvent(labObject);
+        labPanelService.saveLabObject(labObject);
 
         verify(panelDAO).insertData(panel);
     }
@@ -71,7 +69,7 @@ public class LabPanelTest {
 
         LabObject labObject = new LabObject("193","Lab Panel","lab panel desc","1");
 
-        labPanelService.saveEvent(labObject);
+        labPanelService.saveLabObject(labObject);
 
         verify(panelDAO).updateData(panel);
     }

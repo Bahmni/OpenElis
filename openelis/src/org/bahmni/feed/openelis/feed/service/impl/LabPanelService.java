@@ -1,8 +1,8 @@
-package org.bahmni.feed.openelis.event.service.impl;
+package org.bahmni.feed.openelis.feed.service.impl;
 
 import org.bahmni.feed.openelis.AtomFeedProperties;
-import org.bahmni.feed.openelis.event.object.LabObject;
-import org.bahmni.feed.openelis.event.service.LabService;
+import org.bahmni.feed.openelis.feed.domain.LabObject;
+import org.bahmni.feed.openelis.feed.service.LabService;
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoImpl;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
@@ -13,7 +13,7 @@ import us.mn.state.health.lims.panel.valueholder.Panel;
 import java.io.IOException;
 
 
-public class LabPanelService extends TransactionalLabService implements LabService {
+public class LabPanelService extends TransactionalService implements LabService {
 
     private PanelDAO panelDAO = new PanelDAOImpl();
     private ExternalReferenceDao externalReferenceDao = new ExternalReferenceDaoImpl();
@@ -28,7 +28,7 @@ public class LabPanelService extends TransactionalLabService implements LabServi
         this.externalReferenceDao = externalReferenceDao;
     }
 
-    protected void saveEvent(LabObject labObject) throws IOException {
+    protected void saveLabObject(LabObject labObject) throws IOException {
         Panel panel = mapToPanel(labObject);
         ExternalReference data = externalReferenceDao.getData(labObject.getExternalId());
         if(data ==null){

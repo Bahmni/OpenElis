@@ -16,7 +16,7 @@
  */
 package us.mn.state.health.lims.scheduler;
 
-import org.bahmni.feed.openelis.OpeneERPLabTestFeedClient;
+import org.bahmni.feed.openelis.feed.client.OpeneERPLabTestFeedClient;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import us.mn.state.health.lims.common.util.DateUtil;
@@ -45,7 +45,7 @@ public class LateStartScheduler {
 		scheduleJobMap = new HashMap<String, Class<? extends Job>>();
 		scheduleJobMap.put("sendSiteIndicators", AggregateReportJob.class);
 		scheduleJobMap.put("sendMalariaSurviellanceReport", MalariaSurveilanceJob.class);
-		scheduleJobMap.put("pollOpenERPLabTestsFeed", OpeneERPLabTestFeedClient.class);
+		scheduleJobMap.put("openERPLabTestsFeed", OpeneERPLabTestFeedClient.class);
 	}
 
 	public void restartSchedules() {
