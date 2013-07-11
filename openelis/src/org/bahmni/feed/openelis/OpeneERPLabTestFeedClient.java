@@ -4,6 +4,8 @@ package org.bahmni.feed.openelis;
 import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.event.EventWorkerFactory;
 import org.ict4h.atomfeed.client.factory.AtomClientFactory;
+import org.ict4h.atomfeed.client.repository.AllFeeds;
+import org.ict4h.atomfeed.client.repository.datasource.WebClient;
 import org.ict4h.atomfeed.client.repository.jdbc.AllFailedEventsJdbcImpl;
 import org.ict4h.atomfeed.client.repository.jdbc.AllMarkersJdbcImpl;
 import org.ict4h.atomfeed.client.service.AtomFeedClient;
@@ -46,7 +48,7 @@ public class OpeneERPLabTestFeedClient implements Job {
     private static AtomFeedClient getFeedClient() {
         JdbcConnectionProvider jdbcConnectionProvider = new PropertiesJdbcConnectionProvider();
         AllMarkersJdbcImpl allMarkersJdbc = new AllMarkersJdbcImpl(jdbcConnectionProvider);
-        return new AtomClientFactory().create(allMarkersJdbc, new AllFailedEventsJdbcImpl(jdbcConnectionProvider));
+        return new AtomFeedClient(new AllFeeds(new WebClient()),allMarkersJdbc, new AllFailedEventsJdbcImpl(jdbcConnectionProvider));
     }
 
     public void processFeed()  {

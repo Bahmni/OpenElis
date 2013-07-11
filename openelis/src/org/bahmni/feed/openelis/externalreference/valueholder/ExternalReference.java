@@ -8,6 +8,14 @@ public class ExternalReference {
     private String externalId;
     private String type;
 
+    public ExternalReference(){}
+
+    public ExternalReference(long itemId, String externalId, String type) {
+        this.itemId = itemId;
+        this.externalId = externalId;
+        this.type = type;
+    }
+
     public String getId() {
         return id;
     }

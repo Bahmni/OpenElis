@@ -5,13 +5,6 @@ import java.util.ResourceBundle;
 
 public class AtomFeedProperties {
 
-//    private @Value("${feed.generator.uri}") String feedUri;
-//    private @Value("${openerp.host}") String host;
-//    private @Value("${openerp.port}") int port;
-//    private @Value("${openerp.database}") String database;
-//    private @Value("${openerp.user}") String user;
-//    private @Value("${openerp.password}") String password;
-//    private @Value("${scheduler.fixed.delay}") String schedulerDelay;
 
 
     private static final String LAB_TEST_EVENT = "productType.labTest";
@@ -46,28 +39,4 @@ public class AtomFeedProperties {
         return resourceBundle.getString(PANEL_EVENT);
     }
 
-   /* @Override
-    public String getHost() {
-        return resourceBundle.getString("openerp.host");
-    }
-
-    @Override
-    public int getPort() {
-        return Integer.parseInt(resourceBundle.getString("openerp.port"));
-    }
-
-    @Override
-    public String getDatabase() {
-        return resourceBundle.getString("openerp.database");
-    }
-
-    @Override
-    public String getUser() {
-        return resourceBundle.getString("openerp.user");
-    }
-
-    @Override
-    public String getPassword() {
-        return resourceBundle.getString("openerp.password");
-    }*/
 }

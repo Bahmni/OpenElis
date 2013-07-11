@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 
-public class LabPanel extends TransactionalEventObject  implements EventObject {
+public class LabPanelService extends TransactionalEventObject  implements EventObject {
 
     private PanelDAO panelDAO = new PanelDAOImpl();
     private ExternalReferenceDao externalReferenceDao = new ExternalReferenceDaoImpl();
@@ -22,11 +22,11 @@ public class LabPanel extends TransactionalEventObject  implements EventObject {
     private String sysUserId;
     private String externalId;
 
-    public LabPanel(String sysUserId){
+    public LabPanelService(String sysUserId){
         this.sysUserId = sysUserId;
     }
 
-    LabPanel(PanelDAO panelDAO, ExternalReferenceDao externalReferenceDao) {
+    LabPanelService(PanelDAO panelDAO, ExternalReferenceDao externalReferenceDao) {
         this.panelDAO = panelDAO;
         this.externalReferenceDao = externalReferenceDao;
     }
@@ -34,8 +34,11 @@ public class LabPanel extends TransactionalEventObject  implements EventObject {
     protected void saveEvent(Event event) throws IOException {
         Panel panel = mapToPanel(event);
         ExternalReference data = externalReferenceDao.getData(externalId);
-        if(data ==null)
+        if(data ==null){
             panelDAO.insertData(panel);
+            data = new ExternalReference(Long.parseLong(panel.getId()),externalId,"panel");
+            externalReferenceDao.insertData(data)  ;
+        }
         else {
             Panel panelById = panelDAO.getPanelById(String.valueOf(data.getItemId()));
             updatePanelFieldsIfNotEmpty(panel, panelById);
@@ -44,15 +47,18 @@ public class LabPanel extends TransactionalEventObject  implements EventObject {
     }
 
     private void updatePanelFieldsIfNotEmpty(Panel panel, Panel panelById) {
-        if(isEmpty(panel.getName())){
+        if(isSet(panel.getName())){
             panelById.setName(panel.getName());
         }
-        if(isEmpty(panel.getDescription())){
+        if(isSet(panel.getDescription())){
             panelById.setDescription(panel.getDescription());
+        }
+        if(isSet(panel.getSysUserId())){
+            panelById.setSysUserId(panel.getSysUserId());
         }
     }
 
-    private boolean isEmpty(String value){
+    private boolean isSet(String value){
        return value != null && !value.isEmpty();
     }
 

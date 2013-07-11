@@ -24,12 +24,12 @@ public class LabPanelTest {
     @Mock
     ExternalReferenceDao externalReferenceDao;
     static final String EVENT_CONTENT = " {\"category\": \"panel\",\"description\": \"Test Panel\", \"list_price\": \"0.0\", \"name\": \"ECHO\", \"type\": \"service\", \"standard_price\": \"0.0\", \"uom_id\": 1, \"uom_po_id\": 1, \"categ_id\": 33, \"id\": 193}";
-    LabPanel labPanel;
+    LabPanelService labPanelService;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        labPanel = new LabPanel(panelDAO,externalReferenceDao);
+        labPanelService = new LabPanelService(panelDAO,externalReferenceDao);
 
     }
 
@@ -48,7 +48,7 @@ public class LabPanelTest {
         panel.setDescription("Test Panel");
 
 
-        labPanel.saveEvent(event);
+        labPanelService.saveEvent(event);
 
         verify(panelDAO).insertData(panel);
     }
@@ -68,7 +68,7 @@ public class LabPanelTest {
 
         Event event = new Event("554433221",EVENT_CONTENT);
 
-        labPanel.saveEvent(event);
+        labPanelService.saveEvent(event);
 
         verify(panelDAO).updateData(panel);
     }

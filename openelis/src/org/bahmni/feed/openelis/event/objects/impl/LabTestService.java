@@ -13,18 +13,18 @@ import us.mn.state.health.lims.test.valueholder.Test;
 import java.io.IOException;
 import java.util.HashMap;
 
-public class LabTest extends TransactionalEventObject {
+public class LabTestService extends TransactionalEventObject {
     private String sysUserId;
     private String externalId;
     private TestDAO testDAO = new TestDAOImpl() ;
     private ExternalReferenceDao externalReferenceDao = new ExternalReferenceDaoImpl();
 
 
-    public LabTest(String sysUserId){
+    public LabTestService(String sysUserId){
         this.sysUserId = sysUserId;
     }
 
-    LabTest(TestDAO testDao, ExternalReferenceDao externalReferenceDao) {
+    LabTestService(TestDAO testDao, ExternalReferenceDao externalReferenceDao) {
         testDAO = testDao;
         this.externalReferenceDao = externalReferenceDao;
     }
@@ -33,11 +33,15 @@ public class LabTest extends TransactionalEventObject {
     protected void saveEvent(Event event) throws IOException {
         Test test = mapToTest(event);
         ExternalReference data = externalReferenceDao.getData(externalId);
-        if(data ==null)
+        if(data ==null) {
             testDAO.insertData(test);
-        if(data !=null) {
+            data = new ExternalReference(Long.parseLong(test.getId()),externalId,"panel");
+            externalReferenceDao.insertData(data)  ;
+        }
+        else {
             Test activeTestById = testDAO.getActiveTestById((int)data.getItemId());
             test.setId(activeTestById.getId());
+            updateTestFieldsIfNotEmpty(test, activeTestById);
             testDAO.updateData(test);
         }
     }
@@ -56,6 +60,21 @@ public class LabTest extends TransactionalEventObject {
         return test;
     }
 
+    private void updateTestFieldsIfNotEmpty(Test test, Test testById) {
+        if(isSet(test.getName())){
+            testById.setName(test.getName());
+        }
+        if(isSet(test.getDescription())){
+            testById.setDescription(test.getDescription());
+        }
+        if(isSet(test.getSysUserId())){
+            testById.setSysUserId(test.getSysUserId());
+        }
+    }
+
+    private boolean isSet(String value){
+        return value != null && !value.isEmpty();
+    }
     void setSysUserId(String sysUserId) {
         this.sysUserId = sysUserId;
     }

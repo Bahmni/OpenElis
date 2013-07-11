@@ -10,13 +10,13 @@
             <column name="value" value="DATENUM"/>
             <where>name='acessionFormat'</where>
         </update>
-        <!--insert schemaName="clinlims" tableName="site_information">
+        <insert schemaName="clinlims" tableName="site_information">
             <column name="id" valueNumeric=" nextVal( 'site_information_seq' ) "/>
             <column name="name" value="SampleEntryFieldsetOrder"/>
             <column name="description" value="Configures the order in which each section appears in the Add Sample Entry form. Eg: value: patient|samples|order"/>
             <column name="value" value="patient|samples|order"/>
             <column name="lastupdated" valueDate=" now() "/>
-        </insert-->
+        </insert>
     </changeSet>
 
     <changeSet id="2" author="tw" context="bahmni" runOnChange="true">
@@ -93,7 +93,7 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="6" author="tw" runOnChange="true" context="haiti,haitiLNSP">
+    <changeSet id="6" author="tw" runOnChange="true" context="bahmni">
         <comment>Set address part type to D for department</comment>
         <update schemaName="clinlims" tableName="address_part">
             <column name="type" value="D"/>
@@ -171,6 +171,15 @@
             <column name="job_name" value="atom-feed-openmrs-patient"/>
             <column name="display_key" value="schedule.name.atomFeedOpenMRSPatient"/>
             <column name="description_key" value="schedule.name.atomFeedOpenMRSPatient"/>
+        </insert>
+    </changeSet>
+    <changeSet id="11" author="tw" runOnChange="true" context="bahmni">
+        <insert schemaName="clinlims" tableName="site_information">
+            <column name="id" valueNumeric=" nextVal( 'site_information_seq' ) "/>
+            <column name="name" value="AdminUser"/>
+            <column name="description" value="Holds the name of the admin user responsible for creating Lab/Panels"/>
+            <column name="value" value="admin"/>
+            <column name="lastupdated" valueDate=" now() "/>
         </insert>
     </changeSet>
 </databaseChangeLog>

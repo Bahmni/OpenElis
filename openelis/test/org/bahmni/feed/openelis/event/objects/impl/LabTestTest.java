@@ -23,12 +23,12 @@ public class LabTestTest {
     @Mock
     ExternalReferenceDao externalReferenceDao;
     static final String EVENT_CONTENT = " {\"category\": \"test\",\"description\": \"Test Panel\", \"list_price\": \"0.0\", \"name\": \"ECHO\", \"type\": \"service\", \"standard_price\": \"0.0\", \"uom_id\": 1, \"uom_po_id\": 1, \"categ_id\": 33, \"id\": 193}";
-    LabTest labTest;
+    LabTestService labTest;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        labTest = new LabTest(testDao,externalReferenceDao);
+        labTest = new LabTestService(testDao,externalReferenceDao);
 
     }
 
