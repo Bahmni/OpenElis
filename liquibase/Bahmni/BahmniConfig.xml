@@ -101,7 +101,7 @@
         </update>
     </changeSet>
 
-    <changeSet id="7" author="tw" runOnChange="true" context="jss">
+    <changeSet id="7" author="tw" runOnChange="true" context="bahmni">
         <comment>Adding changes to support openelis atom feed</comment>
 
         <createTable schemaName="clinlims" tableName="failed_events">
@@ -116,7 +116,7 @@
             <column name="failed_at" type="timestamp(6) without time zone"/>
     	</createTable>
 
-	    <createTable schemaName="clinlims" tableName="markers" context="bahmni">
+	    <createTable schemaName="clinlims" tableName="markers" >
             <column name="id" type="numeric(10,0)" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -131,7 +131,7 @@
             </column>
     	</createTable>
 
-	    <createTable schemaName="clinlims" tableName="external_reference" context="bahmni">
+	    <createTable schemaName="clinlims" tableName="external_reference" >
             <column name="id" type="numeric(10,0)" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -156,14 +156,14 @@
         />
     </changeSet>
 
-    <changeSet id="9" author="tw" runOnChange="true">
+    <changeSet id="9" author="tw" runOnChange="true" context="bahmni">
         <comment>Stop the schedulers not required for bahmni</comment>
         <update schemaName="clinlims" tableName="quartz_cron_scheduler">
             <column name="active" valueBoolean="false"/>
         </update>
     </changeSet>
 
-    <changeSet id="10" author="tw" runOnChange="true">
+    <changeSet id="10" author="tw" runOnChange="true" context="bahmni">
         <insert schemaName="clinlims" tableName="quartz_cron_scheduler">
             <column name="id" valueNumeric=" nextval( 'quartz_cron_scheduler_seq' ) "/>
             <column name="active" type="boolean" valueBoolean="true"/>
