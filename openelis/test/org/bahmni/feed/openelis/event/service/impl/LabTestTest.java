@@ -1,5 +1,7 @@
-package org.bahmni.feed.openelis.event.objects.impl;
+package org.bahmni.feed.openelis.event.service.impl;
 
+import org.bahmni.feed.openelis.event.object.LabObject;
+import org.bahmni.feed.openelis.event.service.impl.LabTestService;
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import org.ict4h.atomfeed.client.domain.Event;
@@ -41,13 +43,13 @@ public class LabTestTest {
     public void shouldInsertNewIfExternalReferenceNotFound() throws IOException {
         when(externalReferenceDao.getData(anyString())).thenReturn(null);
 
-        Event event = new Event("554433221",EVENT_CONTENT);
+        LabObject labObject = new LabObject("193","Lab Test","lab test desc","1");
         Test test = new Test();
-        test.setTestName("ECHO");
-        test.setDescription("Test Panel");
+        test.setTestName("Lab Test");
+        test.setDescription("lab test desc");
 
 
-        labTest.saveEvent(event);
+        labTest.saveEvent(labObject);
 
 
         verify(testDao).insertData(test);
@@ -59,16 +61,18 @@ public class LabTestTest {
         reference.setItemId(293);
         reference.setExternalId("193");
 
+        LabObject labObject = new LabObject("193","Lab Test","lab test desc","1");
         Test test = new Test();
-        test.setTestName("ECHO");
-        test.setDescription("Test Panel");
+        test.setTestName("Lab Test");
+        test.setDescription("lab test desc");
+
 
         when(externalReferenceDao.getData("193")).thenReturn(reference);
         when(testDao.getActiveTestById(293)).thenReturn(test);
 
-        Event event = new Event("554433221",EVENT_CONTENT);
 
-        labTest.saveEvent(event);
+
+        labTest.saveEvent(labObject);
 
         verify(testDao).updateData(test);
     }

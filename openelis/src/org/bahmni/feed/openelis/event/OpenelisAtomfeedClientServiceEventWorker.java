@@ -2,8 +2,9 @@ package org.bahmni.feed.openelis.event;
 
 
 import org.bahmni.feed.openelis.AtomFeedProperties;
-import org.bahmni.feed.openelis.event.objects.EventObject;
-import org.bahmni.feed.openelis.event.objects.LabTestServiceFactory;
+import org.bahmni.feed.openelis.event.object.LabObject;
+import org.bahmni.feed.openelis.event.service.LabService;
+import org.bahmni.feed.openelis.event.service.LabTestServiceFactory;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.ict4h.atomfeed.client.domain.Event;
 import org.ict4h.atomfeed.client.service.EventWorker;
@@ -21,17 +22,15 @@ public class OpenelisAtomfeedClientServiceEventWorker implements EventWorker {
 
     public void process(Event event) {
         try {
-            EventObject eventObject =  LabTestServiceFactory.getLabTestService(getCategory(event), new AtomFeedProperties());;
-            eventObject.save(event);
+            LabService labService =  LabTestServiceFactory.getLabTestService(event, new AtomFeedProperties());
+            LabObject labObject =  LabTestServiceFactory.getLabObject(event, new AtomFeedProperties());
+            labService.save(labObject);
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
 
-    private String getCategory(Event event) throws IOException {
-        HashMap<String,Object> paramMap = new ObjectMapper().readValue(event.getContent(), HashMap.class) ;
-        return (String) paramMap.get("category");
-    }
+
 
 }

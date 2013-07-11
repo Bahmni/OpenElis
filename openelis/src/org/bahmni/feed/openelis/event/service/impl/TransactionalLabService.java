@@ -1,6 +1,7 @@
-package org.bahmni.feed.openelis.event.objects.impl;
+package org.bahmni.feed.openelis.event.service.impl;
 
-import org.bahmni.feed.openelis.event.objects.EventObject;
+import org.bahmni.feed.openelis.event.object.LabObject;
+import org.bahmni.feed.openelis.event.service.LabService;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.ict4h.atomfeed.client.domain.Event;
@@ -10,20 +11,20 @@ import us.mn.state.health.lims.hibernate.HibernateUtil;
 
 import java.io.IOException;
 
-public abstract class TransactionalEventObject implements EventObject{
+public abstract class TransactionalLabService implements LabService {
 
-    public void save(Event event) {
+    public void save(LabObject labObject) {
         Transaction tx= null;
         Session session = HibernateUtil.getSession();
         try {
             tx = session.beginTransaction();
-            saveEvent(event);
+            saveEvent(labObject);
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
             LogEvent.logError(" Event", "save", e.toString());
             e.printStackTrace();
-            throw new LIMSRuntimeException("Error in LabPanelService event save", e);
+            throw new LIMSRuntimeException("Error in LabService event save", e);
 
         }finally {
             session.flush();
@@ -32,7 +33,7 @@ public abstract class TransactionalEventObject implements EventObject{
 
     }
 
-    protected abstract void saveEvent(Event event) throws IOException;
+    protected abstract void saveEvent(LabObject labObject) throws IOException;
 
 
 }

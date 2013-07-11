@@ -1,6 +1,8 @@
-package org.bahmni.feed.openelis.event.objects.impl;
+package org.bahmni.feed.openelis.event.service.impl;
 
 
+import org.bahmni.feed.openelis.AtomFeedProperties;
+import org.bahmni.feed.openelis.event.object.LabObject;
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoImpl;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
@@ -13,15 +15,14 @@ import us.mn.state.health.lims.test.valueholder.Test;
 import java.io.IOException;
 import java.util.HashMap;
 
-public class LabTestService extends TransactionalEventObject {
-    private String sysUserId;
-    private String externalId;
+public class LabTestService extends TransactionalLabService {
+
     private TestDAO testDAO = new TestDAOImpl() ;
     private ExternalReferenceDao externalReferenceDao = new ExternalReferenceDaoImpl();
+    private String labProductType;
 
-
-    public LabTestService(String sysUserId){
-        this.sysUserId = sysUserId;
+    public LabTestService(){
+        labProductType = new AtomFeedProperties().getProductTypeLabTest();
     }
 
     LabTestService(TestDAO testDao, ExternalReferenceDao externalReferenceDao) {
@@ -30,12 +31,14 @@ public class LabTestService extends TransactionalEventObject {
     }
 
     @Override
-    protected void saveEvent(Event event) throws IOException {
-        Test test = mapToTest(event);
-        ExternalReference data = externalReferenceDao.getData(externalId);
+    protected void saveEvent(LabObject labObject) throws IOException {
+        Test test = mapToTest(labObject);
+        ExternalReference data = externalReferenceDao.getData(labObject.getExternalId());
         if(data ==null) {
             testDAO.insertData(test);
-            data = new ExternalReference(Long.parseLong(test.getId()),externalId,"panel");
+            if(test.getId() != null && !test.getId().isEmpty()){
+                data = new ExternalReference(Long.parseLong(test.getId()),labObject.getExternalId(),labProductType);
+            }
             externalReferenceDao.insertData(data)  ;
         }
         else {
@@ -46,17 +49,15 @@ public class LabTestService extends TransactionalEventObject {
         }
     }
 
-    private Test mapToTest(Event event) throws IOException {
-        HashMap<String,Object> paramMap = new ObjectMapper().readValue(event.getContent(), HashMap.class) ;
+    private Test mapToTest(LabObject labObject) throws IOException {
         Test test = new Test();
-        test.setTestName((String) paramMap.get("name"));
-        String desc = (String) paramMap.get("description");
+        test.setTestName(labObject.getName());
+        String desc = labObject.getDescription();
         if(desc == null || desc.isEmpty()){
-            desc = (String) paramMap.get("name");
+            desc = labObject.getDescription();
         }
         test.setDescription(desc);
-        externalId = String.valueOf( paramMap.get("id"));
-        test.setSysUserId(sysUserId);
+        test.setSysUserId(labObject.getSysUserId());
         return test;
     }
 
@@ -75,7 +76,5 @@ public class LabTestService extends TransactionalEventObject {
     private boolean isSet(String value){
         return value != null && !value.isEmpty();
     }
-    void setSysUserId(String sysUserId) {
-        this.sysUserId = sysUserId;
-    }
+
 }

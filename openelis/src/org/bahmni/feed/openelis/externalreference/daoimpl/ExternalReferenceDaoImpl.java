@@ -45,7 +45,7 @@ public class ExternalReferenceDaoImpl extends BaseDAOImpl implements ExternalRef
     }
 
     public void deleteData(ExternalReference data) throws LIMSRuntimeException {
-            data = getData(data.getId());
+            data = getData(data.getExternalId());
             if(data != null) {
                 HibernateUtil.getSession().delete(data);
                 HibernateUtil.getSession().flush();

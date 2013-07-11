@@ -12,21 +12,33 @@ public class ExternalReferenceDaoImplTest {
 
     @Test
     public void testInsertData() throws Exception {
-           ExternalReference reference = new ExternalReference();
-            reference.setExternalId("1123456");
-            reference.setItemId(1123457);
-            reference.setType("Test");
+        ExternalReference reference = new ExternalReference();
 
-            Transaction transaction = HibernateUtil.getSession().beginTransaction();
-            externalReferenceDao.insertData(reference);
-            transaction.commit();
 
-            reference = externalReferenceDao.getData("1123456");
-            Assert.assertNotNull(reference);
+        reference = externalReferenceDao.getData("1123456");
 
+        Transaction transaction = null;
+        if(reference != null){
             transaction = HibernateUtil.getSession().beginTransaction();
             externalReferenceDao.deleteData(reference);
             transaction.commit();
+        }
+
+        reference = new ExternalReference();
+        reference.setExternalId("1123456");
+        reference.setItemId(1123457);
+        reference.setType("Test");
+
+        transaction = HibernateUtil.getSession().beginTransaction();
+        externalReferenceDao.insertData(reference);
+        transaction.commit();
+
+        reference = externalReferenceDao.getData("1123456");
+        Assert.assertNotNull(reference);
+
+        transaction = HibernateUtil.getSession().beginTransaction();
+        externalReferenceDao.deleteData(reference);
+        transaction.commit();
 
     }
 

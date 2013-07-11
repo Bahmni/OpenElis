@@ -1,29 +1,26 @@
-package org.bahmni.feed.openelis.event.objects.impl;
+package org.bahmni.feed.openelis.event.service.impl;
 
-import org.bahmni.feed.openelis.event.objects.EventObject;
+import org.bahmni.feed.openelis.AtomFeedProperties;
+import org.bahmni.feed.openelis.event.object.LabObject;
+import org.bahmni.feed.openelis.event.service.LabService;
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoImpl;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.ict4h.atomfeed.client.domain.Event;
 import us.mn.state.health.lims.panel.dao.PanelDAO;
 import us.mn.state.health.lims.panel.daoimpl.PanelDAOImpl;
 import us.mn.state.health.lims.panel.valueholder.Panel;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 
-public class LabPanelService extends TransactionalEventObject  implements EventObject {
+public class LabPanelService extends TransactionalLabService implements LabService {
 
     private PanelDAO panelDAO = new PanelDAOImpl();
     private ExternalReferenceDao externalReferenceDao = new ExternalReferenceDaoImpl();
+    private String labProductType;
 
-    private String sysUserId;
-    private String externalId;
-
-    public LabPanelService(String sysUserId){
-        this.sysUserId = sysUserId;
+    public LabPanelService(){
+        labProductType = new AtomFeedProperties().getProductTypePanel();
     }
 
     LabPanelService(PanelDAO panelDAO, ExternalReferenceDao externalReferenceDao) {
@@ -31,12 +28,14 @@ public class LabPanelService extends TransactionalEventObject  implements EventO
         this.externalReferenceDao = externalReferenceDao;
     }
 
-    protected void saveEvent(Event event) throws IOException {
-        Panel panel = mapToPanel(event);
-        ExternalReference data = externalReferenceDao.getData(externalId);
+    protected void saveEvent(LabObject labObject) throws IOException {
+        Panel panel = mapToPanel(labObject);
+        ExternalReference data = externalReferenceDao.getData(labObject.getExternalId());
         if(data ==null){
             panelDAO.insertData(panel);
-            data = new ExternalReference(Long.parseLong(panel.getId()),externalId,"panel");
+            if(panel.getId() != null && !panel.getId().isEmpty()) {
+                data = new ExternalReference(Long.parseLong(panel.getId()),labObject.getExternalId(),labProductType);
+            }
             externalReferenceDao.insertData(data)  ;
         }
         else {
@@ -62,23 +61,17 @@ public class LabPanelService extends TransactionalEventObject  implements EventO
        return value != null && !value.isEmpty();
     }
 
-    private Panel mapToPanel(Event event) throws IOException {
+    private Panel mapToPanel(LabObject labObject) throws IOException {
         Panel panel = new us.mn.state.health.lims.panel.valueholder.Panel();
-        HashMap<String,Object> paramMap = new ObjectMapper().readValue(event.getContent(), HashMap.class) ;
-
-        panel.setPanelName((String) paramMap.get("name"));
-        String desc = (String) paramMap.get("description");
+        panel.setPanelName(labObject.getName());
+        String desc = labObject.getDescription();
         if(desc == null || desc.isEmpty()){
-            desc = (String) paramMap.get("name");
+            desc = labObject.getName();
         }
         panel.setDescription(desc);
-        externalId = String.valueOf(paramMap.get("id"));
-        panel.setSysUserId(sysUserId);
-
+        panel.setSysUserId(labObject.getSysUserId());
         return panel;
     }
 
-    void setSysUserId(String sysUserId) {
-        this.sysUserId = sysUserId;
-    }
+
 }

@@ -1,5 +1,7 @@
-package org.bahmni.feed.openelis.event.objects.impl;
+package org.bahmni.feed.openelis.event.service.impl;
 
+import org.bahmni.feed.openelis.event.object.LabObject;
+import org.bahmni.feed.openelis.event.service.impl.LabPanelService;
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import org.ict4h.atomfeed.client.domain.Event;
@@ -42,13 +44,13 @@ public class LabPanelTest {
     public void shouldInsertNewIfExternalReferenceNotFound() throws IOException {
         when(externalReferenceDao.getData(anyString())).thenReturn(null);
 
-        Event event = new Event("554433221",EVENT_CONTENT);
+        LabObject labObject = new LabObject("193","Lab Panel","lab panel desc","1");
         Panel panel = new Panel();
-        panel.setPanelName("ECHO");
-        panel.setDescription("Test Panel");
+        panel.setPanelName("Lab Panel");
+        panel.setDescription("lab panel desc");
 
 
-        labPanelService.saveEvent(event);
+        labPanelService.saveEvent(labObject);
 
         verify(panelDAO).insertData(panel);
     }
@@ -60,15 +62,16 @@ public class LabPanelTest {
         reference.setExternalId("193");
 
         Panel panel = new Panel();
-        panel.setPanelName("ECHO");
-        panel.setDescription("Test Panel");
+        panel.setPanelName("Lab Panel");
+        panel.setDescription("lab panel desc");
 
         when(externalReferenceDao.getData("193")).thenReturn(reference);
         when(panelDAO.getPanelById("293")).thenReturn(panel);
 
-        Event event = new Event("554433221",EVENT_CONTENT);
 
-        labPanelService.saveEvent(event);
+        LabObject labObject = new LabObject("193","Lab Panel","lab panel desc","1");
+
+        labPanelService.saveEvent(labObject);
 
         verify(panelDAO).updateData(panel);
     }
