@@ -23,8 +23,8 @@ public class OpenelisAtomfeedClientServiceEventWorker implements EventWorker {
 
     public void process(Event event) {
         try {
-            LabObject labObject =  getLabObject(event, new AtomFeedProperties());
-            LabService labService =  LabTestServiceFactory.getLabTestService(labObject.getCategory(), new AtomFeedProperties());
+            LabObject labObject =  getLabObject(event);
+            LabService labService =  LabTestServiceFactory.getLabTestService(labObject.getCategory(), AtomFeedProperties.getInstance());
             labService.save(labObject);
         } catch (IOException e) {
             e.printStackTrace();
@@ -32,7 +32,7 @@ public class OpenelisAtomfeedClientServiceEventWorker implements EventWorker {
         }
     }
 
-    public static LabObject getLabObject(Event event,AtomFeedProperties properties ) throws IOException {
+    private LabObject getLabObject(Event event) throws IOException {
         HashMap<String,Object> paramMap = new ObjectMapper().readValue(event.getContent(), HashMap.class) ;
         LabObject lab = new LabObject();
         lab.setName((String) paramMap.get("name"));

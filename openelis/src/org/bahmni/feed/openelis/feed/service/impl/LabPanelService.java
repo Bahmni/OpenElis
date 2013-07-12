@@ -20,7 +20,7 @@ public class LabPanelService extends TransactionalService implements LabService 
     private String labProductType;
 
     public LabPanelService(){
-        labProductType = new AtomFeedProperties().getProductTypePanel();
+        labProductType = AtomFeedProperties.getInstance().getProductTypePanel();
     }
 
     LabPanelService(PanelDAO panelDAO, ExternalReferenceDao externalReferenceDao) {

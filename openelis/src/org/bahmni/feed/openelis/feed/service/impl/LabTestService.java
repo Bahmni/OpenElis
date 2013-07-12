@@ -19,7 +19,7 @@ public class LabTestService extends TransactionalService {
     private String labProductType;
 
     public LabTestService(){
-        labProductType = new AtomFeedProperties().getProductTypeLabTest();
+        labProductType = AtomFeedProperties.getInstance().getProductTypeLabTest();
     }
 
     LabTestService(TestDAO testDao, ExternalReferenceDao externalReferenceDao) {

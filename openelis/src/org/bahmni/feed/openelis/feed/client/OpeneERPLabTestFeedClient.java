@@ -41,7 +41,7 @@ public class OpeneERPLabTestFeedClient implements Job {
     }
 
     public OpeneERPLabTestFeedClient() {
-            this(new AtomFeedProperties(), getFeedClient(), new EventWorkerFactory());
+            this(AtomFeedProperties.getInstance(), getFeedClient(), new EventWorkerFactory());
     }
 
 

@@ -7,6 +7,7 @@ import com.sun.syndication.feed.atom.Link;
 import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoImpl;
 import org.bahmni.feed.openelis.feed.event.EventWorkerFactory;
+import org.bahmni.feed.openelis.utils.OpenElisConnectionProvider;
 import org.ict4h.atomfeed.Configuration;
 import org.ict4h.atomfeed.client.domain.Marker;
 import org.ict4h.atomfeed.client.repository.AllFeeds;
@@ -16,7 +17,6 @@ import org.ict4h.atomfeed.client.service.AtomFeedClient;
 import org.ict4h.atomfeed.client.service.FeedEnumerator;
 import org.ict4h.atomfeed.jdbc.JdbcConnectionProvider;
 import org.ict4h.atomfeed.jdbc.JdbcUtils;
-import org.ict4h.atomfeed.jdbc.PropertiesJdbcConnectionProvider;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,7 +62,7 @@ public class OpeneERPLabTestFeedClientIT {
     public void setUp() throws URISyntaxException {
         atomFeedProperties = mock(AtomFeedProperties.class);
         allFeedsMock = mock(AllFeeds.class);
-        jdbcConnectionProvider = new PropertiesJdbcConnectionProvider();
+        jdbcConnectionProvider = new OpenElisConnectionProvider();
         externalReferenceDao = new ExternalReferenceDaoImpl();
         allMarkersJdbc = new OpenelisAllMarkersJdbcImpl(jdbcConnectionProvider);
 
