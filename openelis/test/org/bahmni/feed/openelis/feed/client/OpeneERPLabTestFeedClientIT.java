@@ -36,8 +36,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/*@ContextConfiguration(locations = {"classpath*:applicationContext-openelisTest.xml"})*/
-public class OpenelisAtomfeedClientServiceIT {
+public class OpeneERPLabTestFeedClientIT {
     private   AllFeeds allFeedsMock;
     private AtomFeedProperties atomFeedProperties;
 
@@ -130,7 +129,7 @@ public class OpenelisAtomfeedClientServiceIT {
 
 
     @Test
-    public void shouldCreate() throws URISyntaxException {
+    public void shouldUpdateMarkerOnProcessingEvents() throws URISyntaxException {
         when(atomFeedProperties.getFeedUri("openerp.labtest.feed.generator.uri")).thenReturn("http://host/patients/notifications");
         when(allFeedsMock.getFor(notificationsUri)).thenReturn(last);
         when(allFeedsMock.getFor(recentFeedUri)).thenReturn(last);
@@ -139,7 +138,7 @@ public class OpenelisAtomfeedClientServiceIT {
 
 
         OpeneERPLabTestFeedClient feedClient = new OpeneERPLabTestFeedClient(atomFeedProperties,atomFeedClient,new EventWorkerFactory());
-        feedClient.setFeedName("openerp.labtest.feed.generator.uri");
+//        feedClient.setFEED_NAME("openerp.labtest.feed.generator.uri");
         feedClient.processFeed();
 
         Marker marker = allMarkersJdbc.get(notificationsUri);
