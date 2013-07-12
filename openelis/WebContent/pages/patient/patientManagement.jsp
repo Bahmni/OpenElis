@@ -33,7 +33,7 @@
 	boolean supportPatientType = true;
 	boolean supportInsurance = true;
 	boolean supportSubjectNumber = true;
-	boolean supportNationalID = true;
+	boolean supportNationalID = false;
 	boolean supportOccupation = true;
 	boolean supportCommune = true;
 	boolean supportAddressDepartment = false;
@@ -772,81 +772,81 @@ function healthDistrictSuccess( xhr ){
 	<h2><bean:message key="patient.information"/></h2>
 	<table width="80%" border="0">
 	<tr>
-			<% if( !supportSubjectNumber){ %>
-			<td>
-				<bean:message key="patient.externalId"/>
-				<% if( patientIDRequired){ %>
-					<span class="requiredlabel">*</span>
-				<% } %>
-			</td>
-			<%} %>
-			<% if( supportSTNumber){ %>
-			<td align="right">
-				<bean:message key="patient.ST.number"/>:
-			</td>
-			<td>
-				<nested:text name='<%=formName%>'
-						  property="patientProperties.STnumber"
-						  onchange="updatePatientEditStatus();"
-						  styleId="ST_ID"
-						  styleClass="text"
-						  size="60" />
-			</td>
-		</tr>
-		<tr>
-			<td width="5%">&nbsp;
-				
-			</td>
-			<%} %>
-			<% if( supportSubjectNumber){ %>
-			<td>&nbsp;
-				
-			</td>
-			<td align="right">
-				<bean:message key="patient.subject.number"/>:
-				<span class="requiredlabel">*</span>
-			</td>
-			<td>
-				<nested:text name='<%=formName%>'
-						  property="patientProperties.subjectNumber"
-						  onchange="updatePatientEditStatus();"
-						  styleId="subjectNumberID"
-						  styleClass="text"
-						  size="60" />
-			</td>
-		</tr>
-		<tr>
-			<td width="5%">&nbsp;
-				
-			</td>
-        <% } %>
-		<% if( supportNationalID ){ %>
-			<td width="25%" align="right">
-				<%=StringUtil.getContextualMessageForKey("patient.NationalID") %>:
+        <% if( !supportSubjectNumber){ %>
+        <td>
+            <bean:message key="patient.externalId"/>
+            <% if( patientIDRequired){ %>
+                <span class="requiredlabel">*</span>
+            <% } %>
+        </td>
+        <%} %>
+        <% if( supportSTNumber){ %>
+        <td align="right">
+            <bean:message key="patient.ST.number"/>:
+        </td>
+        <td>
+            <nested:text name='<%=formName%>'
+                      property="patientProperties.STnumber"
+                      onchange="updatePatientEditStatus();"
+                      styleId="ST_ID"
+                      styleClass="text"
+                      size="60" />
+        </td>
+    </tr>
+    <tr >
+        <td width="5%">&nbsp;
 
-			</td>
-			<td width="25%">
-			    <nested:text name='<%=formName%>'
-			    		  property="patientProperties.nationalId"
-			    		  onchange="updatePatientEditStatus();"
-						  styleId="nationalID"
-						  styleClass="text"
-						  size="60"/>
-			</td>
-			<td width="10%">&nbsp;
-				
-			</td>
-			<td width="15%">&nbsp;
-				
-			</td>
-	</tr>
+        </td>
+        <%} %>
+        <% if( supportSubjectNumber){ %>
+        <td>&nbsp;
+
+        </td>
+        <td align="right">
+            <bean:message key="patient.subject.number"/>:
+            <span class="requiredlabel">*</span>
+        </td>
+        <td>
+            <nested:text name='<%=formName%>'
+                      property="patientProperties.subjectNumber"
+                      onchange="updatePatientEditStatus();"
+                      styleId="subjectNumberID"
+                      styleClass="text"
+                      size="60" />
+        </td>
+    </tr>
+    <tr class="nationalID">
+        <td width="5%">&nbsp;
+
+        </td>
+    <% } %>
+    <% if( supportNationalID ){ %>
+        <td  width="25%" align="right">
+            <%=StringUtil.getContextualMessageForKey("patient.NationalID") %>:
+
+        </td>
+        <td width="25%">
+            <nested:text name='<%=formName%>'
+                      property="patientProperties.nationalId"
+                      onchange="updatePatientEditStatus();"
+                      styleId="nationalID"
+                      styleClass="text"
+                      size="60"/>
+        </td>
+        <td width="10%">&nbsp;
+
+        </td>
+        <td width="15%">&nbsp;
+
+        </td>
+    </tr>
 	<%} %>
 	<tr ><td colspan="2">&nbsp;</td></tr>
 	<tr>
 		<td width="15%">
 			<bean:message key="patient.name" />
 		</td>
-		<td align="right" width="10%">
+		<td class="lastNameID" align="right" width="10%">
 			<bean:message key="patient.epiLastName" />
 			:
 			<% if( patientNamesRequired){ %>
@@ -861,7 +861,7 @@ function healthDistrictSuccess( xhr ){
 				      onchange="updatePatientEditStatus();"
 				      styleId="lastNameID"/>
 		</td>
-		<td width="10%" align="right">
+		<td class="firstNameID" width="10%" align="right">
 			<bean:message key="patient.epiFirstName" />
 			:
 			<% if( patientNamesRequired){ %>
@@ -878,9 +878,9 @@ function healthDistrictSuccess( xhr ){
 		</td>
 	</tr>
 	<% if(supportAKA){ %>
-	<tr>
+	<tr class="akaID">
 	<td></td>
-	<td align="right">
+	<td  align="right">
 		<bean:message key="patient.aka"/>
 	</td>
 	<td>
@@ -1125,7 +1125,7 @@ function healthDistrictSuccess( xhr ){
 			</nested:select>
 		</td>
 		<% } if( supportInsurance ){ %>
-		<td align="right">
+		<td class="insuranceID" align="right">
 			<bean:message  key="patient.insuranceNumber" />:
 		</td>
 		<td>

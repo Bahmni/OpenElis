@@ -1,0 +1,9 @@
+
+#nationalID,.nationalID,
+#insuranceID,.insuranceID,
+#requestingFacilityID,.requestingFacilityID,
+#akaID,.akaID,
+#providerWorkPhoneID,.providerWorkPhoneID
+{
+    display:none;
+}

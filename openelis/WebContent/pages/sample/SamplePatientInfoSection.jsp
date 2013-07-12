@@ -56,10 +56,10 @@
             <bean:message key="patient.birthDate"/>:
         </td>
         <td id="dob"><b>&nbsp;</b></td>
-        <td>
+        <td class="nationalID">
             <%=StringUtil.getContextualMessageForKey("patient.NationalID") %>:
         </td>
-        <td id="national"><b>&nbsp;</b></td>
+        <td class="nationalID" id="national"><b>&nbsp;</b></td>
         <td>
             <bean:message key="patient.gender"/>:
         </td>

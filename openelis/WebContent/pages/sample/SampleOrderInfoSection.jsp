@@ -140,7 +140,7 @@
     <td>&nbsp;</td>
 </tr>
 <% if( FormFields.getInstance().useField(Field.SampleEntryRequestingSiteSampleId)) {%>
-<tr>
+<tr class="requestingFacilityID">
     <td >
         <bean:message key="sample.clientReference" />
         :
@@ -217,8 +217,8 @@
                    size="30" />
     </td>
 </tr>
-<tr>
-    <td>
+<tr class="providerWorkPhoneID">
+    <td >
         <%= StringUtil.getContextualMessageForKey("humansampleone.provider.workPhone") + ": " +  StringUtil.getContextualMessageForKey("humansampleone.phone.additionalFormat")%>
     </td>
     <td>

@@ -286,7 +286,7 @@ function /*void*/ dirtySearchInfo(e){
 		</td>
 		<%} %>
 		<% if( supportNationalID ){ %>
-		<td width="20%">
+		<td class="nationalID" width="20%">
 			<%=StringUtil.getContextualMessageForKey("patient.NationalID") %>
 		</td>
 		<%} %>
@@ -317,7 +317,7 @@ function /*void*/ dirtySearchInfo(e){
 	<% } %>
 	<% if(supportNationalID){ %>
 	<td>
-		<input name="searchNationalID" size="15" value="" id="searchNationalID" class="text" type="text" onkeyup="dirtySearchInfo( event )" >
+		<input name="searchNationalID" size="15" value="" id="searchNationalID" class="text nationalID" type="text" onkeyup="dirtySearchInfo( event )" >
 	</td>
 	<% } %>
 	<% if(supportLabNumber){ %>
