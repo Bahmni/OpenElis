@@ -30,10 +30,10 @@ public class LabPanelService extends TransactionalService implements LabService 
 
     protected void saveLabObject(LabObject labObject) throws IOException {
         Panel panel = mapToPanel(labObject);
-        ExternalReference data = externalReferenceDao.getData(labObject.getExternalId());
+        ExternalReference data = externalReferenceDao.getData(labObject.getExternalId(), labProductType);
         if(data ==null){
             panelDAO.insertData(panel);
-            if(panel.getId() != null && !panel.getId().isEmpty()) {
+            if(isEmpty(panel)) {
                 data = new ExternalReference(Long.parseLong(panel.getId()),labObject.getExternalId(),labProductType);
             }
             externalReferenceDao.insertData(data)  ;
@@ -43,6 +43,10 @@ public class LabPanelService extends TransactionalService implements LabService 
             updatePanelFieldsIfNotEmpty(panel, panelById);
             panelDAO.updateData(panelById);
         }
+    }
+
+    private boolean isEmpty(Panel panel) {
+        return panel.getId() != null && !panel.getId().isEmpty();
     }
 
     private void updatePanelFieldsIfNotEmpty(Panel panel, Panel panelById) {

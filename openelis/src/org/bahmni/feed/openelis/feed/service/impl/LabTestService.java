@@ -30,7 +30,7 @@ public class LabTestService extends TransactionalService {
     @Override
     protected void saveLabObject(LabObject labObject) throws IOException {
         Test test = mapToTest(labObject);
-        ExternalReference data = externalReferenceDao.getData(labObject.getExternalId());
+        ExternalReference data = externalReferenceDao.getData(labObject.getExternalId(),labObject.getCategory());
         if(data ==null) {
             testDAO.insertData(test);
             if(test.getId() != null && !test.getId().isEmpty()){
@@ -42,7 +42,7 @@ public class LabTestService extends TransactionalService {
             Test activeTestById = testDAO.getActiveTestById((int)data.getItemId());
             test.setId(activeTestById.getId());
             updateTestFieldsIfNotEmpty(test, activeTestById);
-            testDAO.updateData(test);
+            testDAO.updateData(activeTestById);
         }
     }
 

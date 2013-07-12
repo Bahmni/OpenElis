@@ -21,7 +21,7 @@ public class LabObject {
 
     public LabObject (){}
 
-    public LabObject(String externalId, String name, String description, String sysUserId) {
+    public LabObject(String externalId, String name, String description, String sysUserId, String category) {
         this.externalId = externalId;
         this.name = name;
         this.description = description;

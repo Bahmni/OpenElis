@@ -6,7 +6,7 @@ import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 
 public interface ExternalReferenceDao extends BaseDAO {
 
-    ExternalReference getData(String externalReferenceId) throws LIMSRuntimeException;
+    ExternalReference getData(String externalReferenceId, String category) throws LIMSRuntimeException;
 
     boolean insertData(ExternalReference externalReference) throws LIMSRuntimeException;
 }
