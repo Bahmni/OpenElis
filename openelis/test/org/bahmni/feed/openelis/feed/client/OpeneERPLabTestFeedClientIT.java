@@ -4,10 +4,16 @@ import com.sun.syndication.feed.atom.Content;
 import com.sun.syndication.feed.atom.Entry;
 import com.sun.syndication.feed.atom.Feed;
 import com.sun.syndication.feed.atom.Link;
+import junit.framework.Assert;
 import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoImpl;
+import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
+import org.bahmni.feed.openelis.feed.event.EventWorkerFactory;
+import org.bahmni.feed.openelis.utils.AtomfeedClientUtils;
 import org.bahmni.feed.openelis.utils.OpenElisConnectionProvider;
+import org.hibernate.Transaction;
 import org.ict4h.atomfeed.Configuration;
+import org.ict4h.atomfeed.client.domain.Marker;
 import org.ict4h.atomfeed.client.repository.AllFeeds;
 import org.ict4h.atomfeed.client.repository.jdbc.AllFailedEventsJdbcImpl;
 import org.ict4h.atomfeed.client.repository.jdbc.AllMarkersJdbcImpl;
@@ -18,8 +24,10 @@ import org.ict4h.atomfeed.jdbc.JdbcUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.panel.dao.PanelDAO;
 import us.mn.state.health.lims.panel.daoimpl.PanelDAOImpl;
+import us.mn.state.health.lims.panel.valueholder.Panel;
 import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 
@@ -33,7 +41,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class OpeneERPLabTestFeedClientIT {
     private   AllFeeds allFeedsMock;
@@ -94,54 +105,56 @@ public class OpeneERPLabTestFeedClientIT {
 
     @Test
     public void shouldUpdateMarkerOnProcessingEvents() throws URISyntaxException {
-//        when(atomFeedProperties.getFeedUri("openerp.labtest.feed.generator.uri")).thenReturn("http://host/patients/notifications");
-//        when(allFeedsMock.getFor(notificationsUri)).thenReturn(last);
-//        when(allFeedsMock.getFor(recentFeedUri)).thenReturn(last);
-//        when(allFeedsMock.getFor(secondFeedUri)).thenReturn(second);
-//        when(allFeedsMock.getFor(firstFeedUri)).thenReturn(first);
-//
-//
-//        OpeneERPLabTestFeedClient feedClient = new OpeneERPLabTestFeedClient(atomFeedProperties,atomFeedClient,new EventWorkerFactory());
-//        feedClient.processFeed();
-//
-//        Marker marker = allMarkersJdbc.get(notificationsUri);
-//        assertThat(marker.getLastReadEntryId(), is("9") );
+        when(atomFeedProperties.getFeedUri("openerp.labtest.feed.generator.uri")).thenReturn("http://host/patients/notifications");
+        when(allFeedsMock.getFor(notificationsUri)).thenReturn(last);
+        when(allFeedsMock.getFor(recentFeedUri)).thenReturn(last);
+        when(allFeedsMock.getFor(secondFeedUri)).thenReturn(second);
+        when(allFeedsMock.getFor(firstFeedUri)).thenReturn(first);
+
+
+        OpeneERPLabTestFeedClient feedClient = new OpeneERPLabTestFeedClient(atomFeedProperties,atomFeedClient,new EventWorkerFactory());
+        feedClient.processFeed();
+
+        Marker marker = allMarkersJdbc.get(notificationsUri);
+        assertThat(marker.getLastReadEntryId(), is("9"));
 
     }
 
     @After
     public void tearDown() throws Exception {
-//        allMarkersJdbc.delete(notificationsUri);
-//        ExternalReference reference = externalReferenceDao.getData("193","panel");
-//        Assert.assertNotNull(reference);
-//
-//        Transaction transaction = HibernateUtil.getSession().beginTransaction();
-//        externalReferenceDao.deleteData(reference);
-//        transaction.commit();
-//
-//        reference = externalReferenceDao.getData("193","test");
-//        Assert.assertNotNull(reference);
-//
-//        transaction = HibernateUtil.getSession().beginTransaction();
-//        externalReferenceDao.deleteData(reference);
-//
-//        us.mn.state.health.lims.test.valueholder.Test test = testDAO.getActiveTestByName("ECHO");
-//        test.setSysUserId(AtomfeedClientUtils.getSysUserId());
-//        ArrayList tests = new ArrayList();
-//        tests.add(test);
-//        testDAO.deleteData(tests);
-//
-//        Panel panel = panelDAO.getPanelByName("ECHO");
-//        panel.setSysUserId(AtomfeedClientUtils.getSysUserId());
-//        ArrayList panels = new ArrayList();
-//        panels.add(panel);
-//        panelDAO.deleteData(panels);
-//
-//        transaction.commit();
+        allMarkersJdbc.delete(notificationsUri);
+        ExternalReference reference = externalReferenceDao.getData("193","panel");
+        Assert.assertNotNull(reference);
+
+        Transaction transaction = HibernateUtil.getSession().beginTransaction();
+        externalReferenceDao.deleteData(reference);
+        transaction.commit();
+
+        reference = externalReferenceDao.getData("193","test");
+        Assert.assertNotNull(reference);
+
+        transaction = HibernateUtil.getSession().beginTransaction();
+        externalReferenceDao.deleteData(reference);
+        transaction.commit();
+
+        transaction = HibernateUtil.getSession().beginTransaction();
+        us.mn.state.health.lims.test.valueholder.Test test = testDAO.getActiveTestByName("ECHO");
+        test.setSysUserId(AtomfeedClientUtils.getSysUserId());
+        HibernateUtil.getSession().delete(test);
+        HibernateUtil.getSession().flush();
+        HibernateUtil.getSession().clear();
+        transaction.commit();
+
+        transaction = HibernateUtil.getSession().beginTransaction();
+        Panel panel = panelDAO.getPanelByName("ECHO");
+        panel.setSysUserId(AtomfeedClientUtils.getSysUserId());
+        ArrayList panels = new ArrayList();
+        panels.add(panel);
+        panelDAO.deleteData(panels);
+
+        transaction.commit();
 
     }
-
-
 
     private Link getLink(String archiveType, URI uri) {
         Link link = new Link();

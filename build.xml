@@ -93,6 +93,7 @@
                 <fileset dir="${liquibase}/lib">
                     <include name="*.jar"/>
                 </fileset>
+                <pathelement location="${src}"/>
                 <pathelement location="${target}"/>
                 <pathelement location="${test.target}"/>
             </classpath>
