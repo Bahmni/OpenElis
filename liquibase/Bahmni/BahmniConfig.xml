@@ -182,4 +182,14 @@
             <column name="lastupdated" valueDate=" now() "/>
         </insert>
     </changeSet>
+    <changeSet id="12" author="tw" runOnChange="true" context="bahmni">
+        <insert schemaName="clinlims" tableName="quartz_cron_scheduler">
+            <column name="id" valueNumeric=" nextval( 'quartz_cron_scheduler_seq' ) "/>
+            <column name="active" type="boolean" valueBoolean="true"/>
+            <column name="name" value="atom feed openerp lab tests "/>
+            <column name="job_name" value="openERPLabTestsFeed"/>
+            <column name="display_key" value="schedule.name.openERPLabTestsFeed"/>
+            <column name="description_key" value="schedule.name.openERPLabTestsFeed"/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>
