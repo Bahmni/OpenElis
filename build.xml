@@ -40,9 +40,7 @@
         </war>
     </target>
 
-    <target name="build" depends="clean, compile, test, report, dist"
-            description="run test and generate the distribution">
-    </target>
+    <target name="build" depends="clean, compile, resetDB, test, report, dist"/>
 
     <target name="clean">
         <delete dir="${target}"/>
