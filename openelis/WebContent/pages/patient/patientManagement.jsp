@@ -77,6 +77,7 @@
 	patientNamesRequired = FormFields.getInstance().useField(Field.PatientNameRequired);
 %>
 
+
 <script type="text/javascript" src="<%=basePath%>scripts/utilities.js?ver=<%= Versioning.getBuildNumber() %>" ></script>
 
 <script type="text/javascript" >
@@ -815,12 +816,15 @@ function healthDistrictSuccess( xhr ){
                       size="60" />
         </td>
     </tr>
+    <% } %>
+
+    <% if( supportNationalID ){ %>
     <tr class="nationalID">
         <td width="5%">&nbsp;
 
         </td>
-    <% } %>
-    <% if( supportNationalID ){ %>
+
+
         <td  width="25%" align="right">
             <%=StringUtil.getContextualMessageForKey("patient.NationalID") %>:
 
@@ -840,20 +844,22 @@ function healthDistrictSuccess( xhr ){
 
         </td>
     </tr>
-	<%} %>
-	<tr ><td colspan="2">&nbsp;</td></tr>
+
+	<tr class="empty-row"><td colspan="2">&nbsp;</td></tr>
+
+    <%} %>
 	<tr>
 		<td width="15%">
 			<bean:message key="patient.name" />
 		</td>
-		<td class="lastNameID" align="right" width="10%">
+    	<td class="lastNameLabel" align="right" width="10%">
 			<bean:message key="patient.epiLastName" />
 			:
 			<% if( patientNamesRequired){ %>
 				<span class="requiredlabel">*</span>
 			<% } %>
 		</td>
-		<td width="20%">
+		<td class="lastName" width="20%">
 			<nested:text name='<%=formName%>'
 					  property="patientProperties.lastName"
 					  styleClass="text"
@@ -861,14 +867,14 @@ function healthDistrictSuccess( xhr ){
 				      onchange="updatePatientEditStatus();"
 				      styleId="lastNameID"/>
 		</td>
-		<td class="firstNameID" width="10%" align="right">
+		<td class="firstNameLabel" width="10%" align="right">
 			<bean:message key="patient.epiFirstName" />
 			:
 			<% if( patientNamesRequired){ %>
 				<span class="requiredlabel">*</span>
 			<% } %>	
 		</td>
-		<td width="20%">
+		<td class="firstName">
 			<nested:text name='<%=formName%>'
 					  property="patientProperties.firstName"
 					  styleClass="text"

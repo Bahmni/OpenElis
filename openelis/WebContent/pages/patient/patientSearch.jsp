@@ -44,6 +44,8 @@
 	basePath = request.getScheme() + "://" + request.getServerName() + ":"	+ request.getServerPort() + path + "/";
   %>
 
+<link rel="stylesheet" href="css/bahmni.css?ver=<%= Versioning.getBuildNumber() %>">
+
 <script type="text/javascript" src="<%=basePath%>scripts/ajaxCalls.js?ver=<%= Versioning.getBuildNumber() %>" ></script>
 <script type="text/javascript" language="JavaScript1.2">
 
@@ -269,14 +271,14 @@ function /*void*/ dirtySearchInfo(e){
 
 	<table width="70%">
 	<tr >
-		<td width="30%">
+		<td class="searchLastName" width="30%">
 			<bean:message key="patient.epiLastName"/>
 		</td>
-		<td width="25%">
+		<td class="searchFirstName" width="25%">
 			<bean:message key="patient.epiFirstName"/>
 		</td>
 		<% if( supportSTNumber ){ %>
-		<td width="20%">
+		<td class="searchST" width="20%">
 			<bean:message key="patient.ST.number"/>
 		</td>
 		<%} %>
@@ -299,14 +301,14 @@ function /*void*/ dirtySearchInfo(e){
 	</tr>
 
 	<tr>
-	<td >
+	<td class="searchLastName" >
 		<input name="searchLastName" size="30" value="" id="searchLastNameID" class="text" type="text" onkeyup="dirtySearchInfo( event )">
 	</td>
-	<td>
+	<td class="searchFirstName">
 		<input name="searchFirstName" size="30" value="" id="searchFirstNameID" class="text" type="text" onkeyup="dirtySearchInfo( event )" >
 	</td>
 	<% if(supportSTNumber){ %>
-	<td>
+	<td class="searchST">
 		<input name="searchST" size="15" value="" id="searchSTID" class="text" type="text" onkeyup="dirtySearchInfo( event )">
 	</td>
 	<% } %>
@@ -333,7 +335,7 @@ function /*void*/ dirtySearchInfo(e){
 	</td>
 	<% } %>
 	
-	<td><html:button property="searchButton" onclick="searchPatients()"  >
+	<td class="searchButton"><html:button property="searchButton" onclick="searchPatients()"  >
 			<bean:message key="sample.entry.runSearch"/>
 		</html:button>
 	</td>
@@ -355,10 +357,10 @@ function /*void*/ dirtySearchInfo(e){
 			<tr>
 				<th width="2%"></th>
 		<% } %>
-				<th width="18%">
+				<th class="lastName" width="18%">
 					<bean:message key="patient.epiLastName"/>
 				</th>
-				<th width="15%">
+				<th class="firstName" width="15%">
 					<bean:message key="patient.epiFirstName"/>
 				</th>
 				<th width="5%">

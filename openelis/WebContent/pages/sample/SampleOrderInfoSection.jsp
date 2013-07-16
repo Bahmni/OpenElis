@@ -197,19 +197,25 @@
 </tr>
 <%  if (useProviderInfo) { %>
 <tr>
-    <td >
+    <td class="lastNameLabel">
         <%= StringUtil.getContextualMessageForKey("sample.entry.provider.name") %>:
         <% if(requesterLastNameRequired ){ %>
         <span class="requiredlabel">*</span>
         <% } %>
     </td>
-    <td >
+    <td class="lastName">
         <html:text name="<%=formName%>"
                    property="providerLastName"
                    styleId="providerLastNameID"
                    onchange="makeDirty();setSave()"
                    size="30" />
-        <bean:message key="humansampleone.provider.firstName.short"/>:
+    </td>
+</tr>
+<tr>
+    <td class="firstNameLabel">
+        <bean:message key="sample.entry.provider.firstName"/>:
+    </td>
+    <td class="firstName">
         <html:text name="<%=formName%>"
                    property="providerFirstName"
                    styleId="providerFirstNameID"
