@@ -123,6 +123,7 @@ public class PanelItemUpdateAction extends BaseAction {
 		// String selectedPanelItemId = (String)
 		// dynaForm.get("selectedPanelItemId");
 		String parentPanelName = (String) dynaForm.get("parentPanelName");
+		String testName = (String) dynaForm.get("testName");
 
 		List methods = new ArrayList();
 		List tests = new ArrayList();
@@ -167,6 +168,19 @@ public class PanelItemUpdateAction extends BaseAction {
 			}
 		}
 
+        Test test = null;
+        for (int i = 0; i < tests.size(); i++) {
+            Test o = (Test) tests.get(i);
+            // if (o.getId().equals(selectedPanelItemId)) {
+            //System.out.println("This " + o.getPanelName());
+            if (o.getTestName().equals(testName)) {
+                test = o;
+                break;
+            }
+        }
+
+
+
 		// populate valueholder from form
 		PropertyUtils.copyProperties(panelItem, dynaForm);
 		//System.out.println("Setting parent panel teo " + parentPanel);
@@ -174,6 +188,8 @@ public class PanelItemUpdateAction extends BaseAction {
 			//System.out.println("This is id " + parentPanel.getId());
 		}
 		panelItem.setPanel(parentPanel);
+		panelItem.setTest(test);
+
 
 		try {
 

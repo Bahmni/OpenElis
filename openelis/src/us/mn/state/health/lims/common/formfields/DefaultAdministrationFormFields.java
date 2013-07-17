@@ -102,7 +102,9 @@ public class DefaultAdministrationFormFields extends AAdministrationFormFields {
 			return new RETROCIAdministrationFormFields().getImplementationAttributes();
 		}else if(IActionConstants.FORM_FIELD_SET_CI_IPCI.equals(fieldSet)){
 			return new CI_IPCIAdministrationFormFields().getImplementationAttributes();
-		}
+		} else if(IActionConstants.FORM_FIELD_SET_BAHMNI.equals(fieldSet)) {
+            return new BahmniAdministrativeFormFields().getImplementationAttributes();
+        }
 
 		return null;
 	}

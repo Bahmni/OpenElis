@@ -130,7 +130,7 @@ public class TestMenuAction extends BaseMenuAction {
 	
     @Override
 	protected String getAddDisabled() {
-        return "true";
+        return "false";
     }
     
     @Override

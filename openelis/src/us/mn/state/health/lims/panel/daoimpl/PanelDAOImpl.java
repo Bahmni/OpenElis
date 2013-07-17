@@ -264,7 +264,7 @@ public class PanelDAOImpl extends BaseDAOImpl implements PanelDAO {
 	public List getActivePanels(String filter) throws LIMSRuntimeException {
 		List list = null;
 		try {
-			String sql = "from Panel p where isActive = 'Y' and upper(p.panelName) like upper(:param) order by upper(p.panelName)";
+			String sql = "from Panel p where p.isActive = 'Y' and upper(p.panelName) like upper(:param) order by upper(p.panelName)";
 			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
 			query.setParameter("param", filter+"%");	
 
