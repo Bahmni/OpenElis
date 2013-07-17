@@ -6,13 +6,14 @@ import org.bahmni.feed.openelis.feed.domain.LabObject;
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoImpl;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
+import org.bahmni.feed.openelis.feed.service.LabService;
 import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 import us.mn.state.health.lims.test.valueholder.Test;
 
 import java.io.IOException;
 
-public class LabTestService extends TransactionalService {
+public class LabTestService implements LabService {
 
     private TestDAO testDAO = new TestDAOImpl() ;
     private ExternalReferenceDao externalReferenceDao = new ExternalReferenceDaoImpl();
@@ -28,7 +29,7 @@ public class LabTestService extends TransactionalService {
     }
 
     @Override
-    protected void saveLabObject(LabObject labObject) throws IOException {
+    public void save(LabObject labObject) throws IOException {
         Test test = mapToTest(labObject);
         ExternalReference data = externalReferenceDao.getData(labObject.getExternalId(),labObject.getCategory());
         if(data ==null) {

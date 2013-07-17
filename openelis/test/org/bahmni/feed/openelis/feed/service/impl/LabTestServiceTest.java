@@ -46,7 +46,7 @@ public class LabTestServiceTest {
         test.setDescription("lab test desc");
 
 
-        labTest.saveLabObject(labObject);
+        labTest.save(labObject);
 
 
         verify(testDao).insertData(test);
@@ -69,7 +69,7 @@ public class LabTestServiceTest {
 
 
 
-        labTest.saveLabObject(labObject);
+        labTest.save(labObject);
 
 //        verify(testDao).updateData(test);
     }

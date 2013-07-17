@@ -13,7 +13,7 @@ import us.mn.state.health.lims.panel.valueholder.Panel;
 import java.io.IOException;
 
 
-public class LabPanelService extends TransactionalService implements LabService {
+public class LabPanelService  implements LabService {
 
     private PanelDAO panelDAO = new PanelDAOImpl();
     private ExternalReferenceDao externalReferenceDao = new ExternalReferenceDaoImpl();
@@ -28,7 +28,7 @@ public class LabPanelService extends TransactionalService implements LabService 
         this.externalReferenceDao = externalReferenceDao;
     }
 
-    protected void saveLabObject(LabObject labObject) throws IOException {
+    public void save(LabObject labObject) throws Exception {
         Panel panel = mapToPanel(labObject);
         ExternalReference data = externalReferenceDao.getData(labObject.getExternalId(), labProductType);
         if(data ==null){

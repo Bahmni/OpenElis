@@ -4,12 +4,14 @@ package org.bahmni.feed.openelis.feed.client;
 import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.feed.event.EventWorkerFactory;
+import org.hibernate.Transaction;
 import org.ict4h.atomfeed.client.service.AtomFeedClient;
 import org.ict4h.atomfeed.client.service.EventWorker;
 import org.joda.time.DateTime;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import us.mn.state.health.lims.hibernate.HibernateUtil;
 
 import java.net.URI;
 
@@ -39,11 +41,17 @@ public class OpeneERPLabTestFeedClient implements Job {
 
     public void processFeed() {
         EventWorker eventWorker = workerFactory.getWorker(EventWorkerFactory.OPENERP_ATOMFEED_WORKER, atomFeedProperties.getFeedUri(FEED_NAME));
+        Transaction transaction = HibernateUtil.getSession().beginTransaction();;
         try {
             logger.info("Processing Lab test Feed " + DateTime.now());
             atomFeedClient.processEvents(new URI(atomFeedProperties.getFeedUri(FEED_NAME)), eventWorker);
+            transaction.commit();
         } catch (Exception e) {
+            transaction.rollback();
             logger.error("failed lab test feed execution " + e);
+        }  finally {
+            HibernateUtil.getSession().flush();
+            HibernateUtil.getSession().clear();
         }
     }
 

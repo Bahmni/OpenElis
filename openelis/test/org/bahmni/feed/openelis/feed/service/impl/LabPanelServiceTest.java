@@ -10,8 +10,6 @@ import org.mockito.Mock;
 import us.mn.state.health.lims.panel.dao.PanelDAO;
 import us.mn.state.health.lims.panel.valueholder.Panel;
 
-import java.io.IOException;
-
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -38,7 +36,7 @@ public class LabPanelServiceTest {
     }
 
     @Test
-    public void shouldInsertNewIfExternalReferenceNotFound() throws IOException {
+    public void shouldInsertNewIfExternalReferenceNotFound() throws Exception {
         when(externalReferenceDao.getData("193", "Panel")).thenReturn(null);
 
         LabObject labObject = new LabObject("193","Lab Panel","lab panel desc","1", "Panel");
@@ -47,13 +45,13 @@ public class LabPanelServiceTest {
         panel.setDescription("lab panel desc");
 
 
-        labPanelService.saveLabObject(labObject);
+        labPanelService.save(labObject);
 
         verify(panelDAO).insertData(panel);
     }
 
     @Test
-    public void shouldUpdateIfExternalReferenceFound() throws IOException {
+    public void shouldUpdateIfExternalReferenceFound() throws Exception {
         ExternalReference reference = new ExternalReference();
         reference.setItemId(293);
         reference.setExternalId("193");
@@ -68,7 +66,7 @@ public class LabPanelServiceTest {
 
         LabObject labObject = new LabObject("193","Lab Panel","lab panel desc","1", "Panel");
 
-        labPanelService.saveLabObject(labObject);
+        labPanelService.save(labObject);
 
 //        verify(panelDAO).updateData(panel);
     }

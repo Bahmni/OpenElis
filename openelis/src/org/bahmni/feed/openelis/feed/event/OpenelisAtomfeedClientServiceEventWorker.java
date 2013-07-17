@@ -26,7 +26,7 @@ public class OpenelisAtomfeedClientServiceEventWorker implements EventWorker {
             LabObject labObject =  getLabObject(event);
             LabService labService =  LabTestServiceFactory.getLabTestService(labObject.getCategory(), AtomFeedProperties.getInstance());
             labService.save(labObject);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
