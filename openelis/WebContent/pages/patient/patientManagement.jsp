@@ -44,6 +44,7 @@
 	boolean patientAgeRequired = true;
 	boolean patientGenderRequired = true;
     boolean supportDynamicAddresses = false;
+    boolean supportfirstNameFirst;
  %>
 <%
 	String path = request.getContextPath();
@@ -61,6 +62,7 @@
 	supportMothersInitial = FormFields.getInstance().useField(Field.MotherInitial);
 	supportAddressDepartment = FormFields.getInstance().useField(Field.AddressDepartment );
     supportDynamicAddresses = FormFields.getInstance().useField(Field.DynamicAddress);
+    supportfirstNameFirst = FormFields.getInstance().useField(Field.FirstNameFirst);
 	
 	if("SampleConfirmationEntryForm".equals( formName )){
 		patientIDRequired = FormFields.getInstance().useField(Field.PatientIDRequired_SampleConfirmation);
@@ -852,21 +854,8 @@ function healthDistrictSuccess( xhr ){
 		<td width="15%">
 			<bean:message key="patient.name" />
 		</td>
-    	<td class="lastNameLabel" align="right" width="10%">
-			<bean:message key="patient.epiLastName" />
-			:
-			<% if( patientNamesRequired){ %>
-				<span class="requiredlabel">*</span>
-			<% } %>
-		</td>
-		<td class="lastName" width="20%">
-			<nested:text name='<%=formName%>'
-					  property="patientProperties.lastName"
-					  styleClass="text"
-				      size="60"
-				      onchange="updatePatientEditStatus();"
-				      styleId="lastNameID"/>
-		</td>
+		 <% if(supportfirstNameFirst) { %>
+
 		<td class="firstNameLabel" width="10%" align="right">
 			<bean:message key="patient.epiFirstName" />
 			:
@@ -874,14 +863,62 @@ function healthDistrictSuccess( xhr ){
 				<span class="requiredlabel">*</span>
 			<% } %>	
 		</td>
-		<td class="firstName">
+		<td class="firstName" width="20%">
 			<nested:text name='<%=formName%>'
 					  property="patientProperties.firstName"
 					  styleClass="text"
-					  size="40"
+					  size="60"
 					  onchange="updatePatientEditStatus();"
 					  styleId="firstNameID"/>
 		</td>
+		<td class="lastNameLabel" align="right" width="10%">
+        			<bean:message key="patient.epiLastName" />
+        			:
+        			<% if( patientNamesRequired){ %>
+        				<span class="requiredlabel">*</span>
+        			<% } %>
+        		</td>
+        		<td class="lastName">
+        			<nested:text name='<%=formName%>'
+        					  property="patientProperties.lastName"
+        					  styleClass="text"
+        				      size="40"
+        				      onchange="updatePatientEditStatus();"
+        				      styleId="lastNameID"/>
+        		</td>
+		 <% } else { %>
+		  <td class="lastNameLabel" align="right" width="10%">
+          			<bean:message key="patient.epiLastName" />
+          			:
+          			<% if( patientNamesRequired){ %>
+          				<span class="requiredlabel">*</span>
+          			<% } %>
+          		</td>
+          		<td class="lastName" width="20%">
+          			<nested:text name='<%=formName%>'
+          					  property="patientProperties.lastName"
+          					  styleClass="text"
+          				      size="60"
+          				      onchange="updatePatientEditStatus();"
+          				      styleId="lastNameID"/>
+          		</td>
+          		<td class="firstNameLabel" width="10%" align="right">
+          			<bean:message key="patient.epiFirstName" />
+          			:
+          			<% if( patientNamesRequired){ %>
+          				<span class="requiredlabel">*</span>
+          			<% } %>
+          		</td>
+          		<td class="firstName">
+          			<nested:text name='<%=formName%>'
+          					  property="patientProperties.firstName"
+          					  styleClass="text"
+          					  size="40"
+          					  onchange="updatePatientEditStatus();"
+          					  styleId="firstNameID"/>
+          		</td>
+           <% } %>
+
 	</tr>
 	<% if(supportAKA){ %>
 	<tr class="akaID">

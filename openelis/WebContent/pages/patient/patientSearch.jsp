@@ -28,6 +28,7 @@
 	boolean supportNationalID = true;
 	boolean supportLabNumber = false;
 	String basePath = "";
+	boolean supportfirstNameFirst;
  %>
 
  <%
@@ -42,6 +43,7 @@
 	accessionNumberValidator = new AccessionNumberValidatorFactory().getValidator();
 	String path = request.getContextPath();
 	basePath = request.getScheme() + "://" + request.getServerName() + ":"	+ request.getServerPort() + path + "/";
+	supportfirstNameFirst = FormFields.getInstance().useField(Field.FirstNameFirst);
   %>
 
 <link rel="stylesheet" href="css/bahmni.css?ver=<%= Versioning.getBuildNumber() %>">
@@ -271,12 +273,21 @@ function /*void*/ dirtySearchInfo(e){
 
 	<table width="70%">
 	<tr >
-		<td class="searchLastName" width="30%">
-			<bean:message key="patient.epiLastName"/>
-		</td>
+	 <% if(supportfirstNameFirst) { %>
 		<td class="searchFirstName" width="25%">
 			<bean:message key="patient.epiFirstName"/>
 		</td>
+		<td class="searchLastName" width="30%">
+        			<bean:message key="patient.epiLastName"/>
+        		</td>
+		 <% } else { %>
+		 <td class="searchLastName" width="30%">
+         			<bean:message key="patient.epiLastName"/>
+         		</td>
+         		<td class="searchFirstName" width="25%">
+         			<bean:message key="patient.epiFirstName"/>
+         		</td>
+          <% } %>
 		<% if( supportSTNumber ){ %>
 		<td class="searchST" width="20%">
 			<bean:message key="patient.ST.number"/>
@@ -301,12 +312,22 @@ function /*void*/ dirtySearchInfo(e){
 	</tr>
 
 	<tr>
-	<td class="searchLastName" >
-		<input name="searchLastName" size="30" value="" id="searchLastNameID" class="text" type="text" onkeyup="dirtySearchInfo( event )">
-	</td>
-	<td class="searchFirstName">
-		<input name="searchFirstName" size="30" value="" id="searchFirstNameID" class="text" type="text" onkeyup="dirtySearchInfo( event )" >
-	</td>
+	<% if(supportfirstNameFirst) { %>
+        <td class="searchFirstName">
+            <input name="searchFirstName" size="30" value="" id="searchFirstNameID" class="text" type="text" onkeyup="dirtySearchInfo( event )" >
+        </td>
+        <td class="searchLastName" >
+            <input name="searchLastName" size="30" value="" id="searchLastNameID" class="text" type="text" onkeyup="dirtySearchInfo( event )">
+        </td>
+     <%} else {%>
+      <td class="searchLastName" >
+          <input name="searchLastName" size="30" value="" id="searchLastNameID" class="text" type="text" onkeyup="dirtySearchInfo( event )">
+      </td>
+      <td class="searchFirstName">
+          <input name="searchFirstName" size="30" value="" id="searchFirstNameID" class="text" type="text" onkeyup="dirtySearchInfo( event )" >
+      </td>
+       <% } %>
+
 	<% if(supportSTNumber){ %>
 	<td class="searchST">
 		<input name="searchST" size="15" value="" id="searchSTID" class="text" type="text" onkeyup="dirtySearchInfo( event )">

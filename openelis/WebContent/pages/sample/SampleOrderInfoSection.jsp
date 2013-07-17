@@ -30,6 +30,7 @@
     boolean trackPayment = false;
     boolean requesterLastNameRequired = false;
     IAccessionNumberValidator accessionNumberValidator;
+    boolean supportfirstNameFirst;
 
 
 %>
@@ -40,6 +41,7 @@
     trackPayment = ConfigurationProperties.getInstance().isPropertyValueEqual(Property.trackPatientPayment, "true");
     accessionNumberValidator = new AccessionNumberValidatorFactory().getValidator();
     requesterLastNameRequired = FormFields.getInstance().useField(Field.SampleEntryRequesterLastNameRequired);
+    supportfirstNameFirst = FormFields.getInstance().useField(Field.FirstNameFirst);
 
 
 %>
@@ -196,7 +198,37 @@
     <td>&nbsp;</td>
 </tr>
 <%  if (useProviderInfo) { %>
+<% if(supportfirstNameFirst) { %>
 <tr>
+    <td class="firstNameLabel">
+        <bean:message key="sample.entry.provider.firstName"/>:
+    </td>
+    <td class="firstName">
+        <html:text name="<%=formName%>"
+                   property="providerFirstName"
+                   styleId="providerFirstNameID"
+                   onchange="makeDirty();"
+                   size="30" />
+    </td>
+</tr>
+<tr>
+    <td class="lastNameLabel">
+        <%= StringUtil.getContextualMessageForKey("sample.entry.provider.name") %>:
+        <% if(requesterLastNameRequired ){ %>
+        <span class="requiredlabel">*</span>
+        <% } %>
+    </td>
+    <td class="lastName">
+        <html:text name="<%=formName%>"
+                   property="providerLastName"
+                   styleId="providerLastNameID"
+                   onchange="makeDirty();setSave()"
+                   size="30" />
+    </td>
+</tr>
+<% } else { %>
+<tr>
+
     <td class="lastNameLabel">
         <%= StringUtil.getContextualMessageForKey("sample.entry.provider.name") %>:
         <% if(requesterLastNameRequired ){ %>
@@ -223,6 +255,8 @@
                    size="30" />
     </td>
 </tr>
+
+<% } %>
 <tr class="providerWorkPhoneID">
     <td >
         <%= StringUtil.getContextualMessageForKey("humansampleone.provider.workPhone") + ": " +  StringUtil.getContextualMessageForKey("humansampleone.phone.additionalFormat")%>
