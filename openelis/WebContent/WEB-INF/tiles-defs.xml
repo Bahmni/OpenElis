@@ -1059,5 +1059,13 @@
          <put name="body" value="/pages/result/resultsEntryHistoryBySamplePopup.jsp" /> 
          <put name="footer" value="/pages/result/resultsEntryHistoryBySamplePopupFormFooterButtons.jsp" />
 	</definition>
-    
+
+    <definition name="healthCenterMenu"  extends="baseMenuDefinition" >
+        <put name="body" value="healthCenterMenuPanel" />
+    </definition>
+
+    <definition name="healthCenterMenuPanel"  extends="masterListsPageBodyDefinition" >
+        <put name="right" value="/pages/healthcenter/healthCenterMenuPanel.jsp" />
+    </definition>
+
 </tiles-definitions>

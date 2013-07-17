@@ -285,6 +285,8 @@
 		resource="us/mn/state/health/lims/qaevent/valueholder/QaObservation.hbm.xml" />
     <mapping
 		resource="org/bahmni/feed/openelis/externalreference/valueholder/ExternalReference.hbm.xml" />
+    <mapping
+            resource="us/mn/state/health/lims/healthcenter/valueholder/HealthCenter.hbm.xml" />
 
 </session-factory>
 

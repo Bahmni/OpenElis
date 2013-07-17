@@ -192,4 +192,49 @@
             <column name="description_key" value="schedule.name.openERPLabTestsFeed"/>
         </insert>
     </changeSet>
+
+    <changeSet id="13" author="tw" runOnChange="true" context="bahmni">
+        <createTable schemaName="clinlims" tableName="HEALTH_CENTER" >
+            <column name="id" type="numeric(10,0)" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(10)">
+                <constraints nullable="false" unique="true" />
+            </column>
+            <column name="description" type="varchar(50)" />
+            <column name="active" type="boolean" />
+        </createTable>
+
+        <insert schemaName="clinlims" tableName="HEALTH_CENTER">
+            <column name="id" valueNumeric=" nextval( 'health_center_id_seq' ) "/>
+            <column name="active" type="boolean" valueBoolean="true"/>
+            <column name="name" value="GAN"/>
+            <column name="description" value="Ganiyari"/>
+        </insert>
+        <insert schemaName="clinlims" tableName="HEALTH_CENTER">
+            <column name="id" valueNumeric=" nextval( 'health_center_id_seq' ) "/>
+            <column name="active" type="boolean" valueBoolean="true"/>
+            <column name="name" value="SEM"/>
+            <column name="description" value="Semariya"/>
+        </insert>
+        <insert schemaName="clinlims" tableName="HEALTH_CENTER">
+            <column name="id" valueNumeric=" nextval( 'health_center_id_seq' ) "/>
+            <column name="active" type="boolean" valueBoolean="true"/>
+            <column name="name" value="SIV"/>
+            <column name="description" value="SHIVTARAI"/>
+        </insert>
+        <insert schemaName="clinlims" tableName="HEALTH_CENTER">
+            <column name="id" valueNumeric=" nextval( 'health_center_id_seq' ) "/>
+            <column name="active" type="boolean" valueBoolean="true"/>
+            <column name="name" value="BAM"/>
+            <column name="description" value="Bahmni"/>
+        </insert>
+        <insert schemaName="clinlims" tableName="HEALTH_CENTER">
+            <column name="id" valueNumeric=" nextval( 'health_center_id_seq' ) "/>
+            <column name="active" type="boolean" valueBoolean="true"/>
+            <column name="name" value="CHP"/>
+            <column name="description" value="CHP"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>

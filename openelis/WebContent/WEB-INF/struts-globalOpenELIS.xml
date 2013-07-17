@@ -649,6 +649,15 @@
 			<form-property name="log" type="java.util.Collection" />
 			<form-property name="accessionNumber" type="java.lang.String" initial="" />
 		</form-bean>
+
+
+
+        <form-bean name="HealthCenterForm" type="us.mn.state.health.lims.common.action.BaseActionForm">
+            <form-property name="healthCenters" type="java.util.Collection" />
+            <form-property name="name" type="java.lang.String" initial="" />
+            <form-property name="description" type="java.lang.String" initial="" />
+            <form-property name="active" type="boolean" initial="true" />
+        </form-bean>
 	</form-beans>
 
 	
@@ -1430,6 +1439,11 @@
 		<action path="/AuditTrailReport" name="AuditTrailViewForm" type="us.mn.state.health.lims.audittrail.action.AuditTrailViewAction" >
 			<forward name="success" path="auditTrailViewDefinition" />
 		</action>
+
+
+        <action path="/HealthCenterMenu"  name="HealthCenterForm" type="us.mn.state.health.lims.healthcenter.action.HealthCenterMenuAction">
+            <forward name="success" path="healthCenterMenu" />
+        </action>
 
 	</action-mappings>
 </struts-config>
