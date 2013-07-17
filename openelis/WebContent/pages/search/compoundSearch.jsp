@@ -25,6 +25,7 @@
 	boolean supportSTNumber = true;
 	boolean supportSubjectNumber = true;
 	boolean supportNationalID = true;
+	boolean supportfirstNameFirst;
  %>
 <%
 	String path = request.getContextPath();
@@ -35,6 +36,7 @@
 	supportSTNumber = FormFields.getInstance().useField(Field.StNumber);
  	supportSubjectNumber = FormFields.getInstance().useField(Field.SubjectNumber);
  	supportNationalID = FormFields.getInstance().useField(Field.NationalID);
+ 	supportfirstNameFirst = FormFields.getInstance().useField(Field.FirstNameFirst);
 %>
 
 <script type="text/javascript" src="<%=basePath%>scripts/utilities.js?ver=<%= Versioning.getBuildNumber() %>" ></script>
@@ -223,8 +225,13 @@ function makeExclusive(inputElement){
 <!-- 		<th rowspan="2" id="receptionDate" >Reception Date</th>  -->
 	</tr>
 	<tr>
-		<th><bean:message key="patient.epiLastName"/></th>
-		<th><bean:message key="patient.epiFirstName"/></th>
+        <% if(supportfirstNameFirst) { %>
+            <th><bean:message key="patient.epiFirstName"/></th>
+            <th><bean:message key="patient.epiLastName"/></th>
+        <% } else { %>
+            <th><bean:message key="patient.epiLastName"/></th>
+            <th><bean:message key="patient.epiFirstName"/></th>
+        <% } %>
 		<th><%=StringUtil.getContextualMessageForKey("patient.search.all_IDs") %></th>
 	</tr>
 	<tr >
@@ -238,16 +245,8 @@ function makeExclusive(inputElement){
 			       class="text"
 			       type="text">
 		</td>
-		<td headers="patient" >
-			<input name="searchPatientLastName"
-			       style="display:table-cell; width:100%"
-			       id="lastName"
-			       class="text"
-			       type="text"
-			       onkeyup="setSearch(this.value); "
-			       onblur="makeExclusive(this);"
-			       >
-		</td>
+		<% if(supportfirstNameFirst) { %>
+
 		<td headers="patient" >
 			<input name="searchPatientFirstName"
 				   style="display:table-cell; width:100%"
@@ -258,6 +257,38 @@ function makeExclusive(inputElement){
 			       onblur="makeExclusive(this);"
 			       >
 		</td>
+		<td headers="patient" >
+        			<input name="searchPatientLastName"
+        			       style="display:table-cell; width:100%"
+        			       id="lastName"
+        			       class="text"
+        			       type="text"
+        			       onkeyup="setSearch(this.value); "
+        			       onblur="makeExclusive(this);"
+        			       >
+        		</td>
+		   <%} else {%>
+		        <td headers="patient" >
+                     <input name="searchPatientLastName"
+                            style="display:table-cell; width:100%"
+                           id="lastName"
+                           class="text"
+                           type="text"
+                           onkeyup="setSearch(this.value); "
+                           onblur="makeExclusive(this);"
+                           >
+                </td>
+               <td headers="patient" >
+                        <input name="searchPatientFirstName"
+                               style="display:table-cell; width:100%"
+                               id="firstName"
+                               class="text"
+                               type="text"
+                               onkeyup="setSearch(this.value); "
+                               onblur="makeExclusive(this);"
+                               >
+                    </td>
+              <% } %>
 		<td headers="patient">
 			<input name="searchPatientID"
 			       style="display:table-cell; width:100%"

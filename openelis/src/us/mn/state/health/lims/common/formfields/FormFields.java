@@ -98,7 +98,8 @@ public class FormFields {
 		PatientEducation,
 		SampleEntryPatientClinical,
 		QA_DOCUMENT_NUMBER,
-        DynamicAddress
+        DynamicAddress, FirstNameFirst,
+
     }
 
 	private static FormFields instance = null;

@@ -45,7 +45,10 @@ public class BahmniFormFields implements IFormFieldsForImplementation {
         settings.put(Field.SampleCondition, Boolean.TRUE);
         settings.put(Field.NON_CONFORMITY_SITE_LIST, Boolean.TRUE);
         settings.put(Field.ValueHozSpaceOnResults, Boolean.TRUE);
+        settings.put(Field.FirstNameFirst,Boolean.TRUE);
 		return settings;
 	}
+
+
 
 }
