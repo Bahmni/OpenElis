@@ -41,8 +41,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -66,9 +66,9 @@ public class OpeneERPLabTestFeedClientIT {
     TestDAO testDAO;
     PanelDAO panelDAO;
 
-    static final String PANEL_EVENT_CONTENT = " {\"category\": \"panel\", \"list_price\": \"0.0\", \"name\": \"ECHO\", \"type\": \"service\", \"standard_price\": \"0.0\", \"uom_id\": 1, \"uom_po_id\": 1, \"categ_id\": 33, \"id\": 193}";
+    static final String PANEL_EVENT_CONTENT = " {\"category\": \"Panel\", \"list_price\": \"0.0\", \"name\": \"ECHO\", \"type\": \"service\", \"standard_price\": \"0.0\", \"uom_id\": 1, \"uom_po_id\": 1, \"categ_id\": 33, \"id\": 193}";
 
-    static final String LAB_EVENT_CONTENT = " {\"category\": \"test\", \"list_price\": \"0.0\", \"name\": \"ECHO\", \"type\": \"service\", \"standard_price\": \"0.0\", \"uom_id\": 1, \"uom_po_id\": 1, \"categ_id\": 34, \"id\": 193}";
+    static final String LAB_EVENT_CONTENT = " {\"category\": \"Test\", \"list_price\": \"0.0\", \"name\": \"ECHO\", \"type\": \"service\", \"standard_price\": \"0.0\", \"uom_id\": 1, \"uom_po_id\": 1, \"categ_id\": 34, \"id\": 193}";
 
     @Before
     public void setUp() throws URISyntaxException {
@@ -123,14 +123,14 @@ public class OpeneERPLabTestFeedClientIT {
     @After
     public void tearDown() throws Exception {
         allMarkersJdbc.delete(notificationsUri);
-        ExternalReference reference = externalReferenceDao.getData("193","panel");
+        ExternalReference reference = externalReferenceDao.getData("193","Panel");
         Assert.assertNotNull(reference);
 
         Transaction transaction = HibernateUtil.getSession().beginTransaction();
         externalReferenceDao.deleteData(reference);
         transaction.commit();
 
-        reference = externalReferenceDao.getData("193","test");
+        reference = externalReferenceDao.getData("193","Test");
         Assert.assertNotNull(reference);
 
         transaction = HibernateUtil.getSession().beginTransaction();
@@ -153,6 +153,8 @@ public class OpeneERPLabTestFeedClientIT {
         panelDAO.deleteData(panels);
 
         transaction.commit();
+
+//        HibernateUtil.getSession().connection().close();
 
     }
 

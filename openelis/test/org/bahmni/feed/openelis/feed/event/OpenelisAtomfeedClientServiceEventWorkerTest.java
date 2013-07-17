@@ -27,7 +27,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 
 public class OpenelisAtomfeedClientServiceEventWorkerTest {
-    static final String EVENT_CONTENT = " {\"category\": \"panel\", \"list_price\": \"0.0\", \"name\": \"ECHO\", \"type\": \"service\", \"standard_price\": \"0.0\", \"uom_id\": 1, \"uom_po_id\": 1, \"categ_id\": 33, \"id\": 193}";
+    static final String EVENT_CONTENT = " {\"category\": \"Panel\", \"list_price\": \"0.0\", \"name\": \"ECHO\", \"type\": \"service\", \"standard_price\": \"0.0\", \"uom_id\": 1, \"uom_po_id\": 1, \"categ_id\": 33, \"id\": 193}";
 
     @Mock
     LoginDAO loginDAO;
@@ -65,10 +65,10 @@ public class OpenelisAtomfeedClientServiceEventWorkerTest {
 
         Transaction transaction = HibernateUtil.getSession().beginTransaction();
         panelDao.deleteData(panels);
-        ExternalReference externalReference = externalReferenceDao.getData("193", "panel");
+        ExternalReference externalReference = externalReferenceDao.getData("193", "Panel");
         if(externalReference != null)
             externalReferenceDao.deleteData(externalReference);
-        externalReference = externalReferenceDao.getData("193", "test");
+        externalReference = externalReferenceDao.getData("193", "Test");
         if(externalReference != null)
             externalReferenceDao.deleteData(externalReference);
 

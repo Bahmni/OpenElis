@@ -22,7 +22,7 @@ public class LabPanelServiceTest {
     PanelDAO panelDAO;
     @Mock
     ExternalReferenceDao externalReferenceDao;
-    static final String EVENT_CONTENT = " {\"category\": \"panel\",\"description\": \"Test Panel\", \"list_price\": \"0.0\", \"name\": \"ECHO\", \"type\": \"service\", \"standard_price\": \"0.0\", \"uom_id\": 1, \"uom_po_id\": 1, \"categ_id\": 33, \"id\": 193}";
+    static final String EVENT_CONTENT = " {\"category\": \"Panel\",\"description\": \"Test Panel\", \"list_price\": \"0.0\", \"name\": \"ECHO\", \"type\": \"service\", \"standard_price\": \"0.0\", \"uom_id\": 1, \"uom_po_id\": 1, \"categ_id\": 33, \"id\": 193}";
     LabPanelService labPanelService;
 
     @Before
@@ -39,9 +39,9 @@ public class LabPanelServiceTest {
 
     @Test
     public void shouldInsertNewIfExternalReferenceNotFound() throws IOException {
-        when(externalReferenceDao.getData("193", "panel")).thenReturn(null);
+        when(externalReferenceDao.getData("193", "Panel")).thenReturn(null);
 
-        LabObject labObject = new LabObject("193","Lab Panel","lab panel desc","1", "panel");
+        LabObject labObject = new LabObject("193","Lab Panel","lab panel desc","1", "Panel");
         Panel panel = new Panel();
         panel.setPanelName("Lab Panel");
         panel.setDescription("lab panel desc");
@@ -62,14 +62,14 @@ public class LabPanelServiceTest {
         panel.setPanelName("Lab Panel");
         panel.setDescription("lab panel desc");
 
-        when(externalReferenceDao.getData("193", "panel")).thenReturn(reference);
+        when(externalReferenceDao.getData("193", "Panel")).thenReturn(reference);
         when(panelDAO.getPanelById("293")).thenReturn(panel);
 
 
-        LabObject labObject = new LabObject("193","Lab Panel","lab panel desc","1", "panel");
+        LabObject labObject = new LabObject("193","Lab Panel","lab panel desc","1", "Panel");
 
         labPanelService.saveLabObject(labObject);
 
-//        verify(panelDAO).updateData(panel);
+        verify(panelDAO).updateData(panel);
     }
 }

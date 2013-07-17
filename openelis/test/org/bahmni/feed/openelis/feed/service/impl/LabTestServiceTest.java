@@ -21,7 +21,7 @@ public class LabTestServiceTest {
     TestDAO testDao;
     @Mock
     ExternalReferenceDao externalReferenceDao;
-    static final String EVENT_CONTENT = " {\"category\": \"test\",\"description\": \"Test Panel\", \"list_price\": \"0.0\", \"name\": \"ECHO\", \"type\": \"service\", \"standard_price\": \"0.0\", \"uom_id\": 1, \"uom_po_id\": 1, \"categ_id\": 33, \"id\": 193}";
+    static final String EVENT_CONTENT = " {\"category\": \"Test\",\"description\": \"Test Panel\", \"list_price\": \"0.0\", \"name\": \"ECHO\", \"type\": \"service\", \"standard_price\": \"0.0\", \"uom_id\": 1, \"uom_po_id\": 1, \"categ_id\": 33, \"id\": 193}";
     LabTestService labTest;
 
     @Before
@@ -38,9 +38,9 @@ public class LabTestServiceTest {
 
     @org.junit.Test
     public void shouldInsertNewIfExternalReferenceNotFound() throws IOException {
-        when(externalReferenceDao.getData("193", "test")).thenReturn(null);
+        when(externalReferenceDao.getData("193", "Test")).thenReturn(null);
 
-        LabObject labObject = new LabObject("193","Lab Test","lab test desc","1", "test");
+        LabObject labObject = new LabObject("193","Lab Test","lab test desc","1", "Test");
         Test test = new Test();
         test.setTestName("Lab Test");
         test.setDescription("lab test desc");
@@ -58,19 +58,19 @@ public class LabTestServiceTest {
         reference.setItemId(293);
         reference.setExternalId("193");
 
-        LabObject labObject = new LabObject("193","Lab Test","lab test desc","1", "test");
+        LabObject labObject = new LabObject("193","Lab Test","lab test desc","1", "Test");
         Test test = new Test();
         test.setTestName("Lab Test");
         test.setDescription("lab test desc");
 
 
-        when(externalReferenceDao.getData("193", "test")).thenReturn(reference);
+        when(externalReferenceDao.getData("193", "Test")).thenReturn(reference);
         when(testDao.getActiveTestById(293)).thenReturn(test);
 
 
 
         labTest.saveLabObject(labObject);
 
-//        verify(testDao).updateData(test);
+        verify(testDao).updateData(test);
     }
 }

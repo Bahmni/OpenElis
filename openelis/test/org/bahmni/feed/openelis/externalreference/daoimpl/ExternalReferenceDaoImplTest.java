@@ -15,7 +15,7 @@ public class ExternalReferenceDaoImplTest {
         ExternalReference reference = new ExternalReference();
 
 
-        reference = externalReferenceDao.getData("1123456", "panel");
+        reference = externalReferenceDao.getData("1123456", "Panel");
 
         Transaction transaction = null;
         if(reference != null){
@@ -27,13 +27,13 @@ public class ExternalReferenceDaoImplTest {
         reference = new ExternalReference();
         reference.setExternalId("1123456");
         reference.setItemId(1123457);
-        reference.setType("panel");
+        reference.setType("Panel");
 
         transaction = HibernateUtil.getSession().beginTransaction();
         externalReferenceDao.insertData(reference);
         transaction.commit();
 
-        reference = externalReferenceDao.getData("1123456", "panel");
+        reference = externalReferenceDao.getData("1123456", "Panel");
         Assert.assertNotNull(reference);
 
         transaction = HibernateUtil.getSession().beginTransaction();
