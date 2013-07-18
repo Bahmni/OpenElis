@@ -6,6 +6,8 @@
         <javac includeantruntime="false"/>
     </presetdef>
     <property file="build.properties"/>
+    <property environment="env"/>
+    <property name="OPENELIS_CONTEXT" value="${env.OPENELIS_CONTEXT}"/>
 
     <target name="init">
         <tstamp/>
@@ -33,6 +35,8 @@
         <copy todir="${target}">
             <fileset dir="${src}" includes="**/*.properties"/>
         </copy>
+
+        <move file="${target}/${OPENELIS_CONTEXT}MessageResources.properties" tofile="${target}/MessageResources.properties"/>
         <war destfile="${dist}/openelis.war">
             <classes dir="${target}"/>
             <fileset dir="${web}"/>
