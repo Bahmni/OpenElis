@@ -16,7 +16,7 @@ public class HealthCenter{
     }
 
     public HealthCenter(String name, String description) {
-        super();
+        this();
         this.name = name;
         this.description = description;
     }

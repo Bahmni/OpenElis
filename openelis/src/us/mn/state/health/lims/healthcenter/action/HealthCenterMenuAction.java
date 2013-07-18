@@ -17,10 +17,9 @@ public class HealthCenterMenuAction  extends BaseAction {
     @Override
     protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         HealthCenterDAOImpl healthCenterDAO = new HealthCenterDAOImpl();
-        List menuList = null;
-
         DynaActionForm dynaForm = (DynaActionForm) form;
-        dynaForm.initialize(mapping);
+        request.setAttribute("currentAction", "list");
+
         PropertyUtils.setProperty(dynaForm, "healthCenters", healthCenterDAO.getAll());
 
         return mapping.findForward("success"); //To change body of implemented methods use File | Settings | File Templates.

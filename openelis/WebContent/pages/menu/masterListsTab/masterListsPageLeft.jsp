@@ -430,12 +430,12 @@
     <bean:message key="unifiedSystemUser.browser.title" />
   </html:link>
 </li>
-<%} %>
 <li>
     <html:link action="/HealthCenterMenu">
         <bean:message key="healthcenter.browse.title" />
     </html:link>
 </li>
+<%} %>
 
 </ul>
 </table>

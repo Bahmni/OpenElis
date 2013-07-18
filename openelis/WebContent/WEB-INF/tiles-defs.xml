@@ -1060,12 +1060,14 @@
          <put name="footer" value="/pages/result/resultsEntryHistoryBySamplePopupFormFooterButtons.jsp" />
 	</definition>
 
-    <definition name="healthCenterMenu"  extends="baseMenuDefinition" >
-        <put name="body" value="healthCenterMenuPanel" />
+    <definition name="healthCenterMaster"  extends="baseMenuDefinition" >
+        <put name="body" value="healthCenterMasterPanel" />
     </definition>
 
-    <definition name="healthCenterMenuPanel"  extends="masterListsPageBodyDefinition" >
-        <put name="right" value="/pages/healthcenter/healthCenterMenuPanel.jsp" />
+    <definition name="healthCenterMasterPanel"  extends="masterListsPageBodyDefinition" >
+        <put name="right" value="/pages/healthcenter/healthCenterMasterPanel.jsp" />
     </definition>
+
+
 
 </tiles-definitions>
