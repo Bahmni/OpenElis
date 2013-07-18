@@ -242,7 +242,7 @@
             <column name="name" value="New"/>
             <column name="description" value="Dummy Section"/>
             <column name="is_external" value="N"/>
-            <column name="is_active" type="boolean" valueBoolean="false"/>
+            <column name="is_active" value="N"/>
         </insert>
     </changeSet>
 
