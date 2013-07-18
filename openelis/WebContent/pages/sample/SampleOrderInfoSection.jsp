@@ -67,14 +67,14 @@
 
 <tr>
 <td>
-<table >
+<table width="auto">
 <tr>
-    <td width="35%">
+    <td width="20%">
         <%=StringUtil.getContextualMessageForKey("quick.entry.accession.number")%>
         :
         <span class="requiredlabel">*</span>
     </td>
-    <td width="65%">
+    <td width="80%">
         <app:text name="<%=formName%>" property="labNo"
                   maxlength='<%= Integer.toString(accessionNumberValidator.getMaxAccessionLength())%>'
                   onchange="checkAccessionNumber(this);makeDirty();"
@@ -209,16 +209,10 @@
                    styleId="providerFirstNameID"
                    onchange="makeDirty();"
                    size="30" />
-    </td>
-</tr>
-<tr>
-    <td class="lastNameLabel">
         <%= StringUtil.getContextualMessageForKey("sample.entry.provider.name") %>:
         <% if(requesterLastNameRequired ){ %>
         <span class="requiredlabel">*</span>
         <% } %>
-    </td>
-    <td class="lastName">
         <html:text name="<%=formName%>"
                    property="providerLastName"
                    styleId="providerLastNameID"
@@ -241,13 +235,7 @@
                    styleId="providerLastNameID"
                    onchange="makeDirty();setSave()"
                    size="30" />
-    </td>
-</tr>
-<tr>
-    <td class="firstNameLabel">
-        <bean:message key="sample.entry.provider.firstName"/>:
-    </td>
-    <td class="firstName">
+        <bean:message key="humansampleone.provider.firstName.short"/>:
         <html:text name="<%=formName%>"
                    property="providerFirstName"
                    styleId="providerFirstNameID"
