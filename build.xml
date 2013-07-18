@@ -7,7 +7,9 @@
     </presetdef>
     <property file="build.properties"/>
     <property environment="env"/>
-    <property name="OPENELIS_CONTEXT" value="${env.OPENELIS_CONTEXT}"/>
+    <condition property="OPENELIS_CONTEXT" value="${env.OPENELIS_CONTEXT}" else="">
+        <isset property="env.OPENELIS_CONTEXT" />
+    </condition>
 
     <target name="init">
         <tstamp/>
