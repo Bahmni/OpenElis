@@ -33,7 +33,7 @@ public class LabPanelService  implements LabService {
         ExternalReference data = externalReferenceDao.getData(labObject.getExternalId(), labProductType);
         if(data ==null){
             panelDAO.insertData(panel);
-            if(isEmpty(panel)) {
+            if(isNotEmpty(panel)) {
                 data = new ExternalReference(Long.parseLong(panel.getId()),labObject.getExternalId(),labProductType);
             }
             externalReferenceDao.insertData(data)  ;
@@ -45,7 +45,7 @@ public class LabPanelService  implements LabService {
         }
     }
 
-    private boolean isEmpty(Panel panel) {
+    private boolean isNotEmpty(Panel panel) {
         return panel.getId() != null && !panel.getId().isEmpty();
     }
 

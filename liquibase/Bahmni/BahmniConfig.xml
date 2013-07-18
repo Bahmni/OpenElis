@@ -236,5 +236,17 @@
             <column name="description" value="CHP"/>
         </insert>
     </changeSet>
+    <changeSet id="14" author="tw" runOnChange="true" context="bahmni">
+	 <insert schemaName="clinlims" tableName="TEST_SECTION">
+            <column name="id" valueNumeric=" nextval( 'test_section_seq' ) "/>
+            <column name="name" value="New"/>
+            <column name="description" value="Dummy Section"/>
+            <column name="isExternal" value="N"/>
+            <column name="is_active" type="boolean" valueBoolean="false"/>
+        </insert>
+    </changeSet>
+
+
+
 
 </databaseChangeLog>
