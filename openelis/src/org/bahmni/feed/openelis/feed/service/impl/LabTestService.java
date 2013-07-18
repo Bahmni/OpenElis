@@ -2,14 +2,17 @@ package org.bahmni.feed.openelis.feed.service.impl;
 
 
 import org.bahmni.feed.openelis.AtomFeedProperties;
-import org.bahmni.feed.openelis.feed.domain.LabObject;
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoImpl;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
+import org.bahmni.feed.openelis.feed.domain.LabObject;
 import org.bahmni.feed.openelis.feed.service.LabService;
 import us.mn.state.health.lims.test.dao.TestDAO;
+import us.mn.state.health.lims.test.dao.TestSectionDAO;
 import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
+import us.mn.state.health.lims.test.daoimpl.TestSectionDAOImpl;
 import us.mn.state.health.lims.test.valueholder.Test;
+import us.mn.state.health.lims.test.valueholder.TestSection;
 
 import java.io.IOException;
 
@@ -18,6 +21,7 @@ public class LabTestService implements LabService {
     private TestDAO testDAO = new TestDAOImpl() ;
     private ExternalReferenceDao externalReferenceDao = new ExternalReferenceDaoImpl();
     private String labProductType;
+    private TestSectionDAO sectionDAO = new TestSectionDAOImpl();
 
     public LabTestService(){
         labProductType = AtomFeedProperties.getInstance().getProductTypeLabTest();
@@ -60,6 +64,11 @@ public class LabTestService implements LabService {
         }
         test.setDescription(desc);
         test.setSysUserId(labObject.getSysUserId());
+
+        TestSection section = sectionDAO.getTestSectionByName("New");
+        test.setTestSection(section);
+        test.setTestSectionName(section.getTestSectionName());
+
         return test;
     }
 
@@ -80,3 +89,5 @@ public class LabTestService implements LabService {
     }
 
 }
+
+
