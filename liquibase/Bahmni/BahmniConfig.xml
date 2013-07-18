@@ -241,7 +241,7 @@
             <column name="id" valueNumeric=" nextval( 'test_section_seq' ) "/>
             <column name="name" value="New"/>
             <column name="description" value="Dummy Section"/>
-            <column name="isExternal" value="N"/>
+            <column name="is_external" value="N"/>
             <column name="is_active" type="boolean" valueBoolean="false"/>
         </insert>
     </changeSet>
