@@ -27,7 +27,7 @@ public class LabTestService implements LabService {
         labProductType = AtomFeedProperties.getInstance().getProductTypeLabTest();
     }
 
-    LabTestService(TestDAO testDao, ExternalReferenceDao externalReferenceDao) {
+    LabTestService(TestDAO testDao, ExternalReferenceDao externalReferenceDao, TestSectionDAO testSectionDAO) {
         testDAO = testDao;
         this.externalReferenceDao = externalReferenceDao;
     }
