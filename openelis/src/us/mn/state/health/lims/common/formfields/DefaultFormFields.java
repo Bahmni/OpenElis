@@ -108,6 +108,8 @@ public class DefaultFormFields extends AFormFields {
 		setFieldFalse(Field.QASubjectNumber);
 		setFieldFalse(Field.QATimeWithDate);
         setFieldFalse(Field.DynamicAddress);
+        setFieldFalse(Field.HealthCenter);
+        setFieldFalse(Field.FirstNameFirst);
     }
 
 	@Override

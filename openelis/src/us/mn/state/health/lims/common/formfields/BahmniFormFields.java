@@ -47,6 +47,7 @@ public class BahmniFormFields implements IFormFieldsForImplementation {
         settings.put(Field.ValueHozSpaceOnResults, Boolean.TRUE);
         settings.put(Field.FirstNameFirst,Boolean.TRUE);
         settings.put(Field.NationalID,Boolean.FALSE);
+        settings.put(Field.HealthCenter, Boolean.TRUE);
 		return settings;
 	}
 

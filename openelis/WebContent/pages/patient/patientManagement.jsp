@@ -45,6 +45,7 @@
 	boolean patientGenderRequired = true;
     boolean supportDynamicAddresses = false;
     boolean supportfirstNameFirst;
+    boolean supportHealthCenters = false;
  %>
 <%
 	String path = request.getContextPath();
@@ -63,6 +64,7 @@
 	supportAddressDepartment = FormFields.getInstance().useField(Field.AddressDepartment );
     supportDynamicAddresses = FormFields.getInstance().useField(Field.DynamicAddress);
     supportfirstNameFirst = FormFields.getInstance().useField(Field.FirstNameFirst);
+    supportHealthCenters = FormFields.getInstance().useField(Field.HealthCenter);
 	
 	if("SampleConfirmationEntryForm".equals( formName )){
 		patientIDRequired = FormFields.getInstance().useField(Field.PatientIDRequired_SampleConfirmation);
@@ -110,6 +112,7 @@ var supportPatientNationality = <%= FormFields.getInstance().useField(Field.Pati
 var supportMaritialStatus = <%= FormFields.getInstance().useField(Field.PatientMarriageStatus) %>;
 var supportHealthRegion = <%= FormFields.getInstance().useField(Field.PatientHealthRegion) %>;
 var supportHealthDistrict = <%= FormFields.getInstance().useField(Field.PatientHealthDistrict) %>;
+var supportHealthCenters = <%= supportHealthCenters %>;
 
 
 var pt_invalidElements = [];
@@ -128,12 +131,17 @@ if( patientNamesRequired){
 var pt_requiredOneOfFields = new Array();
 
 if( patientIDRequired){
-	pt_requiredOneOfFields.push("nationalID") ;
+    if(supportNationalID){
+	    pt_requiredOneOfFields.push("nationalID") ;
+    }
 	if (supportSTNumber) {
 		pt_requiredOneOfFields.push("ST_ID");
 	} else if (supportSubjectNumber){
 		pt_requiredOneOfFields = new Array("subjectNumberID");
 	}
+    if(supportHealthCenters) {
+        pt_requiredFields.push("healthCenterName");
+    }
 }
 
 var updateStatus = "add";
@@ -575,6 +583,9 @@ function  /*void*/ processSearchPopulateFailure(xhr) {
 
 function  /*void*/ clearPatientInfo(){
 	setPatientInfo();
+    if(supportHealthCenters) {
+        jQuery('#healthCenterName').children()[0].selected=true;
+    }
 }
 
 function /*void*/ clearErrors(){
@@ -650,6 +661,10 @@ function  /*void*/ setPatientInfo(nationalID, ST_ID, subjectNumber, lastName, fi
 	document.getElementById("genderID").selectedIndex = gender == undefined ? 0 : gender;
 	if(supportPatientType){document.getElementById("patientTypeID").selectedIndex = patientType == undefined ? 0 : patientType; }
 
+    if(supportHealthCenters) {
+        splitSTNumber();
+        setSTNumberFieldState(false);
+    }
 	// run this b/c dynamically populating the fields does not constitute an onchange event to populate the patmgmt tile
 	// this is the fx called by the onchange event if manually changing the fields
 	updatePatientEditStatus();
@@ -660,13 +675,13 @@ function  /*void*/ updatePatientEditStatus() {
 	if (updateStatus == "noAction") {
 		setUpdateStatus("update");
 	}
-
+    var stNumber =  supportSTNumber ? $("ST_ID").value : "";
 	for(var i = 0; i < patientInfoChangeListeners.length; i++){
 			patientInfoChangeListeners[i]($("firstNameID").value,
 										  $("lastNameID").value,
 										  $("genderID").value,
 										  $("dateOfBirthID").value,
-										  supportSTNumber ? $("ST_ID").value : "",
+                                          stNumber,
 										  supportSubjectNumber ? $("subjectNumberID").value : "",
 										  supportNationalID ? $("nationalID").value : "",
 										  supportMothersName ? $("motherID").value : null,
@@ -699,10 +714,14 @@ function  /*void*/  addPatient(){
 	if(supportSubjectNumber){$("subjectNumberID").disabled = false;}
 	if(supportNationalID){$("nationalID").disabled = false;}
 	setUpdateStatus( "add" );
-	
+
+    if(supportHealthCenters) {
+        setSTNumberFieldState(true);
+    }
+
 	for(var i = 0; i < patientInfoChangeListeners.length; i++){
-			patientInfoChangeListeners[i]("", "", "", "", "", "", "", "", "");
-		}
+        patientInfoChangeListeners[i]("", "", "", "", "", "", "", "", "");
+    }
 }
 
 function clearDynamicAddresses(){
@@ -712,6 +731,7 @@ function clearDynamicAddresses(){
 function  /*void*/ savePage()
 {
 	window.onbeforeunload = null; // Added to flag that formWarning alert isn't needed.
+    concatenateSTNumberAndHealthCenter();
 	var form = window.document.forms[0];
 	form.action = "PatientManagementUpdate.do";
 	form.submit();
@@ -788,12 +808,19 @@ function healthDistrictSuccess( xhr ){
             <bean:message key="patient.ST.number"/>:
         </td>
         <td>
-            <nested:text name='<%=formName%>'
-                      property="patientProperties.STnumber"
-                      onchange="updatePatientEditStatus();"
-                      styleId="ST_ID"
-                      styleClass="text"
-                      size="60" />
+            <div>
+                <% if (supportHealthCenters) { %>
+                    <select id="healthCenterName" onchange="updatePatientEditStatus()">
+                        <option value="">Select One</option>
+                    </select>
+                <% } %>
+                <nested:text name='<%=formName%>'
+                          property="patientProperties.STnumber"
+                          onchange="updatePatientEditStatus();"
+                          styleId="ST_ID"
+                          styleClass="text"
+                          size="60" />
+            </div>
         </td>
     </tr>
     <tr >
@@ -1268,5 +1295,49 @@ function registerPatientChangedForManagement(){
 	}
 }
 
+function pageOnLoad() {
+    if(supportHealthCenters) {
+        populateHealthCenter();
+    }
+}
+
+function populateHealthCenter() {
+    new Ajax.Request('<%= request.getContextPath() + "/HealthCenterList.do"%>', {
+        method: 'get',
+        onSuccess:  function(object) {
+            var selectObj = jQuery("#healthCenterName")[0];
+            JSON.parse(object.responseText).forEach(function(healthCenter){
+                selectObj.add(new Option(healthCenter, healthCenter));
+            });
+        },
+        onFailure:  function(data) {console.log(data)}
+    });
+}
+
+function splitSTNumber() {
+    var stNumber = $('ST_ID').value;
+    if(stNumber && !stNumber.blank()) {
+        var match = stNumber.match(/([a-zA-Z]*)(\d+)/);
+        $('healthCenterName').value = match[1];
+        $('ST_ID').value = match[2];
+    }
+}
+
+function setSTNumberFieldState(state){
+    if(state){
+        $('ST_ID').removeAttribute('readonly');
+        $('healthCenterName').disabled = false;
+    }
+    else{
+        jQuery('#ST_ID').attr('readonly', 'true');
+        jQuery('#healthCenterName').attr('disabled', 'true');
+    }
+}
+
+function concatenateSTNumberAndHealthCenter() {
+    if(supportHealthCenters && supportSTNumber) {
+        $('ST_ID').value = $('healthCenterName').value + $('ST_ID').value;
+    }
+}
 registerPatientChangedForManagement();
 </script>
