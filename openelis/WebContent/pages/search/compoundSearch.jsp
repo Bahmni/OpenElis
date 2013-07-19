@@ -317,12 +317,21 @@ function makeExclusive(inputElement){
 		<table id="searchResultTable" style="width:70%">
 			<tr>
 				<th width="2%"></th>
-				<th width="18%">
-					<bean:message key="patient.epiLastName"/>
-				</th>
-				<th width="15%">
-					<bean:message key="patient.epiFirstName"/>
-				</th>
+				<% if(supportfirstNameFirst){ %>
+                    <th width="15%">
+                        <bean:message key="patient.epiFirstName"/>
+                    </th>
+                    <th width="18%">
+                        <bean:message key="patient.epiLastName"/>
+                    </th>
+				<%} else {%>
+                    <th width="18%">
+                        <bean:message key="patient.epiLastName"/>
+                    </th>
+                    <th width="15%">
+                        <bean:message key="patient.epiFirstName"/>
+                    </th>
+                  <% } %>
 				<th width="5%">
 					<bean:message key="patient.gender"/>
 				</th>
