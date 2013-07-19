@@ -71,9 +71,30 @@ function validateForm(form) {
 							<bean:message key="typeofsample.localAbbreviation"/>:<span class="requiredlabel">*</span>
 						</td>	
 						<td> 
-						    <html:text name="<%=formName%>" property="localAbbreviation" size="10" onblur="this.value=this.value.toUpperCase()" />
+						    <html:text name="<%=formName%>" property="localAbbreviation" size="10" maxlength="10" onblur="this.value=this.value.toUpperCase()" />
 						</td>
-		</tr>	
+		</tr>
+        <tr>
+            <td class="label">
+                <bean:message key="typeofsample.isActive"/>:<span class="requiredlabel">*</span>
+            </td>
+            <td>
+                <%--<html:select name="<%=formName%>" property="isActive" size="1" onblur="this.value=this.value.toUpperCase()">--%>
+
+                <%--</html:select>--%>
+
+                <html:text name="<%=formName%>" property="isActive" size="1" onblur="this.value=this.value.toUpperCase()"/>
+            </td>
+
+        </tr>
+        <tr>
+            <td class="label">
+                <bean:message key="typeofsample.sortOrder"/>:<span class="requiredlabel">*</span>
+            </td>
+            <td>
+                <html:text name="<%=formName%>" property="sortOrder" />
+            </td>
+        </tr>
  		<tr>
 		<td>&nbsp;</td>
 		</tr>

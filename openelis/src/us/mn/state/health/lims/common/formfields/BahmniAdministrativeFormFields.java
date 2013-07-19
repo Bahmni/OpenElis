@@ -11,9 +11,11 @@ public class BahmniAdministrativeFormFields implements IAdministrationFormFields
         settings.put(AdministrationFormFields.Field.TestMenu, Boolean.TRUE);
         settings.put(AdministrationFormFields.Field.PanelMenu, Boolean.TRUE);
         settings.put(AdministrationFormFields.Field.PanelItemMenu, Boolean.TRUE);
+        settings.put(AdministrationFormFields.Field.UnitOfMeasureMenu, Boolean.TRUE);
         settings.put(AdministrationFormFields.Field.TypeOfSampleMenu, Boolean.TRUE);
-        settings.put(AdministrationFormFields.Field.UnitOfMeasureMenu, Boolean.TRUE);
-        settings.put(AdministrationFormFields.Field.UnitOfMeasureMenu, Boolean.TRUE);
+        settings.put(AdministrationFormFields.Field.TypeOfSampleTestMenu, Boolean.TRUE);
+        settings.put(AdministrationFormFields.Field.TypeOfSamplePanelMenu, Boolean.TRUE);
+        settings.put(AdministrationFormFields.Field.ResultLimitsMenu, Boolean.TRUE);
         return settings;
 
     }

@@ -58,7 +58,8 @@ import us.mn.state.health.lims.testanalyte.valueholder.TestAnalyte;
  */
 public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
 
-	private static Map<String, String> ID_NAME_MAP = null;
+	private static final Object LOCK_OBJECT = new Object();
+    private static Map<String, String> ID_NAME_MAP = null;
 	private static Map<String, String> ID_DESCRIPTION_MAP = null;
 
 	public void deleteData(List tests) throws LIMSRuntimeException {
@@ -68,7 +69,7 @@ public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
 			for (int i = 0; i < tests.size(); i++) {
 				Test data = (Test) tests.get(i);
 
-				Test oldData = (Test) readTest(data.getId());
+				Test oldData = readTest(data.getId());
 				Test newData = new Test();
 
 				String sysUserId = data.getSysUserId();
@@ -85,7 +86,7 @@ public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
 		try {
 			for (int i = 0; i < tests.size(); i++) {
 				Test data = (Test) tests.get(i);
-				Test cloneData = (Test) readTest(data.getId());
+				Test cloneData = readTest(data.getId());
 
 				cloneData.setIsActive(IActionConstants.NO);
 				HibernateUtil.getSession().merge(cloneData);
@@ -197,7 +198,7 @@ public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
 		List<Test> list = new Vector<Test>();
 		try {
 			String sql = "from Test Order by description";
-			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
+			Query query = HibernateUtil.getSession().createQuery(sql);
 			list = query.list();
 			list = filterOnlyFullSetup(onlyTestsFullySetup, list);
 
@@ -216,7 +217,7 @@ public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
         List<Test> list = new Vector<Test>();
         try {
             String sql = "from Test WHERE is_Active = 'Y' Order by description";
-            org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
+            Query query = HibernateUtil.getSession().createQuery(sql);
             list = query.list();
             list = filterOnlyFullSetup(onlyTestsFullySetup, list);
 
@@ -269,7 +270,7 @@ public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
 				return list;
 			}
 
-			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
+			Query query = HibernateUtil.getSession().createQuery(sql);
 			list = query.list();
 
 			list = filterOnlyFullSetup(onlyTestsFullySetup, list);
@@ -292,7 +293,7 @@ public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
 
 			// bugzilla 1399
 			String sql = "from Test t order by t.testSection.testSectionName, t.testName";
-    		org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
+    		Query query = HibernateUtil.getSession().createQuery(sql);
 			query.setFirstResult(startingRecNo - 1);
 			query.setMaxResults(endingRecNo - 1);
 
@@ -331,7 +332,7 @@ public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
 	             newSearchStr = searchString.replace(wildCard, "%").toLowerCase().trim();
 	             sql = "from Test t where trim(lower (t.description)) like :param  order by t.testSection.testSectionName, t.testName";
 	          }
-	          org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
+	          Query query = HibernateUtil.getSession().createQuery(sql);
 	          query.setParameter("param", newSearchStr);
 	          query.setFirstResult(startingRecNo - 1);
 	          query.setMaxResults(endingRecNo - 1);
@@ -378,7 +379,7 @@ public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
 				return list;
 			}
 
-    		org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
+    		Query query = HibernateUtil.getSession().createQuery(sql);
 			query.setFirstResult(startingRecNo - 1);
 			query.setMaxResults(endingRecNo - 1);
 
@@ -440,7 +441,7 @@ public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
 		  else
 		   	  return list;
 
-		  org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
+		  Query query = HibernateUtil.getSession().createQuery(sql);
 		  query.setParameter("param", newSearchStr);
           query.setFirstResult(startingRecNo - 1);
           query.setMaxResults(endingRecNo - 1);
@@ -489,7 +490,7 @@ public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
 		List list = new Vector();
 		try {
 			String sql = "from Test t where upper(t.testName) like upper(:param) and t.isActive='Y' order by upper(t.testName)";
-			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
+			Query query = HibernateUtil.getSession().createQuery(sql);
 			query.setParameter("param", filter + "%");
 			list = query.list();
 
@@ -512,7 +513,7 @@ public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
 	public Test getTestByName(String testName) throws LIMSRuntimeException {
 		try {
 			String sql = "from Test t where t.testName = :testName and t.isActive='Y'";
-			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
+			Query query = HibernateUtil.getSession().createQuery(sql);
 			query.setParameter("testName", testName);
 
 
@@ -554,7 +555,7 @@ public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
 	}
 
    @SuppressWarnings("unchecked")
-public Test getActiveTestById(Integer testId) throws LIMSRuntimeException {
+    public Test getActiveTestById(Integer testId) throws LIMSRuntimeException {
         List<Test> list = null;
 
         try {
@@ -591,7 +592,7 @@ public Test getActiveTestById(Integer testId) throws LIMSRuntimeException {
 	public List getMethodsByTestSection(String filter) throws LIMSRuntimeException {
 		try {
 			String sql = "from Test t where t.testSection = :param";
-			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
+			Query query = HibernateUtil.getSession().createQuery(sql);
 			query.setParameter("param", filter);
 
 			List list = query.list();
@@ -624,7 +625,7 @@ public Test getActiveTestById(Integer testId) throws LIMSRuntimeException {
 	public List getTestsByTestSection(String filter) throws LIMSRuntimeException {
 		try {
 			String sql = "from Test t where t.testSection = :param";
-			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
+			Query query = HibernateUtil.getSession().createQuery(sql);
 			query.setInteger("param", Integer.parseInt(filter));
 
 			List list = query.list();
@@ -643,7 +644,7 @@ public Test getActiveTestById(Integer testId) throws LIMSRuntimeException {
 	public List getTestsByMethod(String filter) throws LIMSRuntimeException {
 		try {
 			String sql = "from Test t where t.method = :param";
-			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
+			Query query = HibernateUtil.getSession().createQuery(sql);
 			query.setParameter("param", filter);
 
 			List list = query.list();
@@ -662,7 +663,7 @@ public Test getActiveTestById(Integer testId) throws LIMSRuntimeException {
 	public List getTestsByTestSectionAndMethod(String filter, String filter2) throws LIMSRuntimeException {
 		try {
 			String sql = "from Test t where t.testSection = :param1 and t.method = :param2";
-			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
+			Query query = HibernateUtil.getSession().createQuery(sql);
 			query.setParameter("param1", filter);
 			query.setParameter("param2", filter2);
 
@@ -703,7 +704,7 @@ public Test getActiveTestById(Integer testId) throws LIMSRuntimeException {
 			      newSearchStr = searchString.replace(wildCard, "%").toLowerCase().trim();
 		          sql = "select count (*) from Test t where trim(lower (t.description)) like :param ";
 		      }
-		      org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
+		      Query query = HibernateUtil.getSession().createQuery(sql);
 		      query.setParameter("param", newSearchStr);
 
 		      List results  = query.list();
@@ -765,7 +766,7 @@ public Test getActiveTestById(Integer testId) throws LIMSRuntimeException {
 	   	   else
 	   	   	  return count;
 
-	      org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
+	      Query query = HibernateUtil.getSession().createQuery(sql);
 	      query.setParameter("param", newSearchStr);
 
 	      List results  = query.list();
@@ -834,7 +835,7 @@ public Test getActiveTestById(Integer testId) throws LIMSRuntimeException {
     		String sql = "select t.id from Test t " +
 					" order by t.testSection.testSectionName, t.testName";
 
- 			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
+ 			Query query = HibernateUtil.getSession().createQuery(sql);
 			list = query.list();
 			HibernateUtil.getSession().flush();
 			HibernateUtil.getSession().clear();
@@ -868,7 +869,7 @@ public Test getActiveTestById(Integer testId) throws LIMSRuntimeException {
     		String sql = "select t.id from Test t " +
 					" order by t.testSection.testSectionName desc, t.testName desc";
 
- 			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
+ 			Query query = HibernateUtil.getSession().createQuery(sql);
 			list = query.list();
 			HibernateUtil.getSession().flush();
 			HibernateUtil.getSession().clear();
@@ -899,7 +900,7 @@ public Test getActiveTestById(Integer testId) throws LIMSRuntimeException {
 			// not case sensitive hemolysis and Hemolysis are considered
 			// duplicates
 			String sql = "from Test t where ((trim(lower(t.testName)) = :param and t.isActive='Y' and t.id != :param2) or (trim(lower(t.description)) = :param3 and t.isActive='Y' and t.id != :param2))";
-			org.hibernate.Query query = HibernateUtil.getSession().createQuery(
+			Query query = HibernateUtil.getSession().createQuery(
 					sql);
 			query.setParameter("param", test.getTestName().toLowerCase().trim());
 
@@ -970,7 +971,7 @@ public Test getActiveTestById(Integer testId) throws LIMSRuntimeException {
 			Test testWithHighestSortOrder = null;
 
 			String sql = "from Test t where t.testSection = :param and t.sortOrder is not null order by t.sortOrder desc";
-			org.hibernate.Query query = HibernateUtil.getSession().createQuery(
+			Query query = HibernateUtil.getSession().createQuery(
 					sql);
 			query.setParameter("param", test.getTestSection());
 
@@ -994,20 +995,24 @@ public Test getActiveTestById(Integer testId) throws LIMSRuntimeException {
 	}
 
 	public String getNameForTestId(String id) {
-		if( ID_NAME_MAP == null){
-			loadMaps();
-		}
-
-		return ID_NAME_MAP != null ? ID_NAME_MAP.get(id) : id;
+        loadMapsSynchronized(ID_NAME_MAP);
+        return ID_NAME_MAP != null ? ID_NAME_MAP.get(id) : id;
 	}
 
 	public String getDescriptionForTestId(String id) {
-		if( ID_DESCRIPTION_MAP == null){
-			loadMaps();
-		}
-
+        loadMapsSynchronized(ID_DESCRIPTION_MAP);
 		return ID_DESCRIPTION_MAP != null ? ID_DESCRIPTION_MAP.get(id) : id;
 	}
+
+    private void loadMapsSynchronized(Object description) {
+        if (description == null) {
+            synchronized (LOCK_OBJECT) {
+                if (description == null) {
+                    loadMaps();
+                }
+            }
+        }
+    }
 
 	private void loadMaps(){
 		List allTests = getAllTests(false);
@@ -1026,8 +1031,10 @@ public Test getActiveTestById(Integer testId) throws LIMSRuntimeException {
 	}
 
 	private void clearIDMaps(){
-		ID_NAME_MAP = null;
-		ID_DESCRIPTION_MAP = null;
+        synchronized (LOCK_OBJECT) {
+            ID_NAME_MAP = null;
+            ID_DESCRIPTION_MAP = null;
+        }
 	}
 
     /**
@@ -1044,7 +1051,7 @@ public Test getActiveTestById(Integer testId) throws LIMSRuntimeException {
             // I didn't manage to get a query parameter to be used as a column name to sort by (because ORDER BY "my_column" is not valid SQL).
             // so I had to generate the HQL manually, but only after the above check.
             String hql = "from Test t where t.isActive='Y' ORDER BY " + columnName;
-            org.hibernate.Query query = HibernateUtil.getSession().createQuery(hql);
+            Query query = HibernateUtil.getSession().createQuery(hql);
             hql = query.getQueryString();
             entities = query.list();
             closeSession();

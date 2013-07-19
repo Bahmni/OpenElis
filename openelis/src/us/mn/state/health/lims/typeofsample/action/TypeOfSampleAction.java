@@ -92,7 +92,7 @@ public class TypeOfSampleAction extends BaseAction {
 			// end of logic to enable next or previous button
 
 		} else { // this is a new typeOfSample
-
+            typeOfSample.setIsActive(YES);
 			isNew = true; // this is to set correct page title
 
 		}

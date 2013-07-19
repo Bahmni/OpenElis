@@ -87,17 +87,18 @@ public class TypeOfSampleUpdateAction extends BaseAction {
 			return mapping.findForward(FWD_FAIL);
 		}
 
-		String start = (String) request.getParameter("startingRecNo");
-		String direction = (String) request.getParameter("direction");
+		String start = request.getParameter("startingRecNo");
+		String direction = request.getParameter("direction");
 
 		TypeOfSample typeOfSample = new TypeOfSample();
 		//get sysUserId from login module
 		UserSessionData usd = (UserSessionData)request.getSession().getAttribute(USER_SESSION_DATA);
 		String sysUserId = String.valueOf(usd.getSystemUserId());	
-		typeOfSample.setSysUserId(sysUserId);			
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();	
+		typeOfSample.setSysUserId(sysUserId);
+        typeOfSample.setIsActive(dynaForm.getString("isActive"));
+		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
 		
-		List domains = new ArrayList();
+		List domains;
 		if (dynaForm.get("domains") != null) {
 			domains = (List) dynaForm.get("domains");
 		} else {
@@ -179,7 +180,7 @@ public class TypeOfSampleUpdateAction extends BaseAction {
 
 		if (typeOfSample.getId() != null && !typeOfSample.getId().equals("0")) {
 			request.setAttribute(ID, typeOfSample.getId());
-
+            id = typeOfSample.getId();
 		}
 
 		//bugzilla 1400

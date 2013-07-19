@@ -13,10 +13,10 @@ import java.util.*;
 public class DateNumAccessionValidator implements IAccessionNumberValidator {
 
     private static String nextAccessionNumber;
-    private static Object LOCK_OBJECT = new Object();
+    private static final Object LOCK_OBJECT = new Object();
     private SampleDAO sampleDAO = new SampleDAOImpl();
 
-    private enum AccessionNumberState{
+    private enum AccessionNumberState {
         NEW,
         CURRENT_HEIGHEST,
     }
@@ -73,7 +73,7 @@ public class DateNumAccessionValidator implements IAccessionNumberValidator {
 
     @Override
     public String createFirstAccessionNumber(String programCode) {
-        return getDatePrefix()+ "001";
+        return getDatePrefix() + "001";
     }
 
     @Override
@@ -87,22 +87,24 @@ public class DateNumAccessionValidator implements IAccessionNumberValidator {
 
     @Override
     public String getNextAvailableAccessionNumber(String programCode) {
-
+        // This part relevant when the application gets initialized. The following section would always be skipped after the number has been initialized
         if (nextAccessionNumber == null || hasNextAccessionNumberExpired()) {
             synchronized (LOCK_OBJECT) {
-                return  generateNextAccessionNumber();
+                return generateNextAccessionNumber();
             }
         }
-        synchronized (LOCK_OBJECT) {
-            nextAccessionNumber = incrementAccessionNumber(nextAccessionNumber);
-            return nextAccessionNumber;
+        // This part relevant when the application tries to get next accessnumber
+        if (nextAccessionNumber == null || nextAccessionNumber.isEmpty()) {
+            synchronized (LOCK_OBJECT) {
+                nextAccessionNumber = incrementAccessionNumber(nextAccessionNumber);
+            }
         }
-
+        return nextAccessionNumber;
     }
 
 
-    private String generateNextAccessionNumber(){
-        String accessionNumber =null;
+    private String generateNextAccessionNumber() {
+        String accessionNumber = null;
         if (nextAccessionNumber == null || hasNextAccessionNumberExpired()) {
             accessionNumber = sampleDAO.getLargestAccessionNumberWithPrefix(getDatePrefix());
             if (accessionNumber == null) {
@@ -115,6 +117,7 @@ public class DateNumAccessionValidator implements IAccessionNumberValidator {
         nextAccessionNumber = incrementAccessionNumber(nextAccessionNumber);
         return nextAccessionNumber;
     }
+
     @Override
     public int getMaxAccessionLength() {
         return 13;
@@ -147,15 +150,16 @@ public class DateNumAccessionValidator implements IAccessionNumberValidator {
     }
 
 
-    private String getDatePrefix(){
-        return  new SimpleDateFormat("ddMMyyyy").format(new Date()) +"-";
+    private String getDatePrefix() {
+        return new SimpleDateFormat("ddMMyyyy").format(new Date()) + "-";
     }
-    private boolean hasNextAccessionNumberExpired(){
+
+    private boolean hasNextAccessionNumberExpired() {
         String prefix = getDatePrefix();
         return !nextAccessionNumber.startsWith(prefix);
     }
 
-    static void resetAccessionNumber(){
+    static void resetAccessionNumber() {
         nextAccessionNumber = null;
     }
 }

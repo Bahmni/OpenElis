@@ -31,8 +31,6 @@
             <column name="METHOD_NAME" length="20" />
         </property>
         
-        <property name="testId" column="test_id" type="us.mn.state.health.lims.hibernate.resources.usertype.LIMSStringNumberUserType" />
-        
     </class>
     <query name="panelitem.getNext">
          from PanelItem pi order by pi.panel.panelName, pi.testName

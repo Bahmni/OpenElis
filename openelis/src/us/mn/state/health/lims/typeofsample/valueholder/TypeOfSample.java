@@ -83,16 +83,20 @@ public class TypeOfSample extends BaseObject {
 		return isActive;
 	}
 
-	public void setActive(boolean isActive) {
-		this.isActive = isActive;
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public boolean getActive() {
+        return isActive;
+    }
+
+	public String getIsActive() {
+		return isActive ? "Y" : "N";
 	}
 
-	public boolean getIsActive() {
-		return isActive;
-	}
-
-	public void setIsActive(boolean isActive) {
-		this.isActive = isActive;
+	public void setIsActive(String isActive) {
+		this.isActive = isActive.equalsIgnoreCase("Y");
 	}
 	
 	public int getSortOrder() {

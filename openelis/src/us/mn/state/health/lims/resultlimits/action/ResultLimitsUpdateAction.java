@@ -80,32 +80,29 @@ public class ResultLimitsUpdateAction extends BaseAction {
 
 		// return mapping.findForward(FWD_FAIL);
 		// }
+        org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
 
+        try {
 
-		ResultLimitsLink limitsLink = (ResultLimitsLink) dynaForm.get("limit");
-		ResultLimit resultLimit = limitsLink.populateResultLimit(null);
-		Test test = getTest( limitsLink);
+            ResultLimitsLink limitsLink = (ResultLimitsLink) dynaForm.get("limit");
+            ResultLimit resultLimit = limitsLink.populateResultLimit(null);
 
-		//the session.merge is not loading the resultLimit from the DB correctly
-		//I don't understand why but this block is the workaround until I do.
-		if (!newLimit) {
-			ResultLimitDAO resultLimitDAO = new ResultLimitDAOImpl();
-			resultLimitDAO.getData(resultLimit);
-			limitsLink.populateResultLimit(resultLimit);
-		}
+            //the session.merge is not loading the resultLimit from the DB correctly
+            //I don't understand why but this block is the workaround until I do.
+            if (!newLimit) {
+                ResultLimitDAO resultLimitDAO = new ResultLimitDAOImpl();
+                resultLimitDAO.getData(resultLimit);
+                limitsLink.populateResultLimit(resultLimit);
+            }
 
-		resultLimit.setSysUserId(getSysUserId(request));
+            resultLimit.setSysUserId(getSysUserId(request));
 
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
+            persistLimit(resultLimit);
 
-		try {
-			persistLimit(resultLimit);
-			persistTest(test);
+            tx.commit();
 
-			tx.commit();
-
-			forward = FWD_SUCCESS_INSERT;
-		} catch (LIMSRuntimeException lre) {
+            forward = FWD_SUCCESS_INSERT;
+        } catch (LIMSRuntimeException lre) {
 			tx.rollback();
 			errors = new ActionMessages();
 			ActionError error = null;
@@ -130,24 +127,6 @@ public class ResultLimitsUpdateAction extends BaseAction {
 			HibernateUtil.closeSession();
 		}
 		return forward;
-	}
-
-	private Test getTest(ResultLimitsLink limitsLink) {
-		Test test = new Test();
-		test.setId(limitsLink.getTestId());
-		testDAO.getData(test);
-		UnitOfMeasureDAO uofDAO = new UnitOfMeasureDAOImpl();
-		UnitOfMeasure uom = new UnitOfMeasure();
-		uom = uofDAO.getUnitOfMeasureByName(uom);
-
-		if( test.getId() != null &&
-			((test.getUnitOfMeasure() != null && !test.getUnitOfMeasure().getId().equals(uom.getId()))||
-			test.getUnitOfMeasure() == null)	){
-			test.setUnitOfMeasure(uom);
-			return test;
-		}
-
-		return null;
 	}
 
 	private void persistLimit(ResultLimit resultLimit) {

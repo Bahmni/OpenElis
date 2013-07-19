@@ -38,6 +38,8 @@ import us.mn.state.health.lims.scriptlet.daoimpl.ScriptletDAOImpl;
 import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 import us.mn.state.health.lims.test.valueholder.Test;
+import us.mn.state.health.lims.unitofmeasure.daoimpl.UnitOfMeasureDAOImpl;
+import us.mn.state.health.lims.unitofmeasure.valueholder.UnitOfMeasure;
 
 /**
  * @author diane benz
@@ -79,6 +81,8 @@ public class TestAction extends BaseAction {
 		// initialize the form
 		dynaForm.initialize(mapping);
 
+        List<UnitOfMeasure> allUnitOfMeasures = (List<UnitOfMeasure>)(new UnitOfMeasureDAOImpl().getAllUnitOfMeasures());
+        PropertyUtils.setProperty(form, "unitOfMeasureList", allUnitOfMeasures);
 		Test test = new Test();
 
 		if ((id != null) && (!"0".equals(id))) { // this is an existing
@@ -177,6 +181,8 @@ public class TestAction extends BaseAction {
 		Collections.sort(labels, LabelComparator.NAME_COMPARATOR);		
 		PropertyUtils.setProperty(form, "scriptlets", scriptlets);
 		PropertyUtils.setProperty(form, "labels", labels);
+        PropertyUtils.setProperty(form, "unitOfMeasureId", test.getUnitOfMeasure().getId());
+
 		
 		PropertyUtils.copyProperties(dynaForm, test);
 

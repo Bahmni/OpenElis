@@ -28,6 +28,7 @@ public class PanelItem extends EnumValueItemImpl {
 	private String id;
 
 	private ValueHolderInterface panel;
+
 	private ValueHolderInterface test;
 
 	private String panelName;
@@ -40,8 +41,6 @@ public class PanelItem extends EnumValueItemImpl {
 
 	private String testName;
 
-	private String testId;
-	
 	public PanelItem() {
 		super();
 		this.panel = new ValueHolder();
@@ -124,13 +123,4 @@ public class PanelItem extends EnumValueItemImpl {
 	public void setTest(Test test) {
 		this.test.setValue(test);
 	}
-
-	public String getTestId() {
-		return testId;
-	}
-
-	public void setTestId(String testId) {
-		this.testId = testId;
-	}
-
 }

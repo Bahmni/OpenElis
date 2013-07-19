@@ -21,6 +21,7 @@ import us.mn.state.health.lims.common.dao.BaseDAO;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.panel.valueholder.Panel;
 import us.mn.state.health.lims.panelitem.valueholder.PanelItem;
+import us.mn.state.health.lims.test.valueholder.Test;
 
 /**
  * @author diane benz
@@ -62,5 +63,5 @@ public interface PanelItemDAO extends BaseDAO {
 
 	public List getPanelItemsForPanel(String panelId) throws LIMSRuntimeException;
 
-	public List<PanelItem> getPanelItemByTestId(String id) throws LIMSRuntimeException;
+	public List<PanelItem> getPanelItemByTest(Test test) throws LIMSRuntimeException;
 }

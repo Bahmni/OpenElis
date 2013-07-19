@@ -22,9 +22,11 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
+import org.hibernate.Transaction;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
+import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSamplePanelDAO;
 import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSamplePanelDAOImpl;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSamplePanel;
@@ -68,16 +70,24 @@ public class TypeOfSamplePanelUpdateAction extends BaseAction {
 		samplePanel.setPanelId(panelId);
 		samplePanel.setTypeOfSampleId(typeOfSampleId);
 		samplePanel.setSysUserId(currentUserId);
+
+        Transaction tx = HibernateUtil.getSession().beginTransaction();
 		
 		TypeOfSamplePanelDAO samplePanelDAO = new TypeOfSamplePanelDAOImpl();
 		try{
 			samplePanelDAO.insertData(samplePanel);
-		} catch (LIMSRuntimeException lre) {
-			
-		}
+            tx.commit();
+            forward = FWD_SUCCESS_INSERT;
+        } catch (LIMSRuntimeException lre) {
+            //bugzilla 2154
+            tx.rollback();
+            forward = FWD_FAIL;
+        }
+        finally {
+            HibernateUtil.closeSession();
+        }
 
-		forward = FWD_SUCCESS_INSERT;
-		
+
 		return getForward(mapping.findForward(forward), id, start, direction);
 
 	}

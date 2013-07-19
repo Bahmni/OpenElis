@@ -110,14 +110,25 @@ function getNextSortOrder() {
 							<html:textarea name="<%=formName%>" property="description" cols="40" rows="2" onkeyup="this.value=this.value.slice(0,60)"/>
 						</td>
 		 </tr>
-          <tr>
-						<td class="label">
-							<bean:message key="test.isActive"/>:<span class="requiredlabel">*</span>
-						</td>	
-						<td width="1">
-							<html:text name="<%=formName%>" property="isActive" size="1" onblur="this.value=this.value.toUpperCase()"/>
-						</td>
-          </tr>
+      <tr>
+      	<td class="label">
+      		<bean:message key="test.isActive"/>:<span class="requiredlabel">*</span>
+      	</td>	
+      	<td width="1">
+      		<html:text name="<%=formName%>" property="isActive" size="1" onblur="this.value=this.value.toUpperCase()"/>
+      	</td>
+      </tr>
+    <tr>
+        <td class="label">
+            <bean:message key="test.unitOfMeasure"/>:<span class="requiredlabel">*</span>
+        </td>
+        <td width="1">
+            <html:select name="<%=formName%>" property="unitOfMeasureId" value="unitOfMeasureId">
+                <html:optionsCollection name="<%=formName%>" property="unitOfMeasureList" label="unitOfMeasureName" value="id" />
+            </html:select>
+        </td>
+    </tr>
+        <tr>
           <%--bugzilla 1784 adding isReportable on test and required--%>
 		<td>&nbsp;</td>
 		</tr>

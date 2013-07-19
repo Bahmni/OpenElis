@@ -44,7 +44,8 @@ public class PanelDAOImpl extends BaseDAOImpl implements PanelDAO {
 
 	private static Map<String, String> ID_NAME_MAP = null;
 	private static Map<String, String> ID_DESCRIPTION_MAP = null;
-	
+    private static final Object LOCK_OBJECT = new Object();
+
 	public void deleteData(List panels) throws LIMSRuntimeException {
 		//add to audit trail
 		try {
@@ -408,19 +409,27 @@ public class PanelDAOImpl extends BaseDAOImpl implements PanelDAO {
 	}
 	
 	public String getNameForPanelId(String id) {
-		if( ID_NAME_MAP == null){
-			loadMaps();
-		}
-		
-		return ID_NAME_MAP != null ? ID_NAME_MAP.get(id) : id;
-	}
+        if (ID_NAME_MAP == null) {
+            synchronized (LOCK_OBJECT) {
+                if (ID_NAME_MAP == null) {
+                    loadMaps();
+                }
+            }
+        }
+
+        return ID_NAME_MAP != null ? ID_NAME_MAP.get(id) : id;
+    }
 	
 	public String getDescriptionForPanelId(String id) {
-		if( ID_DESCRIPTION_MAP == null){
-			loadMaps();
-		}
-		
-		return ID_DESCRIPTION_MAP != null ? ID_DESCRIPTION_MAP.get(id) : id;
+        if (ID_DESCRIPTION_MAP == null) {
+            synchronized (LOCK_OBJECT) {
+                if (ID_DESCRIPTION_MAP == null) {
+                    loadMaps();
+                }
+            }
+        }
+
+        return ID_DESCRIPTION_MAP != null ? ID_DESCRIPTION_MAP.get(id) : id;
 	}
 	
 	private void loadMaps(){
@@ -440,8 +449,10 @@ public class PanelDAOImpl extends BaseDAOImpl implements PanelDAO {
 	}
 	
 	private void clearIDMaps(){
-		ID_NAME_MAP = null;
-		ID_DESCRIPTION_MAP = null;
+        synchronized (LOCK_OBJECT) {
+            ID_NAME_MAP = null;
+            ID_DESCRIPTION_MAP = null;
+        }
 	}
 
 	public Panel getPanelByName(String panelName) {

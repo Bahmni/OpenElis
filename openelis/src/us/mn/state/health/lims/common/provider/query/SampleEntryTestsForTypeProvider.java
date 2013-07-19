@@ -209,8 +209,8 @@ public class SampleEntryTestsForTypeProvider extends BaseQueryProvider {
 	private String getDerivedNameFromPanel(PanelItem item) {
 		//This cover the transition in the DBbetween the panel_item being linked by name
 		//to being linked by id
-		if( item.getTestId() != null){
-			Test test = testDAO.getTestById(item.getTestId());
+		if( item.getTest() != null){
+			Test test = testDAO.getTestById(item.getTest().getId());
 			if( test != null){
 				return test.getTestName();
 			}

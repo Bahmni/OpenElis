@@ -403,7 +403,7 @@ public class PanelItemDAOImpl extends BaseDAOImpl implements PanelItemDAO {
 	//bugzilla 2207
 	public boolean getDuplicateSortOrderForPanel(PanelItem panelItem) throws LIMSRuntimeException {
 		try {
-			List list = new ArrayList();
+			List list ;
 
 			// not case sensitive hemolysis and Hemolysis are considered
 			// duplicates
@@ -483,12 +483,12 @@ public class PanelItemDAOImpl extends BaseDAOImpl implements PanelItemDAO {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<PanelItem> getPanelItemByTestId(String testId) throws LIMSRuntimeException {
-		String sql = "From PanelItem pi where pi.testId= :testId";
+	public List<PanelItem> getPanelItemByTest(Test test) throws LIMSRuntimeException {
+		String sql = "From PanelItem pi where pi.test= :pTest";
 		
 		try {
 			Query query = HibernateUtil.getSession().createQuery(sql);
-			query.setInteger("testId", Integer.parseInt(testId));
+            query.setParameter("pTest", test);
 			List<PanelItem> panelItems = query.list();
 			closeSession();
 			return panelItems;

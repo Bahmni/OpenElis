@@ -55,6 +55,8 @@ import us.mn.state.health.lims.testtrailer.dao.TestTrailerDAO;
 import us.mn.state.health.lims.testtrailer.daoimpl.TestTrailerDAOImpl;
 import us.mn.state.health.lims.testtrailer.valueholder.TestTrailer;
 import us.mn.state.health.lims.typeofsample.util.TypeOfSampleUtil;
+import us.mn.state.health.lims.unitofmeasure.daoimpl.UnitOfMeasureDAOImpl;
+import us.mn.state.health.lims.unitofmeasure.valueholder.UnitOfMeasure;
 
 /**
  * @author diane benz
@@ -120,6 +122,12 @@ public class TestUpdateAction extends BaseAction {
 		org.hibernate.Transaction tx = HibernateUtil.getSession()
 				.beginTransaction();
 
+        UnitOfMeasureDAOImpl unitOfMeasureDAO = new UnitOfMeasureDAOImpl();
+        String unitOfMeasureId = (String) dynaForm.get("unitOfMeasureId");
+        UnitOfMeasure unitOfMeasure = unitOfMeasureDAO.readUnitOfMeasure(unitOfMeasureId);
+
+
+
 		Method method = new Method();
 		String methodName = (String) dynaForm.get("methodName");
 		method.setMethodName((methodName == null)?"":methodName);
@@ -163,6 +171,8 @@ public class TestUpdateAction extends BaseAction {
 		test.setTestTrailer(tt);
 		test.setTestSection(ts);
 		test.setScriptlet(s);
+        test.setOrderable(Boolean.TRUE);
+        test.setUnitOfMeasure(unitOfMeasure);
 
 		try {
 
@@ -234,7 +244,7 @@ public class TestUpdateAction extends BaseAction {
 
 		if (test.getId() != null && !test.getId().equals("0")) {
 			request.setAttribute(ID, test.getId());
-
+            id = test.getId();
 		}
 
 		// bugzilla 1400

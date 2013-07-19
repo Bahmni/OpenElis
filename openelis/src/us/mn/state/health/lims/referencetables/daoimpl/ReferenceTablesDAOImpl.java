@@ -50,7 +50,7 @@ public class ReferenceTablesDAOImpl extends BaseDAOImpl implements ReferenceTabl
 			
 			    ReferenceTables data = (ReferenceTables)referenceTableses.get(i);
 			
-				ReferenceTables oldData = (ReferenceTables)readReferenceTables(data.getId());
+				ReferenceTables oldData = readReferenceTables(data.getId());
 				ReferenceTables newData = new ReferenceTables();
 
 				String sysUserId = data.getSysUserId();
@@ -69,7 +69,7 @@ public class ReferenceTablesDAOImpl extends BaseDAOImpl implements ReferenceTabl
 				
 				ReferenceTables data = (ReferenceTables) referenceTableses.get(i);
 				//bugzilla 2206
-				data = (ReferenceTables)readReferenceTables(data.getId());
+				data = readReferenceTables(data.getId());
 				HibernateUtil.getSession().delete(data);
 				HibernateUtil.getSession().flush();
 				HibernateUtil.getSession().clear();
@@ -269,16 +269,13 @@ public class ReferenceTablesDAOImpl extends BaseDAOImpl implements ReferenceTabl
 		}			
 	
 		return referenceTables;
-		
 	}
 	
 	public List getNextReferenceTablesRecord(String id) throws LIMSRuntimeException {
-
 		return getNextRecord(id, "ReferenceTables", ReferenceTables.class);
 	}
 
 	public List getPreviousReferenceTablesRecord(String id) throws LIMSRuntimeException {
-
 		return getPreviousRecord(id, "ReferenceTables", ReferenceTables.class);
 	}
 	

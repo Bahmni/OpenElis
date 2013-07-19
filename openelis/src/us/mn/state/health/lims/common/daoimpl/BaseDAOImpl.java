@@ -125,7 +125,7 @@ public class BaseDAOImpl implements BaseDAO, IActionConstants{
 	}
 
 	protected void handleException( Exception e, String method) throws LIMSRuntimeException {
-		LogEvent.logError( this.getClass().getSimpleName(), method, e.toString());
+		LogEvent.logErrorStack( this.getClass().getSimpleName(), method, e);
 		throw new LIMSRuntimeException("Error in " + this.getClass().getSimpleName() + " " + method, e);
 	}
 

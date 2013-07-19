@@ -785,7 +785,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 	}
 
 	private Panel getPanelForTest(Test test) {
-		List<PanelItem> panelItems = panelItemDAO.getPanelItemByTestId( test.getId());
+		List<PanelItem> panelItems = panelItemDAO.getPanelItemByTest(test);
 		
 		for( PanelItem panelItem : panelItems){
 			Panel panel = panelIdPanelMap.get(panelItem.getPanel().getId());
