@@ -53,8 +53,8 @@ function validateEntrySize( elementValue ){
 	$("retrieveTestsID").disabled = (elementValue.length == 0);
 }
 
-function setSearch( value ){
-	$("searchID").disabled = value.length == 0;
+function setSearch(){
+    $("searchID").disabled = $jq.grep($jq('td[headers="patient"] input'), function(input){ return input.value.length > 0 }).length === 0;
 }
 
 function doShowTests(){
@@ -253,7 +253,7 @@ function makeExclusive(inputElement){
 			       id="firstName"
 			       class="text"
 			       type="text"
-			       onkeyup="setSearch(this.value); "
+			       onkeyup="setSearch(); "
 			       onblur="makeExclusive(this);"
 			       >
 		</td>
@@ -263,7 +263,7 @@ function makeExclusive(inputElement){
         			       id="lastName"
         			       class="text"
         			       type="text"
-        			       onkeyup="setSearch(this.value); "
+        			       onkeyup="setSearch(); "
         			       onblur="makeExclusive(this);"
         			       >
         		</td>
@@ -274,7 +274,7 @@ function makeExclusive(inputElement){
                            id="lastName"
                            class="text"
                            type="text"
-                           onkeyup="setSearch(this.value); "
+                           onkeyup="setSearch(); "
                            onblur="makeExclusive(this);"
                            >
                 </td>
@@ -284,7 +284,7 @@ function makeExclusive(inputElement){
                                id="firstName"
                                class="text"
                                type="text"
-                               onkeyup="setSearch(this.value); "
+                               onkeyup="setSearch(); "
                                onblur="makeExclusive(this);"
                                >
                     </td>
@@ -295,7 +295,7 @@ function makeExclusive(inputElement){
 			       id="patientID"
 			       class="text"
 			       type="text"
-			       onkeyup="setSearch(this.value); "
+			       onkeyup="setSearch(); "
 			       onblur="makeExclusive(this);">
 		</td>
 <!-- 		<td headers="receptionDate">
@@ -304,7 +304,7 @@ function makeExclusive(inputElement){
 			       id="receptionDate"
 			       class="text"
 			       type="text"
-			       onkeyup="setSearch(this.value); "
+			       onkeyup="setSearch(); "
 			       onblur="makeExclusive(this);">
 		</td>  -->
 	</tr>
