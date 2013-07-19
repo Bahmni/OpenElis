@@ -8,7 +8,6 @@ import junit.framework.Assert;
 import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoImpl;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
-import org.bahmni.feed.openelis.feed.event.EventWorkerFactory;
 import org.bahmni.feed.openelis.utils.AtomfeedClientUtils;
 import org.bahmni.feed.openelis.utils.OpenElisConnectionProvider;
 import org.hibernate.Transaction;
@@ -105,14 +104,14 @@ public class OpeneERPLabTestFeedClientIT {
 
     @Test
     public void shouldUpdateMarkerOnProcessingEvents() throws URISyntaxException {
-        when(atomFeedProperties.getFeedUri("openerp.labtest.feed.generator.uri")).thenReturn("http://host/patients/notifications");
+        when(atomFeedProperties.getProperty("openerp.labtest.feed.uri")).thenReturn("http://host/patients/notifications");
         when(allFeedsMock.getFor(notificationsUri)).thenReturn(last);
         when(allFeedsMock.getFor(recentFeedUri)).thenReturn(last);
         when(allFeedsMock.getFor(secondFeedUri)).thenReturn(second);
         when(allFeedsMock.getFor(firstFeedUri)).thenReturn(first);
 
 
-        OpeneERPLabTestFeedClient feedClient = new OpeneERPLabTestFeedClient(atomFeedProperties,atomFeedClient,new EventWorkerFactory());
+        OpenERPLabTestFeedJob feedClient = new OpenERPLabTestFeedJob(atomFeedProperties,atomFeedClient);
         feedClient.processFeed();
 
         Marker marker = allMarkersJdbc.get(notificationsUri);

@@ -51,7 +51,7 @@ public class AtomFeedProperties {
     }
 
 
-    public String getFeedUri(String feedname) {
+    public String getProperty(String feedname) {
         return properties.getProperty(feedname);
     }
 
@@ -62,5 +62,4 @@ public class AtomFeedProperties {
     public String getProductTypePanel(){
         return properties.getProperty(PANEL_EVENT);
     }
-
 }

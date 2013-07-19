@@ -1,7 +1,5 @@
 package org.bahmni.feed.openelis.webclient;
 
-import org.apache.commons.httpclient.HttpStatus;
-import org.ict4h.atomfeed.client.exceptions.AtomFeedClientException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 
 import java.io.BufferedReader;
@@ -11,6 +9,16 @@ import java.net.URI;
 import java.util.Map;
 
 public class WebClient {
+    static {
+        javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(
+                new javax.net.ssl.HostnameVerifier() {
+                    public boolean verify(String hostname,
+                                          javax.net.ssl.SSLSession sslSession) {
+                        return hostname.equals("localhost");
+                    }
+                });
+    }
+
     public String get(URI uri, Map<String, String> headers) {
         HttpURLConnection connection = null;
         StringBuilder stringBuilder = new StringBuilder();
@@ -32,7 +40,7 @@ public class WebClient {
             }
 //            responseCode = connection.getResponseCode();
         } catch (Exception e) {
-            throw new LIMSRuntimeException(e);
+            throw new LIMSRuntimeException(e.getMessage(), e);
         } finally {
             if (connection != null)
                 connection.disconnect();

@@ -79,7 +79,7 @@ public class LIMSRuntimeException extends RuntimeException {
 	 *            the wrapped exception
 	 */
 	public LIMSRuntimeException(Exception pException) {
-		this(null, pException);
+		this(pException.getMessage(), pException);
 	}
 
 	/**
