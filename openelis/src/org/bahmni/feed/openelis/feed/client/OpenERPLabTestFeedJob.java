@@ -6,7 +6,6 @@ import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.feed.event.OpenelisAtomfeedClientServiceEventWorker;
 import org.hibernate.Transaction;
 import org.ict4h.atomfeed.client.service.AtomFeedClient;
-import org.ict4h.atomfeed.client.service.EventWorker;
 import org.joda.time.DateTime;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -42,8 +41,7 @@ public class OpenERPLabTestFeedJob implements Job {
             transaction.rollback();
             logger.error("failed lab test feed execution " + e);
         } finally {
-            HibernateUtil.getSession().flush();
-            HibernateUtil.getSession().clear();
+            HibernateUtil.closeSession();
         }
     }
 

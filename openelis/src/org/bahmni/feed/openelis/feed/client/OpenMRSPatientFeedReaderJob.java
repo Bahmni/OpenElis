@@ -5,10 +5,12 @@ import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.feed.event.PatientFeedWorker;
 import org.bahmni.feed.openelis.webclient.WebClient;
+import org.hibernate.Transaction;
 import org.ict4h.atomfeed.client.service.AtomFeedClient;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import us.mn.state.health.lims.hibernate.HibernateUtil;
 
 import java.net.URI;
 import java.net.URL;
@@ -34,6 +36,7 @@ public class OpenMRSPatientFeedReaderJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+        Transaction transaction = HibernateUtil.getSession().beginTransaction();
         try {
             WebClient webClient = new WebClient();
             URI uri = URI.create(atomFeedProperties.getProperty(AUTH_URI));
@@ -46,9 +49,13 @@ public class OpenMRSPatientFeedReaderJob implements Job {
             URL openMRSAuthURL = new URL(atomFeedProperties.getProperty(AUTH_URI));
             String urlPrefix = String.format("%s://%s", openMRSAuthURL.getProtocol(), openMRSAuthURL.getAuthority());
             atomFeedClient.processEvents(new URI(atomFeedProperties.getProperty(FEED_NAME)), new PatientFeedWorker(webClient, urlPrefix));
+            transaction.commit();
         } catch (Exception e) {
+            transaction.rollback();
             logger.error(e.getMessage(), e);
             throw new JobExecutionException(e);
+        } finally {
+            HibernateUtil.closeSession();
         }
     }
 }
