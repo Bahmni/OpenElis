@@ -53,7 +53,6 @@ public class OpenMRSPatientFeedReaderJob implements Job {
         } catch (Exception e) {
             transaction.rollback();
             logger.error(e.getMessage(), e);
-            throw new JobExecutionException(e);
         } finally {
             HibernateUtil.closeSession();
         }
