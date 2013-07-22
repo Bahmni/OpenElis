@@ -3,12 +3,10 @@ package org.bahmni.feed.openelis.feed.client;
 import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.webclient.WebClient;
-import org.hibernate.Transaction;
 import org.ict4h.atomfeed.client.service.AtomFeedClient;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 
 public class OpenMRSPatientFeedReaderJob implements Job {
     private AtomFeedProperties atomFeedProperties;
@@ -38,15 +36,10 @@ public class OpenMRSPatientFeedReaderJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        Transaction transaction = HibernateUtil.getSession().beginTransaction();
         try {
             atomFeedClient.processEvents();
-            transaction.commit();
         } catch (Exception e) {
-            transaction.rollback();
             logger.error(e.getMessage(), e);
-        } finally {
-            HibernateUtil.closeSession();
         }
     }
 }
