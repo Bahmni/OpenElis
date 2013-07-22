@@ -8,11 +8,13 @@ import junit.framework.Assert;
 import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoImpl;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
+import org.bahmni.feed.openelis.feed.event.OpenELISAtomFeedClientServiceEventWorker;
 import org.bahmni.feed.openelis.utils.AtomfeedClientUtils;
 import org.bahmni.feed.openelis.utils.OpenElisConnectionProvider;
 import org.hibernate.Transaction;
 import org.ict4h.atomfeed.Configuration;
 import org.ict4h.atomfeed.client.domain.Marker;
+import org.ict4h.atomfeed.client.repository.AllFailedEvents;
 import org.ict4h.atomfeed.client.repository.AllFeeds;
 import org.ict4h.atomfeed.client.repository.jdbc.AllFailedEventsJdbcImpl;
 import org.ict4h.atomfeed.client.repository.jdbc.AllMarkersJdbcImpl;
@@ -47,9 +49,9 @@ import static org.mockito.Mockito.when;
 
 public class OpeneERPLabTestFeedClientIT {
     private   AllFeeds allFeedsMock;
+    private AllFailedEvents allFailedEventsMock;
+
     private AtomFeedProperties atomFeedProperties;
-
-
     private AtomFeedClient atomFeedClient;
 
     private URI notificationsUri;
@@ -71,23 +73,27 @@ public class OpeneERPLabTestFeedClientIT {
 
     @Before
     public void setUp() throws URISyntaxException {
+        jdbcConnectionProvider = new OpenElisConnectionProvider();
+
         atomFeedProperties = mock(AtomFeedProperties.class);
         allFeedsMock = mock(AllFeeds.class);
-        jdbcConnectionProvider = new OpenElisConnectionProvider();
+        allFailedEventsMock = mock(AllFailedEvents.class);
+        allMarkersJdbc = new OpenelisAllMarkersJdbcImpl(jdbcConnectionProvider);
+
         externalReferenceDao = new ExternalReferenceDaoImpl();
         testDAO = new TestDAOImpl();
         panelDAO = new PanelDAOImpl();
-        allMarkersJdbc = new OpenelisAllMarkersJdbcImpl(jdbcConnectionProvider);
 
-        atomFeedClient =  new AtomFeedClient(allFeedsMock,allMarkersJdbc,new AllFailedEventsJdbcImpl(jdbcConnectionProvider),true);
+        atomFeedClient = new AtomFeedClient(allFeedsMock, allMarkersJdbc, new AllFailedEventsJdbcImpl(jdbcConnectionProvider),
+                true, jdbcConnectionProvider, new URI("http://host/patients/notifications"), new OpenELISAtomFeedClientServiceEventWorker());
 
         first = new Feed();
         second = new Feed();
         last = new Feed();
 
-        first.setEntries(getEntries(1,3,PANEL_EVENT_CONTENT));
-        second.setEntries(getEntries(4,6,LAB_EVENT_CONTENT));
-        last.setEntries(getEntries(7,9,PANEL_EVENT_CONTENT));
+        first.setEntries(getEntries(1, 3, PANEL_EVENT_CONTENT));
+        second.setEntries(getEntries(4, 6, LAB_EVENT_CONTENT));
+        last.setEntries(getEntries(7, 9, PANEL_EVENT_CONTENT));
 
         notificationsUri = new URI("http://host/patients/notifications");
         recentFeedUri = new URI("http://host/patients/3");
@@ -99,24 +105,22 @@ public class OpeneERPLabTestFeedClientIT {
         second.setOtherLinks(Arrays.asList(getLink("prev-archive", firstFeedUri), getLink("next-archive", recentFeedUri),getLink("self", secondFeedUri),getLink("via", secondFeedUri)));
 
         first.setOtherLinks(Arrays.asList(new Link[]{getLink("next-archive", secondFeedUri),getLink("self", firstFeedUri),getLink("via", firstFeedUri)}));
-
     }
 
     @Test
     public void shouldUpdateMarkerOnProcessingEvents() throws URISyntaxException {
         when(atomFeedProperties.getProperty("openerp.labtest.feed.uri")).thenReturn("http://host/patients/notifications");
+
         when(allFeedsMock.getFor(notificationsUri)).thenReturn(last);
         when(allFeedsMock.getFor(recentFeedUri)).thenReturn(last);
         when(allFeedsMock.getFor(secondFeedUri)).thenReturn(second);
         when(allFeedsMock.getFor(firstFeedUri)).thenReturn(first);
-
 
         OpenERPLabTestFeedJob feedClient = new OpenERPLabTestFeedJob(atomFeedProperties,atomFeedClient);
         feedClient.processFeed();
 
         Marker marker = allMarkersJdbc.get(notificationsUri);
         assertThat(marker.getLastReadEntryId(), is("9"));
-
     }
 
     @After

@@ -1,9 +1,7 @@
 package org.bahmni.feed.openelis.feed.client;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.AtomFeedProperties;
-import org.bahmni.feed.openelis.feed.event.PatientFeedWorker;
 import org.bahmni.feed.openelis.webclient.WebClient;
 import org.hibernate.Transaction;
 import org.ict4h.atomfeed.client.service.AtomFeedClient;
@@ -12,43 +10,37 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 
-import java.net.URI;
-import java.net.URL;
-import java.util.HashMap;
-
 public class OpenMRSPatientFeedReaderJob implements Job {
     private AtomFeedProperties atomFeedProperties;
+    private AtomFeedClient atomFeedClient;
+
     private static final String FEED_NAME = "openmrs.patient.feed.uri";
     private static final String AUTH_URI = "openmrs.auth.uri";
     private static final String OPENMRS_USER = "openmrs.user";
     private static final String OPENMRS_PASSWORD = "openmrs.password";
-    private AtomFeedClient atomFeedClient;
     private static Logger logger = Logger.getLogger(OpenMRSPatientFeedReaderJob.class);
+    private WebClient authenticatedWebClient;
 
     public OpenMRSPatientFeedReaderJob() {
-        this(AtomFeedProperties.getInstance(), AtomFeedClientFactory.getFeedClient());
+        this(AtomFeedProperties.getInstance(), new AtomFeedClientFactory());
     }
 
-    public OpenMRSPatientFeedReaderJob(AtomFeedProperties atomFeedProperties, AtomFeedClient atomFeedClient) {
+    public OpenMRSPatientFeedReaderJob(AtomFeedProperties atomFeedProperties, AtomFeedClientFactory atomFeedClientFactory) {
         this.atomFeedProperties = atomFeedProperties;
-        this.atomFeedClient = atomFeedClient;
+        this.authenticatedWebClient = atomFeedClientFactory.getAuthenticatedWebClient(
+                atomFeedProperties.getProperty(AUTH_URI),
+                atomFeedProperties.getProperty(OPENMRS_USER),
+                atomFeedProperties.getProperty(OPENMRS_PASSWORD)
+                );
+        this.atomFeedClient = atomFeedClientFactory.getMRSPatientFeedClient(atomFeedProperties,
+                FEED_NAME, AUTH_URI, authenticatedWebClient);
     }
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         Transaction transaction = HibernateUtil.getSession().beginTransaction();
         try {
-            WebClient webClient = new WebClient();
-            URI uri = URI.create(atomFeedProperties.getProperty(AUTH_URI));
-            HashMap<String, String> headers = new HashMap<String, String>();
-            String authorizationHeaderValue = String.format("Basic %s:%s", atomFeedProperties.getProperty(OPENMRS_USER), atomFeedProperties.getProperty(OPENMRS_PASSWORD));
-            headers.put("Authorization", new String(Base64.encodeBase64(authorizationHeaderValue.getBytes())));
-            headers.put("Disable-WWW-Authenticate", "true");
-            webClient.get(uri, headers);
-
-            URL openMRSAuthURL = new URL(atomFeedProperties.getProperty(AUTH_URI));
-            String urlPrefix = String.format("%s://%s", openMRSAuthURL.getProtocol(), openMRSAuthURL.getAuthority());
-            atomFeedClient.processEvents(new URI(atomFeedProperties.getProperty(FEED_NAME)), new PatientFeedWorker(webClient, urlPrefix));
+            atomFeedClient.processEvents();
             transaction.commit();
         } catch (Exception e) {
             transaction.rollback();

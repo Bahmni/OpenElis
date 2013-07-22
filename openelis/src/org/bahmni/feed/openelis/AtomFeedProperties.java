@@ -11,6 +11,9 @@ public class AtomFeedProperties {
     private static final String LAB_TEST_EVENT = "productType.labTest";
     private static final String PANEL_EVENT = "productType.panel";
 
+    private static final String WEB_CONNECT_TIMEOUT = "connectionTimeoutInMilliseconds";
+    private static final String WEB_REPLY_TIMEOUT = "replyTimeoutInMilliseconds";
+
     public static final String DEFAULT_PROPERTY_FILENAME = "/atomfeed.properties";
 
     private Properties properties;
@@ -61,5 +64,13 @@ public class AtomFeedProperties {
 
     public String getProductTypePanel(){
         return properties.getProperty(PANEL_EVENT);
+    }
+
+    public String getWebConnectionTimeout(){
+        return properties.getProperty(WEB_CONNECT_TIMEOUT);
+    }
+
+    public String getWebReplyTimeout(){
+        return properties.getProperty(WEB_REPLY_TIMEOUT);
     }
 }
