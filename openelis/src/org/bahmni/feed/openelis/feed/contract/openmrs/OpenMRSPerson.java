@@ -9,7 +9,7 @@ public class OpenMRSPerson {
     private String gender;
     private Date birthdate;
     private OpenMRSPersonAddress preferredAddress;
-    private List<OpenMRSPersonAttribute> attributes;
+    private OpenMRSPersonAttributes attributes;
 
     public OpenMRSPersonAddress getPreferredAddress() {
         return preferredAddress;
@@ -24,7 +24,7 @@ public class OpenMRSPerson {
     }
 
     public void setAttributes(List<OpenMRSPersonAttribute> attributes) {
-        this.attributes = attributes;
+        this.attributes = new OpenMRSPersonAttributes(attributes);
     }
 
     public String getGender() {
@@ -57,5 +57,14 @@ public class OpenMRSPerson {
 
     public void setBirthdate(Date birthdate) {
         this.birthdate = birthdate;
+    }
+
+    public OpenMRSPersonAttribute findAttributeByAttributeTypeDisplayName(String displayName) {
+        for (OpenMRSPersonAttribute personAttribute : attributes) {
+            if (personAttribute.getAttributeType().getDisplay().equals(displayName)) {
+                return personAttribute;
+            }
+        }
+        return null;
     }
 }

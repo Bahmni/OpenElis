@@ -25,6 +25,7 @@ import us.mn.state.health.lims.person.valueholder.Person;
 public interface PersonAddressDAO {
 	public List<PersonAddress> getAddressPartsByPersonId(String personId) throws LIMSRuntimeException;
 	public void insert(PersonAddress personAddress) throws LIMSRuntimeException;
+	public void insert(List<PersonAddress> personAddresses) throws LIMSRuntimeException;
 	public void update(PersonAddress personAddress) throws LIMSRuntimeException;
 	public PersonAddress getByPersonIdAndPartId(String personId, String addressPartId) throws LIMSRuntimeException;
     public void deleteAddressOfPerson(Person person);

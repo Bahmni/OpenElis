@@ -19,6 +19,7 @@ package us.mn.state.health.lims.address.valueholder;
 import org.apache.commons.validator.GenericValidator;
 
 import us.mn.state.health.lims.common.valueholder.BaseObject;
+import us.mn.state.health.lims.person.valueholder.Person;
 
 public class PersonAddress extends BaseObject {
 
@@ -29,7 +30,16 @@ public class PersonAddress extends BaseObject {
 	private String value;
 	private String uniqueIdentifyer;
 
-	public AddressPK getCompoundId() {
+    public static PersonAddress create(Person person, AddressParts addressParts, String partName, String value) {
+        AddressPart addressPart = addressParts.find(partName);
+        PersonAddress personAddress = new PersonAddress();
+        personAddress.setAddressPartId(addressPart.getId());
+        personAddress.setPersonId(person.getId());
+        personAddress.setValue(value);
+        return personAddress;
+    }
+
+    public AddressPK getCompoundId() {
 		return compoundId;
 	}
 	public void setCompoundId(AddressPK compoundId) {

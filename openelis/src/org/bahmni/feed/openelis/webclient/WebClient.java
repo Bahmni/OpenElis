@@ -9,16 +9,6 @@ import java.net.URI;
 import java.util.Map;
 
 public class WebClient {
-    static {
-        javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(
-                new javax.net.ssl.HostnameVerifier() {
-                    public boolean verify(String hostname,
-                                          javax.net.ssl.SSLSession sslSession) {
-                        return hostname.equals("localhost");
-                    }
-                });
-    }
-
     public String get(URI uri, Map<String, String> headers) {
         HttpURLConnection connection = null;
         StringBuilder stringBuilder = new StringBuilder();

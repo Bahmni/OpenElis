@@ -4,11 +4,12 @@ import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPatient;
 import org.bahmni.feed.openelis.feed.service.impl.BahmniPatientService;
 import org.bahmni.feed.openelis.webclient.WebClient;
 import org.ict4h.atomfeed.client.domain.Event;
+import us.mn.state.health.lims.address.daoimpl.AddressPartDAOImpl;
 import us.mn.state.health.lims.address.daoimpl.PersonAddressDAOImpl;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
-import us.mn.state.health.lims.patient.dao.PatientDAO;
 import us.mn.state.health.lims.patient.daoimpl.PatientDAOImpl;
 import us.mn.state.health.lims.patientidentity.daoimpl.PatientIdentityDAOImpl;
+import us.mn.state.health.lims.patientidentitytype.daoimpl.PatientIdentityTypeDAOImpl;
 import us.mn.state.health.lims.person.daoimpl.PersonDAOImpl;
 
 import java.io.IOException;
@@ -30,8 +31,9 @@ public class PatientFeedWorker extends MyEventWorker {
         try {
             String content = event.getContent();
             String patientJSON = webClient.get(URI.create(urlPrefix + content), new HashMap<String, String>(0));
-            OpenMRSPatient openMRSPatient = objectMapper.readValue(event.getContent(), OpenMRSPatient.class);
-            BahmniPatientService bahmniPatientService = new BahmniPatientService(new PatientDAOImpl(), new PersonDAOImpl(), new PatientIdentityDAOImpl(), new PersonAddressDAOImpl());
+            OpenMRSPatient openMRSPatient = objectMapper.readValue(patientJSON, OpenMRSPatient.class);
+            BahmniPatientService bahmniPatientService = new BahmniPatientService(new PatientDAOImpl(), new PersonDAOImpl(), new PatientIdentityDAOImpl(),
+                    new PersonAddressDAOImpl(), new AddressPartDAOImpl(), new PatientIdentityTypeDAOImpl());
             bahmniPatientService.create(openMRSPatient);
         } catch (IOException e) {
             throw new LIMSRuntimeException(e);

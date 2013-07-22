@@ -48,39 +48,39 @@
         <delete schemaName="clinlims" tableName="address_part"></delete>
         <insert schemaName="clinlims" tableName="address_part">
             <column name="id" valueNumeric=" nextVal( 'address_part_seq' ) "/>
-            <column name="part_name" value="houseNumber"/>
+            <column name="part_name" value="level1"/>
             <column name="display_order" value="1"/>
-            <column name="display_key" value="address.houseNumber"/>
+            <column name="display_key" value="address.level1"/>
         </insert>
         <insert schemaName="clinlims" tableName="address_part">
             <column name="id" valueNumeric=" nextVal( 'address_part_seq' ) "/>
-            <column name="part_name" value="village"/>
+            <column name="part_name" value="level2"/>
             <column name="display_order" value="2"/>
-            <column name="display_key" value="address.village"/>
+            <column name="display_key" value="address.level2"/>
         </insert>
         <insert schemaName="clinlims" tableName="address_part">
             <column name="id" valueNumeric=" nextVal( 'address_part_seq' ) "/>
-            <column name="part_name" value="gramPanchayat"/>
+            <column name="part_name" value="level3"/>
             <column name="display_order" value="3"/>
-            <column name="display_key" value="address.gPanchayat"/>
+            <column name="display_key" value="address.level3"/>
         </insert>
         <insert schemaName="clinlims" tableName="address_part">
             <column name="id" valueNumeric=" nextVal( 'address_part_seq' ) "/>
-            <column name="part_name" value="tehsil"/>
+            <column name="part_name" value="level4"/>
             <column name="display_order" value="4"/>
-            <column name="display_key" value="address.tehsil"/>
+            <column name="display_key" value="address.level4"/>
         </insert>
         <insert schemaName="clinlims" tableName="address_part">
             <column name="id" valueNumeric=" nextVal( 'address_part_seq' ) "/>
             <column name="part_name" value="district"/>
             <column name="display_order" value="5"/>
-            <column name="display_key" value="address.district"/>
+            <column name="display_key" value="address.level5"/>
         </insert>
         <insert schemaName="clinlims" tableName="address_part">
             <column name="id" valueNumeric=" nextVal( 'address_part_seq' ) "/>
             <column name="part_name" value="state"/>
             <column name="display_order" value="6"/>
-            <column name="display_key" value="address.state"/>
+            <column name="display_key" value="address.level6"/>
         </insert>
     </changeSet>
 
@@ -114,9 +114,9 @@
             <column name="event_id" type="varchar(255)"/>
             <column name="event_content" type="varchar(4000)"/>
             <column name="failed_at" type="timestamp(6) without time zone"/>
-    	</createTable>
+        </createTable>
 
-	    <createTable schemaName="clinlims" tableName="markers" >
+        <createTable schemaName="clinlims" tableName="markers">
             <column name="id" type="numeric(10,0)" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -129,9 +129,9 @@
             <column name="last_read_entry_id" type="varchar(250)">
                 <constraints nullable="false"/>
             </column>
-    	</createTable>
+        </createTable>
 
-	    <createTable schemaName="clinlims" tableName="external_reference" >
+        <createTable schemaName="clinlims" tableName="external_reference">
             <column name="id" type="numeric(10,0)" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -144,7 +144,7 @@
             <column name="type" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
-    	</createTable>
+        </createTable>
     </changeSet>
 
     <changeSet id="8" author="tw" runOnChange="true" context="bahmni">
@@ -153,7 +153,7 @@
                 constraintName="unique_ids"
                 schemaName="clinlims"
                 tableName="external_reference"
-        />
+                />
     </changeSet>
 
     <changeSet id="9" author="tw" runOnChange="true" context="bahmni">
@@ -194,15 +194,15 @@
     </changeSet>
 
     <changeSet id="13" author="tw" runOnChange="true" context="bahmni">
-        <createTable schemaName="clinlims" tableName="HEALTH_CENTER" >
+        <createTable schemaName="clinlims" tableName="HEALTH_CENTER">
             <column name="id" type="numeric(10,0)" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="name" type="varchar(10)">
-                <constraints nullable="false" unique="true" />
+                <constraints nullable="false" unique="true"/>
             </column>
-            <column name="description" type="varchar(50)" />
-            <column name="active" type="boolean" />
+            <column name="description" type="varchar(50)"/>
+            <column name="active" type="boolean"/>
         </createTable>
 
         <insert schemaName="clinlims" tableName="HEALTH_CENTER">
@@ -237,7 +237,7 @@
         </insert>
     </changeSet>
     <changeSet id="14" author="tw" runOnChange="true" context="bahmni">
-	 <insert schemaName="clinlims" tableName="TEST_SECTION">
+        <insert schemaName="clinlims" tableName="TEST_SECTION">
             <column name="id" valueNumeric=" nextval( 'test_section_seq' ) "/>
             <column name="name" value="New"/>
             <column name="description" value="Dummy Section"/>
@@ -245,8 +245,4 @@
             <column name="is_active" value="N"/>
         </insert>
     </changeSet>
-
-
-
-
 </databaseChangeLog>

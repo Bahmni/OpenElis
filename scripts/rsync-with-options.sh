@@ -1,1 +1,1 @@
-rsync -rh --progress -i --itemize-changes --update --delete --perms --executability --exclude=.svn --exclude='*.class' $*
+rsync -rh --progress -i --itemize-changes --update --delete --perms --executability --exclude=.svn --exclude='*.class' --exclude='*.war' $*
