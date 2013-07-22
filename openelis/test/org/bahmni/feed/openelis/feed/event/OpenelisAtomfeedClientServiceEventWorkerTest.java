@@ -38,11 +38,11 @@ public class OpenelisAtomFeedClientServiceEventWorkerTest {
     ExternalReferenceDaoImpl externalReferenceDao;
 
 
-    OpenelisAtomFeedClientServiceEventWorker eventWorker;
+    OpenelisAtomfeedClientServiceEventWorker eventWorker;
     @Before
     public void setUp(){
         initMocks(this);
-        eventWorker = new OpenelisAtomFeedClientServiceEventWorker();
+        eventWorker = new OpenelisAtomfeedClientServiceEventWorker();
         externalReferenceDao = new ExternalReferenceDaoImpl();
     }
 
