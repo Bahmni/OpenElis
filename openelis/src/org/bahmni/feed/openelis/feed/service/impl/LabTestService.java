@@ -38,6 +38,7 @@ public class LabTestService implements LabService {
         ExternalReference data = externalReferenceDao.getData(labObject.getExternalId(),labObject.getCategory());
         if(data ==null) {
             testDAO.insertData(test);
+            updateSection(test);
             if(isNotEmpty(test)){
                 data = new ExternalReference(Long.parseLong(test.getId()),labObject.getExternalId(),labProductType);
             }
@@ -49,6 +50,19 @@ public class LabTestService implements LabService {
             updateTestFieldsIfNotEmpty(test, activeTestById);
             testDAO.updateData(activeTestById);
         }
+    }
+
+    private void updateSection(Test test) {
+        String sysUserId = test.getSysUserId();
+        test = testDAO.getTestByName(test);
+        test.setSysUserId(sysUserId);
+
+        TestSection section = sectionDAO.getTestSectionByName("New");
+        if(section != null){
+            test.setTestSection(section);
+            test.setTestSectionName(section.getTestSectionName());
+        }
+        testDAO.updateData(test);
     }
 
     private boolean isNotEmpty(Test test) {
@@ -64,10 +78,6 @@ public class LabTestService implements LabService {
         }
         test.setDescription(desc);
         test.setSysUserId(labObject.getSysUserId());
-
-        TestSection section = sectionDAO.getTestSectionByName("New");
-        test.setTestSection(section);
-        test.setTestSectionName(section.getTestSectionName());
 
         return test;
     }
