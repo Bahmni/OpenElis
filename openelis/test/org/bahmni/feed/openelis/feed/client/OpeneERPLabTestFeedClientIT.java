@@ -8,7 +8,7 @@ import junit.framework.Assert;
 import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoImpl;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
-import org.bahmni.feed.openelis.feed.event.OpenELISAtomFeedClientServiceEventWorker;
+import org.bahmni.feed.openelis.feed.event.OpenelisAtomFeedClientServiceEventWorker;
 import org.bahmni.feed.openelis.utils.AtomfeedClientUtils;
 import org.bahmni.feed.openelis.utils.OpenElisConnectionProvider;
 import org.hibernate.Transaction;
@@ -85,7 +85,7 @@ public class OpeneERPLabTestFeedClientIT {
         panelDAO = new PanelDAOImpl();
 
         atomFeedClient = new AtomFeedClient(allFeedsMock, allMarkersJdbc, new AllFailedEventsJdbcImpl(jdbcConnectionProvider),
-                true, jdbcConnectionProvider, new URI("http://host/patients/notifications"), new OpenELISAtomFeedClientServiceEventWorker());
+                true, jdbcConnectionProvider, new URI("http://host/patients/notifications"), new OpenelisAtomFeedClientServiceEventWorker());
 
         first = new Feed();
         second = new Feed();

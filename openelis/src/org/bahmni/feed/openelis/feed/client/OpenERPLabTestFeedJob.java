@@ -3,7 +3,7 @@ package org.bahmni.feed.openelis.feed.client;
 
 import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.AtomFeedProperties;
-import org.bahmni.feed.openelis.feed.event.OpenELISAtomFeedClientServiceEventWorker;
+import org.bahmni.feed.openelis.feed.event.OpenelisAtomFeedClientServiceEventWorker;
 import org.hibernate.Transaction;
 import org.ict4h.atomfeed.client.service.AtomFeedClient;
 import org.joda.time.DateTime;
@@ -27,7 +27,7 @@ public class OpenERPLabTestFeedJob implements Job {
     public OpenERPLabTestFeedJob() {
         this(AtomFeedProperties.getInstance(),
                 AtomFeedClientFactory.getERPLabTestFeedClient(AtomFeedProperties.getInstance(), FEED_NAME,
-                        new OpenELISAtomFeedClientServiceEventWorker()));
+                        new OpenelisAtomFeedClientServiceEventWorker()));
     }
 
     public void processFeed() {

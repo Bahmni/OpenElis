@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 
-public class OpenELISAtomFeedClientServiceEventWorkerTest {
+public class OpenelisAtomFeedClientServiceEventWorkerTest {
     static final String EVENT_CONTENT = " {\"category\": \"Panel\", \"list_price\": \"0.0\", \"name\": \"ECHO\", \"type\": \"service\", \"standard_price\": \"0.0\", \"uom_id\": 1, \"uom_po_id\": 1, \"categ_id\": 33, \"id\": 193}";
 
     @Mock
@@ -38,11 +38,11 @@ public class OpenELISAtomFeedClientServiceEventWorkerTest {
     ExternalReferenceDaoImpl externalReferenceDao;
 
 
-    OpenELISAtomFeedClientServiceEventWorker eventWorker;
+    OpenelisAtomFeedClientServiceEventWorker eventWorker;
     @Before
     public void setUp(){
         initMocks(this);
-        eventWorker = new OpenELISAtomFeedClientServiceEventWorker();
+        eventWorker = new OpenelisAtomFeedClientServiceEventWorker();
         externalReferenceDao = new ExternalReferenceDaoImpl();
     }
 
