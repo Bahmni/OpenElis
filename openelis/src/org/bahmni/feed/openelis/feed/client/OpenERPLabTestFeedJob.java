@@ -38,7 +38,7 @@ public class OpenERPLabTestFeedJob implements Job {
             transaction.commit();
         } catch (Exception e) {
             transaction.rollback();
-            logger.error("failed lab test feed execution " + e);
+            logger.error("failed lab test feed execution " + e, e);
             throw new RuntimeException(e);
         } finally {
             HibernateUtil.closeSession();
