@@ -40,8 +40,10 @@ public class LabPanelService  implements LabService {
         }
         else {
             Panel panelById = panelDAO.getPanelById(String.valueOf(data.getItemId()));
-            updatePanelFieldsIfNotEmpty(panel, panelById);
-            panelDAO.updateData(panelById);
+            if(panelById != null){
+                updatePanelFieldsIfNotEmpty(panel, panelById);
+                panelDAO.updateData(panelById);
+            }
         }
     }
 

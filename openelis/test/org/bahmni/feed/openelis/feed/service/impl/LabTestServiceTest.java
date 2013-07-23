@@ -52,6 +52,9 @@ public class LabTestServiceTest {
         test.setTestName("Lab Test");
         test.setDescription("lab test desc");
 
+        when(testDao.getTestByName("Lab Test")).thenReturn(test);
+
+
 
         labTest.save(labObject);
 
@@ -72,7 +75,7 @@ public class LabTestServiceTest {
 
         when(externalReferenceDao.getData("193", "Test")).thenReturn(reference);
         when(testDao.getActiveTestById(293)).thenReturn(test);
-
+        when(testDao.getTestByName("Lab Test")).thenReturn(test);
 
 
         labTest.save(labObject);

@@ -31,12 +31,10 @@ public class ExternalReferenceDaoImplTest {
 
         transaction = HibernateUtil.getSession().beginTransaction();
         externalReferenceDao.insertData(reference);
-        transaction.commit();
 
         reference = externalReferenceDao.getData("1123456", "Panel");
         Assert.assertNotNull(reference);
 
-        transaction = HibernateUtil.getSession().beginTransaction();
         externalReferenceDao.deleteData(reference);
         transaction.commit();
 

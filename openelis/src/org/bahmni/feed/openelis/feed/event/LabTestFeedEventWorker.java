@@ -12,7 +12,7 @@ import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import java.io.IOException;
 import java.util.HashMap;
 
-public class OpenelisAtomfeedClientServiceEventWorker extends MyEventWorker {
+public class LabTestFeedEventWorker extends MyEventWorker {
 
     public void process(Event event) {
         try {

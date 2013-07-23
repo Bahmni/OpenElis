@@ -18,6 +18,7 @@ import java.io.IOException;
 
 public class LabTestService implements LabService {
 
+    public static final String SECTION_NEW = "New";
     private TestDAO testDAO = new TestDAOImpl() ;
     private ExternalReferenceDao externalReferenceDao = new ExternalReferenceDaoImpl();
     private String labProductType;
@@ -54,10 +55,10 @@ public class LabTestService implements LabService {
 
     private void updateSection(Test test) {
         String sysUserId = test.getSysUserId();
-        test = testDAO.getTestByName(test);
+        test = testDAO.getTestByName(test.getTestName());
         test.setSysUserId(sysUserId);
 
-        TestSection section = sectionDAO.getTestSectionByName("New");
+        TestSection section = sectionDAO.getTestSectionByName(SECTION_NEW);
         if(section != null){
             test.setTestSection(section);
             test.setTestSectionName(section.getTestSectionName());

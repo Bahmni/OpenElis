@@ -4,11 +4,10 @@ import com.sun.syndication.feed.atom.Content;
 import com.sun.syndication.feed.atom.Entry;
 import com.sun.syndication.feed.atom.Feed;
 import com.sun.syndication.feed.atom.Link;
-import junit.framework.Assert;
 import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoImpl;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
-import org.bahmni.feed.openelis.feed.event.OpenelisAtomfeedClientServiceEventWorker;
+import org.bahmni.feed.openelis.feed.event.LabTestFeedEventWorker;
 import org.bahmni.feed.openelis.utils.AtomfeedClientUtils;
 import org.bahmni.feed.openelis.utils.OpenElisConnectionProvider;
 import org.hibernate.Transaction;
@@ -85,7 +84,7 @@ public class OpeneERPLabTestFeedClientIT {
         panelDAO = new PanelDAOImpl();
 
         atomFeedClient = new AtomFeedClient(allFeedsMock, allMarkersJdbc, new AllFailedEventsJdbcImpl(jdbcConnectionProvider),
-                true, jdbcConnectionProvider, new URI("http://host/patients/notifications"), new OpenelisAtomfeedClientServiceEventWorker());
+                true, jdbcConnectionProvider, new URI("http://host/patients/notifications"), new LabTestFeedEventWorker());
 
         first = new Feed();
         second = new Feed();
@@ -125,30 +124,22 @@ public class OpeneERPLabTestFeedClientIT {
 
     @After
     public void tearDown() throws Exception {
+        Transaction transaction = HibernateUtil.getSession().beginTransaction();
         allMarkersJdbc.delete(notificationsUri);
         ExternalReference reference = externalReferenceDao.getData("193","Panel");
-        Assert.assertNotNull(reference);
 
-        Transaction transaction = HibernateUtil.getSession().beginTransaction();
         externalReferenceDao.deleteData(reference);
-        transaction.commit();
 
         reference = externalReferenceDao.getData("193","Test");
-        Assert.assertNotNull(reference);
 
-        transaction = HibernateUtil.getSession().beginTransaction();
         externalReferenceDao.deleteData(reference);
-        transaction.commit();
 
-        transaction = HibernateUtil.getSession().beginTransaction();
         us.mn.state.health.lims.test.valueholder.Test test = testDAO.getActiveTestByName("ECHO");
         test.setSysUserId(AtomfeedClientUtils.getSysUserId());
         HibernateUtil.getSession().delete(test);
         HibernateUtil.getSession().flush();
         HibernateUtil.getSession().clear();
-        transaction.commit();
 
-        transaction = HibernateUtil.getSession().beginTransaction();
         Panel panel = panelDAO.getPanelByName("ECHO");
         panel.setSysUserId(AtomfeedClientUtils.getSysUserId());
         ArrayList panels = new ArrayList();
