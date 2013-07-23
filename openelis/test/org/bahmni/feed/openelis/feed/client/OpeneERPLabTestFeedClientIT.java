@@ -23,6 +23,7 @@ import org.ict4h.atomfeed.jdbc.JdbcConnectionProvider;
 import org.ict4h.atomfeed.jdbc.JdbcUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.panel.dao.PanelDAO;
 import us.mn.state.health.lims.panel.daoimpl.PanelDAOImpl;
@@ -45,6 +46,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@Ignore
 public class OpeneERPLabTestFeedClientIT {
     private   AllFeeds allFeedsMock;
     private AllFailedEvents allFailedEventsMock;
