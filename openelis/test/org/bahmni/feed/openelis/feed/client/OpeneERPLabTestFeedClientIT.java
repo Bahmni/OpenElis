@@ -127,12 +127,12 @@ public class OpeneERPLabTestFeedClientIT {
         Transaction transaction = HibernateUtil.getSession().beginTransaction();
         allMarkersJdbc.delete(notificationsUri);
         ExternalReference reference = externalReferenceDao.getData("193","Panel");
-
-        externalReferenceDao.deleteData(reference);
+        if(reference != null)
+            externalReferenceDao.deleteData(reference);
 
         reference = externalReferenceDao.getData("193","Test");
-
-        externalReferenceDao.deleteData(reference);
+        if(reference != null)
+            externalReferenceDao.deleteData(reference);
 
         us.mn.state.health.lims.test.valueholder.Test test = testDAO.getActiveTestByName("ECHO");
         test.setSysUserId(AtomfeedClientUtils.getSysUserId());
