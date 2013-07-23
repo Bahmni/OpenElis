@@ -1,6 +1,7 @@
 package org.bahmni.feed.openelis.feed.service.impl;
 
 
+import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoImpl;
@@ -18,6 +19,8 @@ import us.mn.state.health.lims.test.valueholder.TestSection;
 import java.io.IOException;
 
 public class LabTestService implements LabService {
+
+    private static Logger logger = Logger.getLogger(LabTestService.class);
 
     public static final String SECTION_NEW = "New";
     private TestDAO testDAO = new TestDAOImpl() ;
@@ -41,7 +44,6 @@ public class LabTestService implements LabService {
         ExternalReference data = externalReferenceDao.getData(labObject.getExternalId(),labObject.getCategory());
         if(data ==null) {
             testDAO.insertData(test);
-            updateSection(test);
             if(isNotEmpty(test)){
                 data = new ExternalReference(Long.parseLong(test.getId()),labObject.getExternalId(),labProductType);
             }
@@ -75,23 +77,9 @@ public class LabTestService implements LabService {
     }
 
     private void updateSection(Test test) {
-        String sysUserId = test.getSysUserId();
-        test.setSysUserId(sysUserId);
-
-        TestSection testSection = new TestSection();
-        testSection.setTestSectionName(SECTION_NEW);
-
-        TestSection section = sectionDAO.getTestSectionByName(testSection);
-        section.setSysUserId(sysUserId);
-        //TODO :workaround for the transient object exception-need fix.
-        sectionDAO.updateData(section);
-
-        if(section != null){
-            test.setTestSection(testSection);
-            test.setTestSectionName(testSection.getTestSectionName());
-        }
+        TestSection section = sectionDAO.getTestSectionByName(SECTION_NEW);
+        test.setTestSection(section);
     }
-
 
     private void updateTestFieldsIfNotEmpty(Test test, Test testById) {
         if(isSet(test.getName())){
