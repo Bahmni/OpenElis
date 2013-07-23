@@ -6,6 +6,7 @@ import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import org.bahmni.feed.openelis.utils.AtomfeedClientUtils;
 import org.hibernate.Transaction;
 import org.ict4h.atomfeed.client.domain.Event;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -77,10 +78,12 @@ public class LabTestFeedEventWorkerTest {
 
         panel = panelDao.getPanelByName("ECHO");
         Assert.assertNull(panel);
-
     }
 
-
+    @After
+    public void tearDown() throws Exception {
+        HibernateUtil.getSession().connection().close();
+    }
 
     private Event createEvent(){
         Event event = new Event("4234332",EVENT_CONTENT);

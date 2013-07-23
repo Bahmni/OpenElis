@@ -137,8 +137,6 @@ public class OpeneERPLabTestFeedClientIT {
         us.mn.state.health.lims.test.valueholder.Test test = testDAO.getActiveTestByName("ECHO");
         test.setSysUserId(AtomfeedClientUtils.getSysUserId());
         HibernateUtil.getSession().delete(test);
-        HibernateUtil.getSession().flush();
-        HibernateUtil.getSession().clear();
 
         Panel panel = panelDAO.getPanelByName("ECHO");
         panel.setSysUserId(AtomfeedClientUtils.getSysUserId());
@@ -148,7 +146,7 @@ public class OpeneERPLabTestFeedClientIT {
 
         transaction.commit();
 
-//        HibernateUtil.getSession().connection().close();
+        HibernateUtil.getSession().connection().close();
 
     }
 

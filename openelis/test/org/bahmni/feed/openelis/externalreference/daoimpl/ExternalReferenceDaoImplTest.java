@@ -2,6 +2,7 @@ package org.bahmni.feed.openelis.externalreference.daoimpl;
 
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import org.hibernate.Transaction;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
@@ -9,6 +10,7 @@ import us.mn.state.health.lims.hibernate.HibernateUtil;
 public class ExternalReferenceDaoImplTest {
 
     ExternalReferenceDaoImpl externalReferenceDao = new ExternalReferenceDaoImpl();
+
 
     @Test
     public void testInsertData() throws Exception {
@@ -38,6 +40,11 @@ public class ExternalReferenceDaoImplTest {
         externalReferenceDao.deleteData(reference);
         transaction.commit();
 
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        HibernateUtil.getSession().connection().close();
     }
 
 }
