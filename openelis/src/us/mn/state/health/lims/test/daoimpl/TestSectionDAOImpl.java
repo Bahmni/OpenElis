@@ -339,9 +339,7 @@ public class TestSectionDAOImpl extends BaseDAOImpl implements TestSectionDAO {
 //			HibernateUtil.getSession().clear();
 
 			if ( !list.isEmpty() ){
-                TestSection section = list.get(0);
-                HibernateUtil.getSession().refresh(section);
-                return section;
+                return list.get(0);
 			}
 			
 			return null;
