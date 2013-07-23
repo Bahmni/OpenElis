@@ -17,12 +17,9 @@
 */
 package us.mn.state.health.lims.siteinformation.daoimpl;
 
-import java.util.List;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
-
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
 import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
 import us.mn.state.health.lims.common.action.IActionConstants;
@@ -33,6 +30,8 @@ import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.siteinformation.dao.SiteInformationDAO;
 import us.mn.state.health.lims.siteinformation.valueholder.SiteInformation;
+
+import java.util.List;
 
 public class SiteInformationDAOImpl extends BaseDAOImpl implements SiteInformationDAO {
 
@@ -132,8 +131,8 @@ public class SiteInformationDAOImpl extends BaseDAOImpl implements SiteInformati
 			String sql = "from SiteInformation";
 			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
+//			HibernateUtil.getSession().flush();
+//			HibernateUtil.getSession().clear();
 		} catch (Exception e) {
 			LogEvent.logError("SiteInformationsDAOImpl","getAllSiteInformation()",e.toString());
 			throw new LIMSRuntimeException("Error in SiteInformation getAllSiteInformation()", e);
@@ -197,7 +196,7 @@ public class SiteInformationDAOImpl extends BaseDAOImpl implements SiteInformati
 			Query query = HibernateUtil.getSession().createQuery(sql);
 			query.setString("name", siteName);
 			SiteInformation information = (SiteInformation)query.uniqueResult();
-			closeSession();
+//			closeSession();
 			return information;
 		}catch(HibernateException e){
 			handleException(e, "getSiteInformationByName");

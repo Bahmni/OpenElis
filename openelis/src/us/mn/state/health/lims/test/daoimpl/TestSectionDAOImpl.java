@@ -492,7 +492,7 @@ public class TestSectionDAOImpl extends BaseDAOImpl implements TestSectionDAO {
 
 			List<TestSection> list = query.list();
 			
-			closeSession();
+//			closeSession();
 			
 			if ( !list.isEmpty() ){
 				return list.get(0);
