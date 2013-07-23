@@ -15,21 +15,13 @@
 */
 package us.mn.state.health.lims.test.action;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-
-import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.label.dao.LabelDAO;
 import us.mn.state.health.lims.label.daoimpl.LabelDAOImpl;
 import us.mn.state.health.lims.label.valueholder.LabelComparator;
@@ -40,6 +32,12 @@ import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.unitofmeasure.daoimpl.UnitOfMeasureDAOImpl;
 import us.mn.state.health.lims.unitofmeasure.valueholder.UnitOfMeasure;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author diane benz
@@ -181,7 +179,10 @@ public class TestAction extends BaseAction {
 		Collections.sort(labels, LabelComparator.NAME_COMPARATOR);		
 		PropertyUtils.setProperty(form, "scriptlets", scriptlets);
 		PropertyUtils.setProperty(form, "labels", labels);
-        PropertyUtils.setProperty(form, "unitOfMeasureId", test.getUnitOfMeasure().getId());
+        UnitOfMeasure unitOfMeasure = test.getUnitOfMeasure();
+        if (unitOfMeasure != null) {
+            PropertyUtils.setProperty(form, "unitOfMeasureId", unitOfMeasure.getId());
+        }
 
 		
 		PropertyUtils.copyProperties(dynaForm, test);
