@@ -15,14 +15,9 @@
 */
 package us.mn.state.health.lims.test.daoimpl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
-
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
 import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
 import us.mn.state.health.lims.common.action.IActionConstants;
@@ -38,6 +33,10 @@ import us.mn.state.health.lims.systemusersection.daoimpl.SystemUserSectionDAOImp
 import us.mn.state.health.lims.systemusersection.valueholder.SystemUserSection;
 import us.mn.state.health.lims.test.dao.TestSectionDAO;
 import us.mn.state.health.lims.test.valueholder.TestSection;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * @author diane benz
@@ -336,11 +335,13 @@ public class TestSectionDAOImpl extends BaseDAOImpl implements TestSectionDAO {
 			query.setParameter("param", testSection.getTestSectionName());
 
 			List<TestSection> list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
-			
+//			HibernateUtil.getSession().flush();
+//			HibernateUtil.getSession().clear();
+
 			if ( !list.isEmpty() ){
-				return list.get(0);
+                TestSection section = list.get(0);
+                HibernateUtil.getSession().refresh(section);
+                return section;
 			}
 			
 			return null;
