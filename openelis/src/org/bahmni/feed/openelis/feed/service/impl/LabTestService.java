@@ -7,6 +7,7 @@ import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoIm
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import org.bahmni.feed.openelis.feed.domain.LabObject;
 import org.bahmni.feed.openelis.feed.service.LabService;
+import org.hibernate.Transaction;
 import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.dao.TestSectionDAO;
 import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
@@ -23,6 +24,7 @@ public class LabTestService implements LabService {
     private ExternalReferenceDao externalReferenceDao = new ExternalReferenceDaoImpl();
     private String labProductType;
     private TestSectionDAO sectionDAO = new TestSectionDAOImpl();
+    Transaction transaction;
 
     public LabTestService(){
         labProductType = AtomFeedProperties.getInstance().getProductTypeLabTest();
@@ -53,19 +55,6 @@ public class LabTestService implements LabService {
         }
     }
 
-    private void updateSection(Test test) {
-        String sysUserId = test.getSysUserId();
-        test = testDAO.getTestByName(test.getTestName());
-        test.setSysUserId(sysUserId);
-
-        TestSection section = sectionDAO.getTestSectionByName(SECTION_NEW);
-        if(section != null){
-            test.setTestSection(section);
-            test.setTestSectionName(section.getTestSectionName());
-        }
-        testDAO.updateData(test);
-    }
-
     private boolean isNotEmpty(Test test) {
         return test.getId() != null && !test.getId().isEmpty();
     }
@@ -80,8 +69,29 @@ public class LabTestService implements LabService {
         test.setDescription(desc);
         test.setSysUserId(labObject.getSysUserId());
 
+        updateSection(test);
+
         return test;
     }
+
+    private void updateSection(Test test) {
+        String sysUserId = test.getSysUserId();
+        test.setSysUserId(sysUserId);
+
+        TestSection testSection = new TestSection();
+        testSection.setTestSectionName(SECTION_NEW);
+
+        TestSection section = sectionDAO.getTestSectionByName(testSection);
+        section.setSysUserId(sysUserId);
+        //TODO :workaround for the transient object exception-need fix.
+        sectionDAO.updateData(section);
+
+        if(section != null){
+            test.setTestSection(testSection);
+            test.setTestSectionName(testSection.getTestSectionName());
+        }
+    }
+
 
     private void updateTestFieldsIfNotEmpty(Test test, Test testById) {
         if(isSet(test.getName())){
