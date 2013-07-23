@@ -16,6 +16,8 @@ public class OpenMRSPatientFeedReaderJob implements Job {
     private static final String AUTH_URI = "openmrs.auth.uri";
     private static final String OPENMRS_USER = "openmrs.user";
     private static final String OPENMRS_PASSWORD = "openmrs.password";
+    private static final String OPENMRS_WEBCLIENT_CONNECT_TIMEOUT = "openmrs.connectionTimeoutInMilliseconds";
+    private static final String OPENMRS_WEBCLIENT_READ_TIMEOUT = "openmrs.replyTimeoutInMilliseconds";
     private static Logger logger = Logger.getLogger(OpenMRSPatientFeedReaderJob.class);
     private WebClient authenticatedWebClient;
 
@@ -28,7 +30,9 @@ public class OpenMRSPatientFeedReaderJob implements Job {
         this.authenticatedWebClient = atomFeedClientFactory.getAuthenticatedWebClient(
                 atomFeedProperties.getProperty(AUTH_URI),
                 atomFeedProperties.getProperty(OPENMRS_USER),
-                atomFeedProperties.getProperty(OPENMRS_PASSWORD)
+                atomFeedProperties.getProperty(OPENMRS_PASSWORD),
+                atomFeedProperties.getProperty(OPENMRS_WEBCLIENT_CONNECT_TIMEOUT),
+                atomFeedProperties.getProperty(OPENMRS_WEBCLIENT_READ_TIMEOUT)
                 );
         this.atomFeedClient = atomFeedClientFactory.getMRSPatientFeedClient(atomFeedProperties,
                 FEED_NAME, AUTH_URI, authenticatedWebClient);

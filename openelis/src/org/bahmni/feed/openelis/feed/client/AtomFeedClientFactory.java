@@ -33,21 +33,31 @@ public class AtomFeedClientFactory {
                                                         getURLPrefix(atomFeedProperties, authenticationURI));
         String uri = atomFeedProperties.getProperty(feedName);
         try {
+            org.ict4h.atomfeed.client.factory.AtomFeedProperties feedProperties = new org.ict4h.atomfeed.client.factory.AtomFeedProperties();
+            feedProperties.setConnectTimeout(Integer.parseInt(atomFeedProperties.getFeedConnectionTimeout()));
+            feedProperties.setReadTimeout(Integer.parseInt(atomFeedProperties.getFeedReplyTimeout()));
+
             return new AtomFeedClientBuilder().
                             forFeedAt(new URI(uri)).
                             processedBy(patientFeedWorker).
+                            with(feedProperties).
                             build();
         } catch (URISyntaxException e) {
             throw new RuntimeException("Is not a valid URI - " + uri);
         }
     }
 
-    public WebClient getAuthenticatedWebClient(String authenticationURI, String userName, String password) {
-        WebClient webClient = new WebClient();
+    public WebClient getAuthenticatedWebClient(String authenticationURI, String userName, String password,
+                                               String connectTimeoutStr, String readTimeoutStr) {
+        int connectTimeout = Integer.parseInt(connectTimeoutStr);
+        int readTimeout = Integer.parseInt(readTimeoutStr);
+
+        WebClient webClient = new WebClient(connectTimeout, readTimeout);
         HashMap<String, String> headers = new HashMap<String, String>();
         String authorizationHeaderValue = String.format("Basic %s:%s", userName, password);
         headers.put("Authorization", new String(Base64.encodeBase64(authorizationHeaderValue.getBytes())));
         headers.put("Disable-WWW-Authenticate", "true");
+
         webClient.get(URI.create(authenticationURI), headers);
         return webClient;
     }
