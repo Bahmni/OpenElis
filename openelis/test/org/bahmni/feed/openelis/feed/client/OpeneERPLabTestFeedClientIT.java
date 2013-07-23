@@ -135,14 +135,18 @@ public class OpeneERPLabTestFeedClientIT {
             externalReferenceDao.deleteData(reference);
 
         us.mn.state.health.lims.test.valueholder.Test test = testDAO.getActiveTestByName("ECHO");
-        test.setSysUserId(AtomfeedClientUtils.getSysUserId());
-        HibernateUtil.getSession().delete(test);
+        if(test !=null){
+            test.setSysUserId(AtomfeedClientUtils.getSysUserId());
+            HibernateUtil.getSession().delete(test);
+        }
 
         Panel panel = panelDAO.getPanelByName("ECHO");
-        panel.setSysUserId(AtomfeedClientUtils.getSysUserId());
-        ArrayList panels = new ArrayList();
-        panels.add(panel);
-        panelDAO.deleteData(panels);
+        if(panel != null) {
+            panel.setSysUserId(AtomfeedClientUtils.getSysUserId());
+            ArrayList panels = new ArrayList();
+            panels.add(panel);
+            panelDAO.deleteData(panels);
+        }
 
         transaction.commit();
 
