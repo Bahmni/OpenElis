@@ -82,7 +82,7 @@ public class LabTestFeedEventWorkerTest {
 
     @After
     public void tearDown() throws Exception {
-        HibernateUtil.getSession().connection().close();
+        HibernateUtil.getSession().close();
     }
 
     private Event createEvent(){

@@ -151,7 +151,9 @@ public class HibernateUtil {
     public static Session getSession() throws LIMSRuntimeException {
         Session s = (Session) threadSession.get();
         try {
-            if (s == null) {
+            if (s == null || !s.isOpen()) {
+                if ( s!=null && !s.isOpen())
+                    LogEvent.logWarn(HibernateUtil.class.getSimpleName(), "getSession()", "Session was not null but was closed.");
                 //bugzilla 2154
                 LogEvent.logDebug("HibernateUtil","getSession()","Opening new Session for this thread.");
                 if (getInterceptor() != null) {

@@ -23,7 +23,6 @@ import org.ict4h.atomfeed.jdbc.JdbcConnectionProvider;
 import org.ict4h.atomfeed.jdbc.JdbcUtils;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.panel.dao.PanelDAO;
 import us.mn.state.health.lims.panel.daoimpl.PanelDAOImpl;
@@ -41,8 +40,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -106,7 +105,6 @@ public class OpeneERPLabTestFeedClientIT {
         first.setOtherLinks(Arrays.asList(new Link[]{getLink("next-archive", secondFeedUri),getLink("self", firstFeedUri),getLink("via", firstFeedUri)}));
     }
 
-    @Test
     public void shouldUpdateMarkerOnProcessingEvents() throws URISyntaxException {
         when(atomFeedProperties.getProperty("openerp.labtest.feed.uri")).thenReturn("http://host/patients/notifications");
 

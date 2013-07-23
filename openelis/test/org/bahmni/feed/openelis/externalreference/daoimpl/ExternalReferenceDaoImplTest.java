@@ -44,7 +44,7 @@ public class ExternalReferenceDaoImplTest {
 
     @After
     public void tearDown() throws Exception {
-        HibernateUtil.getSession().connection().close();
+        HibernateUtil.getSession().close();
     }
 
 }
