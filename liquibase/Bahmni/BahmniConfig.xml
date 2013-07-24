@@ -245,7 +245,7 @@
             <column name="is_active" value="N"/>
         </insert>
     </changeSet>
-    <changeSet id="15" author="tw" runOnChange="true" context="bahmni">
+    <!--changeSet id="15" author="tw" runOnChange="true" context="bahmni">
         <comment>Adding constraint to make ST number unique for a patient</comment>
         <addUniqueConstraint
                 columnNames="identity_data"
@@ -253,5 +253,5 @@
                 schemaName="clinlims"
                 tableName="patient_identity"
                 />
-    </changeSet>
+    </changeSet-->
 </databaseChangeLog>
