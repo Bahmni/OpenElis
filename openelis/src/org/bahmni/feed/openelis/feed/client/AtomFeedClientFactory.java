@@ -3,6 +3,7 @@ package org.bahmni.feed.openelis.feed.client;
 import org.apache.commons.codec.binary.Base64;
 import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.feed.event.PatientFeedWorker;
+import org.bahmni.feed.openelis.utils.OpenElisConnectionProvider;
 import org.bahmni.feed.openelis.webclient.WebClient;
 import org.ict4h.atomfeed.client.factory.AtomFeedClientBuilder;
 import org.ict4h.atomfeed.client.service.AtomFeedClient;
@@ -21,6 +22,7 @@ public class AtomFeedClientFactory {
             return new AtomFeedClientBuilder().
                             forFeedAt(new URI(uri)).
                             processedBy(eventWorker).
+                            usingConnectionProvider(new OpenElisConnectionProvider()).
                             build();
         } catch (URISyntaxException e) {
             throw new RuntimeException("Is not a valid URI - " + uri);
@@ -40,6 +42,7 @@ public class AtomFeedClientFactory {
             return new AtomFeedClientBuilder().
                             forFeedAt(new URI(uri)).
                             processedBy(patientFeedWorker).
+                            usingConnectionProvider(new OpenElisConnectionProvider()).
                             with(feedProperties).
                             build();
         } catch (URISyntaxException e) {
