@@ -5,10 +5,12 @@ import java.util.List;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 
+import org.hibernate.exception.ConstraintViolationException;
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
 import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.daoimpl.BaseDAOImpl;
+import us.mn.state.health.lims.common.exception.LIMSInvalidSTNumberException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
@@ -43,8 +45,9 @@ public class PatientIdentityDAOImpl extends BaseDAOImpl implements PatientIdenti
 
 	public boolean insertData(PatientIdentity patientIdentity) throws LIMSRuntimeException {
 		try {
-			String id = (String) HibernateUtil.getSession().save(patientIdentity);
-			patientIdentity.setId(id);
+            String id = (String) HibernateUtil.getSession().save(patientIdentity);
+            HibernateUtil.getSession().flush();
+            patientIdentity.setId(id);
 
 			AuditTrailDAO auditDAO = new AuditTrailDAOImpl();
 			String sysUserId = patientIdentity.getSysUserId();
@@ -54,7 +57,9 @@ public class PatientIdentityDAOImpl extends BaseDAOImpl implements PatientIdenti
 			HibernateUtil.getSession().flush();
 			HibernateUtil.getSession().clear();
 
-		} catch (Exception e) {
+		} catch (ConstraintViolationException e){
+            throw  new LIMSInvalidSTNumberException("Patient identity number is invalid",e);
+        }catch (Exception e) {
 			LogEvent.logError("PatientIdentityDAOImpl", "insertData()", e.toString());
 			throw new LIMSRuntimeException("Error in PatientIdentity insertData()", e);
 		}
@@ -183,4 +188,5 @@ public class PatientIdentityDAOImpl extends BaseDAOImpl implements PatientIdenti
 		
 		return null;
 	}
+
 }

@@ -1033,3 +1033,8 @@ input[type=radio] + label {
   margin-right: 0.5em /* Adds spacing after 1st radio button on horizontal line */
 }
 /* End experimental CSS for use on updated OE forms */
+
+
+#ST_ID{
+    width:99%;
+}

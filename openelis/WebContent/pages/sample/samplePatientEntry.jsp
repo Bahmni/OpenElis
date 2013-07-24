@@ -511,14 +511,14 @@ function /*void*/ makeDirty(){
 function  /*void*/ savePage()
 {
 	loadSamples(); //in addSample tile
-    if (window.concatenateSTNumberAndHealthCenter != null) {
-        concatenateSTNumberAndHealthCenter();
+    window.onbeforeunload = null; // Added to flag that formWarning alert isn't needed.
+    var form = window.document.forms[0];
+    if(supportHealthCenters && supportSTNumber) {
+        var val = concatenateSTNumberAndHealthCenter();
+        form.elements.namedItem("patientProperties.STnumber").value = val;
     }
-
-  window.onbeforeunload = null; // Added to flag that formWarning alert isn't needed.
-	var form = window.document.forms[0];
-	form.action = "SamplePatientEntrySave.do";
-	form.submit();
+    form.action = "SamplePatientEntrySave.do";
+    form.submit();
 }
 
 

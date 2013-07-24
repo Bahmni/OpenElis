@@ -52,6 +52,7 @@ import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.exception.LIMSInvalidSTNumberException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.formfields.FormFields;
 import us.mn.state.health.lims.common.formfields.FormFields.Field;
@@ -306,7 +307,9 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 			ActionError error = null;
 			if (lre.getException() instanceof StaleObjectStateException) {
 				error = new ActionError("errors.OptimisticLockException", null, null);
-			} else {
+			} else if(lre instanceof LIMSInvalidSTNumberException){
+                error = new ActionError("errors.InvalidStNumber", null, null);
+            } else {
 				lre.printStackTrace();
 				error = new ActionError("errors.UpdateException", null, null);
 			}

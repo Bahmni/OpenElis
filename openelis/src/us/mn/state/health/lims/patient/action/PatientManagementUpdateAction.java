@@ -43,6 +43,7 @@ import us.mn.state.health.lims.address.valueholder.AddressPart;
 import us.mn.state.health.lims.address.valueholder.PersonAddress;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.exception.LIMSInvalidSTNumberException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.formfields.FormFields;
 import us.mn.state.health.lims.common.util.validator.ActionError;
@@ -134,10 +135,13 @@ public class PatientManagementUpdateAction extends BaseAction implements IPatien
 				ActionError error = null;
 				if (lre.getException() instanceof StaleObjectStateException) {
 					error = new ActionError("errors.OptimisticLockException", null, null);
-				} else {
-					lre.printStackTrace();
-					error = new ActionError("errors.UpdateException", null, null);
-				}
+				} else if(lre instanceof LIMSInvalidSTNumberException){
+                    error = new ActionError("errors.InvalidStNumber", null, null);
+                }
+                else {
+                    lre.printStackTrace();
+                    error = new ActionError("errors.UpdateException", null, null);
+                }
 				errors.add(ActionMessages.GLOBAL_MESSAGE, error);
 				saveErrors(request, errors);
 				request.setAttribute(Globals.ERROR_KEY, errors);

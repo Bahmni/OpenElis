@@ -657,7 +657,9 @@
             <form-property name="name" type="java.lang.String" initial="" />
             <form-property name="description" type="java.lang.String" initial="" />
             <form-property name="active" type="boolean" initial="" />
+            <form-property name="healthCenterSelect" type="java.util.List"  />
         </form-bean>
+
 	</form-beans>
 
 	
@@ -1445,6 +1447,11 @@
         </action>
 
         <action path="/HealthCenterMenu"  name="HealthCenterForm" type="us.mn.state.health.lims.healthcenter.action.HealthCenterMenuAction">
+            <forward name="success" path="healthCenterMaster" />
+        </action>
+
+        <action path="/HealthCenterDeactivate"  name="HealthCenterForm" type="us.mn.state.health.lims.healthcenter.action.HealthCenterDeactivateAction">
+            <forward name="list" path="/HealthCenterMenu.do" redirect="true"/>
             <forward name="success" path="healthCenterMaster" />
         </action>
 

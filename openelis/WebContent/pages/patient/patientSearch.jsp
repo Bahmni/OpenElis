@@ -29,6 +29,7 @@
 	boolean supportLabNumber = false;
 	String basePath = "";
 	boolean supportfirstNameFirst;
+    boolean supportHealthCenter;
  %>
 
  <%
@@ -44,6 +45,8 @@
 	String path = request.getContextPath();
 	basePath = request.getScheme() + "://" + request.getServerName() + ":"	+ request.getServerPort() + path + "/";
 	supportfirstNameFirst = FormFields.getInstance().useField(Field.FirstNameFirst);
+    supportHealthCenter = FormFields.getInstance().useField(Field.HealthCenter);
+
   %>
 
 <link rel="stylesheet" href="css/bahmni.css?ver=<%= Versioning.getBuildNumber() %>">
@@ -61,6 +64,7 @@ var patientInfoHash = new Array();
 var patientChangeListeners = new Array();
 var localDB = '<%=localDBOnly%>' == "true";
 var newSearchInfo = false;
+var supportHealthCenter = <%= supportHealthCenter%> ;
 
 function searchPatients()
 {
@@ -74,6 +78,9 @@ function searchPatients()
 	var lastName = $("searchLastNameID").value;
 	var firstName = $("searchFirstNameID").value;
     var STNumber = supportSTNumber ? $("searchSTID").value : "";
+    if(supportHealthCenter){
+        STNumber = STNumber.toUpperCase();
+    }
     var subjectNumber = supportSubjectNumber ? $("searchSubjectNumberID").value : "";
     var nationalID = supportNationalID ? $("searchNationalID").value : "";
     var labNumber = supportLabNumber ? $("searchLabNumber").value : "";

@@ -65,7 +65,7 @@
     supportDynamicAddresses = FormFields.getInstance().useField(Field.DynamicAddress);
     supportfirstNameFirst = FormFields.getInstance().useField(Field.FirstNameFirst);
     supportHealthCenters = FormFields.getInstance().useField(Field.HealthCenter);
-	
+
 	if("SampleConfirmationEntryForm".equals( formName )){
 		patientIDRequired = FormFields.getInstance().useField(Field.PatientIDRequired_SampleConfirmation);
 		patientRequired = FormFields.getInstance().useField(Field.PatientRequired_SampleConfirmation );
@@ -113,7 +113,6 @@ var supportMaritialStatus = <%= FormFields.getInstance().useField(Field.PatientM
 var supportHealthRegion = <%= FormFields.getInstance().useField(Field.PatientHealthRegion) %>;
 var supportHealthDistrict = <%= FormFields.getInstance().useField(Field.PatientHealthDistrict) %>;
 var supportHealthCenters = <%= supportHealthCenters %>;
-
 
 var pt_invalidElements = [];
 var pt_requiredFields = new Array( );
@@ -671,11 +670,18 @@ function  /*void*/ setPatientInfo(nationalID, ST_ID, subjectNumber, lastName, fi
 
 }
 
+function patientIdChanged(){
+    if(supportHealthCenters){
+        validatePatientId();
+    }
+    updatePatientEditStatus();
+}
 function  /*void*/ updatePatientEditStatus() {
 	if (updateStatus == "noAction") {
 		setUpdateStatus("update");
 	}
-    var stNumber =  supportSTNumber ? $("ST_ID").value : "";
+
+    var stNumber =  supportSTNumber ? getPatientId() : "";
 	for(var i = 0; i < patientInfoChangeListeners.length; i++){
 			patientInfoChangeListeners[i]($("firstNameID").value,
 										  $("lastNameID").value,
@@ -730,9 +736,12 @@ function clearDynamicAddresses(){
 
 function  /*void*/ savePage()
 {
-	window.onbeforeunload = null; // Added to flag that formWarning alert isn't needed.
-    concatenateSTNumberAndHealthCenter();
-	var form = window.document.forms[0];
+    window.onbeforeunload = null; // Added to flag that formWarning alert isn't needed.
+    var form = window.document.forms[0];
+    if(supportHealthCenters && supportSTNumber) {
+        var val = concatenateSTNumberAndHealthCenter();
+        form.elements.namedItem("patientProperties.STnumber").value = val;
+    }
 	form.action = "PatientManagementUpdate.do";
 	form.submit();
 }
@@ -816,10 +825,10 @@ function healthDistrictSuccess( xhr ){
                 <% } %>
                 <nested:text name='<%=formName%>'
                           property="patientProperties.STnumber"
-                          onchange="updatePatientEditStatus();"
+                          onchange="patientIdChanged();"
                           styleId="ST_ID"
                           styleClass="text"
-                          size="60" />
+                          />
             </div>
         </td>
     </tr>
@@ -1298,6 +1307,18 @@ function registerPatientChangedForManagement(){
 function pageOnLoad() {
     if(supportHealthCenters) {
         populateHealthCenter();
+        $("ST_ID").value = "";
+    }
+}
+
+function validatePatientId(){
+    var patientId = $("ST_ID").value;
+    if(patientId){
+        if(patientId.search(/\D/) !== -1 ){
+            alert("Only numbers allowed in the PatientID");
+            $("ST_ID").value = "";
+            makeDirty();
+        }
     }
 }
 
@@ -1334,10 +1355,15 @@ function setSTNumberFieldState(state){
     }
 }
 
-function concatenateSTNumberAndHealthCenter() {
-    if(supportHealthCenters && supportSTNumber) {
-        $('ST_ID').value = $('healthCenterName').value + $('ST_ID').value;
+function getPatientId(){
+    if(supportHealthCenters){
+        return concatenateSTNumberAndHealthCenter();
     }
+    return $("ST_ID").value ;
+}
+
+function concatenateSTNumberAndHealthCenter() {
+    return  $('healthCenterName').value + $('ST_ID').value;
 }
 registerPatientChangedForManagement();
 </script>

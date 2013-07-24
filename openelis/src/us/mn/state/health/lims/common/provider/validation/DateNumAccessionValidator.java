@@ -84,7 +84,7 @@ public class DateNumAccessionValidator implements IAccessionNumberValidator {
         int nextIndex = Integer.parseInt(currentHighAccessionNumber.substring(9)) + 1;
         return String.format(currentHighAccessionNumber.substring(0, 9) + "%03d", nextIndex);
     }
-
+/*
     @Override
     public String getNextAvailableAccessionNumber(String programCode) {
         // This part relevant when the application gets initialized. The following section would always be skipped after the number has been initialized
@@ -100,8 +100,23 @@ public class DateNumAccessionValidator implements IAccessionNumberValidator {
             }
         }
         return nextAccessionNumber;
-    }
+    }*/
 
+
+    @Override
+    public String getNextAvailableAccessionNumber(String programCode) {
+
+        if (nextAccessionNumber == null || hasNextAccessionNumberExpired()) {
+            synchronized (LOCK_OBJECT) {
+                return  generateNextAccessionNumber();
+            }
+        }
+        synchronized (LOCK_OBJECT) {
+            nextAccessionNumber = incrementAccessionNumber(nextAccessionNumber);
+            return nextAccessionNumber;
+        }
+
+    }
 
     private String generateNextAccessionNumber() {
         String accessionNumber = null;
