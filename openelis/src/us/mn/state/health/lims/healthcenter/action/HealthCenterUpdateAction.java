@@ -1,9 +1,7 @@
 package us.mn.state.health.lims.healthcenter.action;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.*;
 import org.hibernate.Transaction;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
@@ -28,6 +26,7 @@ public class HealthCenterUpdateAction extends BaseAction {
 
     private ActionForward performGet(ActionMapping mapping, ActionForm form, HttpServletRequest request) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         request.setAttribute("currentAction", "edit");
+        setGlobalMessage(new ActionMessage("healthcenter.edit.title",null,null),request);
         HealthCenterDAO healthCenterDAO = new HealthCenterDAOImpl();
         HealthCenter healthCenter = healthCenterDAO.getByName(request.getParameter("name"));
         PropertyUtils.copyProperties(form, healthCenter);
@@ -58,5 +57,11 @@ public class HealthCenterUpdateAction extends BaseAction {
     @Override
     protected String getPageSubtitleKey() {
         return "healthcenter.add.title";
+    }
+
+    private void setGlobalMessage(ActionMessage message,HttpServletRequest request){
+        ActionMessages messages = new ActionMessages();
+        messages.add(ActionMessages.GLOBAL_MESSAGE, message);
+        saveMessages(request,messages);
     }
 }

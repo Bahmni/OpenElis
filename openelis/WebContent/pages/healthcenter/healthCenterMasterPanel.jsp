@@ -33,6 +33,8 @@
     function deactivateHealthCenters(){
         document.getElementById("HealthCenterDeactivateForm").submit();
     }
+
+
 </script>
 
 
@@ -92,19 +94,19 @@
 </logic:equal>
 
 <logic:equal name="currentAction" value="addNew">
-    <html:form action="/AddHealthCenter">
+    <html:form styleId="addHealthCenterForm" action="/AddHealthCenter">
         <table>
             <tr>
                 <td><bean:message key="healthcenter.add.name" /></td>
-                <td><html:text name="<%=formName%>" property="name" size="30" styleId="healthCenterName" onchange="toUppercase()"/></td>
+                <td><html:text name="<%=formName%>" property="name" size="30" styleId="healthCenterName" onchange="toUppercase()" value="" /></td>
             </tr>
             <tr>
                 <td><bean:message key="healthcenter.add.description" /></td>
-                <td><html:text name="<%=formName%>" property="description" size="30"/></td>
+                <td><html:text name="<%=formName%>" property="description" size="30" value=""/></td>
             </tr>
         </table>
         <html:submit><bean:message key="healthcenter.save" /></html:submit>
-        <a href="<%= request.getContextPath()%>/HealthCenterMenu.do"><button>exit</button></a>
+        <a href="<%= request.getContextPath()%>/HealthCenterMenu.do"><button type="button">exit</button></a>
     </html:form>
 </logic:equal>
 
@@ -113,7 +115,7 @@
         <table>
             <tr>
                 <td><bean:message key="healthcenter.add.name" /></td>
-                <td><html:text name="<%=formName%>" property="name" size="30" styleId="healthCenterName" onchange="toUppercase()" /></td>
+                <td><html:text name="<%=formName%>" property="name" size="30" styleId="healthCenterName" onchange="toUppercase()" readonly="true"/></td>
             </tr>
             <tr>
                 <td><bean:message key="healthcenter.add.description" /></td>
@@ -126,7 +128,7 @@
         </table>
         <html:hidden property="active" value="false"/> <!-- To submit checkbox value when unchecked -->
         <html:submit><bean:message key="healthcenter.save" /></html:submit>
-        <a href="<%= request.getContextPath()%>/HealthCenterMenu.do"><button>exit</button></a>
+        <a href="<%= request.getContextPath()%>/HealthCenterMenu.do"><button type="button">exit</button></a>
     </html:form>
 </logic:equal>
 

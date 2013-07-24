@@ -212,6 +212,10 @@ function makeExclusive(inputElement){
 
 }
 
+function toUppercase(element){
+    element.value = element.value.toUpperCase();
+}
+
 </script>
 
 
@@ -296,7 +300,9 @@ function makeExclusive(inputElement){
 			       class="text"
 			       type="text"
 			       onkeyup="setSearch(); "
-			       onblur="makeExclusive(this);">
+			       onblur="makeExclusive(this)"
+			       onchange="toUppercase(this)"
+			       >
 		</td>
 <!-- 		<td headers="receptionDate">
 			<input name="searchReceptionDate"

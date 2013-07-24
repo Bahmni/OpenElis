@@ -1458,11 +1458,13 @@
         <action path="/AddHealthCenter"  name="HealthCenterForm" type="us.mn.state.health.lims.healthcenter.action.HealthCenterCreateAction">
             <forward name="list" path="/HealthCenterMenu.do" redirect="true"/>
             <forward name="success" path="healthCenterMaster" />
+            <forward name="fail" path="healthCenterMaster" />
         </action>
 
         <action path="/EditHealthCenter"  name="HealthCenterForm" type="us.mn.state.health.lims.healthcenter.action.HealthCenterUpdateAction">
             <forward name="list" path="/HealthCenterMenu.do" redirect="true"/>
             <forward name="success" path="healthCenterMaster" />
+            <forward name="fail" path="healthCenterMaster" />
         </action>
 
 	</action-mappings>
