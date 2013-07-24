@@ -1,6 +1,6 @@
 <project name="OpenElis" default="test" basedir=".">
     <description>
-        OpenElis build file
+        OpenElis build file. Reason we are not using maven is because the code is not structured according to it.
     </description>
     <presetdef name="javac">
         <javac includeantruntime="false"/>
@@ -73,9 +73,7 @@
     </target>
 
     <target name="dropDB">
-        <exec executable="dropdb">
-            <arg line="-U postgres clinlims"/>
-        </exec>
+        <exec executable="scripts/dropDB.sh"/>
     </target>
 
     <target name="resetDB" depends="dropDB, initDB, updateDB"/>
@@ -91,7 +89,9 @@
         </exec>
     </target>
 
-    <target name="test" depends="clean, compile, updateDB">
+    <target name="test" depends="clean, compile, updateDB, test-only" />
+
+    <target name="test-only">
         <mkdir dir="${junit.output.dir}"/>
         <mkdir dir="${test.target}"/>
         <javac srcdir="${test.src}" classpathref="lib" destdir="${test.target}" encoding="iso-8859-1" debug="on">
@@ -99,6 +99,9 @@
                 <dirset dir="${target}"/>
             </classpath>
         </javac>
+        <copy todir="${test.target}">
+            <fileset dir="${test.src}" includes="**/*.json"/>
+        </copy>
         <junit printsummary="yes" haltonerror="false" haltonfailure="false"
                showoutput="true" failureproperty="test.failed">
             <classpath>
@@ -116,6 +119,7 @@
                 <formatter type="xml"/>
                 <fileset dir="${test.src}">
                     <include name="**/*Test*.java"/>
+                    <include name="**/*IT.java"/>
                     <exclude name="**/All*Tests.java"/>
                 </fileset>
             </batchtest>
@@ -123,7 +127,7 @@
         <fail message="Test failure detected, check test results." if="test.failed"/>
     </target>
 
-    <target name="report" depends="test">
+    <target name="report">
         <mkdir dir="${junit.output.dir}/html"/>
         <junitreport todir="${junit.output.dir}">
             <fileset dir="${junit.output.dir}">

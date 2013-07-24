@@ -3,6 +3,7 @@ package org.bahmni.feed.openelis.feed.service.impl;
 import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPatient;
 import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPerson;
 import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPersonAttribute;
+import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPersonAttributeType;
 import us.mn.state.health.lims.address.dao.AddressPartDAO;
 import us.mn.state.health.lims.address.dao.PersonAddressDAO;
 import us.mn.state.health.lims.address.valueholder.AddressParts;
@@ -43,6 +44,7 @@ public class BahmniPatientService {
         OpenMRSPerson openMRSPerson = openMRSPatient.getPerson();
         person.setFirstName(openMRSPerson.getPreferredName().getGivenName());
         person.setLastName(openMRSPerson.getPreferredName().getFamilyName());
+//        person.setSysUserId();
         personDAO.insertData(person);
 
         AddressParts addressParts = new AddressParts(addressPartDAO.getAll());
@@ -62,11 +64,11 @@ public class BahmniPatientService {
 
         PatientIdentityTypes patientIdentityTypes = new PatientIdentityTypes(patientIdentityTypeDAO.getAllPatientIdenityTypes());
         addPatientIdentity(patient, patientIdentityTypes, "", openMRSPatient.getIdentifiers().get(0).getIdentifier());
-        OpenMRSPersonAttribute primaryRelativeAttribute = openMRSPerson.findAttributeByAttributeTypeDisplayName("primaryRelative");
+        OpenMRSPersonAttribute primaryRelativeAttribute = openMRSPerson.findAttributeByAttributeTypeDisplayName(OpenMRSPersonAttributeType.ATTRIBUTE1_NAME);
         if (primaryRelativeAttribute != null)
             addPatientIdentity(patient, patientIdentityTypes, "MOTHER", primaryRelativeAttribute.getValue());
 
-        OpenMRSPersonAttribute occupationAttribute = openMRSPerson.findAttributeByAttributeTypeDisplayName("occupation");
+        OpenMRSPersonAttribute occupationAttribute = openMRSPerson.findAttributeByAttributeTypeDisplayName(OpenMRSPersonAttributeType.ATTRIBUTE2_NAME);
         if (occupationAttribute != null)
             addPatientIdentity(patient, patientIdentityTypes, "OCCUPATION", occupationAttribute.getValue());
     }

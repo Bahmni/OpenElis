@@ -4,7 +4,6 @@ package org.bahmni.feed.openelis.feed.client;
 import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.feed.event.LabTestFeedEventWorker;
-import org.hibernate.Transaction;
 import org.ict4h.atomfeed.client.service.AtomFeedClient;
 import org.joda.time.DateTime;
 import org.quartz.Job;

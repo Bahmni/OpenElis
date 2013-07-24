@@ -25,7 +25,7 @@ public class OpenMRSPatientFeedReaderJob implements Job {
         this(AtomFeedProperties.getInstance(), new AtomFeedClientFactory());
     }
 
-    public OpenMRSPatientFeedReaderJob(AtomFeedProperties atomFeedProperties, AtomFeedClientFactory atomFeedClientFactory) {
+    OpenMRSPatientFeedReaderJob(AtomFeedProperties atomFeedProperties, AtomFeedClientFactory atomFeedClientFactory) {
         this.atomFeedProperties = atomFeedProperties;
         this.authenticatedWebClient = atomFeedClientFactory.getAuthenticatedWebClient(
                 atomFeedProperties.getProperty(AUTH_URI),

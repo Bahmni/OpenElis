@@ -245,13 +245,4 @@
             <column name="is_active" value="N"/>
         </insert>
     </changeSet>
-    <!--changeSet id="15" author="tw" runOnChange="true" context="bahmni">
-        <comment>Adding constraint to make ST number unique for a patient</comment>
-        <addUniqueConstraint
-                columnNames="identity_data"
-                constraintName="unique_st_number"
-                schemaName="clinlims"
-                tableName="patient_identity"
-                />
-    </changeSet-->
 </databaseChangeLog>

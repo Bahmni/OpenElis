@@ -1,0 +1,248 @@
+{
+    "uuid": "ffdaed4a-ca88-4233-af3e-f972e0f40204",
+    "display": "GAN101604 - Lalla Kewant",
+    "identifiers": [
+        {
+            "display": "JSS = GAN101604",
+            "uuid": "4e025317-9bdd-47df-888c-b5c98802b2a4",
+            "identifier": "GAN101604",
+            "identifierType": {
+                "uuid": "b45f311a-c79a-11e2-b0c0-8e397087571c",
+                "display": "JSS",
+                "links": [
+                    {
+                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/patientidentifiertype/b45f311a-c79a-11e2-b0c0-8e397087571c",
+                        "rel": "self"
+                    }
+                ]
+            },
+            "location": null,
+            "preferred": true,
+            "voided": false,
+            "links": [
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/patient/ffdaed4a-ca88-4233-af3e-f972e0f40204/identifier/4e025317-9bdd-47df-888c-b5c98802b2a4",
+                    "rel": "self"
+                },
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/patient/ffdaed4a-ca88-4233-af3e-f972e0f40204/identifier/4e025317-9bdd-47df-888c-b5c98802b2a4?v=full",
+                    "rel": "full"
+                }
+            ],
+            "resourceVersion": "1.8"
+        }
+    ],
+    "person": {
+        "uuid": "ffdaed4a-ca88-4233-af3e-f972e0f40204",
+        "display": "Lalla Kewant",
+        "gender": "M",
+        "age": 35,
+        "birthdate": "1977-09-19T00:00:00.000+0530",
+        "birthdateEstimated": false,
+        "dead": false,
+        "deathDate": null,
+        "causeOfDeath": null,
+        "preferredName": {
+            "display": "Lalla Kewant",
+            "uuid": "8c951798-0127-4015-bad9-a0dd7012eec9",
+            "givenName": "Lalla",
+            "middleName": null,
+            "familyName": "Kewant",
+            "familyName2": null,
+            "voided": false,
+            "links": [
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/person/ffdaed4a-ca88-4233-af3e-f972e0f40204/name/8c951798-0127-4015-bad9-a0dd7012eec9",
+                    "rel": "self"
+                },
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/person/ffdaed4a-ca88-4233-af3e-f972e0f40204/name/8c951798-0127-4015-bad9-a0dd7012eec9?v=full",
+                    "rel": "full"
+                }
+            ],
+            "resourceVersion": "1.8"
+        },
+        "preferredAddress": {
+            "display": null,
+            "uuid": "69810ca4-9e18-4b2d-a657-a68541248e60",
+            "preferred": true,
+            "address1": null,
+            "address2": null,
+            "cityVillage": "Niratu",
+            "stateProvince": "Chhattisgarh",
+            "country": null,
+            "postalCode": null,
+            "countyDistrict": "Bilaspur",
+            "address3": "Takhatpur",
+            "address4": null,
+            "address5": null,
+            "address6": null,
+            "startDate": null,
+            "endDate": null,
+            "latitude": null,
+            "longitude": null,
+            "voided": false,
+            "links": [
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/person/ffdaed4a-ca88-4233-af3e-f972e0f40204/address/69810ca4-9e18-4b2d-a657-a68541248e60",
+                    "rel": "self"
+                },
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/person/ffdaed4a-ca88-4233-af3e-f972e0f40204/address/69810ca4-9e18-4b2d-a657-a68541248e60?v=full",
+                    "rel": "full"
+                }
+            ],
+            "resourceVersion": "1.8"
+        },
+        "names": [
+            {
+                "display": "Lalla Kewant",
+                "uuid": "8c951798-0127-4015-bad9-a0dd7012eec9",
+                "givenName": "Lalla",
+                "middleName": null,
+                "familyName": "Kewant",
+                "familyName2": null,
+                "voided": false,
+                "links": [
+                    {
+                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/person/ffdaed4a-ca88-4233-af3e-f972e0f40204/name/8c951798-0127-4015-bad9-a0dd7012eec9",
+                        "rel": "self"
+                    },
+                    {
+                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/person/ffdaed4a-ca88-4233-af3e-f972e0f40204/name/8c951798-0127-4015-bad9-a0dd7012eec9?v=full",
+                        "rel": "full"
+                    }
+                ],
+                "resourceVersion": "1.8"
+            }
+        ],
+        "addresses": [
+            {
+                "display": null,
+                "uuid": "69810ca4-9e18-4b2d-a657-a68541248e60",
+                "preferred": true,
+                "address1": null,
+                "address2": null,
+                "cityVillage": "Niratu",
+                "stateProvince": "Chhattisgarh",
+                "country": null,
+                "postalCode": null,
+                "countyDistrict": "Bilaspur",
+                "address3": "Takhatpur",
+                "address4": null,
+                "address5": null,
+                "address6": null,
+                "startDate": null,
+                "endDate": null,
+                "latitude": null,
+                "longitude": null,
+                "voided": false,
+                "links": [
+                    {
+                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/person/ffdaed4a-ca88-4233-af3e-f972e0f40204/address/69810ca4-9e18-4b2d-a657-a68541248e60",
+                        "rel": "self"
+                    },
+                    {
+                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/person/ffdaed4a-ca88-4233-af3e-f972e0f40204/address/69810ca4-9e18-4b2d-a657-a68541248e60?v=full",
+                        "rel": "full"
+                    }
+                ],
+                "resourceVersion": "1.8"
+            }
+        ],
+        "attributes": [
+            {
+                "display": "Health Center = 2",
+                "uuid": "cf1a3220-c325-40b3-94f5-3e7b524537d7",
+                "value": "2",
+                "attributeType": {
+                    "uuid": "b458b0a6-c79a-11e2-b0c0-8e397087571c",
+                    "display": "Health Center",
+                    "links": [
+                        {
+                            "uri": "NEED-TO-CONFIGURE/ws/rest/v1/personattributetype/b458b0a6-c79a-11e2-b0c0-8e397087571c",
+                            "rel": "self"
+                        }
+                    ]
+                },
+                "voided": false,
+                "links": [
+                    {
+                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/person/ffdaed4a-ca88-4233-af3e-f972e0f40204/attribute/cf1a3220-c325-40b3-94f5-3e7b524537d7",
+                        "rel": "self"
+                    },
+                    {
+                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/person/ffdaed4a-ca88-4233-af3e-f972e0f40204/attribute/cf1a3220-c325-40b3-94f5-3e7b524537d7?v=full",
+                        "rel": "full"
+                    }
+                ],
+                "resourceVersion": "1.8"
+            },
+            {
+                "display": "primaryRelative = Chidi Ram",
+                "uuid": "c551ca0e-86fe-4d63-ad6b-5f5d85df8e63",
+                "value": "Chidi Ram",
+                "attributeType": {
+                    "uuid": "b45b608a-c79a-11e2-b0c0-8e397087571c",
+                    "display": "primaryRelative",
+                    "links": [
+                        {
+                            "uri": "NEED-TO-CONFIGURE/ws/rest/v1/personattributetype/b45b608a-c79a-11e2-b0c0-8e397087571c",
+                            "rel": "self"
+                        }
+                    ]
+                },
+                "voided": false,
+                "links": [
+                    {
+                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/person/ffdaed4a-ca88-4233-af3e-f972e0f40204/attribute/c551ca0e-86fe-4d63-ad6b-5f5d85df8e63",
+                        "rel": "self"
+                    },
+                    {
+                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/person/ffdaed4a-ca88-4233-af3e-f972e0f40204/attribute/c551ca0e-86fe-4d63-ad6b-5f5d85df8e63?v=full",
+                        "rel": "full"
+                    }
+                ],
+                "resourceVersion": "1.8"
+            }
+        ],
+        "voided": false,
+        "personDateCreated": "2007-09-12T00:00:00.000+0530",
+        "auditInfo": {
+            "creator": null,
+            "dateCreated": null,
+            "changedBy": null,
+            "dateChanged": null
+        },
+        "links": [
+            {
+                "uri": "NEED-TO-CONFIGURE/ws/rest/v1/person/ffdaed4a-ca88-4233-af3e-f972e0f40204",
+                "rel": "self"
+            }
+        ],
+        "resourceVersion": "1.8"
+    },
+    "voided": false,
+    "auditInfo": {
+        "creator": {
+            "uuid": "9642a090-c79a-11e2-b0c0-8e397087571c",
+            "display": "admin",
+            "links": [
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/user/9642a090-c79a-11e2-b0c0-8e397087571c",
+                    "rel": "self"
+                }
+            ]
+        },
+        "dateCreated": "2013-05-30T00:59:40.000+0530",
+        "changedBy": null,
+        "dateChanged": null
+    },
+    "links": [
+        {
+            "uri": "NEED-TO-CONFIGURE/ws/rest/v1/patient/ffdaed4a-ca88-4233-af3e-f972e0f40204",
+            "rel": "self"
+        }
+    ],
+    "resourceVersion": "1.8"
+}

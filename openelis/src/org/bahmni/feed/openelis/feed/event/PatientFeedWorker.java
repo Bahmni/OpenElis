@@ -1,6 +1,7 @@
 package org.bahmni.feed.openelis.feed.event;
 
 import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPatient;
+import org.bahmni.feed.openelis.feed.mapper.OpenMRSPatientMapper;
 import org.bahmni.feed.openelis.feed.service.impl.BahmniPatientService;
 import org.bahmni.feed.openelis.webclient.WebClient;
 import org.ict4h.atomfeed.client.domain.Event;
@@ -31,7 +32,8 @@ public class PatientFeedWorker extends MyEventWorker {
         try {
             String content = event.getContent();
             String patientJSON = webClient.get(URI.create(urlPrefix + content), new HashMap<String, String>(0));
-            OpenMRSPatient openMRSPatient = objectMapper.readValue(patientJSON, OpenMRSPatient.class);
+            OpenMRSPatientMapper openMRSPatientMapper = new OpenMRSPatientMapper(objectMapper);
+            OpenMRSPatient openMRSPatient = openMRSPatientMapper.map(patientJSON);
             BahmniPatientService bahmniPatientService = new BahmniPatientService(new PatientDAOImpl(), new PersonDAOImpl(), new PatientIdentityDAOImpl(),
                     new PersonAddressDAOImpl(), new AddressPartDAOImpl(), new PatientIdentityTypeDAOImpl());
             bahmniPatientService.create(openMRSPatient);

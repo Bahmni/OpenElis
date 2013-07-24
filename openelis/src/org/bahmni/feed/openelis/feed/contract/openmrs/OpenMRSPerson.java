@@ -1,8 +1,12 @@
 package org.bahmni.feed.openelis.feed.contract.openmrs;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OpenMRSPerson {
     private OpenMRSName preferredName;
     private String uuid;
@@ -10,6 +14,23 @@ public class OpenMRSPerson {
     private Date birthdate;
     private OpenMRSPersonAddress preferredAddress;
     private OpenMRSPersonAttributes attributes;
+
+    public OpenMRSPerson(OpenMRSName preferredName, String uuid, String gender, Date birthdate, OpenMRSPersonAddress preferredAddress) {
+        this.preferredName = preferredName;
+        this.uuid = uuid;
+        this.gender = gender;
+        this.birthdate = birthdate;
+        this.preferredAddress = preferredAddress;
+    }
+
+    public OpenMRSPerson addAttribute(OpenMRSPersonAttribute attribute) {
+        if (attributes == null) attributes = new OpenMRSPersonAttributes();
+        attributes.add(attribute);
+        return this;
+    }
+
+    public OpenMRSPerson() {
+    }
 
     public OpenMRSPersonAddress getPreferredAddress() {
         return preferredAddress;

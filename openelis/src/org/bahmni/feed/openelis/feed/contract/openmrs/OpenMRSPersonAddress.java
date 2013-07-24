@@ -1,5 +1,8 @@
 package org.bahmni.feed.openelis.feed.contract.openmrs;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OpenMRSPersonAddress {
     private String address1;
     private String address2;
@@ -7,6 +10,18 @@ public class OpenMRSPersonAddress {
     private String cityVillage;
     private String countyDistrict;
     private String stateProvince;
+
+    public OpenMRSPersonAddress() {
+    }
+
+    public OpenMRSPersonAddress(String address1, String address2, String address3, String cityVillage, String countyDistrict, String stateProvince) {
+        this.address1 = address1;
+        this.address2 = address2;
+        this.address3 = address3;
+        this.cityVillage = cityVillage;
+        this.countyDistrict = countyDistrict;
+        this.stateProvince = stateProvince;
+    }
 
     public String getAddress1() {
         return address1;

@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.util.HashMap;
 
 public class LabTestFeedEventWorker extends MyEventWorker {
-
     public void process(Event event) {
         try {
             LabObject labObject = getLabObject(event);
@@ -38,6 +37,4 @@ public class LabTestFeedEventWorker extends MyEventWorker {
         lab.setCategory((String) paramMap.get("category"));
         return lab;
     }
-
-
 }

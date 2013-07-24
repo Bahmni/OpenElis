@@ -8,13 +8,11 @@ import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 import us.mn.state.health.lims.siteinformation.valueholder.SiteInformation;
 
 public class AtomfeedClientUtils {
-
     private static LoginDAO loginDao;
-
     private static SiteInformationDAO siteInformationDao;
 
     public static String getSysUserId() {
-        if(siteInformationDao == null){
+        if(siteInformationDao == null) {
             siteInformationDao = new SiteInformationDAOImpl();
         }
 

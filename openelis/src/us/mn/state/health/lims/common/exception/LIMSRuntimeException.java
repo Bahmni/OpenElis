@@ -38,8 +38,7 @@ public class LIMSRuntimeException extends RuntimeException {
 	 *            the wrapped exception
 	 */
 	public LIMSRuntimeException(String pMessage, Exception pException) {
-		super(pMessage);
-		this.exception = pException;
+		super(pMessage, pException);
 	}
 
 	/**
@@ -55,8 +54,7 @@ public class LIMSRuntimeException extends RuntimeException {
 	 *            the Log to write a message to
 	 */
 	public LIMSRuntimeException(String pMessage, Exception pException, Log pLog) {
-		super(pMessage);
-		this.exception = pException;
+		super(pMessage, pException);
 		if (pLog != null) {
 			pLog.error(pMessage, pException);
 		}

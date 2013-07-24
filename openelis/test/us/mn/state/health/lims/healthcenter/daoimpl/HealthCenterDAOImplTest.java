@@ -1,5 +1,6 @@
 package us.mn.state.health.lims.healthcenter.daoimpl;
 
+import org.bahmni.feed.openelis.IT;
 import org.hibernate.Transaction;
 import org.junit.After;
 import org.junit.Before;
@@ -12,19 +13,12 @@ import java.util.List;
 
 import static junit.framework.Assert.*;
 
-public class HealthCenterDAOImplTest {
+public class HealthCenterDAOImplTest extends IT {
     HealthCenterDAO healthCenterDAO;
-    private Transaction transaction;
 
     @Before
     public void setUp() throws Exception {
         healthCenterDAO = new HealthCenterDAOImpl();
-        transaction = HibernateUtil.getSession().beginTransaction();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        transaction.rollback();
     }
 
     @Test
