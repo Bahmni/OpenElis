@@ -51,8 +51,8 @@ public class LabPanelService implements LabService {
     }
 
     private void updatePanelFieldsIfNotEmpty(Panel panel, Panel panelById) {
-        if (isSet(panel.getName())) {
-            panelById.setName(panel.getName());
+        if (isSet(panel.getPanelName())) {
+            panelById.setPanelName(panel.getPanelName());
         }
         if (isSet(panel.getDescription())) {
             panelById.setDescription(panel.getDescription());
@@ -69,11 +69,7 @@ public class LabPanelService implements LabService {
     private Panel mapToPanel(LabObject labObject) throws IOException {
         Panel panel = new us.mn.state.health.lims.panel.valueholder.Panel();
         panel.setPanelName(labObject.getName());
-        String desc = labObject.getDescription();
-        if (desc == null || desc.isEmpty()) {
-            desc = labObject.getName();
-        }
-        panel.setDescription(desc);
+        panel.setDescription(labObject.getName());
         panel.setSysUserId(labObject.getSysUserId());
         return panel;
     }

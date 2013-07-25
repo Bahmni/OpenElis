@@ -82,8 +82,8 @@ public class LabTestService implements LabService {
     }
 
     private void updateTestFieldsIfNotEmpty(Test test, Test testById) {
-        if(isSet(test.getName())){
-            testById.setName(test.getName());
+        if(isSet(test.getTestName())){
+            testById.setTestName(test.getTestName());
         }
         if(isSet(test.getDescription())){
             testById.setDescription(test.getDescription());

@@ -13,19 +13,15 @@ public class OpenERPLabTestMapper {
             HashMap<String, Object> paramMap = ObjectMapperRepository.objectMapper.readValue(event.getContent(), HashMap.class);
             LabObject lab = new LabObject();
             lab.setName((String) paramMap.get("name"));
-            String desc = (String) paramMap.get("description");
-            if (desc == null || desc.isEmpty()) {
-                desc = (String) paramMap.get("name");
-            }
+            String desc = (String) paramMap.get("name");
+//            if (desc == null || desc.isEmpty()) {
+//                desc = (String) paramMap.get("name");
+//            }
             lab.setDescription(desc);
-            lab.setExternalId(parseUUID(event.getId()));
+            lab.setExternalId((String)paramMap.get("uuid"));
             lab.setSysUserId(sysUserId);
             lab.setCategory((String) paramMap.get("category"));
             return lab;
         }
-
-    private String parseUUID(String id) {
-        return id.replaceAll("tag:atomfeed.ict4h.org:","");
-    }
 
 }

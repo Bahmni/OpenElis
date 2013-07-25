@@ -3,7 +3,6 @@ package org.bahmni.feed.openelis.feed.service.impl;
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import org.bahmni.feed.openelis.feed.domain.LabObject;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -34,7 +33,7 @@ public class LabPanelServiceTest {
         LabObject labObject = new LabObject("193","Lab Panel","lab panel desc","1", "Panel");
         Panel panel = new Panel();
         panel.setPanelName("Lab Panel");
-        panel.setDescription("lab panel desc");
+        panel.setDescription("Lab Panel");
 
         labPanelService.save(labObject);
         verify(panelDAO).insertData(panel);
@@ -48,7 +47,7 @@ public class LabPanelServiceTest {
 
         Panel panel = new Panel();
         panel.setPanelName("Lab Panel");
-        panel.setDescription("lab panel desc");
+        panel.setDescription("Lab Panel");
 
         when(externalReferenceDao.getData("193", "Panel")).thenReturn(reference);
         when(panelDAO.getPanelById("293")).thenReturn(panel);
