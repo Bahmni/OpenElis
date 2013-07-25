@@ -17,6 +17,7 @@ import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 
 import java.util.UUID;
 
+@Ignore
 public class BahmniPatientServiceIT extends IT {
     @Test
     public void testCreate() throws Exception {
