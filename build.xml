@@ -57,7 +57,7 @@
         </war>
     </target>
 
-    <target name="build" depends="clean, compile, updateDB, test, report, dist"/>
+    <target name="build" depends="clean, compile, resetDB, test, report, dist"/>
 
     <target name="clean">
         <delete dir="${target}"/>
