@@ -22,6 +22,12 @@
         </fileset>
     </path>
 
+    <path id="test.lib">
+        <fileset dir="${test.src}/lib">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
     <path id="build.lib">
         <fileset dir="build/lib">
             <include name="*.jar"/>
@@ -94,9 +100,11 @@
     <target name="test-only">
         <mkdir dir="${junit.output.dir}"/>
         <mkdir dir="${test.target}"/>
-        <javac srcdir="${test.src}" classpathref="lib" destdir="${test.target}" encoding="iso-8859-1" debug="on">
+        <javac srcdir="${test.src}" destdir="${test.target}" encoding="iso-8859-1" debug="on">
             <classpath>
                 <dirset dir="${target}"/>
+                <path refid="test.lib"/>
+                <path refid="lib"/>
             </classpath>
         </javac>
         <copy todir="${test.target}">
@@ -105,12 +113,11 @@
         <junit printsummary="yes" haltonerror="false" haltonfailure="false"
                showoutput="true" failureproperty="test.failed">
             <classpath>
-                <fileset dir="${web}/WEB-INF/lib">
-                    <include name="*.jar"/>
-                </fileset>
                 <fileset dir="${liquibase}/lib">
                     <include name="*.jar"/>
                 </fileset>
+                <path refid="test.lib"/>
+                <path refid="lib"/>
                 <pathelement location="${src}"/>
                 <pathelement location="${target}"/>
                 <pathelement location="${test.target}"/>
