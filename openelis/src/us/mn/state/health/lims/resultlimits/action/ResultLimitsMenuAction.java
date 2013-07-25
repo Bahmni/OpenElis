@@ -114,11 +114,11 @@ public class ResultLimitsMenuAction extends BaseMenuAction {
 	}
 	
 	protected String getAddDisabled() {
-		return "true";
+		return "false";
 	}
 
 	protected String getEditDisabled() {
-		return "true";
+		return "false";
 	}
 
 	@SuppressWarnings("unchecked")
