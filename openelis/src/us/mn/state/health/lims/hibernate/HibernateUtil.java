@@ -54,11 +54,10 @@ public class HibernateUtil {
     }
 
     static {
-        try {  	
-        	
+        try {
         	configuration = new Configuration();
 			//bugzilla 1939 (trim changed data before update/insert)
-			configuration.setInterceptor(new LIMSTrimDataInterceptor());
+//			configuration.setInterceptor(new LIMSTrimDataInterceptor());
              sessionFactory = configuration.configure(configFile).buildSessionFactory();
             // We could also let Hibernate bind it to JNDI:
             

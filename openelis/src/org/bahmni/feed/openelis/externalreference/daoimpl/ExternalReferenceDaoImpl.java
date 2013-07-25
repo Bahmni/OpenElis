@@ -11,16 +11,12 @@ import us.mn.state.health.lims.hibernate.HibernateUtil;
 import java.util.List;
 
 public class ExternalReferenceDaoImpl extends BaseDAOImpl implements ExternalReferenceDao {
-
     @Override
     public boolean insertData(ExternalReference externalReference) throws LIMSRuntimeException {
-
         try {
             String id = (String) HibernateUtil.getSession().save(externalReference);
             externalReference.setId(id);
-
             HibernateUtil.getSession().flush();
-            HibernateUtil.getSession().clear();
         } catch (Exception e) {
             LogEvent.logError("ExternalReferenceDaoImpl", "insertData()", e.toString());
             throw new LIMSRuntimeException("Error in ExternalReference insertData()", e);
@@ -37,12 +33,9 @@ public class ExternalReferenceDaoImpl extends BaseDAOImpl implements ExternalRef
             query.setParameter("param2", type);
 
             List refs = query.list();
-            HibernateUtil.getSession().flush();
-            HibernateUtil.getSession().clear();
             if(!refs.isEmpty())
                  return (ExternalReference)refs.get(0);
             return null;
-
     }
 
     public void deleteData(ExternalReference data) throws LIMSRuntimeException {

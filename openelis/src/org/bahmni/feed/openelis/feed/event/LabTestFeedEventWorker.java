@@ -2,29 +2,42 @@ package org.bahmni.feed.openelis.feed.event;
 
 
 import org.bahmni.feed.openelis.AtomFeedProperties;
+import org.bahmni.feed.openelis.ObjectMapperRepository;
 import org.bahmni.feed.openelis.feed.domain.LabObject;
 import org.bahmni.feed.openelis.feed.service.LabService;
 import org.bahmni.feed.openelis.feed.service.LabTestServiceFactory;
-import org.bahmni.feed.openelis.utils.AtomfeedClientUtils;
+import org.bahmni.feed.openelis.utils.AuditingService;
+import org.hibernate.Session;
 import org.ict4h.atomfeed.client.domain.Event;
+import org.ict4h.atomfeed.client.service.EventWorker;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
+import us.mn.state.health.lims.hibernate.HibernateUtil;
 
 import java.io.IOException;
 import java.util.HashMap;
 
-public class LabTestFeedEventWorker extends MyEventWorker {
+public class LabTestFeedEventWorker implements EventWorker {
+    private AuditingService auditingService;
+
+    public LabTestFeedEventWorker(AuditingService auditingService) {
+        this.auditingService = auditingService;
+    }
+
     public void process(Event event) {
         try {
             LabObject labObject = getLabObject(event);
             LabService labService = LabTestServiceFactory.getLabTestService(labObject.getCategory(), AtomFeedProperties.getInstance());
             labService.save(labObject);
+//            Session session = HibernateUtil.getSession();
+//            session.flush();
+//            session.clear();
         } catch (Exception e) {
             throw new LIMSRuntimeException(e);
         }
     }
 
     private LabObject getLabObject(Event event) throws IOException {
-        HashMap<String, Object> paramMap = objectMapper.readValue(event.getContent(), HashMap.class);
+        HashMap<String, Object> paramMap = ObjectMapperRepository.objectMapper.readValue(event.getContent(), HashMap.class);
         LabObject lab = new LabObject();
         lab.setName((String) paramMap.get("name"));
         String desc = (String) paramMap.get("description");
@@ -33,7 +46,7 @@ public class LabTestFeedEventWorker extends MyEventWorker {
         }
         lab.setDescription(desc);
         lab.setExternalId(String.valueOf(paramMap.get("id")));
-        lab.setSysUserId(AtomfeedClientUtils.getSysUserId());
+        lab.setSysUserId(auditingService.getSysUserId());
         lab.setCategory((String) paramMap.get("category"));
         return lab;
     }

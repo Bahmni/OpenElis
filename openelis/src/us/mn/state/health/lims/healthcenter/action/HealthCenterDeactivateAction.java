@@ -19,7 +19,6 @@ import java.util.List;
 public class HealthCenterDeactivateAction extends BaseAction {
     @Override
     protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
-
         List<HealthCenter> healthCenters = (List<HealthCenter>) ((DynaActionForm)form).get("healthCenters");
         String[] deactivatedHealthCenterNames = request.getParameterValues("hcname");
         deactivateHealthCenters(getDeactivatedHealthCenters(healthCenters, deactivatedHealthCenterNames));
@@ -29,12 +28,12 @@ public class HealthCenterDeactivateAction extends BaseAction {
 
     @Override
     protected String getPageTitleKey() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override
     protected String getPageSubtitleKey() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     private List<HealthCenter> getDeactivatedHealthCenters (List<HealthCenter> healthCenters,String[] deactivatedHealthCenterNames){

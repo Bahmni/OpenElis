@@ -15,24 +15,16 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class LabPanelServiceTest {
-
     @Mock
     PanelDAO panelDAO;
     @Mock
     ExternalReferenceDao externalReferenceDao;
-    static final String EVENT_CONTENT = " {\"category\": \"Panel\",\"description\": \"Test Panel\", \"list_price\": \"0.0\", \"name\": \"ECHO\", \"type\": \"service\", \"standard_price\": \"0.0\", \"uom_id\": 1, \"uom_po_id\": 1, \"categ_id\": 33, \"id\": 193}";
     LabPanelService labPanelService;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
         labPanelService = new LabPanelService(panelDAO,externalReferenceDao);
-
-    }
-
-    @After
-    public void tearDown() throws Exception {
-
     }
 
     @Test
@@ -44,9 +36,7 @@ public class LabPanelServiceTest {
         panel.setPanelName("Lab Panel");
         panel.setDescription("lab panel desc");
 
-
         labPanelService.save(labObject);
-
         verify(panelDAO).insertData(panel);
     }
 

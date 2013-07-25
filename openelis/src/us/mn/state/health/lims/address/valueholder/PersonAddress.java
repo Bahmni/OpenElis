@@ -30,12 +30,13 @@ public class PersonAddress extends BaseObject {
 	private String value;
 	private String uniqueIdentifyer;
 
-    public static PersonAddress create(Person person, AddressParts addressParts, String partName, String value) {
+    public static PersonAddress create(Person person, AddressParts addressParts, String partName, String value, String sysUserId) {
         AddressPart addressPart = addressParts.find(partName);
         PersonAddress personAddress = new PersonAddress();
         personAddress.setAddressPartId(addressPart.getId());
         personAddress.setPersonId(person.getId());
         personAddress.setValue(value);
+        personAddress.setSysUserId(sysUserId);
         return personAddress;
     }
 

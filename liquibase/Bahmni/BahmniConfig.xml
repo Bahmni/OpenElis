@@ -72,13 +72,13 @@
         </insert>
         <insert schemaName="clinlims" tableName="address_part">
             <column name="id" valueNumeric=" nextVal( 'address_part_seq' ) "/>
-            <column name="part_name" value="district"/>
+            <column name="part_name" value="level5"/>
             <column name="display_order" value="5"/>
             <column name="display_key" value="address.level5"/>
         </insert>
         <insert schemaName="clinlims" tableName="address_part">
             <column name="id" valueNumeric=" nextVal( 'address_part_seq' ) "/>
-            <column name="part_name" value="state"/>
+            <column name="part_name" value="level6"/>
             <column name="display_order" value="6"/>
             <column name="display_key" value="address.level6"/>
         </insert>
