@@ -17,18 +17,10 @@
  */
 package us.mn.state.health.lims.analysis.daoimpl;
 
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.validator.GenericValidator;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
-
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
@@ -44,7 +36,15 @@ import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.result.valueholder.Result;
 import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
+import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.test.valueholder.Test;
+
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * @author diane benz
@@ -1335,31 +1335,56 @@ public class AnalysisDAOImpl extends BaseDAOImpl implements AnalysisDAO {
 		return null;
 	}
 
-	@Override
-	public List<Analysis> getAnalysisByTestNamesAndCompletedDateRange(List<String> testNames, Date lowDate, Date highDate)
-			throws LIMSRuntimeException {
-		if (testNames.isEmpty()) {
-			return new ArrayList<Analysis>();
-		}
+    @Override
+    public List<Analysis> getAllByAccessionNumberAndStatus(String accessionNumber, List<StatusOfSampleUtil.AnalysisStatus> analysisStatuses) {
+        if (GenericValidator.isBlankOrNull(accessionNumber) || analysisStatuses == null || analysisStatuses.isEmpty()) {
+            return new ArrayList<>();
+        }
+        String sql = "From Analysis a where a.sampleItem.sample.accessionNumber = :accessionNumber and a.statusId IN (:statusIdList)";
+        try {
+            Query query = HibernateUtil.getSession().createQuery(sql);
+            query.setString("accessionNumber", accessionNumber);
+            query.setParameterList("statusIdList", getStatusIds(analysisStatuses));
+            return query.list();
+        } catch (HibernateException e) {
+            handleException(e, "getAllByAccessionNumberAndStatus");
+        }
+        return null;
+    }
 
-		String sql = "From Analysis a where a.test.testName in (:testNames) and a.completedDate BETWEEN :lowDate AND :highDate";
+    @Override
+    public List<Analysis> getAnalysisByTestNamesAndCompletedDateRange(List<String> testNames, Date lowDate, Date highDate)
+            throws LIMSRuntimeException {
+        if (testNames.isEmpty()) {
+            return new ArrayList<Analysis>();
+        }
 
-		try {
-			Query query = HibernateUtil.getSession().createQuery(sql);
-			query.setParameterList("testNames", testNames);
-			query.setDate("lowDate", lowDate);
-			query.setDate("highDate", highDate);
+        String sql = "From Analysis a where a.test.testName in (:testNames) and a.completedDate BETWEEN :lowDate AND :highDate";
 
-			@SuppressWarnings("unchecked")
-			List<Analysis> list = query.list();
-			closeSession();
-			return list;
-		} catch (HibernateException he) {
-			handleException(he, "getAnalysisByTestNamesAndCompletedDateRange");
-		}
+        try {
+            Query query = HibernateUtil.getSession().createQuery(sql);
+            query.setParameterList("testNames", testNames);
+            query.setDate("lowDate", lowDate);
+            query.setDate("highDate", highDate);
 
-		return null;
-	}
+            @SuppressWarnings("unchecked")
+            List<Analysis> list = query.list();
+            closeSession();
+            return list;
+        } catch (HibernateException he) {
+            handleException(he, "getAnalysisByTestNamesAndCompletedDateRange");
+        }
+
+        return null;
+    }
+
+    private List<Integer> getStatusIds(List<StatusOfSampleUtil.AnalysisStatus> analysisStatuses) {
+        List<Integer> statusIds = new ArrayList<>();
+        for (StatusOfSampleUtil.AnalysisStatus analysisStatus : analysisStatuses) {
+            statusIds.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(analysisStatus)));
+        }
+        return statusIds;
+    }
 
 	@Override
 	public List<Analysis> getAnalysisByTestDescriptionAndCompletedDateRange(List<String> descriptions, Date lowDate, Date highDate)
@@ -1418,5 +1443,4 @@ public class AnalysisDAOImpl extends BaseDAOImpl implements AnalysisDAO {
 		
 		return null;
 	}
-
 }
