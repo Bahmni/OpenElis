@@ -44,7 +44,7 @@ public class LabTestService implements LabService {
         ExternalReference data = externalReferenceDao.getData(labObject.getExternalId(),labObject.getCategory());
         if(data ==null) {
             testDAO.insertData(test);
-            if(isNotEmpty(test)){
+            if(isNotEmpty(test.getId())){
                 data = new ExternalReference(Long.parseLong(test.getId()),labObject.getExternalId(),labProductType);
             }
             externalReferenceDao.insertData(data)  ;
@@ -57,8 +57,8 @@ public class LabTestService implements LabService {
         }
     }
 
-    private boolean isNotEmpty(Test test) {
-        return test.getId() != null && !test.getId().isEmpty();
+    private boolean isNotEmpty(String value) {
+        return value != null && !value.isEmpty();
     }
 
     private Test mapToTest(LabObject labObject) throws IOException {

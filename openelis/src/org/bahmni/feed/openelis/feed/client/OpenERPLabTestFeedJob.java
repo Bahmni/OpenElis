@@ -4,14 +4,11 @@ package org.bahmni.feed.openelis.feed.client;
 import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.feed.event.LabTestFeedEventWorker;
-import org.bahmni.feed.openelis.utils.AuditingService;
 import org.ict4h.atomfeed.client.service.AtomFeedClient;
 import org.joda.time.DateTime;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
-import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 
 public class OpenERPLabTestFeedJob implements Job {
     private AtomFeedClient atomFeedClient;
@@ -26,7 +23,7 @@ public class OpenERPLabTestFeedJob implements Job {
     public OpenERPLabTestFeedJob() {
         this(
                 AtomFeedClientFactory.getERPLabTestFeedClient(AtomFeedProperties.getInstance(), FEED_NAME,
-                        new LabTestFeedEventWorker(new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl()))));
+                        new LabTestFeedEventWorker()));
     }
 
     public void processFeed() {
