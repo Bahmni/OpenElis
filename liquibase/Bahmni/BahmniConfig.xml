@@ -245,4 +245,39 @@
             <column name="is_active" value="N"/>
         </insert>
     </changeSet>
+
+    <changeSet author="tw" id="15" context="bahmni">
+        <createTable tableName="event_records" schemaName="clinlims">
+            <column name="id" type="serial">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="uuid" type="varchar(40)"/>
+            <column name="title" type="varchar(255)"/>
+            <column name="timestamp" type="timestamp" defaultValueDate="CURRENT_TIMESTAMP(6)"/>
+            <column name="uri" type="varchar(255)"/>
+            <!-- TODO: Change to CLOB -->
+            <column name="object" type="varchar(1000)"/>
+        </createTable>
+        <createTable tableName="chunking_history" schemaName="clinlims">
+            <column name="id" type="serial">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="chunk_length" type="BIGINT"/>
+            <column name="start" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="16" author="tw" context="bahmni">
+        <insert tableName="chunking_history" schemaName="clinlims">
+            <column name="chunk_length" valueNumeric="5"></column>
+            <column name="start" valueNumeric="1"></column>
+        </insert>
+    </changeSet>
+    <changeSet id="17" author="tw" context="bahmni">
+        <addColumn tableName="event_records" schemaName="clinlims">
+            <column name="category" type="varchar(255)"></column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

@@ -114,8 +114,10 @@ public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
 			}
 			String id = (String) HibernateUtil.getSession().save(test);
 			test.setId(id);
+            if(test.getTestSection() != null)
+                HibernateUtil.getSession().refresh(test.getTestSection());
 
-			//bugzilla 1824 inserts will be logged in history table
+            //bugzilla 1824 inserts will be logged in history table
 			AuditTrailDAO auditDAO = new AuditTrailDAOImpl();
 			String sysUserId = test.getSysUserId();
 			String tableName = "TEST";
