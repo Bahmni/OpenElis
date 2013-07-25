@@ -67,10 +67,11 @@ public class BahmniPatientService {
         patient.setGender(openMRSPerson.getGender());
         patient.setBirthDate(new Timestamp(openMRSPerson.getBirthdate().getTime()));
         patient.setSysUserId(sysUserId);
+        patient.setPerson(person);
         patientDAO.insertData(patient);
 
         PatientIdentityTypes patientIdentityTypes = new PatientIdentityTypes(patientIdentityTypeDAO.getAllPatientIdenityTypes());
-        addPatientIdentity(patient, patientIdentityTypes, "", openMRSPatient.getIdentifiers().get(0).getIdentifier(), sysUserId);
+        addPatientIdentity(patient, patientIdentityTypes, "ST", openMRSPatient.getIdentifiers().get(0).getIdentifier(), sysUserId);
         OpenMRSPersonAttribute primaryRelativeAttribute = openMRSPerson.findAttributeByAttributeTypeDisplayName(OpenMRSPersonAttributeType.ATTRIBUTE1_NAME);
         if (primaryRelativeAttribute != null)
             addPatientIdentity(patient, patientIdentityTypes, "MOTHER", primaryRelativeAttribute.getValue(), sysUserId);

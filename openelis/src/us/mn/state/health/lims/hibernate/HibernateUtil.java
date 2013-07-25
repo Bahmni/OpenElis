@@ -168,7 +168,7 @@ public class HibernateUtil {
 			LogEvent.logError("HibernateUtil","getSession()",ex.toString());
         	throw new LIMSRuntimeException("Error in getSession()", ex);
         }
-        return s;
+        return new ElisHibernateSession(s);
     }
 
     /**

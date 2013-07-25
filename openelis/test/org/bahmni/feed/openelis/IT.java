@@ -5,6 +5,7 @@ import org.hibernate.Transaction;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
+import us.mn.state.health.lims.hibernate.ElisHibernateSession;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 
 @Ignore
@@ -21,7 +22,7 @@ public abstract class IT {
     @After
     public void after() {
         session.flush();
-        session.clear();
+        ((ElisHibernateSession)session).clearSession();
         transaction.rollback();
     }
 }

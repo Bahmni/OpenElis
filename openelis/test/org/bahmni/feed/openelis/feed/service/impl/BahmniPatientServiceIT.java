@@ -17,9 +17,8 @@ import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 
 import java.util.UUID;
 
-@Ignore
 public class BahmniPatientServiceIT extends IT {
-    @Ignore
+    @Test
     public void testCreate() throws Exception {
         AuditingService auditingService = new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl());
         BahmniPatientService bahmniPatientService = new BahmniPatientService(new PatientDAOImpl(), new PersonDAOImpl(), new PatientIdentityDAOImpl(), new PersonAddressDAOImpl(), new AddressPartDAOImpl(), new PatientIdentityTypeDAOImpl(), auditingService);

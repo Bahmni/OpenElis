@@ -28,9 +28,6 @@ public class LabTestFeedEventWorker implements EventWorker {
             LabObject labObject = getLabObject(event);
             LabService labService = LabTestServiceFactory.getLabTestService(labObject.getCategory(), AtomFeedProperties.getInstance());
             labService.save(labObject);
-//            Session session = HibernateUtil.getSession();
-//            session.flush();
-//            session.clear();
         } catch (Exception e) {
             throw new LIMSRuntimeException(e);
         }
