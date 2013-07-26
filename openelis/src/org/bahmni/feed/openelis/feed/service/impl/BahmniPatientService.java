@@ -5,19 +5,29 @@ import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPerson;
 import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPersonAttribute;
 import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPersonAttributeType;
 import org.bahmni.feed.openelis.utils.AuditingService;
+import org.bahmni.openelis.domain.CompletePatientDetails;
 import us.mn.state.health.lims.address.dao.AddressPartDAO;
 import us.mn.state.health.lims.address.dao.PersonAddressDAO;
+import us.mn.state.health.lims.address.daoimpl.AddressPartDAOImpl;
+import us.mn.state.health.lims.address.daoimpl.PersonAddressDAOImpl;
+import us.mn.state.health.lims.address.valueholder.AddressPart;
 import us.mn.state.health.lims.address.valueholder.AddressParts;
 import us.mn.state.health.lims.address.valueholder.PersonAddress;
+import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
 import us.mn.state.health.lims.patient.dao.PatientDAO;
+import us.mn.state.health.lims.patient.daoimpl.PatientDAOImpl;
 import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.patientidentity.dao.PatientIdentityDAO;
+import us.mn.state.health.lims.patientidentity.daoimpl.PatientIdentityDAOImpl;
 import us.mn.state.health.lims.patientidentity.valueholder.PatientIdentity;
 import us.mn.state.health.lims.patientidentitytype.dao.PatientIdentityTypeDAO;
+import us.mn.state.health.lims.patientidentitytype.daoimpl.PatientIdentityTypeDAOImpl;
 import us.mn.state.health.lims.patientidentitytype.valueholder.PatientIdentityType;
 import us.mn.state.health.lims.patientidentitytype.valueholder.PatientIdentityTypes;
 import us.mn.state.health.lims.person.dao.PersonDAO;
+import us.mn.state.health.lims.person.daoimpl.PersonDAOImpl;
 import us.mn.state.health.lims.person.valueholder.Person;
+import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -31,6 +41,12 @@ public class BahmniPatientService {
     private AddressPartDAO addressPartDAO;
     private PatientIdentityTypeDAO patientIdentityTypeDAO;
     private AuditingService auditingService;
+
+    public BahmniPatientService() {
+        this(new PatientDAOImpl(), new PersonDAOImpl(), new PatientIdentityDAOImpl(),
+                new PersonAddressDAOImpl(), new AddressPartDAOImpl(), new PatientIdentityTypeDAOImpl(),
+                new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl()));
+    }
 
     public BahmniPatientService(PatientDAO patientDAO, PersonDAO personDAO, PatientIdentityDAO patientIdentityDAO,
                                 PersonAddressDAO personAddressDAO, AddressPartDAO addressPartDAO, PatientIdentityTypeDAO patientIdentityTypeDAO,
@@ -79,6 +95,21 @@ public class BahmniPatientService {
         OpenMRSPersonAttribute occupationAttribute = openMRSPerson.findAttributeByAttributeTypeDisplayName(OpenMRSPersonAttributeType.ATTRIBUTE2_NAME);
         if (occupationAttribute != null)
             addPatientIdentity(patient, patientIdentityTypes, "OCCUPATION", occupationAttribute.getValue(), sysUserId);
+    }
+
+    public CompletePatientDetails getCompletePatientDetails(String patientId){
+        PatientIdentityType identityType = patientIdentityTypeDAO.getNamedIdentityType("ST");
+        List<PatientIdentity> patientIdentities = patientIdentityDAO.getPatientIdentitiesByValueAndType(patientId, identityType.getId());
+        if (patientIdentities == null || patientIdentities.size() == 0) {
+            return null;
+        }
+        PatientIdentity identity = patientIdentities.get(0);
+        Patient patient = patientDAO.getData(identity.getPatientId());
+        Person person = patient.getPerson();
+        List<PersonAddress> personAddresses = personAddressDAO.getAddressPartsByPersonId(person.getId());
+        List<AddressPart> addressParts = addressPartDAO.getAll();
+
+        return new CompletePatientDetails(patient,person, identity, personAddresses, addressParts);
     }
 
     private void addPatientIdentity(Patient patient, PatientIdentityTypes patientIdentityTypes, String key, String identifier, String sysUserId) {

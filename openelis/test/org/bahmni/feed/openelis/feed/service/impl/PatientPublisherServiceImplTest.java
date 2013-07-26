@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import us.mn.state.health.lims.patientidentity.valueholder.PatientIdentity;
 
 import static junit.framework.Assert.*;
 import static org.mockito.Mockito.verify;
@@ -27,24 +26,20 @@ public class PatientPublisherServiceImplTest {
     @Test
     public void shouldConstructUrlOfPatientFromPropertiesAndPatientIdentifier() {
         PatientPublisherService patientPublisherService = new PatientPublisherServiceImpl(eventService);
-        PatientIdentity identity = new PatientIdentity();
-        identity.setIdentityData(SAMPLE_PATIENT_ID);
 
-        patientPublisherService.publish(identity);
+        patientPublisherService.publish(SAMPLE_PATIENT_ID);
 
         ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);
         verify(eventService).notify(captor.capture());
         Event event = captor.getValue();
-        assertEquals("/patient/" + SAMPLE_PATIENT_ID, event.getContents());
+        assertEquals("ws/rest/patient/" + SAMPLE_PATIENT_ID, event.getContents());
     }
 
     @Test
     public void shouldPopulateDefaultFieldsWhenCallingEventService() {
         PatientPublisherService patientPublisherService = new PatientPublisherServiceImpl(eventService);
-        PatientIdentity identity = new PatientIdentity();
-        identity.setIdentityData(SAMPLE_PATIENT_ID);
 
-        patientPublisherService.publish(identity);
+        patientPublisherService.publish(SAMPLE_PATIENT_ID);
 
         ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);
         verify(eventService).notify(captor.capture());

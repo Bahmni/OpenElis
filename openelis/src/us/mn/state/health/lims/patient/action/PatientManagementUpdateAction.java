@@ -17,14 +17,6 @@
  */
 package us.mn.state.health.lims.patient.action;
 
-import java.lang.reflect.InvocationTargetException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.validator.GenericValidator;
 import org.apache.struts.Globals;
@@ -32,9 +24,9 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
+import org.bahmni.feed.openelis.feed.service.impl.PatientPublisherServiceImpl;
 import org.hibernate.StaleObjectStateException;
 import org.hibernate.Transaction;
-
 import us.mn.state.health.lims.address.dao.AddressPartDAO;
 import us.mn.state.health.lims.address.dao.PersonAddressDAO;
 import us.mn.state.health.lims.address.daoimpl.AddressPartDAOImpl;
@@ -65,6 +57,13 @@ import us.mn.state.health.lims.patienttype.valueholder.PatientPatientType;
 import us.mn.state.health.lims.person.dao.PersonDAO;
 import us.mn.state.health.lims.person.daoimpl.PersonDAOImpl;
 import us.mn.state.health.lims.person.valueholder.Person;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PatientManagementUpdateAction extends BaseAction implements IPatientUpdate {
 
@@ -127,6 +126,8 @@ public class PatientManagementUpdateAction extends BaseAction implements IPatien
 
 				persistPatientData(patientInfo);
 
+                publishPatientData(patientInfo.getSTnumber());
+
 				tx.commit();
 
 			} catch (LIMSRuntimeException lre) {
@@ -162,15 +163,20 @@ public class PatientManagementUpdateAction extends BaseAction implements IPatien
 		return mapping.findForward(forward);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * us.mn.state.health.lims.patient.action.IPatientUpdate#preparePatientData
-	 * (org.apache.struts.action.ActionMapping,
-	 * javax.servlet.http.HttpServletRequest,
-	 * us.mn.state.health.lims.common.action.BaseActionForm)
-	 */
+    private void publishPatientData(String sTnumber) {
+        new PatientPublisherServiceImpl().publish(sTnumber);
+
+    }
+
+    /*
+      * (non-Javadoc)
+      *
+      * @see
+      * us.mn.state.health.lims.patient.action.IPatientUpdate#preparePatientData
+      * (org.apache.struts.action.ActionMapping,
+      * javax.servlet.http.HttpServletRequest,
+      * us.mn.state.health.lims.common.action.BaseActionForm)
+      */
 	public ActionMessages preparePatientData(ActionMapping mapping, HttpServletRequest request, PatientManagmentInfo patientInfo)
 			throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 

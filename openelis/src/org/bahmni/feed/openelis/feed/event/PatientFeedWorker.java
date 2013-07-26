@@ -39,9 +39,7 @@ public class PatientFeedWorker implements EventWorker {
             String patientJSON = webClient.get(URI.create(urlPrefix + content), new HashMap<String, String>(0));
             OpenMRSPatientMapper openMRSPatientMapper = new OpenMRSPatientMapper(ObjectMapperRepository.objectMapper);
             OpenMRSPatient openMRSPatient = openMRSPatientMapper.map(patientJSON);
-            AuditingService auditingService = new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl());
-            BahmniPatientService bahmniPatientService = new BahmniPatientService(new PatientDAOImpl(), new PersonDAOImpl(), new PatientIdentityDAOImpl(),
-                    new PersonAddressDAOImpl(), new AddressPartDAOImpl(), new PatientIdentityTypeDAOImpl(), auditingService);
+            BahmniPatientService bahmniPatientService = new BahmniPatientService();
             bahmniPatientService.create(openMRSPatient);
         } catch (IOException e) {
             throw new LIMSRuntimeException(e);

@@ -140,6 +140,11 @@
   </servlet-mapping>
 
   <servlet-mapping>
+   <servlet-name>action</servlet-name>
+   <url-pattern>/ws/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
     <servlet-name>ajaxText</servlet-name>
     <url-pattern>/ajaxText</url-pattern>
   </servlet-mapping>

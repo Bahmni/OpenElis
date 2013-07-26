@@ -1452,6 +1452,9 @@
         <action path="/HealthCenterList"  type="us.mn.state.health.lims.healthcenter.action.HealthCenterListAction">
         </action>
 
+        <action path="/rest/patient/**"  type="us.mn.state.health.lims.patient.action.PatientRetrieveAction">
+        </action>
+
         <action path="/HealthCenterMenu"  name="HealthCenterForm" type="us.mn.state.health.lims.healthcenter.action.HealthCenterMenuAction">
             <forward name="success" path="healthCenterMaster" />
         </action>
