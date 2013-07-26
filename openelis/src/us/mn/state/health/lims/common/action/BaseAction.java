@@ -17,28 +17,10 @@
  */
 package us.mn.state.health.lims.common.action;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.log4j.Logger;
 import org.apache.struts.Globals;
-import org.apache.struts.action.Action;
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
-import org.apache.struts.action.ActionMessages;
-import org.apache.struts.action.ActionRedirect;
-import org.apache.struts.action.DynaActionForm;
-
+import org.apache.struts.action.*;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
@@ -57,6 +39,11 @@ import us.mn.state.health.lims.login.dao.UserModuleDAO;
 import us.mn.state.health.lims.login.daoimpl.UserModuleDAOImpl;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
+
 public abstract class BaseAction extends Action implements IActionConstants {
 	private static final boolean USE_PARAMETERS = true;
 
@@ -65,6 +52,8 @@ public abstract class BaseAction extends Action implements IActionConstants {
 	String pageTitle = null;
 
 	protected String currentUserId;
+
+    private static Logger logger = Logger.getLogger(BaseAction.class);
 
 	public BaseAction() {
 
@@ -93,14 +82,23 @@ public abstract class BaseAction extends Action implements IActionConstants {
 
 		currentUserId = getSysUserId(request);
 
-		ActionForward forward = performAction(mapping, form, request, response);
-		String pageTitleKey = getPageTitleKey(request, form);
-		String pageSubtitleKey = getPageSubtitleKey(request, form);
+        ActionForward forward = null;
+        String pageTitleKey = null;
+        String pageSubtitleKey = null;
+        String pageTitleKeyParameter = null;
+        String pageSubtitleKeyParameter = null;
+        try {
+            forward = performAction(mapping, form, request, response);
+            pageTitleKey = getPageTitleKey(request, form);
+            pageSubtitleKey = getPageSubtitleKey(request, form);
 
-		String pageTitleKeyParameter = getPageTitleKeyParameter(request, form);
-		String pageSubtitleKeyParameter = getPageSubtitleKeyParameter(request, form);
+            pageTitleKeyParameter = getPageTitleKeyParameter(request, form);
+            pageSubtitleKeyParameter = getPageSubtitleKeyParameter(request, form);
+        } catch (Throwable e) {
+            logger.error(e);
+        }
 
-		// bugzilla 1512 internationalization
+        // bugzilla 1512 internationalization
 		request.getSession().setAttribute(Globals.LOCALE_KEY, SystemConfiguration.getInstance().getDefaultLocale());
 
 		// bugzilla 1348

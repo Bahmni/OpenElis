@@ -16,16 +16,7 @@
  */
 package us.mn.state.health.lims.resultvalidation.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.validator.GenericValidator;
-
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
@@ -77,6 +68,8 @@ import us.mn.state.health.lims.testresult.dao.TestResultDAO;
 import us.mn.state.health.lims.testresult.daoimpl.TestResultDAOImpl;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
 
+import java.util.*;
+
 public class ResultsValidationUtility {
 
 	public enum TestSectionType {
@@ -110,11 +103,14 @@ public class ResultsValidationUtility {
 		notValidStatus.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.Finalized)));
 		notValidStatus.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.TechnicalRejected)));
 		AnalyteDAO analyteDAO = new AnalyteDAOImpl();
+
 		Analyte analyte = new Analyte();
 		analyte.setAnalyteName("Conclusion");
 		analyte = analyteDAO.getAnalyteByName(analyte, false);
 		CONCLUSION_ID = analyte.getId();
-		analyte.setAnalyteName("generated CD4 Count");
+
+		analyte = new Analyte();
+        analyte.setAnalyteName("generated CD4 Count");
 		analyte = analyteDAO.getAnalyteByName(analyte, false);
 		ANALYTE_CD4_CT_GENERATED_ID = analyte == null ? "" : analyte.getId();
 
@@ -171,7 +167,7 @@ public class ResultsValidationUtility {
 				// unique virology department format
 				if ((!GenericValidator.isBlankOrNull(testName) && testSectionName.equals("Virology"))) {
 					if (testName.equals("Genotyping")) {
-						testName = "Génotypage";
+						testName = "Gï¿½notypage";
 					}
 
 					testList.addAll(getUnValidatedTestResultItemsByTest(testName, statusList));
@@ -210,7 +206,14 @@ public class ResultsValidationUtility {
 
 	}
 
-	private void addPrecentageResultsTotal(List<ResultValidationItem> hematologyResults) {
+    public List<AnalysisItem> getResultValidationListByAccessionNumber(List<AnalysisStatus> statusList, String accessionNumber) {
+        List<Analysis> analysisList = analysisDAO.getAllByAccessionNumberAndStatus(accessionNumber, statusList);
+        List<ResultValidationItem> groupedTestsForAnalysisList = getGroupedTestsForAnalysisList(analysisList, !StatusRules.useRecordStatusForValidation());
+        return testResultListToAnalysisItemList(groupedTestsForAnalysisList);
+    }
+
+
+    private void addPrecentageResultsTotal(List<ResultValidationItem> hematologyResults) {
 		Map<String, ResultValidationItem> accessionToTotalMap = new HashMap<String, ResultValidationItem>();
 
 		for (ResultValidationItem resultItem : hematologyResults) {

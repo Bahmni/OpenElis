@@ -17,22 +17,11 @@
  */
 package us.mn.state.health.lims.resultvalidation.action;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.validator.GenericValidator;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.hibernate.Transaction;
-
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
@@ -64,6 +53,11 @@ import us.mn.state.health.lims.testanalyte.valueholder.TestAnalyte;
 import us.mn.state.health.lims.testresult.dao.TestResultDAO;
 import us.mn.state.health.lims.testresult.daoimpl.TestResultDAOImpl;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.text.DecimalFormat;
+import java.util.*;
 
 public class ResultValidationSaveAction extends BaseResultValidationAction {
 
@@ -161,9 +155,16 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 			Map<String, String> params = new HashMap<String, String>();
 			params.put("type", testSectionName);
 			params.put("test", testName);
+
+            String accessionNumber = request.getParameter(ACCESSION_NUMBER);
+            if (accessionNumber != null && !accessionNumber.trim().isEmpty()) {
+                forward =  FWD_SUCCESS_FOR_ACCESSION_NUMBER;
+                params.put(ACCESSION_NUMBER, accessionNumber);
+            }
+
 			params.put("forward", forward);
 
-			return getForwardWithParameters(mapping.findForward(forward), params);
+            return getForwardWithParameters(mapping.findForward(forward), params);
 		}
 
 	}

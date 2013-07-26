@@ -93,7 +93,9 @@ public interface IActionConstants {
 	public static final String FWD_SUCCESS_OTHER = "successother";
 	public static final String FWD_FAIL_OTHER = "failother";
 
-	//bugzilla 2028 routing to QA Events Entry from Results/Batch Results Entry Update Action if UNSATISFACTORY results
+    public static final String FWD_SUCCESS_FOR_ACCESSION_NUMBER = "successForAccessionNumber";
+
+    //bugzilla 2028 routing to QA Events Entry from Results/Batch Results Entry Update Action if UNSATISFACTORY results
 	public static final String FWD_SUCCESS_QA_EVENTS_ENTRY = "successQaEventsEntry";
 	public static final String UNSATISFACTORY_RESULT = "UNSATISFACTORY";
 

@@ -21,8 +21,10 @@
 <%@ taglib uri="/tags/sourceforge-ajax" prefix="ajax" %>
 
 <bean:define id="formName"	value='<%=(String) request.getAttribute(IActionConstants.FORM_NAME)%>' />
+
 <bean:define id="testSection"	value='<%=(String) request.getParameter("type")%>' />
 <bean:define id="testName"	value='<%=(String) request.getParameter("test")%>' />
+
 <bean:define id="results" name="<%=formName%>" property="resultList" />
 <bean:define id="pagingSearch" name='<%=formName%>' property="paging.searchTermToPage" type="List<IdValuePair>" /> 
 
@@ -282,8 +284,17 @@ function /*boolean*/ handleEnterEvent(){
 	</span>
 </div>
 </logic:notEqual>
+
 <html:hidden name="<%=formName%>"  property="testSection" value="<%=testSection%>" />
 <html:hidden name="<%=formName%>"  property="testName" value="<%=testName%>" />
+<%
+    if (request.getParameter("accessionNumber") != null) {
+%>
+        <html:hidden name="<%=formName%>"  property="accessionNumber" value='<%=(String) request.getParameter("accessionNumber") %>' />
+<%
+    }
+%>
+
 
 <logic:notEqual name="resultCount" value="0">
 <Table width="80%" >

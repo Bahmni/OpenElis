@@ -839,6 +839,11 @@
 			<forward name="fail" path="homePageDefinition" />
 		</action>
 
+        <action path="/ResultValidationForAccessionNumber" name="ResultValidationForm" type="us.mn.state.health.lims.resultvalidation.action.ResultValidationForAccessionNumberAction">
+            <forward name="success" path="resultValidationDefinition" />
+            <forward name="fail" path="homePageDefinition" />
+        </action>
+
 		<action path="/ElisaAlgorithmResultValidation" name="ResultValidationForm" type="us.mn.state.health.lims.resultvalidation.action.ElisaAlgorithmResultValidationAction">
 			<forward name="success" path="elisaAlgorithmResultValidationDefinition" />
 			<forward name="fail" path="homePageDefinition" />
@@ -846,6 +851,7 @@
 
 		<action path="/ResultValidationSave" name="ResultValidationForm" type="us.mn.state.health.lims.resultvalidation.action.ResultValidationSaveAction">
 			<forward name="success" path="/ResultValidation.do" />
+			<forward name="successForAccessionNumber" path="/ResultValidationForAccessionNumber.do" />
 			<forward name="fail" path="homePageDefinition" />
 		</action>
 

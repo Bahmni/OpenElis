@@ -17,20 +17,23 @@
 */
 package us.mn.state.health.lims.resultvalidation.action;
 
+import org.apache.commons.validator.GenericValidator;
+import us.mn.state.health.lims.common.action.BaseAction;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.validator.GenericValidator;
-
-import us.mn.state.health.lims.common.action.BaseAction;
 
 
 public abstract class BaseResultValidationAction extends BaseAction {
 
 	private static Map<String, String> validationGroupToTitleMap = new HashMap<String, String>();
 	private static Map<String, String> validationGroupToSection = new HashMap<String, String>();
-	
-	static{
+
+    public static final String VALIDATION_BY_ACCESSION_NUMBER = "Validation By Accession Number";
+
+    public static final String VALIDATION_BY_ACCESSION_NUMBER_KEY_IN_PROPERTIES = "result.validation.by.accessionNumber";
+
+    static{
 		validationGroupToTitleMap.put("immunology",  "result.validation.immunology.title");
 		validationGroupToTitleMap.put("hematology", "result.validation.hematology.title");
 		validationGroupToTitleMap.put("biochemistry", "result.validation.biochemistry.title");
@@ -54,7 +57,9 @@ public abstract class BaseResultValidationAction extends BaseAction {
 		validationGroupToTitleMap.put("VCT", "result.validation.vct.title");
 		validationGroupToTitleMap.put("virologie", "result.validation.virologie.title");
 		validationGroupToTitleMap.put("mycology", "result.validation.mycology.title");
-			
+
+		validationGroupToTitleMap.put(VALIDATION_BY_ACCESSION_NUMBER, VALIDATION_BY_ACCESSION_NUMBER_KEY_IN_PROPERTIES);
+
 		//N.B. The key should always be capitalized
 		validationGroupToSection.put("MolecularBio", "Biologie Moleculaire");
 		validationGroupToSection.put("Mycology", "mycology");
@@ -74,7 +79,9 @@ public abstract class BaseResultValidationAction extends BaseAction {
 	protected void setRequestType(String section) {
 		if(!GenericValidator.isBlankOrNull(section)){
 			titleKey = validationGroupToTitleMap.get(section);
-		}
+		} else {
+            titleKey = VALIDATION_BY_ACCESSION_NUMBER_KEY_IN_PROPERTIES;
+        }
 	}	
 	
 	protected String getDBSectionName( String section){
