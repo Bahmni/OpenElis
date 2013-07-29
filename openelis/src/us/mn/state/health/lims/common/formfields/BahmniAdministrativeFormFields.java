@@ -7,7 +7,6 @@ public class BahmniAdministrativeFormFields implements IAdministrationFormFields
     @Override
     public HashMap<AdministrationFormFields.Field, Boolean> getImplementationAttributes() {
         HashMap<AdministrationFormFields.Field, Boolean> settings = new HashMap<AdministrationFormFields.Field, Boolean>();
-
         settings.put(AdministrationFormFields.Field.TestMenu, Boolean.TRUE);
         settings.put(AdministrationFormFields.Field.PanelMenu, Boolean.TRUE);
         settings.put(AdministrationFormFields.Field.PanelItemMenu, Boolean.TRUE);
@@ -16,6 +15,7 @@ public class BahmniAdministrativeFormFields implements IAdministrationFormFields
         settings.put(AdministrationFormFields.Field.TypeOfSampleTestMenu, Boolean.TRUE);
         settings.put(AdministrationFormFields.Field.TypeOfSamplePanelMenu, Boolean.TRUE);
         settings.put(AdministrationFormFields.Field.ResultLimitsMenu, Boolean.TRUE);
+        settings.put(AdministrationFormFields.Field.OrganizationMenu,  Boolean.TRUE);
         return settings;
 
     }

@@ -17,7 +17,6 @@
 package us.mn.state.health.lims.scheduler;
 
 import org.bahmni.feed.openelis.feed.client.OpenERPLabTestFeedJob;
-import org.bahmni.feed.openelis.feed.client.OpenMRSPatientFeedReaderJob;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import us.mn.state.health.lims.common.util.DateUtil;
@@ -73,7 +72,7 @@ public class LateStartScheduler {
             List<CronScheduler> schedulers = new CronSchedulerDAOImpl().getAllCronSchedules();
 
             for (CronScheduler schedule : schedulers) {
-                addOrRunSchedule(scheduler, schedule);
+                addOrRunSchedule(schedule);
             }
 
             scheduler.start();
@@ -84,7 +83,7 @@ public class LateStartScheduler {
         }
     }
 
-    private void addOrRunSchedule(Scheduler scheduler, CronScheduler schedule) throws SchedulerException, ParseException {
+    private void addOrRunSchedule(CronScheduler schedule) throws SchedulerException, ParseException {
         int currentHour = DateUtil.getCuurentHour();
         int currentMin = DateUtil.getCuurentMinute();
 
