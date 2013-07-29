@@ -19,9 +19,9 @@ package us.mn.state.health.lims.resultvalidation.action;
 
 import org.apache.commons.validator.GenericValidator;
 import us.mn.state.health.lims.common.action.BaseAction;
+import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 
 public abstract class BaseResultValidationAction extends BaseAction {
@@ -30,8 +30,10 @@ public abstract class BaseResultValidationAction extends BaseAction {
 	private static Map<String, String> validationGroupToSection = new HashMap<String, String>();
 
     public static final String VALIDATION_BY_ACCESSION_NUMBER = "Validation By Accession Number";
+    public static final String ALL = "All Sections";
 
     public static final String VALIDATION_BY_ACCESSION_NUMBER_KEY_IN_PROPERTIES = "result.validation.by.accessionNumber";
+    public static final String VALIDATION_BY_ALL_SECTIONS_KEY_IN_PROPERTIES = "result.validation.by.allSections";
 
     static{
 		validationGroupToTitleMap.put("immunology",  "result.validation.immunology.title");
@@ -59,6 +61,7 @@ public abstract class BaseResultValidationAction extends BaseAction {
 		validationGroupToTitleMap.put("mycology", "result.validation.mycology.title");
 
 		validationGroupToTitleMap.put(VALIDATION_BY_ACCESSION_NUMBER, VALIDATION_BY_ACCESSION_NUMBER_KEY_IN_PROPERTIES);
+		validationGroupToTitleMap.put(ALL, VALIDATION_BY_ALL_SECTIONS_KEY_IN_PROPERTIES);
 
 		//N.B. The key should always be capitalized
 		validationGroupToSection.put("MolecularBio", "Biologie Moleculaire");
@@ -84,8 +87,16 @@ public abstract class BaseResultValidationAction extends BaseAction {
         }
 	}	
 	
-	protected String getDBSectionName( String section){
+	protected String getDBSectionName(String section){
 		String name = validationGroupToSection.get(section);
 		return name == null ? section : name;
 	}
+
+    protected List<StatusOfSampleUtil.AnalysisStatus> getToBeValidatedStatuses() {
+        return Arrays.asList(StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance);
+    }
+
+    protected boolean shouldGetAllSections(String testSectionName) {
+        return testSectionName != null && testSectionName.equalsIgnoreCase(ALL);
+    }
 }

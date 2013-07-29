@@ -1325,9 +1325,9 @@ public class AnalysisDAOImpl extends BaseDAOImpl implements AnalysisDAO {
 			Query query = HibernateUtil.getSession().createQuery(sql);
 			query.setString("accessionNumber", accessionNumber);
 			query.setInteger("testId", Integer.parseInt(testId));
-			List<Analysis> analysises = query.list();
+			List<Analysis> analyses = query.list();
 			closeSession();
-			return analysises;
+			return analyses;
 		} catch (HibernateException e) {
 			handleException(e, "getAnalysisByAccessionAndTestId");
 		}
@@ -1336,7 +1336,7 @@ public class AnalysisDAOImpl extends BaseDAOImpl implements AnalysisDAO {
 	}
 
     @Override
-    public List<Analysis> getAllByAccessionNumberAndStatus(String accessionNumber, List<StatusOfSampleUtil.AnalysisStatus> analysisStatuses) {
+    public List<Analysis> getAllAnalysisByAccessionNumberAndStatus(String accessionNumber, List<StatusOfSampleUtil.AnalysisStatus> analysisStatuses) {
         if (GenericValidator.isBlankOrNull(accessionNumber) || analysisStatuses == null || analysisStatuses.isEmpty()) {
             return new ArrayList<>();
         }
@@ -1347,7 +1347,23 @@ public class AnalysisDAOImpl extends BaseDAOImpl implements AnalysisDAO {
             query.setParameterList("statusIdList", getStatusIds(analysisStatuses));
             return query.list();
         } catch (HibernateException e) {
-            handleException(e, "getAllByAccessionNumberAndStatus");
+            handleException(e, "getAllAnalysisByAccessionNumberAndStatus");
+        }
+        return null;
+    }
+
+    @Override
+    public List<Analysis> getAllAnalysisByStatus(List<StatusOfSampleUtil.AnalysisStatus> analysisStatuses) {
+        if (analysisStatuses == null || analysisStatuses.isEmpty()) {
+            return new ArrayList<>();
+        }
+        String sql = "From Analysis a where a.statusId IN (:statusIdList)";
+        try {
+            Query query = HibernateUtil.getSession().createQuery(sql);
+            query.setParameterList("statusIdList", getStatusIds(analysisStatuses));
+            return query.list();
+        } catch (HibernateException e) {
+            handleException(e, "getAllAnalysisByStatus");
         }
         return null;
     }

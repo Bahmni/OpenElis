@@ -16,23 +16,21 @@
  */
 package us.mn.state.health.lims.resultvalidation.action;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.validator.GenericValidator;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-
 import us.mn.state.health.lims.common.action.BaseActionForm;
 import us.mn.state.health.lims.resultvalidation.action.util.ResultValidationPaging;
 import us.mn.state.health.lims.resultvalidation.bean.AnalysisItem;
 import us.mn.state.health.lims.resultvalidation.util.ResultsValidationUtility;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ResultValidationAction extends BaseResultValidationAction {
 
@@ -52,20 +50,23 @@ public class ResultValidationAction extends BaseResultValidationAction {
 		ResultValidationPaging paging = new ResultValidationPaging();
 		String newPage = request.getParameter("page");
 
-		if (GenericValidator.isBlankOrNull(newPage)) {
-
+		if (getResultsForAPage(newPage)) {
 			// Initialize the form.
 			dynaForm.initialize(mapping);
 
-			List<AnalysisItem> resultList = new ArrayList<AnalysisItem>();
 			resultsValidationUtility = new ResultsValidationUtility();
 			setRequestType(testSectionName);
 			setStatus(testSectionName);
 
 			if (!GenericValidator.isBlankOrNull(testSectionName)) {
-				String sectionName = Character.toUpperCase(testSectionName.charAt(0)) + testSectionName.substring(1);
-				sectionName = getDBSectionName(sectionName);
-				resultList = resultsValidationUtility.getResultValidationList(sectionName, testName, validationStatus);
+                List<AnalysisItem> resultList;
+                if (shouldGetAllSections(testSectionName)) {
+                    resultList = resultsValidationUtility.getResultValidationListByStatus(getToBeValidatedStatuses());
+                } else {
+                    String sectionName = Character.toUpperCase(testSectionName.charAt(0)) + testSectionName.substring(1);
+                    String dbSectionName = getDBSectionName(sectionName);
+                    resultList = resultsValidationUtility.getResultValidationList(dbSectionName, testName, validationStatus);
+                }
 				paging.setDatabaseResults(request, dynaForm, resultList);
 			}
 			
@@ -80,7 +81,11 @@ public class ResultValidationAction extends BaseResultValidationAction {
 		}
 	}
 
-	public void setStatus(String testSection) {
+    private boolean getResultsForAPage(String newPage) {
+        return GenericValidator.isBlankOrNull(newPage);
+    }
+
+    public void setStatus(String testSection) {
 		validationStatus = new ArrayList<Integer>();
 
 		if ("serology".equals(testSection)) {
