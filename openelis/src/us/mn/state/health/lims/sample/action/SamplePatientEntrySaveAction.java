@@ -40,6 +40,7 @@ import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
 import us.mn.state.health.lims.common.exception.LIMSInvalidSTNumberException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
+import us.mn.state.health.lims.common.exception.LIMSValidationException;
 import us.mn.state.health.lims.common.formfields.FormFields;
 import us.mn.state.health.lims.common.formfields.FormFields.Field;
 import us.mn.state.health.lims.common.provider.validation.IAccessionNumberValidator;
@@ -294,26 +295,20 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 
 			tx.commit();
 
-		} catch (LIMSRuntimeException lre) {
-			tx.rollback();
-
-			ActionError error = null;
-			if (lre.getException() instanceof StaleObjectStateException) {
-				error = new ActionError("errors.OptimisticLockException", null, null);
-			} else if(lre instanceof LIMSInvalidSTNumberException){
-                error = new ActionError("errors.InvalidStNumber", null, null);
+		} catch (LIMSInvalidSTNumberException e) {
+            tx.rollback();
+            return addErrorMessageAndForward(mapping, request, new ActionError("errors.InvalidStNumber", null, null));
+        } catch (LIMSValidationException e) {
+            tx.rollback();
+            return addErrorMessageAndForward(mapping, request, new ActionError(e.getMessage(), null, null));
+        } catch (LIMSRuntimeException lre) {
+            tx.rollback();
+            if (lre.getException() instanceof StaleObjectStateException) {
+                return addErrorMessageAndForward(mapping, request, new ActionError("errors.OptimisticLockException", null, null));
             } else {
-				lre.printStackTrace();
-				error = new ActionError("errors.UpdateException", null, null);
-			}
-
-			errors.add(ActionMessages.GLOBAL_MESSAGE, error);
-			saveErrors(request, errors);
-			request.setAttribute(Globals.ERROR_KEY, errors);
-			request.setAttribute(ALLOW_EDITS_KEY, "false");
-			return mapping.findForward(FWD_FAIL);
-
-		} finally {
+                return addErrorMessageAndForward(mapping, request, new ActionError("errors.UpdateException", null, null));
+            }
+        }  finally {
 			HibernateUtil.closeSession();
 		}
 
@@ -322,7 +317,16 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 		return mapping.findForward(forward);
 	}
 
-	private void persistObservations() {
+    private ActionForward addErrorMessageAndForward(ActionMapping mapping, HttpServletRequest request, ActionError error) {
+        ActionMessages errors = new ActionMessages();
+        errors.add(ActionMessages.GLOBAL_MESSAGE, error);
+        saveErrors(request, errors);
+        request.setAttribute(Globals.ERROR_KEY, errors);
+        request.setAttribute(ALLOW_EDITS_KEY, "false");
+        return mapping.findForward(FWD_FAIL);
+    }
+
+    private void persistObservations() {
 
 		observationDAO = new ObservationHistoryDAOImpl();
 		for (ObservationHistory observation : observations) {

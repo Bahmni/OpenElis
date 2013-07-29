@@ -1,15 +1,14 @@
 package us.mn.state.health.lims.patientidentity.daoimpl;
 
-import java.util.List;
-
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
-
 import org.hibernate.exception.ConstraintViolationException;
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
 import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.daoimpl.BaseDAOImpl;
+import us.mn.state.health.lims.common.exception.LIMSValidationException;
+import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSInvalidSTNumberException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
@@ -17,6 +16,9 @@ import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.patientidentity.dao.PatientIdentityDAO;
 import us.mn.state.health.lims.patientidentity.valueholder.PatientIdentity;
+import us.mn.state.health.lims.patientidentitytype.util.PatientIdentityTypeMap;
+
+import java.util.List;
 
 public class PatientIdentityDAOImpl extends BaseDAOImpl implements PatientIdentityDAO {
 
@@ -45,6 +47,7 @@ public class PatientIdentityDAOImpl extends BaseDAOImpl implements PatientIdenti
 
 	public boolean insertData(PatientIdentity patientIdentity) throws LIMSRuntimeException {
 		try {
+            checkForDuplicateSTNumber(patientIdentity);
             String id = (String) HibernateUtil.getSession().save(patientIdentity);
             HibernateUtil.getSession().flush();
             patientIdentity.setId(id);
@@ -59,7 +62,9 @@ public class PatientIdentityDAOImpl extends BaseDAOImpl implements PatientIdenti
 
 		} catch (ConstraintViolationException e){
             throw  new LIMSInvalidSTNumberException("Patient identity number is invalid",e);
-        }catch (Exception e) {
+        } catch (LIMSDuplicateRecordException e) {
+            throw new LIMSValidationException(e);
+        } catch (Exception e) {
 			LogEvent.logError("PatientIdentityDAOImpl", "insertData()", e.toString());
 			throw new LIMSRuntimeException("Error in PatientIdentity insertData()", e);
 		}
@@ -67,9 +72,19 @@ public class PatientIdentityDAOImpl extends BaseDAOImpl implements PatientIdenti
 		return true;
 	}
 
-	public void updateData(PatientIdentity patientIdentity) throws LIMSRuntimeException {
-		PatientIdentity oldData = getCurrentPatientIdentity(patientIdentity.getId());
+    private void checkForDuplicateSTNumber(PatientIdentity patientIdentity) throws LIMSDuplicateRecordException {
+        String stNumberId = PatientIdentityTypeMap.getInstance().getIDForType("ST");
+        if(patientIdentity.getIdentityTypeId().equals(stNumberId)){
+            List<PatientIdentity> patientIdentitiesByValueAndType = this.getPatientIdentitiesByValueAndType(patientIdentity.getIdentityData(), stNumberId);
+            if(!patientIdentitiesByValueAndType.isEmpty()) {
+                throw new LIMSDuplicateRecordException("PatientID " + patientIdentity.getIdentityData() + " already exists.");
+            }
+        }
+    }
 
+
+    public void updateData(PatientIdentity patientIdentity) throws LIMSRuntimeException {
+		PatientIdentity oldData = getCurrentPatientIdentity(patientIdentity.getId());
 		// add to audit trail
 		try {
 			AuditTrailDAO auditDAO = new AuditTrailDAOImpl();
@@ -146,13 +161,13 @@ public class PatientIdentityDAOImpl extends BaseDAOImpl implements PatientIdenti
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<PatientIdentity> getPatientIdentitiesByValueAndType(String value, String identityType) throws LIMSRuntimeException {
+	public List<PatientIdentity> getPatientIdentitiesByValueAndType(String value, String identityTypeId) throws LIMSRuntimeException {
 		String sql = "From PatientIdentity pi where pi.identityData = :value and pi.identityTypeId = :identityType";
 
 		try{
 			Query query = HibernateUtil.getSession().createQuery(sql);
 			query.setString("value", value);
-			query.setInteger("identityType", Integer.parseInt(identityType));
+			query.setInteger("identityType", Integer.parseInt(identityTypeId));
 
 			List<PatientIdentity> identities = query.list();
 

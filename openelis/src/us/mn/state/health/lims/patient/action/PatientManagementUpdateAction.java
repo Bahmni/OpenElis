@@ -38,6 +38,7 @@ import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
 import us.mn.state.health.lims.common.exception.LIMSInvalidSTNumberException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
+import us.mn.state.health.lims.common.exception.LIMSValidationException;
 import us.mn.state.health.lims.common.formfields.FormFields;
 import us.mn.state.health.lims.common.util.validator.ActionError;
 import us.mn.state.health.lims.healthcenter.dao.HealthCenterDAO;
@@ -129,30 +130,21 @@ public class PatientManagementUpdateAction extends BaseAction implements IPatien
 			Transaction tx = HibernateUtil.getSession().beginTransaction();
 
 			try {
-
-				persistPatientData(patientInfo, request.getContextPath());
-
-                tx.commit();
-
-			} catch (LIMSRuntimeException lre) {
+                persistPatientData(patientInfo, request.getContextPath());
+				tx.commit();
+			} catch (LIMSInvalidSTNumberException e) {
+                tx.rollback();
+                return addErrorMessageAndForward(mapping, request, new ActionError("errors.InvalidStNumber", null, null));
+            } catch (LIMSValidationException e) {
+                tx.rollback();
+                return addErrorMessageAndForward(mapping, request, new ActionError(e.getMessage(), null, null));
+            } catch (LIMSRuntimeException lre) {
 				tx.rollback();
-				errors = new ActionMessages();
-				ActionError error = null;
 				if (lre.getException() instanceof StaleObjectStateException) {
-					error = new ActionError("errors.OptimisticLockException", null, null);
-				} else if(lre instanceof LIMSInvalidSTNumberException){
-                    error = new ActionError("errors.InvalidStNumber", null, null);
+					return addErrorMessageAndForward(mapping, request, new ActionError("errors.OptimisticLockException", null, null));
+				} else {
+                    return addErrorMessageAndForward(mapping, request, new ActionError("errors.UpdateException", null, null));
                 }
-                else {
-                    lre.printStackTrace();
-                    error = new ActionError("errors.UpdateException", null, null);
-                }
-				errors.add(ActionMessages.GLOBAL_MESSAGE, error);
-				saveErrors(request, errors);
-				request.setAttribute(Globals.ERROR_KEY, errors);
-				request.setAttribute(ALLOW_EDITS_KEY, "false");
-				return mapping.findForward(FWD_FAIL);
-
 			} finally {
 				HibernateUtil.closeSession();
 			}
@@ -167,16 +159,24 @@ public class PatientManagementUpdateAction extends BaseAction implements IPatien
 		return mapping.findForward(forward);
 	}
 
+    private ActionForward addErrorMessageAndForward(ActionMapping mapping, HttpServletRequest request, ActionError error) {
+        ActionMessages errors = new ActionMessages();
+        errors.add(ActionMessages.GLOBAL_MESSAGE, error);
+        saveErrors(request, errors);
+        request.setAttribute(Globals.ERROR_KEY, errors);
+        request.setAttribute(ALLOW_EDITS_KEY, "false");
+        return mapping.findForward(FWD_FAIL);
+    }
 
     /*
-      * (non-Javadoc)
-      *
-      * @see
-      * us.mn.state.health.lims.patient.action.IPatientUpdate#preparePatientData
-      * (org.apache.struts.action.ActionMapping,
-      * javax.servlet.http.HttpServletRequest,
-      * us.mn.state.health.lims.common.action.BaseActionForm)
-      */
+     * (non-Javadoc)
+     *
+     * @see
+     * us.mn.state.health.lims.patient.action.IPatientUpdate#preparePatientData
+     * (org.apache.struts.action.ActionMapping,
+     * javax.servlet.http.HttpServletRequest,
+     * us.mn.state.health.lims.common.action.BaseActionForm)
+     */
 	public ActionMessages preparePatientData(ActionMapping mapping, HttpServletRequest request, PatientManagmentInfo patientInfo)
 			throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 
