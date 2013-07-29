@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public class PatientPublisherServiceImpl implements PatientPublisherService {
     private EventService eventService;
-    private final String PATIENT_URL_PREFIX = "ws/rest/patient/";
+    private final String PATIENT_URL_PREFIX = "/ws/rest/patient/";
     private final String FEED_TITLE = "openelis";
     private final String CATEGORY = "patient";
 
@@ -25,12 +25,13 @@ public class PatientPublisherServiceImpl implements PatientPublisherService {
         this.eventService = eventService;
     }
 
-    public void publish(String patientIdentity) {
-        String contentUrl = getContentUrlFor(patientIdentity);
+    @Override
+    public void publish(String patientIdentity, String contextPath) {
+        String contentUrl = getContentUrlFor(patientIdentity, contextPath);
         eventService.notify(new Event(UUID.randomUUID().toString(), FEED_TITLE, DateTime.now(), (URI) null, contentUrl, CATEGORY));
     }
 
-    private String getContentUrlFor(String patientIdentity) {
-        return PATIENT_URL_PREFIX + patientIdentity;
+    private String getContentUrlFor(String patientIdentity, String contextPath) {
+        return contextPath + PATIENT_URL_PREFIX + patientIdentity;
     }
 }

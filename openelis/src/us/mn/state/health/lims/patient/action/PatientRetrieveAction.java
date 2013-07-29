@@ -4,9 +4,9 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.bahmni.feed.openelis.ObjectMapperRepository;
 import org.bahmni.feed.openelis.feed.service.impl.BahmniPatientService;
 import org.bahmni.openelis.domain.CompletePatientDetails;
-import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,7 +38,7 @@ public class PatientRetrieveAction extends Action {
         }
 
         response.setContentType("application/json");
-        new ObjectMapper().writeValue(response.getWriter(), completePatientDetails);
+        ObjectMapperRepository.objectMapper.writeValue(response.getWriter(), completePatientDetails);
 
         return null;
     }

@@ -15,15 +15,16 @@
 */
 package us.mn.state.health.lims.patient.valueholder;
 
-import java.sql.Date;
-import java.sql.Timestamp;
-
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.common.valueholder.BaseObject;
 import us.mn.state.health.lims.common.valueholder.ValueHolder;
 import us.mn.state.health.lims.common.valueholder.ValueHolderInterface;
+import us.mn.state.health.lims.healthcenter.valueholder.HealthCenter;
 import us.mn.state.health.lims.person.valueholder.Person;
+
+import java.sql.Date;
+import java.sql.Timestamp;
 
 public class Patient extends BaseObject {
 
@@ -73,7 +74,9 @@ public class Patient extends BaseObject {
 	
 	private String chartNumber;
 
-	public String getChartNumber() {
+    private HealthCenter healthCenter;
+
+    public String getChartNumber() {
 		return chartNumber;
 	}
 
@@ -274,4 +277,12 @@ public class Patient extends BaseObject {
 	public String getSelectedPersonId() {
 		return this.selectedPersonId;
 	}
+
+    public HealthCenter getHealthCenter() {
+        return healthCenter;
+    }
+
+    public void setHealthCenter(HealthCenter healthCenter) {
+        this.healthCenter = healthCenter;
+    }
 }

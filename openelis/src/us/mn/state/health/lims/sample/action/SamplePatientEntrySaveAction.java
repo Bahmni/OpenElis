@@ -17,31 +17,17 @@
  */
 package us.mn.state.health.lims.sample.action;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.validator.GenericValidator;
 import org.apache.struts.Globals;
-import org.apache.struts.action.ActionErrors;
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
-import org.apache.struts.action.ActionMessages;
+import org.apache.struts.action.*;
+import org.bahmni.feed.openelis.feed.service.PatientPublisherService;
+import org.bahmni.feed.openelis.feed.service.impl.PatientPublisherServiceImpl;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.hibernate.StaleObjectStateException;
 import org.hibernate.Transaction;
-
 import us.mn.state.health.lims.address.dao.OrganizationAddressDAO;
 import us.mn.state.health.lims.address.daoimpl.AddressPartDAOImpl;
 import us.mn.state.health.lims.address.daoimpl.OrganizationAddressDAOImpl;
@@ -129,6 +115,11 @@ import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleDAO;
 import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleDAOImpl;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
+
 public class SamplePatientEntrySaveAction extends BaseAction {
 
 	private static final String DEFAULT_ANALYSIS_TYPE = "MANUAL";
@@ -161,9 +152,11 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 	private ObservationHistoryDAO observationDAO;
 	private List<ObservationHistory> observations;
 	private List<OrganizationAddress> orgAddressExtra;
-	
+    private PatientPublisherService patientPublisherService = new PatientPublisherServiceImpl();
 
-	private static String INITIAL_CONDITION_OBSERVATION_ID;
+
+
+    private static String INITIAL_CONDITION_OBSERVATION_ID;
 	private static String PATIENT_PAYMENT_OBSERVATION_ID;
 	private static String REQUEST_DATE_ID;
 	private static String NEXT_VISIT_DATE_ID;
@@ -285,7 +278,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 			persistOrganizationData();
 			
 			if (savePatient) {
-				patientUpdate.persistPatientData(patientInfo);
+				patientUpdate.persistPatientData(patientInfo, request.getContextPath());
 			}
 
 			patientId = patientUpdate.getPatientId(dynaForm);

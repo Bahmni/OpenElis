@@ -16,10 +16,6 @@
  */
 package us.mn.state.health.lims.patient.action.bean;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import us.mn.state.health.lims.address.dao.AddressPartDAO;
 import us.mn.state.health.lims.address.daoimpl.AddressPartDAOImpl;
 import us.mn.state.health.lims.address.valueholder.AddressPart;
@@ -31,6 +27,10 @@ import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
 import us.mn.state.health.lims.patienttype.dao.PatientTypeDAO;
 import us.mn.state.health.lims.patienttype.daoimpl.PatientTypeDAOImpl;
 import us.mn.state.health.lims.patienttype.valueholder.PatientType;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PatientManagmentInfo implements Serializable {
 
@@ -66,6 +66,7 @@ public class PatientManagmentInfo implements Serializable {
 	private String healthDistrict;
 	private String otherNationality;
     private AddressParts addressParts;
+    private String healthCenterName;
 	private static List<IdValuePair> genders;
 	private static List<Dictionary> addressDepartments;
 	private static List<IdValuePair> healthRegions;
@@ -351,5 +352,13 @@ public class PatientManagmentInfo implements Serializable {
 
     public void setAddressParts(AddressParts addressParts) {
         this.addressParts = addressParts;
+    }
+
+    public String getHealthCenterName() {
+        return healthCenterName;
+    }
+
+    public void setHealthCenterName(String healthCenterName) {
+        this.healthCenterName = healthCenterName;
     }
 }

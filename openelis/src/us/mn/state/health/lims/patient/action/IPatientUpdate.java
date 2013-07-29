@@ -17,17 +17,15 @@
 */
 package us.mn.state.health.lims.patient.action;
 
-import java.lang.reflect.InvocationTargetException;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
-
 import us.mn.state.health.lims.common.action.BaseActionForm;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.patient.action.PatientManagementUpdateAction.PatientUpdateStatus;
 import us.mn.state.health.lims.patient.action.bean.PatientManagmentInfo;
+
+import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.InvocationTargetException;
 
 public interface IPatientUpdate {
 
@@ -38,7 +36,7 @@ public interface IPatientUpdate {
 
 	public abstract PatientUpdateStatus getPatientUpdateStatus();
 
-	public abstract void persistPatientData(PatientManagmentInfo patientInfo) throws LIMSRuntimeException;
+	public abstract void persistPatientData(PatientManagmentInfo patientInfo, String contextPath) throws LIMSRuntimeException;
 
 	public abstract String getPatientId(BaseActionForm dynaForm);
 }

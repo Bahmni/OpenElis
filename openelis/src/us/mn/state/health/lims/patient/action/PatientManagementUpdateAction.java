@@ -24,6 +24,7 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
+import org.bahmni.feed.openelis.feed.service.PatientPublisherService;
 import org.bahmni.feed.openelis.feed.service.impl.PatientPublisherServiceImpl;
 import org.hibernate.StaleObjectStateException;
 import org.hibernate.Transaction;
@@ -39,6 +40,8 @@ import us.mn.state.health.lims.common.exception.LIMSInvalidSTNumberException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.formfields.FormFields;
 import us.mn.state.health.lims.common.util.validator.ActionError;
+import us.mn.state.health.lims.healthcenter.dao.HealthCenterDAO;
+import us.mn.state.health.lims.healthcenter.daoimpl.HealthCenterDAOImpl;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.patient.action.bean.AddressPartForm;
 import us.mn.state.health.lims.patient.action.bean.AddressParts;
@@ -75,6 +78,9 @@ public class PatientManagementUpdateAction extends BaseAction implements IPatien
 	private static PatientIdentityDAO identityDAO = new PatientIdentityDAOImpl();
 	private static PatientDAO patientDAO = new PatientDAOImpl();
 	private static PersonAddressDAO personAddressDAO = new PersonAddressDAOImpl();
+    private static HealthCenterDAO healthCenterDAO = new HealthCenterDAOImpl();
+	private PatientPublisherService patientPublisherService = new PatientPublisherServiceImpl();
+
 	protected PatientUpdateStatus patientUpdateStatus = PatientUpdateStatus.NO_ACTION;
 
 	private static String ADDRESS_PART_VILLAGE_ID;
@@ -124,11 +130,9 @@ public class PatientManagementUpdateAction extends BaseAction implements IPatien
 
 			try {
 
-				persistPatientData(patientInfo);
+				persistPatientData(patientInfo, request.getContextPath());
 
-                publishPatientData(patientInfo.getSTnumber());
-
-				tx.commit();
+                tx.commit();
 
 			} catch (LIMSRuntimeException lre) {
 				tx.rollback();
@@ -163,10 +167,6 @@ public class PatientManagementUpdateAction extends BaseAction implements IPatien
 		return mapping.findForward(forward);
 	}
 
-    private void publishPatientData(String sTnumber) {
-        new PatientPublisherServiceImpl().publish(sTnumber);
-
-    }
 
     /*
       * (non-Javadoc)
@@ -278,15 +278,17 @@ public class PatientManagementUpdateAction extends BaseAction implements IPatien
 		}
 	}
 
-	public void persistPatientData(PatientManagmentInfo patientInfo) throws LIMSRuntimeException {
+	public void persistPatientData(PatientManagmentInfo patientInfo, String contextPath) throws LIMSRuntimeException {
 		PersonDAO personDAO = new PersonDAOImpl();
 
-		if (patientUpdateStatus == PatientUpdateStatus.ADD) {
-			personDAO.insertData(person);
-		} else if (patientUpdateStatus == PatientUpdateStatus.UPDATE) {
-			personDAO.updateData(person);
-		}
-		patient.setPerson(person);
+        if (patientUpdateStatus == PatientUpdateStatus.ADD) {
+            personDAO.insertData(person);
+        } else if (patientUpdateStatus == PatientUpdateStatus.UPDATE) {
+            personDAO.updateData(person);
+        }
+
+        patient.setHealthCenter(healthCenterDAO.getByName(patientInfo.getHealthCenterName()));
+        patient.setPerson(person);
 
 		if (patientUpdateStatus == PatientUpdateStatus.ADD) {
 			patientDAO.insertData(patient);
@@ -296,6 +298,8 @@ public class PatientManagementUpdateAction extends BaseAction implements IPatien
 
 		persistPatientRelatedInformation(patientInfo, patient);
 		patientID = patient.getId();
+
+        patientPublisherService.publish(patientInfo.getSTnumber(), contextPath);
 	}
 
     protected void persistPatientRelatedInformation(PatientManagmentInfo patientInfo, Patient patient) {

@@ -676,6 +676,12 @@ function patientIdChanged(){
     }
     updatePatientEditStatus();
 }
+
+function onHealthCenterChange() {
+    $('hiddenhealthCenterName').value =  $('healthCenterName').value;
+    updatePatientEditStatus();
+}
+
 function  /*void*/ updatePatientEditStatus() {
 	if (updateStatus == "noAction") {
 		setUpdateStatus("update");
@@ -819,7 +825,8 @@ function healthDistrictSuccess( xhr ){
         <td>
             <div>
                 <% if (supportHealthCenters) { %>
-                    <select id="healthCenterName" onchange="updatePatientEditStatus()">
+                    <input id="hiddenhealthCenterName" type="hidden" name="patientProperties.healthCenterName">
+                    <select id="healthCenterName" onchange="onHealthCenterChange()" name="healthCenterName">
                         <option value="">Select One</option>
                     </select>
                 <% } %>
@@ -1340,6 +1347,7 @@ function splitSTNumber() {
     if(stNumber && !stNumber.blank()) {
         var match = stNumber.match(/([a-zA-Z]*)(\d+)/);
         $('healthCenterName').value = match[1];
+        $('hiddenhealthCenterName').value =  $('healthCenterName').value;
         $('ST_ID').value = match[2];
     }
 }

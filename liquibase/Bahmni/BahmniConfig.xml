@@ -279,5 +279,19 @@
             <column name="category" type="varchar(255)"></column>
         </addColumn>
     </changeSet>
+    <changeSet id="18" author="tw" context="bahmni">
+        <addColumn tableName="patient" schemaName="clinlims">
+            <column name="health_center_id" type="integer"></column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="19" author="tw" context="bahmni">
+        <addForeignKeyConstraint baseColumnNames="health_center_id"
+                baseTableName="patient"
+                constraintName="fk_patient_health_center"
+                onDelete="CASCADE"
+                onUpdate="RESTRICT"
+                referencedColumnNames="id"
+                referencedTableName="HEALTH_CENTER"/>
+    </changeSet>
 
 </databaseChangeLog>

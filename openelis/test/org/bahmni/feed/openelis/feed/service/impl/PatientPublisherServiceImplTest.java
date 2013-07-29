@@ -27,19 +27,19 @@ public class PatientPublisherServiceImplTest {
     public void shouldConstructUrlOfPatientFromPropertiesAndPatientIdentifier() {
         PatientPublisherService patientPublisherService = new PatientPublisherServiceImpl(eventService);
 
-        patientPublisherService.publish(SAMPLE_PATIENT_ID);
+        patientPublisherService.publish(SAMPLE_PATIENT_ID, "/openelis");
 
         ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);
         verify(eventService).notify(captor.capture());
         Event event = captor.getValue();
-        assertEquals("ws/rest/patient/" + SAMPLE_PATIENT_ID, event.getContents());
+        assertEquals("/openelis/ws/rest/patient/" + SAMPLE_PATIENT_ID, event.getContents());
     }
 
     @Test
     public void shouldPopulateDefaultFieldsWhenCallingEventService() {
         PatientPublisherService patientPublisherService = new PatientPublisherServiceImpl(eventService);
 
-        patientPublisherService.publish(SAMPLE_PATIENT_ID);
+        patientPublisherService.publish(SAMPLE_PATIENT_ID, "/openelis");
 
         ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);
         verify(eventService).notify(captor.capture());
