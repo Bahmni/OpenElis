@@ -63,6 +63,9 @@
 				  type="us.mn.state.health.lims.hibernate.resources.usertype.LIMSStringNumberUserType"
             	  column="status_id"
             	  precision="10" />
+        <many-to-one name="sampleSource" class="us.mn.state.health.lims.samplesource.valueholder.SampleSource" fetch="select" lazy="false">
+            <column name="sample_source_id" precision="10" scale="0" />
+        </many-to-one>
 <!--
         <set name="sampleOrganizations" inverse="true">
             <key>

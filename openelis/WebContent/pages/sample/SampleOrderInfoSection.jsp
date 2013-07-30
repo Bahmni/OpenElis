@@ -89,6 +89,18 @@
         </html:button>
     </td>
 </tr>
+<% if( FormFields.getInstance().useField(Field.UseSampleSource)){ %>
+<tr>
+    <td><bean:message key="sample.entry.sampleSource" />:
+        <span class="requiredlabel">*</span>
+    </td>
+    <td>
+        <html:select name="<%=formName%>" property="sampleSourceId">
+            <html:optionsCollection name="<%=formName%>" property="sampleSourceList" label="name" value="id" />
+        </html:select>
+    </td>
+</tr>
+<% } %>
 <% if( FormFields.getInstance().useField(Field.SampleEntryUseRequestDate)){ %>
 <tr>
     <td><bean:message key="sample.entry.requestDate" />:

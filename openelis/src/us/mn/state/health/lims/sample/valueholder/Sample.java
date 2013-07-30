@@ -15,19 +15,19 @@
 */
 package us.mn.state.health.lims.sample.valueholder;
 
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.validator.GenericValidator;
-
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.common.valueholder.EnumValueItemImpl;
 import us.mn.state.health.lims.common.valueholder.ValueHolder;
 import us.mn.state.health.lims.common.valueholder.ValueHolderInterface;
+import us.mn.state.health.lims.samplesource.valueholder.SampleSource;
 import us.mn.state.health.lims.systemuser.valueholder.SystemUser;
+
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Sample extends EnumValueItemImpl {
 
@@ -64,8 +64,17 @@ public class Sample extends EnumValueItemImpl {
 	private List sampleProjects;
 
 	private String statusId;
+    private SampleSource sampleSource;
 
-	public Sample() {
+    public SampleSource getSampleSource() {
+        return sampleSource;
+    }
+
+    public void setSampleSource(SampleSource sampleSource) {
+        this.sampleSource = sampleSource;
+    }
+
+    public Sample() {
 		super();
 		this.systemUser = new ValueHolder();
 		this.sampleProjects = new ArrayList();

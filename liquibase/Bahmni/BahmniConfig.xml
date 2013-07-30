@@ -315,4 +315,59 @@
             <!--<where>name='atom-feed-openmrs-patient'</where>-->
         <!--</update>-->
     </changeSet>
+    <changeSet id="21" author="tw">
+        <comment>Add new table sample_source and link to sample table</comment>
+        <createTable tableName="sample_source" schemaName="clinlims">
+            <column name="id" type="integer" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(20)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="description" type="varchar(50)"/>
+            <column name="active" type="boolean"/>
+        </createTable>
+        <addColumn tableName="sample" schemaName="clinlims">
+            <column name="sample_source_id" type="integer"></column>
+        </addColumn>
+        <addForeignKeyConstraint baseColumnNames="sample_source_id"
+                baseTableName="sample"
+                constraintName="fk_sample_sample_source"
+                onUpdate="RESTRICT"
+                referencedColumnNames="id"
+                referencedTableName="sample_source"/>
+    </changeSet>
+    <changeSet id="22" author="tw" context="bahmni">
+        <comment>Data required for sample_source</comment>
+        <insert tableName="sample_source" schemaName="clinlims">
+            <column name="id" valueNumeric=" nextval( 'sample_source_id_seq' ) " />
+            <column name="name" value="IPD" />
+            <column name="description" value="InPatient Department"></column>
+            <column name="active" type="boolean" valueBoolean="true"/>
+        </insert>
+        <insert tableName="sample_source" schemaName="clinlims">
+            <column name="id" valueNumeric=" nextval( 'sample_source_id_seq' ) " />
+            <column name="name" value="OPD" />
+            <column name="description" value="OutPatient Department"></column>
+            <column name="active" type="boolean" valueBoolean="true"/>
+        </insert>
+        <insert tableName="sample_source" schemaName="clinlims">
+            <column name="id" valueNumeric=" nextval( 'sample_source_id_seq' ) " />
+            <column name="name" value="Emergency" />
+            <column name="description" value="Emergency"></column>
+            <column name="active" type="boolean" valueBoolean="true"/>
+        </insert>
+        <insert tableName="sample_source" schemaName="clinlims">
+            <column name="id" valueNumeric=" nextval( 'sample_source_id_seq' ) " />
+            <column name="name" value="Sub Center" />
+            <column name="description" value="Sub Center"></column>
+            <column name="active" type="boolean" valueBoolean="true"/>
+        </insert>
+        <insert tableName="sample_source" schemaName="clinlims">
+            <column name="id" valueNumeric=" nextval( 'sample_source_id_seq' ) " />
+            <column name="name" value="Community Program" />
+            <column name="description" value="Community Program"></column>
+            <column name="active" type="boolean" valueBoolean="true"/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>

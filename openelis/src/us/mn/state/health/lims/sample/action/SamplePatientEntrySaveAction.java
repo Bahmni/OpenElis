@@ -20,8 +20,6 @@ package us.mn.state.health.lims.sample.action;
 import org.apache.commons.validator.GenericValidator;
 import org.apache.struts.Globals;
 import org.apache.struts.action.*;
-import org.bahmni.feed.openelis.feed.service.PatientPublisherService;
-import org.bahmni.feed.openelis.feed.service.impl.PatientPublisherServiceImpl;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -106,6 +104,9 @@ import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
 import us.mn.state.health.lims.sampleproject.dao.SampleProjectDAO;
 import us.mn.state.health.lims.sampleproject.daoimpl.SampleProjectDAOImpl;
 import us.mn.state.health.lims.sampleproject.valueholder.SampleProject;
+import us.mn.state.health.lims.samplesource.dao.SampleSourceDAO;
+import us.mn.state.health.lims.samplesource.daoimpl.SampleSourceDAOImpl;
+import us.mn.state.health.lims.samplesource.valueholder.SampleSource;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.OrderStatus;
@@ -131,7 +132,6 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 	private Provider provider;
 	private String patientId;
 	private String accessionNumber;
-	private String projectId;
 	private Sample sample;
 	private SampleHuman sampleHuman;
 	private SampleRequester requesterSite;
@@ -139,8 +139,11 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 	private Map<String, Panel> panelIdPanelMap;
 	private ActionMessages patientErrors;
 	private Organization newOrganization = null;
+    private SampleSource sampleSource;
+    private String projectId;
 
-	private boolean useReceiveDateForCollectionDate = false;
+
+    private boolean useReceiveDateForCollectionDate = false;
 	private boolean useReferringSiteId = false;
 	private String collectionDateFromRecieveDate = null;
 	private TypeOfSampleDAO typeOfSampleDAO = new TypeOfSampleDAOImpl();
@@ -153,7 +156,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 	private ObservationHistoryDAO observationDAO;
 	private List<ObservationHistory> observations;
 	private List<OrganizationAddress> orgAddressExtra;
-    private PatientPublisherService patientPublisherService = new PatientPublisherServiceImpl();
+    private SampleSourceDAO sampleSourceDAO = new SampleSourceDAOImpl();
 
 
 
@@ -212,7 +215,8 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 		}
 	}
 
-	private static String getObservationHistoryTypeId(ObservationHistoryTypeDAO ohtDAO, String name) {
+
+    private static String getObservationHistoryTypeId(ObservationHistoryTypeDAO ohtDAO, String name) {
 		ObservationHistoryType oht;
 		oht = ohtDAO.getByName(name);
 		if (oht != null) {
@@ -442,6 +446,10 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 	private void initSampleData(BaseActionForm dynaForm, String recievedDate, boolean useInitialSampleCondition, boolean trackPayments,
 			boolean useReceiveTimestamp) {
 		sampleItemsTests = new ArrayList<SampleTestCollection>();
+        Integer sampleSourceId = (Integer) dynaForm.get("sampleSourceId");
+        if (sampleSourceId != null) {
+            sampleSource = sampleSourceDAO.load(sampleSourceId);
+        }
 		createPopulatedSample(recievedDate, useReceiveTimestamp);
 
 		addObservations(dynaForm, trackPayments);
@@ -576,8 +584,9 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 		sample = new Sample();
 		sample.setSysUserId(currentUserId);
 		sample.setAccessionNumber(accessionNumber);
+        sample.setSampleSource(sampleSource);
 
-		sample.setEnteredDate(DateUtil.getNowAsSqlDate());
+        sample.setEnteredDate(DateUtil.getNowAsSqlDate());
 		if (useReceiveTimestamp) {
 			sample.setReceivedTimestamp(DateUtil.convertStringDateToTimestamp(receivedDate));
 		} else {
@@ -683,6 +692,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 		AnalysisDAO analysisDAO = new AnalysisDAOImpl();
 		TestDAO testDAO = new TestDAOImpl();
 		String analysisRevision = SystemConfiguration.getInstance().getAnalysisDefaultRevision();
+        sample.setSampleSource(new SampleSourceDAOImpl().getByName("IPD"));
 
 		sampleDAO.insertDataWithAccessionNumber(sample);
 

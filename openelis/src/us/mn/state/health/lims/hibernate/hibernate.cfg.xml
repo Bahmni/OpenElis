@@ -292,7 +292,8 @@
 		resource="org/bahmni/feed/openelis/externalreference/valueholder/ExternalReference.hbm.xml" />
     <mapping
             resource="us/mn/state/health/lims/healthcenter/valueholder/HealthCenter.hbm.xml" />
-
+    <mapping
+            resource="us/mn/state/health/lims/samplesource/valueholder/SampleSource.hbm.xml" />
 </session-factory>
 
 </hibernate-configuration>

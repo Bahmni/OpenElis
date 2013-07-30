@@ -17,12 +17,12 @@
 */
 package us.mn.state.health.lims.common.formfields;
 
-import java.util.HashMap;
-
 import us.mn.state.health.lims.common.action.IActionConstants;
+import us.mn.state.health.lims.common.formfields.FormFields.Field;
 import us.mn.state.health.lims.common.util.ConfigurationProperties;
 import us.mn.state.health.lims.common.util.ConfigurationProperties.Property;
-import us.mn.state.health.lims.common.formfields.FormFields.Field;
+
+import java.util.HashMap;
 
 public class DefaultFormFields extends AFormFields {
 	private HashMap<FormFields.Field, Boolean> defaultAttributes = new HashMap<FormFields.Field, Boolean>();
@@ -110,6 +110,7 @@ public class DefaultFormFields extends AFormFields {
         setFieldFalse(Field.DynamicAddress);
         setFieldFalse(Field.HealthCenter);
         setFieldFalse(Field.FirstNameFirst);
+        setFieldFalse(Field.UseSampleSource);
     }
 
 	@Override
