@@ -13,6 +13,10 @@ import us.mn.state.health.lims.address.daoimpl.PersonAddressDAOImpl;
 import us.mn.state.health.lims.address.valueholder.AddressPart;
 import us.mn.state.health.lims.address.valueholder.AddressParts;
 import us.mn.state.health.lims.address.valueholder.PersonAddress;
+import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
+import us.mn.state.health.lims.healthcenter.dao.HealthCenterDAO;
+import us.mn.state.health.lims.healthcenter.daoimpl.HealthCenterDAOImpl;
+import us.mn.state.health.lims.healthcenter.valueholder.HealthCenter;
 import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
 import us.mn.state.health.lims.patient.dao.PatientDAO;
 import us.mn.state.health.lims.patient.daoimpl.PatientDAOImpl;
@@ -41,16 +45,17 @@ public class BahmniPatientService {
     private AddressPartDAO addressPartDAO;
     private PatientIdentityTypeDAO patientIdentityTypeDAO;
     private AuditingService auditingService;
+    private HealthCenterDAO healthCenterDAO;
 
     public BahmniPatientService() {
         this(new PatientDAOImpl(), new PersonDAOImpl(), new PatientIdentityDAOImpl(),
                 new PersonAddressDAOImpl(), new AddressPartDAOImpl(), new PatientIdentityTypeDAOImpl(),
-                new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl()));
+                new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl()), new HealthCenterDAOImpl());
     }
 
     public BahmniPatientService(PatientDAO patientDAO, PersonDAO personDAO, PatientIdentityDAO patientIdentityDAO,
                                 PersonAddressDAO personAddressDAO, AddressPartDAO addressPartDAO, PatientIdentityTypeDAO patientIdentityTypeDAO,
-                                AuditingService auditingService) {
+                                AuditingService auditingService, HealthCenterDAO healthCenterDAO) {
         this.patientDAO = patientDAO;
         this.personDAO = personDAO;
         this.patientIdentityDAO = patientIdentityDAO;
@@ -58,6 +63,7 @@ public class BahmniPatientService {
         this.addressPartDAO = addressPartDAO;
         this.patientIdentityTypeDAO = patientIdentityTypeDAO;
         this.auditingService = auditingService;
+        this.healthCenterDAO = healthCenterDAO;
     }
 
     public void create(OpenMRSPatient openMRSPatient) {
@@ -84,17 +90,33 @@ public class BahmniPatientService {
         patient.setBirthDate(new Timestamp(openMRSPerson.getBirthdate().getTime()));
         patient.setSysUserId(sysUserId);
         patient.setPerson(person);
+        patient.setHealthCenter(healthCenterOf(healthCenterStringFrom(openMRSPerson)));
         patientDAO.insertData(patient);
 
         PatientIdentityTypes patientIdentityTypes = new PatientIdentityTypes(patientIdentityTypeDAO.getAllPatientIdenityTypes());
         addPatientIdentity(patient, patientIdentityTypes, "ST", openMRSPatient.getIdentifiers().get(0).getIdentifier(), sysUserId);
-        OpenMRSPersonAttribute primaryRelativeAttribute = openMRSPerson.findAttributeByAttributeTypeDisplayName(OpenMRSPersonAttributeType.ATTRIBUTE1_NAME);
+        OpenMRSPersonAttribute primaryRelativeAttribute = openMRSPerson.findAttributeByAttributeTypeDisplayName(OpenMRSPersonAttributeType.MOTHERS_NAME);
         if (primaryRelativeAttribute != null)
             addPatientIdentity(patient, patientIdentityTypes, "MOTHER", primaryRelativeAttribute.getValue(), sysUserId);
 
-        OpenMRSPersonAttribute occupationAttribute = openMRSPerson.findAttributeByAttributeTypeDisplayName(OpenMRSPersonAttributeType.ATTRIBUTE2_NAME);
+        OpenMRSPersonAttribute occupationAttribute = openMRSPerson.findAttributeByAttributeTypeDisplayName(OpenMRSPersonAttributeType.OCCUPATION);
         if (occupationAttribute != null)
             addPatientIdentity(patient, patientIdentityTypes, "OCCUPATION", occupationAttribute.getValue(), sysUserId);
+    }
+
+    private HealthCenter healthCenterOf(String healthCenterString) {
+        if (isNullOrEmpty(healthCenterString)) return null;
+        HealthCenter healthCenter = healthCenterDAO.getByName(healthCenterString);
+        if (healthCenter != null) return healthCenter;
+        throw new LIMSRuntimeException("HealthCenter " + healthCenterString + " is not configured in OpenELIS");
+    }
+
+    private boolean isNullOrEmpty(String healthCenterString) {
+        return healthCenterString == null || healthCenterString.isEmpty();
+    }
+
+    private String healthCenterStringFrom(OpenMRSPerson openMRSPerson) {
+        return openMRSPerson.findAttributeByAttributeTypeDisplayName(OpenMRSPersonAttributeType.HEALTH_CENTER).getValue();
     }
 
     public CompletePatientDetails getCompletePatientDetails(String patientId){
@@ -115,7 +137,7 @@ public class BahmniPatientService {
     private void addPatientIdentity(Patient patient, PatientIdentityTypes patientIdentityTypes, String key, String identifier, String sysUserId) {
         PatientIdentityType patientIdentityType = patientIdentityTypes.find(key);
         PatientIdentity patientIdentity = new PatientIdentity();
-        patientIdentity.setId(patientIdentityType.getId());
+        patientIdentity.setIdentityTypeId(patientIdentityType.getId());
         patientIdentity.setPatientId(patient.getId());
         patientIdentity.setIdentityData(identifier);
         patientIdentity.setSysUserId(sysUserId);

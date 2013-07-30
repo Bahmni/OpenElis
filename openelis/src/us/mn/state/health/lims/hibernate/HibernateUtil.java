@@ -20,10 +20,8 @@ import org.hibernate.Interceptor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
-
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
-import us.mn.state.health.lims.hibernate.resources.interceptor.LIMSTrimDataInterceptor;
 
 /**
  * Basic Hibernate helper class, handles SessionFactory, Session and Transaction.

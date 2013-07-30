@@ -4,8 +4,9 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OpenMRSPersonAttributeType {
-    public static final String ATTRIBUTE1_NAME = "primaryRelative";
-    public static final String ATTRIBUTE2_NAME = "occupation";
+    public static final String MOTHERS_NAME = "primaryRelative";
+    public static final String OCCUPATION = "occupation";
+    public static final String HEALTH_CENTER = "Health Center";
     private String display;
 
     public OpenMRSPersonAttributeType() {
