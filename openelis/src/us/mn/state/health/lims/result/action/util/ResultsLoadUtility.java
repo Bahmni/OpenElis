@@ -1162,7 +1162,7 @@ public class ResultsLoadUtility {
 			Calendar dob = Calendar.getInstance();
 			dob.setTime(currPatient.getBirthDate());
 
-			currPatientAge = DateUtil.getAgeInMonths(currPatient.getBirthDate(), new Date());
+			currPatientAge = DateUtil.getAgeInYears(currPatient.getBirthDate(), new Date());
 		}
 
 		return currPatientAge;
