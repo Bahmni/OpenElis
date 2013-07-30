@@ -49,6 +49,7 @@ public class BahmniFormFields implements IFormFieldsForImplementation {
         settings.put(Field.NationalID,Boolean.FALSE);
         settings.put(Field.HealthCenter, Boolean.TRUE);
         settings.put(Field.ResultsReferral, Boolean.TRUE);
+        settings.put(Field.PatientType, Boolean.FALSE);
 		return settings;
 	}
 
