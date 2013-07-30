@@ -16,6 +16,7 @@
  */
 package us.mn.state.health.lims.scheduler;
 
+import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.feed.client.OpenERPLabTestFeedJob;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
@@ -36,7 +37,6 @@ import static org.quartz.TriggerBuilder.newTrigger;
 
 public class LateStartScheduler {
     private static final String NEVER = "never";
-
     private static Map<String, Class<? extends Job>> scheduleJobMap;
 
     private Scheduler scheduler;

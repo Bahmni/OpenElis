@@ -120,7 +120,7 @@
             <column name="id" type="numeric(10,0)" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="feed_uri_for_last_read_entry" type="varchar(100)">
+            <column name="feed_uri_for_last_read_entry" type="varchar(250)">
                 <constraints nullable="false"/>
             </column>
             <column name="feed_uri" type="varchar(250)">
@@ -293,5 +293,26 @@
                 referencedColumnNames="id"
                 referencedTableName="HEALTH_CENTER"/>
     </changeSet>
-
+    <changeSet id="20" author="tw" context="bahmni">
+        <dropNotNullConstraint columnDataType="varchar(250)"
+                               columnName="last_read_entry_id"
+                               schemaName="clinlims"
+                               tableName="markers"/>
+        <dropNotNullConstraint columnDataType="varchar(250)"
+                               columnName="feed_uri_for_last_read_entry"
+                               schemaName="clinlims"
+                               tableName="markers"/>
+        <insert tableName="markers" schemaName="clinlims">
+            <column name="feed_uri_for_last_read_entry" valueNumeric="'http://localhost:8080/openmrs/ws/atomfeed/patient/1'"/>
+            <column name="feed_uri" valueNumeric="'http://localhost:8080/openmrs/ws/atomfeed/patient/recent'"/>
+        </insert>
+        <!--<update schemaName="clinlims" tableName="quartz_cron_scheduler">-->
+            <!--<column name="cron_statement" value="0/5 * * * * *"/>-->
+            <!--<where>name='atom-feed-openmrs-patient'</where>-->
+        <!--</update>-->
+        <!--<update schemaName="clinlims" tableName="quartz_cron_scheduler">-->
+            <!--<column name="cron_statement" value="* 0/1 * * * *"/>-->
+            <!--<where>name='atom-feed-openmrs-patient'</where>-->
+        <!--</update>-->
+    </changeSet>
 </databaseChangeLog>

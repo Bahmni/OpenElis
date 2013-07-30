@@ -5,7 +5,7 @@ import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPatient;
 import org.bahmni.feed.openelis.feed.mapper.OpenMRSPatientMapper;
 import org.bahmni.feed.openelis.feed.service.impl.BahmniPatientService;
 import org.bahmni.feed.openelis.utils.AuditingService;
-import org.bahmni.feed.openelis.webclient.WebClient;
+import org.bahmni.webclients.WebClient;
 import org.ict4h.atomfeed.client.domain.Event;
 import org.ict4h.atomfeed.client.service.EventWorker;
 import us.mn.state.health.lims.address.daoimpl.AddressPartDAOImpl;

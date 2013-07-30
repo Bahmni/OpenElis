@@ -11,8 +11,8 @@ public class AtomFeedProperties {
     private static final String LAB_TEST_EVENT = "productType.labTest";
     private static final String PANEL_EVENT = "productType.panel";
 
-    private static final String FEED_CONNECT_TIMEOUT = "connectionTimeoutInMilliseconds";
-    private static final String FEED_REPLY_TIMEOUT = "replyTimeoutInMilliseconds";
+    private static final String FEED_CONNECT_TIMEOUT = "feed.connectionTimeoutInMilliseconds";
+    private static final String FEED_REPLY_TIMEOUT = "feed.replyTimeoutInMilliseconds";
 
     public static final String DEFAULT_PROPERTY_FILENAME = "/atomfeed.properties";
 

@@ -3,9 +3,12 @@
 <%@ page import="org.apache.log4j.Logger" %>
 
 <%
+  OpenMRSPatientFeedReaderJob job = null;
   try {
-    OpenMRSPatientFeedReaderJob job = new OpenMRSPatientFeedReaderJob();
-    job.execute(null);
-  } catch (Exception e) {
+    job = new OpenMRSPatientFeedReaderJob();
+  } catch (Throwable e) {
+    Logger.getLogger(OpenMRSPatientFeedReaderJob.class).error(e.getMessage(), e);
+    return;
   }
+  job.execute(null);
 %>
