@@ -16,7 +16,8 @@ public class BahmniAdministrativeFormFields implements IAdministrationFormFields
         settings.put(AdministrationFormFields.Field.TypeOfSamplePanelMenu, Boolean.TRUE);
         settings.put(AdministrationFormFields.Field.ResultLimitsMenu, Boolean.TRUE);
         settings.put(AdministrationFormFields.Field.OrganizationMenu,  Boolean.TRUE);
+        settings.put(AdministrationFormFields.Field.TestResultMenu,  Boolean.TRUE);
+        settings.put(AdministrationFormFields.Field.DictionaryMenu,  Boolean.TRUE);
         return settings;
-
     }
 }

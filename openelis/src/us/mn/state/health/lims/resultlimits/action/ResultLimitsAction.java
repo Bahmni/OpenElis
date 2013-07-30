@@ -15,19 +15,11 @@
  */
 package us.mn.state.health.lims.resultlimits.action;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.DynaActionForm;
-
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.gender.dao.GenderDAO;
 import us.mn.state.health.lims.gender.daoimpl.GenderDAOImpl;
@@ -43,6 +35,12 @@ import us.mn.state.health.lims.typeoftestresult.daoimpl.TypeOfTestResultDAOImpl;
 import us.mn.state.health.lims.typeoftestresult.valueholder.TypeOfTestResult;
 import us.mn.state.health.lims.unitofmeasure.dao.UnitOfMeasureDAO;
 import us.mn.state.health.lims.unitofmeasure.daoimpl.UnitOfMeasureDAOImpl;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class ResultLimitsAction extends BaseAction {
 
@@ -99,7 +97,7 @@ public class ResultLimitsAction extends BaseAction {
 		Collection tests = getAllTests();
 		PropertyUtils.setProperty(form, "tests", tests);
 
-		Collection resultTypes = getNonDictonaryResultTypes();
+        Collection resultTypes = getNumericResultType();
 		PropertyUtils.setProperty(form, "resultTypes", resultTypes);
 
 		Collection genders = getGenders();
@@ -111,7 +109,23 @@ public class ResultLimitsAction extends BaseAction {
 		return mapping.findForward(forward);
 	}
 
-	private Collection getUnits() {
+    private Collection getNumericResultType() {
+        TypeOfTestResultDAO resultTypeDAO = new TypeOfTestResultDAOImpl();
+        Collection<TypeOfTestResult> resultTypes = resultTypeDAO.getAllTypeOfTestResults();
+        Collection filteredResultTypes = new ArrayList();
+
+
+        for (TypeOfTestResult resultType : resultTypes) {
+            if ("N".equals(resultType.getTestResultType())) {
+                filteredResultTypes.add(resultType);
+            }
+        }
+
+        return filteredResultTypes;
+
+    }
+
+    private Collection getUnits() {
 		UnitOfMeasureDAO uomDAO = new UnitOfMeasureDAOImpl();
 		return uomDAO.getAllUnitOfMeasures();
 	}
@@ -121,22 +135,7 @@ public class ResultLimitsAction extends BaseAction {
 		return genderDAO.getAllGenders();
 	}
 
-	@SuppressWarnings("unchecked")
-	private Collection getNonDictonaryResultTypes() {
-		TypeOfTestResultDAO resultTypeDAO = new TypeOfTestResultDAOImpl();
-		Collection<TypeOfTestResult> resultTypes = resultTypeDAO.getAllTypeOfTestResults();
-		Collection filteredResultTypes = new ArrayList();
-
-		for (TypeOfTestResult resultType : resultTypes) {
-			if (!"D".equals(resultType.getTestResultType())) {
-				filteredResultTypes.add(resultType);
-			}
-		}
-
-		return filteredResultTypes;
-	}
-
-	private Collection getAllTests() {
+    private Collection getAllTests() {
 		TestDAO testDAO = new TestDAOImpl();
 		return testDAO.getAllTests(false);
 	}

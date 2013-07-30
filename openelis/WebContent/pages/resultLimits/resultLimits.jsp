@@ -60,7 +60,7 @@ function /*void*/ updateDay( yearElement, dayId ){
 		</td>
 		<td width="15%">
 			<html:select name="<%=formName%>" property="limit.resultTypeId">
-				<app:optionsCollection name="<%=formName%>" property="resultTypes" label="description" value="id" allowEdits="true" />
+				<app:optionsCollection name="<%=formName%>" property="resultTypes" label="description" value="id" allowEdits="true" showDefault="false"/>
 			</html:select>
 		</td>
 		<td width="50%" >&nbsp;</td>
