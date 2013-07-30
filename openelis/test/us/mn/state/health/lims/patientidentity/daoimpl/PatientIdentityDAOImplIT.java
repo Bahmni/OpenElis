@@ -11,7 +11,7 @@ import us.mn.state.health.lims.patientidentitytype.util.PatientIdentityTypeMap;
 import us.mn.state.health.lims.person.daoimpl.PersonDAOImpl;
 import us.mn.state.health.lims.person.valueholder.Person;
 
-public class PatientIdentityDAOImplTest extends IT {
+public class PatientIdentityDAOImplIT extends IT {
 
     @Test(expected = LIMSValidationException.class)
     public void insertData_checks_for_presence_of_duplicate_ST_Number() {
