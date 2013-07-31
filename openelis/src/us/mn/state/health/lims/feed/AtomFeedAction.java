@@ -5,7 +5,6 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.bahmni.feed.openelis.ObjectMapperRepository;
 import org.bahmni.feed.openelis.feed.FeedGeneratorFactory;
 import org.bahmni.feed.openelis.utils.OpenElisConnectionProvider;
 import org.ict4h.atomfeed.server.service.EventFeedServiceImpl;
@@ -33,7 +32,7 @@ public class AtomFeedAction extends Action {
         AtomFeedUrlParser feedUrlParser = new AtomFeedUrlParser(requestUrl);
         responseData = feedUrlParser.isForRecentFeed() ? getRecentFeed(feedUrlParser, requestUrl) : getEventFeed(feedUrlParser, requestUrl);
         response.setContentType("application/atom+xml");
-        ObjectMapperRepository.objectMapper.writeValue(response.getWriter(), responseData);
+        response.getWriter().write(responseData);
         return null;
     }
 
