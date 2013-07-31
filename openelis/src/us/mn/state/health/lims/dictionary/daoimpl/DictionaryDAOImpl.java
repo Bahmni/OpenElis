@@ -207,6 +207,23 @@ public class DictionaryDAOImpl extends BaseDAOImpl implements DictionaryDAO {
         return list;
     }
 
+    public List getAllDictionarys(String filter) throws LIMSRuntimeException {
+        List list;
+        try {
+            String sql = "from Dictionary d where upper(d.dictEntry) like upper(:param) order by upper(d.dictEntry)";
+            Query query = HibernateUtil.getSession().createQuery(sql);
+            query.setParameter("param", filter+"%");
+
+            list = query.list();
+            HibernateUtil.getSession().flush();
+            HibernateUtil.getSession().clear();
+        } catch (Exception e) {
+            LogEvent.logErrorStack("DictionaryDAOImpl","getAllDictionarys(String filter)",e);
+            throw new LIMSRuntimeException( "Error in Dictionary getAllDictionarys(String filter)", e);
+        }
+        return list;
+    }
+
     public List getPageOfDictionarys(int startingRecNo) throws LIMSRuntimeException {
         List list = new Vector();
 

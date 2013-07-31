@@ -15,25 +15,18 @@
 */
 package us.mn.state.health.lims.testresult.action;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts.Globals;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
-
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
+import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.common.log.LogEvent;
-import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
 import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
 import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
@@ -48,6 +41,10 @@ import us.mn.state.health.lims.testresult.dao.TestResultDAO;
 import us.mn.state.health.lims.testresult.daoimpl.TestResultDAOImpl;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+
 /**
  * @author diane benz
  * 
@@ -58,8 +55,10 @@ import us.mn.state.health.lims.testresult.valueholder.TestResult;
 public class TestResultUpdateAction extends BaseAction {
 
 	private boolean isNew = false;
+    private DictionaryDAOImpl dictionaryDAO = new DictionaryDAOImpl();
+    ScriptletDAO scriptletDAO = new ScriptletDAOImpl();
 
-	protected ActionForward performAction(ActionMapping mapping,
+    protected ActionForward performAction(ActionMapping mapping,
 			ActionForm form, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		// The first job is to determine if we are coming to this action with an
@@ -132,6 +131,7 @@ public class TestResultUpdateAction extends BaseAction {
 		// populate valueholder from form
 		PropertyUtils.copyProperties(testResult, dynaForm);
 
+        testResult = setTestResultType(testResult, dynaForm);
 		testResult.setTest(test);
 		testResult.setScriptlet(s);
 
@@ -237,7 +237,14 @@ public class TestResultUpdateAction extends BaseAction {
 
 	}
 
-	protected String getPageTitleKey() {
+    private TestResult setTestResultType(TestResult testResult, BaseActionForm dynaForm) {
+        String testResultTypeName = (String) dynaForm.get("value");
+        Dictionary dictionary = dictionaryDAO.getDictionaryByDictEntry(testResultTypeName);
+        testResult.setValue(dictionary.getId());
+        return testResult;
+    }
+
+    protected String getPageTitleKey() {
 		if (isNew) {
 			return "testresult.add.title";
 		} else {
@@ -270,9 +277,7 @@ public class TestResultUpdateAction extends BaseAction {
 			if (test == null) {
 				// the test is not in database - not valid
 				// testName
-				ActionError error = new ActionError("errors.invalid",
-						getMessageForKey(messageKey), null);
-				errors.add(ActionMessages.GLOBAL_MESSAGE, error);
+				addErrorMessage(errors, messageKey);
 			}
 		}
 
@@ -282,7 +287,6 @@ public class TestResultUpdateAction extends BaseAction {
 		if (!StringUtil.isNullorNill(scriptletSelected)) {
 			Scriptlet scriptlet = new Scriptlet();
 			scriptlet.setScriptletName(scriptletSelected);
-			ScriptletDAO scriptletDAO = new ScriptletDAOImpl();
 			scriptlet = scriptletDAO.getScriptletByName(scriptlet);
 
 			String messageKey = "testresult.scriptletName";
@@ -290,49 +294,35 @@ public class TestResultUpdateAction extends BaseAction {
 			if (scriptlet == null) {
 				// the scriptlet is not in database - not valid
 				// parentScriptlet
-				ActionError error = new ActionError("errors.invalid",
-						getMessageForKey(messageKey), null);
-				errors.add(ActionMessages.GLOBAL_MESSAGE, error);
+				addErrorMessage(errors, messageKey);
 			}
 		}
 
 		// validate for testResult D -> value must be dictionary ID
 		String testResultType = (String) dynaForm.get("testResultType");
 
-		if (testResultType.equals("D")) {
-			String val = (String) dynaForm.get("value");
-			String messageKey = "testresult.value";
-			try {
-				Integer.parseInt(val);
-
-				Dictionary dictionary = new Dictionary();
-				dictionary.setId(val);
-				DictionaryDAO dictDAO = new DictionaryDAOImpl();
-				List dictionarys = dictDAO.getAllDictionarys();
-
-				boolean found = false;
-				for (int i = 0; i < dictionarys.size(); i++) {
-					Dictionary d = (Dictionary) dictionarys.get(i);
-					if (dictionary.getId().equals(d.getId())) {
-						found = true;
-					}
-				}
-
-				if (!found) {
-					ActionError error = new ActionError("errors.invalid",
-							getMessageForKey(messageKey), null);
-					errors.add(ActionMessages.GLOBAL_MESSAGE, error);
-				}
-			} catch (NumberFormatException nfe) {
-    			//bugzilla 2154
-			    LogEvent.logError("TestResultUpdateAction","validateAll()",nfe.toString());
-				ActionError error = new ActionError("errors.invalid",
-						getMessageForKey(messageKey), null);
-				errors.add(ActionMessages.GLOBAL_MESSAGE, error);
-			}
-		}
-
+        if (isDictionaryTestResultType(testResultType)) {
+            String dictionaryEntry = (String) dynaForm.get("value");
+            if (isNotValidDictionaryEntry(dictionaryEntry)) {
+                addErrorMessage(errors, "testresult.value");
+            }
+        }
 		return errors;
 	}
+
+    private boolean isNotValidDictionaryEntry(String dictionaryEntry){
+        return dictionaryDAO.getDictionaryByDictEntry(dictionaryEntry) == null;
+
+    }
+
+    private boolean isDictionaryTestResultType(String testResultType) {
+        return testResultType.equals("D");
+    }
+
+    private void addErrorMessage(ActionMessages errors, String messageKey) throws Exception {
+        ActionError error = new ActionError("errors.invalid",
+                getMessageForKey(messageKey), null);
+        errors.add(ActionMessages.GLOBAL_MESSAGE, error);
+    }
 
 }

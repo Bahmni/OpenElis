@@ -15,21 +15,23 @@
 */
 package us.mn.state.health.lims.testresult.action;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.DynaActionForm;
-
 import us.mn.state.health.lims.common.action.BaseAction;
-import us.mn.state.health.lims.testresult.dao.TestResultDAO;
 import us.mn.state.health.lims.testresult.daoimpl.TestResultDAOImpl;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
+import us.mn.state.health.lims.typeoftestresult.dao.TypeOfTestResultDAO;
+import us.mn.state.health.lims.typeoftestresult.daoimpl.TypeOfTestResultDAOImpl;
+import us.mn.state.health.lims.typeoftestresult.valueholder.TypeOfTestResult;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author diane benz
@@ -41,8 +43,9 @@ import us.mn.state.health.lims.testresult.valueholder.TestResult;
 public class TestResultAction extends BaseAction {
 
 	private boolean isNew = false;
+    private TestResultDAOImpl testResultDAO = new TestResultDAOImpl();
 
-	protected ActionForward performAction(ActionMapping mapping,
+    protected ActionForward performAction(ActionMapping mapping,
 			ActionForm form, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		// The first job is to determine if we are coming to this action with an
@@ -64,11 +67,9 @@ public class TestResultAction extends BaseAction {
 
 		TestResult testResult = new TestResult();
 
-		if ((id != null) && (!"0".equals(id))) { // this is an existing
+		if (isNewTestResult(id)) { // this is an existing
 			// testResult
-
 			testResult.setId(id);
-			TestResultDAO testResultDAO = new TestResultDAOImpl();
 			testResultDAO.getData(testResult);
 
 			// initialize testName
@@ -80,25 +81,22 @@ public class TestResultAction extends BaseAction {
 			if (testResult.getScriptlet() != null) {
 				testResult.setScriptletName(testResult.getScriptlet().getScriptletName());
 			}
-			
+
 			isNew = false; // this is to set correct page title
 
 			// do we need to enable next or previous?
 			List testResults = testResultDAO.getNextTestResultRecord(testResult
 					.getId());
 			if (testResults.size() > 0) {
-				// enable next button
-				request.setAttribute(NEXT_DISABLED, "false");
+				request.setAttribute(NEXT_DISABLED, "false");  // enable next button
 			}
-			testResults = testResultDAO.getPreviousTestResultRecord(testResult
-					.getId());
+
+			testResults = testResultDAO.getPreviousTestResultRecord(testResult.getId());
 			if (testResults.size() > 0) {
-				// enable next button
-				request.setAttribute(PREVIOUS_DISABLED, "false");
+				request.setAttribute(PREVIOUS_DISABLED, "false");  // enable next button
 			}
 			// end of logic to enable next or previous button
 		} else { // this is a new testResult
-
 			isNew = true; // this is to set correct page title
 		}
 
@@ -112,7 +110,26 @@ public class TestResultAction extends BaseAction {
 		return mapping.findForward(forward);
 	}
 
-	protected String getPageTitleKey() {
+    private boolean isNewTestResult(String id) {
+        return (id != null) && (!"0".equals(id));
+    }
+
+    private Collection getDictionaryAndRemarkResultType() {
+        TypeOfTestResultDAO resultTypeDAO = new TypeOfTestResultDAOImpl();
+        Collection<TypeOfTestResult> resultTypes = resultTypeDAO.getAllTypeOfTestResults();
+        Collection filteredResultTypes = new ArrayList();
+
+
+        for (TypeOfTestResult resultType : resultTypes) {
+            if ("D".equals(resultType.getTestResultType()) || "R".equals(resultType.getTestResultType())) {
+                filteredResultTypes.add(resultType);
+            }
+        }
+
+        return filteredResultTypes;
+    }
+
+    protected String getPageTitleKey() {
 		if (isNew) {
 			return "testresult.add.title";
 		} else {
