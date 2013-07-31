@@ -376,7 +376,7 @@
             <column name="display_order" type="integer"></column>
         </addColumn>
     </changeSet>
-    <changeSet id="24" author="tw">
+    <changeSet id="24" author="tw" context="bahmni">
         <comment>setting values for ordering the sample_sources</comment>
         <update schemaName="clinlims" tableName="sample_source">
             <column name="display_order" value="1"/>
