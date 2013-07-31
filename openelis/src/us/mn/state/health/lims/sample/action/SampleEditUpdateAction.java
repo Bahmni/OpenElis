@@ -47,17 +47,13 @@ import us.mn.state.health.lims.observationhistory.valueholder.ObservationHistory
 import us.mn.state.health.lims.observationhistorytype.dao.ObservationHistoryTypeDAO;
 import us.mn.state.health.lims.observationhistorytype.daoImpl.ObservationHistoryTypeDAOImpl;
 import us.mn.state.health.lims.observationhistorytype.valueholder.ObservationHistoryType;
-import us.mn.state.health.lims.panel.dao.PanelDAO;
-import us.mn.state.health.lims.panel.daoimpl.PanelDAOImpl;
-import us.mn.state.health.lims.panel.valueholder.Panel;
-import us.mn.state.health.lims.panelitem.dao.PanelItemDAO;
-import us.mn.state.health.lims.panelitem.daoimpl.PanelItemDAOImpl;
-import us.mn.state.health.lims.panelitem.valueholder.PanelItem;
 import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.sample.bean.SampleEditItem;
+import us.mn.state.health.lims.sample.bean.SampleTestCollection;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
 import us.mn.state.health.lims.sample.util.AccessionNumberUtil;
+import us.mn.state.health.lims.sample.util.AnalysisBuilder;
 import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.samplehuman.daoimpl.SampleHumanDAOImpl;
 import us.mn.state.health.lims.sampleitem.dao.SampleItemDAO;
@@ -77,9 +73,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 public class SampleEditUpdateAction extends BaseAction {
-
-	private static final String DEFAULT_ANALYSIS_TYPE = "MANUAL";
-	private AnalysisDAO analysisDAO = new AnalysisDAOImpl();
+    private AnalysisDAO analysisDAO = new AnalysisDAOImpl();
 	private SampleItemDAO sampleItemDAO = new SampleItemDAOImpl();
 	private SampleDAO sampleDAO = new SampleDAOImpl();
 	private TestDAO testDAO = new TestDAOImpl();
@@ -91,9 +85,7 @@ public class SampleEditUpdateAction extends BaseAction {
 	private ObservationHistoryDAO observationDAO = new ObservationHistoryDAOImpl();
 	private static String INITIAL_CONDITION_OBSERVATION_ID;
 	private TypeOfSampleDAO typeOfSampleDAO = new TypeOfSampleDAOImpl();
-    private PanelItemDAO panelItemDAO = new PanelItemDAOImpl();
-    private Map<String, Panel> panelIdPanelMap;
-    private PanelDAO panelDAO = new PanelDAOImpl();
+    private final AnalysisBuilder analysisBuilder = new AnalysisBuilder();
 
 	static {
 		ObservationHistoryTypeDAO ohtDAO = new ObservationHistoryTypeDAOImpl();
@@ -187,19 +179,19 @@ public class SampleEditUpdateAction extends BaseAction {
 				}
 
 				for( SampleTestCollection sampleTestCollection : addedSamples){
-					sampleItemDAO.insertData(sampleTestCollection.sampleItem);
+					sampleItemDAO.insertData(sampleTestCollection.item);
 
 					for (Test test : sampleTestCollection.tests) {
 						testDAO.getData(test);
 
-						Analysis analysis = populateAnalysis(sampleTestCollection, test);
+                        Analysis analysis = analysisBuilder.populateAnalysis("0", sampleTestCollection, test);
 						analysisDAO.insertData(analysis, false); // false--do not check
 						// for duplicates
 					}
 					
 					if( sampleTestCollection.initialSampleConditionIdList != null){
 						for( ObservationHistory observation : sampleTestCollection.initialSampleConditionIdList){
-							observation.setSampleItemId(sampleTestCollection.sampleItem.getId());
+							observation.setSampleItemId(sampleTestCollection.item.getId());
 							observationDAO.insertData(observation);
 						}
 					}
@@ -235,56 +227,9 @@ public class SampleEditUpdateAction extends BaseAction {
 			params.put("type", sampleEditWritability);
 			return getForwardWithParameters(mapping.findForward(forward), params);
 		}
-
 	}
 
-	private Analysis populateAnalysis(SampleTestCollection sampleTestCollection, Test test) {
-		java.sql.Date collectionDateTime = DateUtil.convertStringDateTimeToSqlDate(sampleTestCollection.collectionDate);
-
-        Panel panel = getPanelForTest(test);
-
-        Analysis analysis = new Analysis();
-		analysis.setTest(test);
-        analysis.setPanel(panel);
-		analysis.setIsReportable(test.getIsReportable());
-		analysis.setAnalysisType(DEFAULT_ANALYSIS_TYPE);
-		analysis.setSampleItem(sampleTestCollection.sampleItem);
-		analysis.setSysUserId(sampleTestCollection.sampleItem.getSysUserId());
-		analysis.setRevision("0");
-		analysis.setStartedDate(collectionDateTime);
-		analysis.setStatusId(StatusOfSampleUtil.getStatusID(AnalysisStatus.NotStarted));
-		analysis.setTestSection(test.getTestSection());
-		return analysis;
-	}
-
-    private void augmentPanelIdToPanelMap(String panelIDs) {
-        if( panelIdPanelMap == null){
-            panelIdPanelMap = new HashMap<String, Panel>();
-        }
-
-        if(panelIDs != null){
-            String[] ids = panelIDs.split(",");
-            for( String id : ids){
-                if( !GenericValidator.isBlankOrNull(id)){
-                    panelIdPanelMap.put(id, panelDAO.getPanelById(id));
-                }
-            }
-        }
-    }
-    private Panel getPanelForTest(Test test) {
-        List<PanelItem> panelItems = panelItemDAO.getPanelItemByTest(test);
-
-        for( PanelItem panelItem : panelItems){
-            Panel panel = panelIdPanelMap.get(panelItem.getPanel().getId());
-            if( panel != null){
-                return panel;
-            }
-        }
-
-        return null;
-    }
-
-	private List<SampleTestCollection> createAddSampleList(DynaActionForm dynaForm, List<Analysis> addAnalysisList, Sample sample) {
+    private List<SampleTestCollection> createAddSampleList(DynaActionForm dynaForm, List<Analysis> addAnalysisList, Sample sample) {
 		if( sample == null){
 			sample = sampleDAO.getSampleByAccessionNumber(dynaForm.getString("accessionNumber"));
 		}
@@ -324,7 +269,7 @@ public class SampleEditUpdateAction extends BaseAction {
                 String panelIDs = sampleItem.attributeValue("panels");
 				String collectionDateTime = collectionDate.trim() + " " + collectionTime.trim();
 
-                augmentPanelIdToPanelMap(panelIDs);
+                analysisBuilder.augmentPanelIdToPanelMap(panelIDs);
 
 				List<ObservationHistory> initialConditionList = null;
 				if (useInitialSampleCondition) {
@@ -590,19 +535,5 @@ public class SampleEditUpdateAction extends BaseAction {
 
 	protected String getPageSubtitleKey() {
 		return StringUtil.getContextualKeyForKey("sample.edit.subtitle");
-	}
-
-	private final class SampleTestCollection {
-		public SampleItem sampleItem;
-		public List<Test> tests;
-		public String collectionDate;
-		public List<ObservationHistory> initialSampleConditionIdList;
-
-		public SampleTestCollection(SampleItem item, List<Test> tests, String collectionDate, List<ObservationHistory> initialConditionList) {
-			this.sampleItem = item;
-			this.tests = tests;
-			this.collectionDate = collectionDate;
-			initialSampleConditionIdList = initialConditionList;
-		}
 	}
 }

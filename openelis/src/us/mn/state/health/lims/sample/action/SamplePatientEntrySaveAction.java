@@ -66,12 +66,6 @@ import us.mn.state.health.lims.organization.daoimpl.OrganizationOrganizationType
 import us.mn.state.health.lims.organization.daoimpl.OrganizationTypeDAOImpl;
 import us.mn.state.health.lims.organization.valueholder.Organization;
 import us.mn.state.health.lims.organization.valueholder.OrganizationType;
-import us.mn.state.health.lims.panel.dao.PanelDAO;
-import us.mn.state.health.lims.panel.daoimpl.PanelDAOImpl;
-import us.mn.state.health.lims.panel.valueholder.Panel;
-import us.mn.state.health.lims.panelitem.dao.PanelItemDAO;
-import us.mn.state.health.lims.panelitem.daoimpl.PanelItemDAOImpl;
-import us.mn.state.health.lims.panelitem.valueholder.PanelItem;
 import us.mn.state.health.lims.patient.action.IPatientUpdate;
 import us.mn.state.health.lims.patient.action.PatientManagementUpdateAction;
 import us.mn.state.health.lims.patient.action.bean.PatientManagmentInfo;
@@ -91,9 +85,11 @@ import us.mn.state.health.lims.requester.daoimpl.RequesterTypeDAOImpl;
 import us.mn.state.health.lims.requester.daoimpl.SampleRequesterDAOImpl;
 import us.mn.state.health.lims.requester.valueholder.RequesterType;
 import us.mn.state.health.lims.requester.valueholder.SampleRequester;
+import us.mn.state.health.lims.sample.bean.SampleTestCollection;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
 import us.mn.state.health.lims.sample.util.AccessionNumberUtil;
+import us.mn.state.health.lims.sample.util.AnalysisBuilder;
 import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.samplehuman.dao.SampleHumanDAO;
 import us.mn.state.health.lims.samplehuman.daoimpl.SampleHumanDAOImpl;
@@ -108,7 +104,6 @@ import us.mn.state.health.lims.samplesource.dao.SampleSourceDAO;
 import us.mn.state.health.lims.samplesource.daoimpl.SampleSourceDAOImpl;
 import us.mn.state.health.lims.samplesource.valueholder.SampleSource;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
-import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.OrderStatus;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.SampleStatus;
 import us.mn.state.health.lims.test.dao.TestDAO;
@@ -124,10 +119,10 @@ import java.util.*;
 
 public class SamplePatientEntrySaveAction extends BaseAction {
 
-	private static final String DEFAULT_ANALYSIS_TYPE = "MANUAL";
 	public static long ORGANIZATION_REQUESTER_TYPE_ID;
 	private static long PROVIDER_REQUESTER_TYPE_ID;
-	private boolean savePatient = false;
+    private final AnalysisBuilder analysisBuilder = new AnalysisBuilder();
+    private boolean savePatient = false;
 	private Person providerPerson;
 	private Provider provider;
 	private String patientId;
@@ -136,8 +131,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 	private SampleHuman sampleHuman;
 	private SampleRequester requesterSite;
 	private List<SampleTestCollection> sampleItemsTests;
-	private Map<String, Panel> panelIdPanelMap;
-	private ActionMessages patientErrors;
+    private ActionMessages patientErrors;
 	private Organization newOrganization = null;
     private SampleSource sampleSource;
     private String projectId;
@@ -151,9 +145,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 	private OrganizationDAO orgDAO = new OrganizationDAOImpl();
 	private OrganizationAddressDAO orgAddressDAO = new OrganizationAddressDAOImpl();
 	private OrganizationOrganizationTypeDAO orgOrgTypeDAO = new OrganizationOrganizationTypeDAOImpl();
-	private PanelDAO panelDAO = new PanelDAOImpl();
-	private PanelItemDAO panelItemDAO = new PanelItemDAOImpl();
-	private ObservationHistoryDAO observationDAO;
+    private ObservationHistoryDAO observationDAO;
 	private List<ObservationHistory> observations;
 	private List<OrganizationAddress> orgAddressExtra;
     private SampleSourceDAO sampleSourceDAO = new SampleSourceDAOImpl();
@@ -232,8 +224,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 
 		String forward = FWD_SUCCESS;
 
-		panelIdPanelMap = null;
-		orgAddressExtra = new ArrayList<OrganizationAddress>();
+        orgAddressExtra = new ArrayList<OrganizationAddress>();
 		observations = new ArrayList<ObservationHistory>();
 		boolean useInitialSampleCondition = FormFields.getInstance().useField(Field.InitialSampleCondition);
 		BaseActionForm dynaForm = (BaseActionForm) form;
@@ -468,7 +459,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 				String panelIDs = sampleItem.attributeValue("panels");
 				String collectionDateTime = sampleItem.attributeValue("date").trim() + " " + sampleItem.attributeValue("time").trim();
 
-				augmentPanelIdToPanelMap(panelIDs);
+				analysisBuilder.augmentPanelIdToPanelMap(panelIDs);
 				List<ObservationHistory> initialConditionList = null;
 
 				if (useInitialSampleCondition) {
@@ -494,21 +485,6 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 		} catch (DocumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-	}
-
-	private void augmentPanelIdToPanelMap(String panelIDs) {
-		if( panelIdPanelMap == null){
-			panelIdPanelMap = new HashMap<String, Panel>();
-		}
-		
-		if(panelIDs != null){
-			String[] ids = panelIDs.split(",");
-			for( String id : ids){
-				if( !GenericValidator.isBlankOrNull(id)){
-					panelIdPanelMap.put(id, panelDAO.getPanelById(id));
-				}
-			}
 		}
 	}
 
@@ -707,7 +683,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 			for (Test test : sampleTestPair.tests) {
 				testDAO.getData(test);
 
-				Analysis analysis = populateAnalysis(analysisRevision, sampleTestPair, test);
+				Analysis analysis = analysisBuilder.populateAnalysis(analysisRevision, sampleTestPair, test);
 				analysisDAO.insertData(analysis, false); // false--do not check
 				// for duplicates
 			}
@@ -775,39 +751,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 		}
 	}
 
-	private Analysis populateAnalysis(String analysisRevision, SampleTestCollection sampleTestCollection, Test test) {
-		java.sql.Date collectionDateTime = DateUtil.convertStringDateTimeToSqlDate(sampleTestCollection.collectionDate);
-
-		Panel panel = getPanelForTest(test);
-		
-		Analysis analysis = new Analysis();
-		analysis.setTest(test);
-		analysis.setPanel(panel);
-		analysis.setIsReportable(test.getIsReportable());
-		analysis.setAnalysisType(DEFAULT_ANALYSIS_TYPE);
-		analysis.setSampleItem(sampleTestCollection.item);
-		analysis.setSysUserId(sampleTestCollection.item.getSysUserId());
-		analysis.setRevision(analysisRevision);
-		analysis.setStartedDate(collectionDateTime);
-		analysis.setStatusId(StatusOfSampleUtil.getStatusID(AnalysisStatus.NotStarted));
-		analysis.setTestSection(test.getTestSection());
-		return analysis;
-	}
-
-	private Panel getPanelForTest(Test test) {
-		List<PanelItem> panelItems = panelItemDAO.getPanelItemByTest(test);
-		
-		for( PanelItem panelItem : panelItems){
-			Panel panel = panelIdPanelMap.get(panelItem.getPanel().getId());
-			if( panel != null){
-				return panel;
-			}
-		}
-
-		return null;
-	}
-
-	@Override
+    @Override
 	protected String getPageTitleKey() {
 		return "sample.entry.title";
 	}
@@ -815,19 +759,5 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 	@Override
 	protected String getPageSubtitleKey() {
 		return "sample.entry.title";
-	}
-
-	private final class SampleTestCollection {
-		public SampleItem item;
-		public List<Test> tests;
-		public String collectionDate;
-		public List<ObservationHistory> initialSampleConditionIdList;
-
-		public SampleTestCollection(SampleItem item, List<Test> tests, String collectionDate, List<ObservationHistory> initialConditionList) {
-			this.item = item;
-			this.tests = tests;
-			this.collectionDate = collectionDate;
-			initialSampleConditionIdList = initialConditionList;
-		}
 	}
 }
