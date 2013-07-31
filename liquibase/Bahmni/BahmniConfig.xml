@@ -399,4 +399,20 @@
             <where>name='Community Program'</where>
         </update>
     </changeSet>
+    <changeSet author="tw" id="25" context="bahmni">
+        <comment>Adds the menu items for Validate 'All Test Sections'</comment>
+        <insert schemaName="clinlims" tableName="menu">
+            <column name="id" valueNumeric=" nextval( 'menu_seq' ) " />
+            <column name="parent_id"
+                valueNumeric=" ( select id from clinlims.menu where element_id = 'menu_resultvalidation' ) " />
+            <column name="presentation_order" valueNumeric="200" />
+            <column name="element_id" value="menu_resultvalidation_All" />
+            <column name="action_url"
+                value="/ResultValidation.do?type=All+Sections&amp;test=" />
+            <column name="display_key"
+                value="banner.menu.resultvalidation.AllSections" />
+            <column name="tool_tip_key"
+                value="banner.menu.resultvalidation.AllSections" />
+        </insert>
+    </changeSet>        
 </databaseChangeLog>
