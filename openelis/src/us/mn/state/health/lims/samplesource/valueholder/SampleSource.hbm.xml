@@ -20,5 +20,8 @@
         <property name="active" type="boolean">
             <column name="ACTIVE" />
         </property>
+        <property name="displayOrder" type="java.lang.Integer">
+            <column name="DISPLAY_ORDER" />
+        </property>
     </class>
 </hibernate-mapping>

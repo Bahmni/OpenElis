@@ -7,16 +7,18 @@ public class SampleSource {
     private String name;
     private String description;
     private boolean active;
+    private Integer displayOrder;
 
     public SampleSource(){
         super();
         this.setActive(true);
     }
 
-    public SampleSource(String name, String description) {
+    public SampleSource(String name, String description, Integer displayOrder) {
         this();
         this.name = name;
         this.description = description;
+        this.displayOrder = displayOrder;
     }
 
     public String getName() {
@@ -61,6 +63,7 @@ public class SampleSource {
         if (active != that.active) return false;
         if (description != null ? !description.equals(that.description) : that.description != null) return false;
         if (!name.equals(that.name)) return false;
+        if (!displayOrder.equals(that.displayOrder)) return false;
 
         return true;
     }
@@ -73,4 +76,11 @@ public class SampleSource {
         return result;
     }
 
+    public Integer getDisplayOrder() {
+        return displayOrder;
+    }
+
+    public void setDisplayOrder(Integer displayOrder) {
+        this.displayOrder = displayOrder;
+    }
 }

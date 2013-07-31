@@ -55,7 +55,7 @@
 			<form-property name="testSectionList"  type="java.util.Collection" />
 			<form-property name="sampleEntryFieldsetOrder"  type="java.util.List" />
 			<form-property name="sampleSourceList"  type="java.util.List" />
-			<form-property name="sampleSourceId"  type="java.lang.Integer" />
+			<form-property name="sampleSourceId"  type="java.lang.String" />
 		</form-bean>
 
 		<form-bean name="SampleConfirmationEntryForm" type="us.mn.state.health.lims.common.action.BaseActionForm">

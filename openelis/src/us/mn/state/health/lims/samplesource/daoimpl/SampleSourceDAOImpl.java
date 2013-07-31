@@ -15,7 +15,7 @@ public class SampleSourceDAOImpl implements SampleSourceDAO{
     public List<SampleSource> getAll() {
         List<SampleSource> list;
         try {
-            String sql = "from SampleSource";
+            String sql = "from SampleSource order by display_order asc";
             org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
             list = query.list();
             flushAndClear();
@@ -46,8 +46,8 @@ public class SampleSourceDAOImpl implements SampleSourceDAO{
     }
 
     @Override
-    public SampleSource load(Integer id) {
-        return (SampleSource) HibernateUtil.getSession().load(SampleSource.class, id);
+    public SampleSource get(String id) {
+        return (SampleSource) HibernateUtil.getSession().get(SampleSource.class, id);
     }
 
     @Override

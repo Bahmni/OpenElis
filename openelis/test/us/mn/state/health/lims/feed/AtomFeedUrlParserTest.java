@@ -16,7 +16,7 @@ public class AtomFeedUrlParserTest {
     }
 
     @Test
-    public void shouldGetFeedMarker() {
+    public void shouldGetFeedMarkerIfPresent() {
         assertEquals(2, new AtomFeedUrlParser("http://host/openelis/ws/feed/patient/2").getFeedMarker());
         assertEquals(0, new AtomFeedUrlParser("http://host/openelis/ws/feed/patient/recent").getFeedMarker());
         assertEquals(2, new AtomFeedUrlParser("http://host/openelis/ws/feed/2").getFeedMarker());

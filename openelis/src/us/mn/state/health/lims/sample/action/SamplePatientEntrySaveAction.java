@@ -446,9 +446,9 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 	private void initSampleData(BaseActionForm dynaForm, String recievedDate, boolean useInitialSampleCondition, boolean trackPayments,
 			boolean useReceiveTimestamp) {
 		sampleItemsTests = new ArrayList<SampleTestCollection>();
-        Integer sampleSourceId = (Integer) dynaForm.get("sampleSourceId");
+        String sampleSourceId = dynaForm.getString("sampleSourceId");
         if (sampleSourceId != null) {
-            sampleSource = sampleSourceDAO.load(sampleSourceId);
+            sampleSource = sampleSourceDAO.get(sampleSourceId);
         }
 		createPopulatedSample(recievedDate, useReceiveTimestamp);
 

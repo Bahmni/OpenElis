@@ -8,7 +8,7 @@ public interface SampleSourceDAO {
 
     public List<SampleSource> getAll();
     public SampleSource getByName(String name);
-    public SampleSource load(Integer id);
+    public SampleSource get(String id);
     public void add(SampleSource sampleSource);
     public void update(SampleSource sampleSource);
 
