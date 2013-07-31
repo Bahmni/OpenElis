@@ -36,6 +36,7 @@
 	boolean patientRequired = false;
 	boolean trackPayment = false;
 	boolean requesterLastNameRequired = false;
+    boolean useSampleSource = false;
 	IAccessionNumberValidator accessionNumberValidator;
     Map<String,String> fieldsetToJspMap = new HashMap<String, String>() ;
 %>
@@ -50,6 +51,7 @@
 	trackPayment = ConfigurationProperties.getInstance().isPropertyValueEqual(Property.trackPatientPayment, "true");
 	accessionNumberValidator = new AccessionNumberValidatorFactory().getValidator();
 	requesterLastNameRequired = FormFields.getInstance().useField(Field.SampleEntryRequesterLastNameRequired);
+    useSampleSource = FormFields.getInstance().useField(Field.UseSampleSource);
     fieldsetToJspMap.put("patient","SamplePatientInfoSection.jsp");
     fieldsetToJspMap.put("samples","SamplePatientSampleSection.jsp");
     fieldsetToJspMap.put("order","SampleOrderInfoSection.jsp");
@@ -80,6 +82,7 @@ var useSTNumber = <%= useSTNumber %>;
 var useMothersName = <%= useMothersName %>;
 var useReferralSiteList = <%= useReferralSiteList%>;
 var requesterLastNameRequired = <%= requesterLastNameRequired %>
+var useSampleSource = <%= useSampleSource%>
 var dirty = false;
 var invalidSampleElements = new Array();
 var requiredFields = new Array("labNo", "receivedDateForDisplay" );
@@ -93,6 +96,10 @@ if( requesterLastNameRequired ){
 <%  if (requesterLastNameRequired) { %>
 	requiredFields.push("providerLastNameID");
 <% } %>
+<%  if (useSampleSource) { %>
+requiredFields.push("sampleSourceID");
+<% } %>
+
 
 
 $jq(function() {

@@ -95,7 +95,8 @@
         <span class="requiredlabel">*</span>
     </td>
     <td>
-        <html:select name="<%=formName%>" property="sampleSourceId">
+        <html:select styleId="sampleSourceID" name="<%=formName%>" property="sampleSourceId" onchange="makeDirty();setSave();">
+            <html:option value=""/>
             <html:optionsCollection name="<%=formName%>" property="sampleSourceList" label="name" value="id" />
         </html:select>
     </td>
