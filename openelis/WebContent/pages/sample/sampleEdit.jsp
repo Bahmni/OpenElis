@@ -31,6 +31,7 @@
 	int nonEditableAccession = 0;
 	int maxAccessionLength = 0;
 	boolean trackPayments = false;
+	boolean allowRemovingTests = FormFields.getInstance().useField(FormFields.Field.AllowRemovingTests);
 %>
 <%
 	String path = request.getContextPath();
@@ -258,9 +259,11 @@ function processAccessionFailure(xhr)
 	<th width="16px"><bean:message key="sample.edit.remove.sample" /></th>
 </logic:equal>
 <th><bean:message key="test.testName"/></th>
+<% if(allowRemovingTests){ %>
 <logic:equal name='<%=formName%>' property="isEditable" value="true" >
 	<th width="16px"><bean:message key="sample.edit.remove.tests" /></th>
 </logic:equal>
+<% } %>
 <logic:equal name='<%=formName%>' property="isEditable" value="false" >
 	<th><bean:message key="analysis.status" /></th>
 </logic:equal>
@@ -288,6 +291,7 @@ function processAccessionFailure(xhr)
 		<td>
 			<bean:write name="existingTests" property="testName"/>
 		</td>
+        <% if(allowRemovingTests){ %>
 		<logic:equal name='<%=formName%>' property="isEditable" value="true" >
 			<td>
 				<% if( existingTests.isCanCancel()){ %>
@@ -297,6 +301,7 @@ function processAccessionFailure(xhr)
 				<% } %>
 			</td>
 		</logic:equal>
+        <% } %>
 		<logic:equal name='<%=formName%>' property="isEditable" value="false" >
 			<td>
 				<bean:write name='existingTests' property="status" />

@@ -101,7 +101,7 @@ public class FormFields {
         DynamicAddress,
         FirstNameFirst,
         HealthCenter,
-        UseSampleSource
+        AllowRemovingTests, UseSampleSource
     }
 
 	private static FormFields instance = null;
