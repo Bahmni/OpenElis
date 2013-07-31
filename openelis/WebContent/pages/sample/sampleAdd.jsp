@@ -370,7 +370,7 @@ function getCheckBoxesHtml( row, userBench){
 }
 
 function getPanelCheckBoxesHtml(map, row, id ){
-	return "<input name='panelSelect' id='panel_" + row + "' onclick='panelSelected(this, new Array(" + map + "));assignTestsToSelected( this, \"" + id + "\")' type='checkbox'>";
+	return "<input name='panelSelect' id='panel_" + row + "' onclick='panelSelected(this, new Array(" + map + "),\"" + id + "\" );assignTestsToSelected( this, \"" + id + "\")' type='checkbox' value='"+ id + "'>";
 }
 
 function getTestDisplayRowHtml( name, id, row ){
@@ -458,7 +458,8 @@ function assignTestsToSelected(checkbox, panelId){
 		var panelIdElement = $("panelIds_" + selectedRowId);
 		
 		if( checkbox.checked ){
-			panelIdElement.value = panelIdElement.value + panelId + ",";
+			if(panelIdElement.value.indexOf(panelId) === -1)
+                panelIdElement.value = panelIdElement.value + panelId + ",";
 		}else{
 			panelIdElement.value = panelIdElement.value.replace( panelId + ",", "");
 		}
@@ -480,16 +481,32 @@ function setSampleTests(){
 	var id = selectedRowId;
 
 	var allTests = $("testIds_" + id ).value;
+    var allPanels = $("panelIds_" + id ).value;
+
+    if(allPanels.length > 0) {
+        var panels = allPanels.split(",");
+        var inputs = $("addPanelTable").getElementsByTagName("input");
+        for( var i = 0; i < panels.length; i++ ){
+            for( var j = 0; j < inputs.length; j++ ){
+                if( inputs[j].value == panels[i] ){
+                    inputs[j].click();
+                    break;
+                }
+            }
+        }
+    }
 
 	if( allTests.length > 0 ){
 		var tests = allTests.split(",");
 
-		inputs = $("addTestTable").getElementsByTagName("input");
+		var inputs = $("addTestTable").getElementsByTagName("input");
 
 		for( var i = 0; i < tests.length; i++ ){
 			for( var j = 1; j < inputs.length; j = j + 2 ){
 				if( inputs[j].value == tests[i] ){
-					inputs[ j - 1].checked = true;
+                    var input = inputs[ j - 1];
+                    if(!input.checked)
+                        input.click();
 					break;
 				}
 			}
@@ -499,10 +516,21 @@ function setSampleTests(){
 	$("testSelections").show();
 }
 
-function panelSelected(checkBox, tests ){
+function panelSelected(checkBox, tests, panelId ){
 	for( var i = 0; i < tests.length; i++ ){
-		$("test_" + tests[i]).checked = checkBox.checked;
-	}
+        var test = $jq("#test_" + tests[i]);
+
+        var selectedPanels = test.data('panels') || [];
+        if(checkBox.checked){
+            selectedPanels.push(panelId);
+        } else {
+            var indexOfPanel = selectedPanels.indexOf(panelId);
+            selectedPanels.splice(indexOfPanel, 1);
+        }
+        test.data('panels', selectedPanels);
+        test.prop('checked', selectedPanels.length > 0);
+        test.prop('disabled', selectedPanels.length > 0);
+    }
 }
 
 function /*boolean*/ allSamplesHaveTests(){
