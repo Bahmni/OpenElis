@@ -111,7 +111,7 @@ public class DefaultFormFields extends AFormFields {
         setFieldFalse(Field.HealthCenter);
         setFieldFalse(Field.FirstNameFirst);
         setFieldFalse(Field.UseSampleSource);
-        setFieldTrue(Field.AllowRemovingTests);
+        setFieldTrue(Field.AllowEditOrRemoveTests);
     }
 
 	@Override

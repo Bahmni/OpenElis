@@ -31,7 +31,7 @@
 	int nonEditableAccession = 0;
 	int maxAccessionLength = 0;
 	boolean trackPayments = false;
-	boolean allowRemovingTests = FormFields.getInstance().useField(FormFields.Field.AllowRemovingTests);
+	boolean allowEditOrRemoveTests = FormFields.getInstance().useField(FormFields.Field.AllowEditOrRemoveTests);
 %>
 <%
 	String path = request.getContextPath();
@@ -259,7 +259,7 @@ function processAccessionFailure(xhr)
 	<th width="16px"><bean:message key="sample.edit.remove.sample" /></th>
 </logic:equal>
 <th><bean:message key="test.testName"/></th>
-<% if(allowRemovingTests){ %>
+<% if(allowEditOrRemoveTests){ %>
 <logic:equal name='<%=formName%>' property="isEditable" value="true" >
 	<th width="16px"><bean:message key="sample.edit.remove.tests" /></th>
 </logic:equal>
@@ -291,7 +291,7 @@ function processAccessionFailure(xhr)
 		<td>
 			<bean:write name="existingTests" property="testName"/>
 		</td>
-        <% if(allowRemovingTests){ %>
+        <% if(allowEditOrRemoveTests){ %>
 		<logic:equal name='<%=formName%>' property="isEditable" value="true" >
 			<td>
 				<% if( existingTests.isCanCancel()){ %>
@@ -313,6 +313,7 @@ function processAccessionFailure(xhr)
 <hr/>
 <br/>
 <logic:equal name='<%=formName%>' property="isEditable" value="true" >
+<% if(allowEditOrRemoveTests){ %>
 <table id="availableTestTable" width="80%">
 <caption><bean:message key="sample.edit.available.tests"/></caption>
 <tr>
@@ -321,27 +322,27 @@ function processAccessionFailure(xhr)
 <th><bean:message key="sample.entry.assignTests"/></th>
 <th><bean:message key="test.testName"/></th>
 </tr>
-	<logic:iterate id="possibleTests" name="<%=formName%>"  property="possibleTests" indexId="index" type="SampleEditItem">
-	<tr>
-		<td>
-		    <html:hidden name="possibleTests" property="testId" indexed="true"/>
-		    <html:hidden name="possibleTests" property="sampleItemId" indexed="true"/>
-			<span class="itemNumber" ><bean:write name="possibleTests" property="accessionNumber"/></span>
-		</td>
-		<td>
-			<bean:write name="possibleTests" property="sampleType"/>
-		</td>
-		<td>
-			<html:checkbox name="possibleTests" property="add" indexed="true" onchange="addRemoveRequest(this);" />
-		</td>
-		<td>&nbsp;
-			<bean:write name="possibleTests" property="testName"/>
-		</td>
-	</tr>
-	</logic:iterate>
+<logic:iterate id="possibleTests" name="<%=formName%>"  property="possibleTests" indexId="index" type="SampleEditItem">
+<tr>
+    <td>
+        <html:hidden name="possibleTests" property="testId" indexed="true"/>
+        <html:hidden name="possibleTests" property="sampleItemId" indexed="true"/>
+        <span class="itemNumber" ><bean:write name="possibleTests" property="accessionNumber"/></span>
+    </td>
+    <td>
+        <bean:write name="possibleTests" property="sampleType"/>
+    </td>
+    <td>
+        <html:checkbox name="possibleTests" property="add" indexed="true" onchange="addRemoveRequest(this);" />
+    </td>
+    <td>&nbsp;
+        <bean:write name="possibleTests" property="testName"/>
+    </td>
+</tr>
+</logic:iterate>
 </table>
-
 <hr>
+<% } %>
 <h1><bean:message key="sample.entry.addSample" /></h1>
 
 <div id="samplesDisplay" class="colorFill" >

@@ -47,6 +47,12 @@ import us.mn.state.health.lims.observationhistory.valueholder.ObservationHistory
 import us.mn.state.health.lims.observationhistorytype.dao.ObservationHistoryTypeDAO;
 import us.mn.state.health.lims.observationhistorytype.daoImpl.ObservationHistoryTypeDAOImpl;
 import us.mn.state.health.lims.observationhistorytype.valueholder.ObservationHistoryType;
+import us.mn.state.health.lims.panel.dao.PanelDAO;
+import us.mn.state.health.lims.panel.daoimpl.PanelDAOImpl;
+import us.mn.state.health.lims.panel.valueholder.Panel;
+import us.mn.state.health.lims.panelitem.dao.PanelItemDAO;
+import us.mn.state.health.lims.panelitem.daoimpl.PanelItemDAOImpl;
+import us.mn.state.health.lims.panelitem.valueholder.PanelItem;
 import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.sample.bean.SampleEditItem;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
@@ -85,6 +91,9 @@ public class SampleEditUpdateAction extends BaseAction {
 	private ObservationHistoryDAO observationDAO = new ObservationHistoryDAOImpl();
 	private static String INITIAL_CONDITION_OBSERVATION_ID;
 	private TypeOfSampleDAO typeOfSampleDAO = new TypeOfSampleDAOImpl();
+    private PanelItemDAO panelItemDAO = new PanelItemDAOImpl();
+    private Map<String, Panel> panelIdPanelMap;
+    private PanelDAO panelDAO = new PanelDAOImpl();
 
 	static {
 		ObservationHistoryTypeDAO ohtDAO = new ObservationHistoryTypeDAOImpl();
@@ -232,8 +241,11 @@ public class SampleEditUpdateAction extends BaseAction {
 	private Analysis populateAnalysis(SampleTestCollection sampleTestCollection, Test test) {
 		java.sql.Date collectionDateTime = DateUtil.convertStringDateTimeToSqlDate(sampleTestCollection.collectionDate);
 
-		Analysis analysis = new Analysis();
+        Panel panel = getPanelForTest(test);
+
+        Analysis analysis = new Analysis();
 		analysis.setTest(test);
+        analysis.setPanel(panel);
 		analysis.setIsReportable(test.getIsReportable());
 		analysis.setAnalysisType(DEFAULT_ANALYSIS_TYPE);
 		analysis.setSampleItem(sampleTestCollection.sampleItem);
@@ -244,7 +256,34 @@ public class SampleEditUpdateAction extends BaseAction {
 		analysis.setTestSection(test.getTestSection());
 		return analysis;
 	}
-	
+
+    private void augmentPanelIdToPanelMap(String panelIDs) {
+        if( panelIdPanelMap == null){
+            panelIdPanelMap = new HashMap<String, Panel>();
+        }
+
+        if(panelIDs != null){
+            String[] ids = panelIDs.split(",");
+            for( String id : ids){
+                if( !GenericValidator.isBlankOrNull(id)){
+                    panelIdPanelMap.put(id, panelDAO.getPanelById(id));
+                }
+            }
+        }
+    }
+    private Panel getPanelForTest(Test test) {
+        List<PanelItem> panelItems = panelItemDAO.getPanelItemByTest(test);
+
+        for( PanelItem panelItem : panelItems){
+            Panel panel = panelIdPanelMap.get(panelItem.getPanel().getId());
+            if( panel != null){
+                return panel;
+            }
+        }
+
+        return null;
+    }
+
 	private List<SampleTestCollection> createAddSampleList(DynaActionForm dynaForm, List<Analysis> addAnalysisList, Sample sample) {
 		if( sample == null){
 			sample = sampleDAO.getSampleByAccessionNumber(dynaForm.getString("accessionNumber"));
@@ -282,7 +321,10 @@ public class SampleEditUpdateAction extends BaseAction {
 				String collectionDate = sampleItem.attributeValue("date");
 				String collectionTime = sampleItem.attributeValue("time");
 				String testIDs = sampleItem.attributeValue("tests");
+                String panelIDs = sampleItem.attributeValue("panels");
 				String collectionDateTime = collectionDate.trim() + " " + collectionTime.trim();
+
+                augmentPanelIdToPanelMap(panelIDs);
 
 				List<ObservationHistory> initialConditionList = null;
 				if (useInitialSampleCondition) {
