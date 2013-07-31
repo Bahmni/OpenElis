@@ -5,6 +5,7 @@ import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPerson;
 import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPersonAttribute;
 import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPersonAttributeType;
 import org.bahmni.feed.openelis.utils.AuditingService;
+import org.bahmni.openelis.domain.Attribute;
 import org.bahmni.openelis.domain.CompletePatientDetails;
 import us.mn.state.health.lims.address.dao.AddressPartDAO;
 import us.mn.state.health.lims.address.dao.PersonAddressDAO;
@@ -120,7 +121,7 @@ public class BahmniPatientService {
     }
 
     public CompletePatientDetails getCompletePatientDetails(String patientId){
-        PatientIdentityType identityType = patientIdentityTypeDAO.getNamedIdentityType("ST");
+        PatientIdentityType identityType = primaryIdentityType();
         List<PatientIdentity> patientIdentities = patientIdentityDAO.getPatientIdentitiesByValueAndType(patientId, identityType.getId());
         if (patientIdentities == null || patientIdentities.size() == 0) {
             return null;
@@ -128,10 +129,32 @@ public class BahmniPatientService {
         PatientIdentity identity = patientIdentities.get(0);
         Patient patient = patientDAO.getData(identity.getPatientId());
         Person person = patient.getPerson();
+
         List<PersonAddress> personAddresses = personAddressDAO.getAddressPartsByPersonId(person.getId());
         List<AddressPart> addressParts = addressPartDAO.getAll();
+        List<Attribute> attributes = getAttributes(patient);
 
-        return new CompletePatientDetails(patient,person, identity, personAddresses, addressParts);
+        return new CompletePatientDetails(patient,person, identity, personAddresses, addressParts, attributes);
+    }
+
+    private PatientIdentityType primaryIdentityType() {
+        return patientIdentityTypeDAO.getNamedIdentityType("ST");
+    }
+
+    private List<Attribute> getAttributes(Patient patient) {
+        List<PatientIdentity> patientIdentitiesForPatient = patientIdentityDAO.getPatientIdentitiesForPatient(patient.getId());
+        List<Attribute> attributes = new ArrayList<>();
+        for (PatientIdentity patientIdentity : patientIdentitiesForPatient) {
+            PatientIdentityType patientIdentityType = patientIdentityTypeDAO.get(patientIdentity.getIdentityTypeId());
+            addAttribute(attributes, patientIdentity, patientIdentityType);
+        }
+        return attributes;
+    }
+
+    private void addAttribute(List<Attribute> attributes, PatientIdentity patientIdentity, PatientIdentityType patientIdentityType) {
+        if (!patientIdentityType.equals(primaryIdentityType())) {
+            attributes.add(new Attribute(patientIdentity, patientIdentityType));
+        }
     }
 
     private void addPatientIdentity(Patient patient, PatientIdentityTypes patientIdentityTypes, String key, String identifier, String sysUserId) {

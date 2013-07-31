@@ -16,13 +16,10 @@
 */
 package us.mn.state.health.lims.patientidentitytype.daoimpl;
 
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
-
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
 import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
 import us.mn.state.health.lims.common.daoimpl.BaseDAOImpl;
@@ -31,6 +28,8 @@ import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.patientidentitytype.dao.PatientIdentityTypeDAO;
 import us.mn.state.health.lims.patientidentitytype.valueholder.PatientIdentityType;
+
+import java.util.List;
 
 
 public class PatientIdentityTypeDAOImpl extends BaseDAOImpl implements PatientIdentityTypeDAO {
@@ -116,4 +115,9 @@ public class PatientIdentityTypeDAOImpl extends BaseDAOImpl implements PatientId
 		
 		return null;
 	}
+
+    @Override
+    public PatientIdentityType get(String id) throws LIMSRuntimeException {
+        return (PatientIdentityType) HibernateUtil.getSession().get(PatientIdentityType.class, id);
+    }
 }

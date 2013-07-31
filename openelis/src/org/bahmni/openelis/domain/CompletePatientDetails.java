@@ -18,13 +18,15 @@ public class CompletePatientDetails {
     private PatientIdentity patientIdentity;
     private List<PersonAddress> personAddresses;
     private List<AddressPart> addressParts;
+    private List<Attribute> attributes;
 
-    public CompletePatientDetails(Patient patient, Person person, PatientIdentity patientIdentity, List<PersonAddress> personAddresses, List<AddressPart> addressParts) {
+    public CompletePatientDetails(Patient patient, Person person, PatientIdentity patientIdentity, List<PersonAddress> personAddresses, List<AddressPart> addressParts, List<Attribute> attributes) {
         this.patient = patient;
         this.person = person;
         this.patientIdentity = patientIdentity;
         this.personAddresses = personAddresses;
         this.addressParts = addressParts;
+        this.attributes = attributes;
     }
 
     public String getFirstName() {
@@ -49,53 +51,45 @@ public class CompletePatientDetails {
     }
 
     public String getAddress1() {
-        for (PersonAddress personAddress : personAddresses) {
-            if(personAddress.getAddressPartId().equals(getAddressPartId("level1"))){
-                return personAddress.getValue();
-            }
-        }
-        return "";
+        return partValueFor("level1");
     }
 
     public String getCityVillage() {
-        for (PersonAddress personAddress : personAddresses) {
-            if(personAddress.getAddressPartId().equals(getAddressPartId("level2"))){
-                return personAddress.getValue();
-            }
-        }
-        return "";
+        return partValueFor("level2");
     }
 
     public String getAddress2() {
-        for (PersonAddress personAddress : personAddresses) {
-            if(personAddress.getAddressPartId().equals(getAddressPartId("level3"))){
-                return personAddress.getValue();
-            }
-        }
-        return "";
+        return partValueFor("level3");
     }
 
     public String getAddress3() {
-        for (PersonAddress personAddress : personAddresses) {
-            if(personAddress.getAddressPartId().equals(getAddressPartId("level4"))){
-                return personAddress.getValue();
-            }
-        }
-        return "";
+        return partValueFor("level4");
     }
 
     public String getCountyDistrict() {
-        for (PersonAddress personAddress : personAddresses) {
-            if(personAddress.getAddressPartId().equals(getAddressPartId("level5"))){
-                return personAddress.getValue();
-            }
-        }
-        return "";
+        return partValueFor("level5");
     }
 
     public String getStateProvince() {
+        return partValueFor("level6");
+    }
+
+    public String getHealthCenter(){
+        HealthCenter healthCenter = patient.getHealthCenter();
+        return healthCenter == null? null : healthCenter.getName();
+    }
+
+    public List<Attribute> getAttributes() {
+        return attributes;
+    }
+
+    public void addAttribute(Attribute attribute) {
+        this.attributes.add(attribute);
+    }
+
+    private String partValueFor(String partId) {
         for (PersonAddress personAddress : personAddresses) {
-            if(personAddress.getAddressPartId().equals(getAddressPartId("level6"))){
+            if(personAddress.getAddressPartId().equals(getAddressPartId(partId))){
                 return personAddress.getValue();
             }
         }
@@ -109,10 +103,5 @@ public class CompletePatientDetails {
             }
         }
         return null;
-    }
-
-    public String getHealthCenter(){
-        HealthCenter healthCenter = patient.getHealthCenter();
-        return healthCenter == null? null : healthCenter.getName();
     }
 }

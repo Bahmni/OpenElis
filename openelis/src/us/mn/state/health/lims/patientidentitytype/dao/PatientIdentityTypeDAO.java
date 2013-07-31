@@ -17,11 +17,11 @@
 */
 package us.mn.state.health.lims.patientidentitytype.dao;
 
-import java.util.List;
-
 import us.mn.state.health.lims.common.dao.BaseDAO;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.patientidentitytype.valueholder.PatientIdentityType;
+
+import java.util.List;
 
 
 public interface PatientIdentityTypeDAO extends BaseDAO {
@@ -31,4 +31,6 @@ public interface PatientIdentityTypeDAO extends BaseDAO {
 	public List<PatientIdentityType> getAllPatientIdenityTypes() throws LIMSRuntimeException;
 	
 	public PatientIdentityType getNamedIdentityType(String name) throws LIMSRuntimeException;
+
+    public PatientIdentityType get(String id) throws LIMSRuntimeException;
 }
