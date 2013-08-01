@@ -91,7 +91,8 @@ public class BahmniPatientService {
         patient.setBirthDate(new Timestamp(openMRSPerson.getBirthdate().getTime()));
         patient.setSysUserId(sysUserId);
         patient.setPerson(person);
-        patient.setHealthCenter(healthCenterOf(healthCenterStringFrom(openMRSPerson)));
+        OpenMRSPersonAttribute healthCenterAttribute = openMRSPerson.findAttributeByAttributeTypeDisplayName(OpenMRSPersonAttributeType.HEALTH_CENTER);
+        patient.setHealthCenter(healthCenterOf(healthCenterAttribute.getValue()));
         patientDAO.insertData(patient);
 
         PatientIdentityTypes patientIdentityTypes = new PatientIdentityTypes(patientIdentityTypeDAO.getAllPatientIdenityTypes());
@@ -107,17 +108,13 @@ public class BahmniPatientService {
 
     private HealthCenter healthCenterOf(String healthCenterString) {
         if (isNullOrEmpty(healthCenterString)) return null;
-        HealthCenter healthCenter = healthCenterDAO.getByName(healthCenterString);
+        HealthCenter healthCenter = healthCenterDAO.get(healthCenterString);
         if (healthCenter != null) return healthCenter;
-        throw new LIMSRuntimeException("HealthCenter " + healthCenterString + " is not configured in OpenELIS");
+        throw new LIMSRuntimeException(String.format("HealthCenter %s is not configured in OpenELIS", healthCenterString));
     }
 
     private boolean isNullOrEmpty(String healthCenterString) {
         return healthCenterString == null || healthCenterString.isEmpty();
-    }
-
-    private String healthCenterStringFrom(OpenMRSPerson openMRSPerson) {
-        return openMRSPerson.findAttributeByAttributeTypeDisplayName(OpenMRSPersonAttributeType.HEALTH_CENTER).getValue();
     }
 
     public CompletePatientDetails getCompletePatientDetails(String patientId){

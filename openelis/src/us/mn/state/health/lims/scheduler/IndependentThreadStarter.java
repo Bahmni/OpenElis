@@ -26,11 +26,9 @@ import us.mn.state.health.lims.scheduler.independentthreads.ResultExporter;
 import us.mn.state.health.lims.scheduler.independentthreads.TestUsageBacklog;
 
 public class IndependentThreadStarter {
-	
 	private ResultExporter resultExporter;
-	private MalariaResultExporter malariaResultExporter;
-	
-	public void startThreads(){
+
+    public void startThreads(){
 		String reportInterval = ConfigurationProperties.getInstance().getPropertyValue(Property.resultsResendTime);
 		if( !GenericValidator.isBlankOrNull(reportInterval)){
 			Long period = 30L;
@@ -42,8 +40,8 @@ public class IndependentThreadStarter {
 			}
 			
 			resultExporter = new ResultExporter(period);
-			resultExporter.start();		
-			malariaResultExporter = new MalariaResultExporter(period);
+			resultExporter.start();
+            MalariaResultExporter malariaResultExporter = new MalariaResultExporter(period);
 			malariaResultExporter.start();		
 			new TestUsageBacklog().start();
 		}
@@ -55,6 +53,4 @@ public class IndependentThreadStarter {
 			resultExporter.stopExports();
 		}
 	}
-
-
 }

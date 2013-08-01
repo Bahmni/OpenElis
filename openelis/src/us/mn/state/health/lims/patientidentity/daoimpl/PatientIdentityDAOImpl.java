@@ -59,20 +59,13 @@ public class PatientIdentityDAOImpl extends BaseDAOImpl implements PatientIdenti
 
 			HibernateUtil.getSession().flush();
 			HibernateUtil.getSession().clear();
-
 		} catch (ConstraintViolationException e){
             throw  new LIMSInvalidSTNumberException("Patient identity number is invalid",e);
-        } catch (LIMSDuplicateRecordException e) {
-            throw new LIMSValidationException(e);
-        } catch (Exception e) {
-			LogEvent.logError("PatientIdentityDAOImpl", "insertData()", e.toString());
-			throw new LIMSRuntimeException("Error in PatientIdentity insertData()", e);
-		}
-
+        }
 		return true;
 	}
 
-    private void checkForDuplicateSTNumber(PatientIdentity patientIdentity) throws LIMSDuplicateRecordException {
+    private void checkForDuplicateSTNumber(PatientIdentity patientIdentity)  {
         String stNumberId = PatientIdentityTypeMap.getInstance().getIDForType("ST");
         if(patientIdentity.getIdentityTypeId().equals(stNumberId)){
             List<PatientIdentity> patientIdentitiesByValueAndType = this.getPatientIdentitiesByValueAndType(patientIdentity.getIdentityData(), stNumberId);

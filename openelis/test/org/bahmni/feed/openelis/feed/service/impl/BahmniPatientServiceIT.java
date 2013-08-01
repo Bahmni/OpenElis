@@ -20,11 +20,9 @@ import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 
 import java.util.UUID;
 
-@Ignore
 public class BahmniPatientServiceIT extends IT {
     @Test
     public void testCreate() throws Exception {
-        Transaction transaction = HibernateUtil.getSession().beginTransaction();
         AuditingService auditingService = new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl());
         BahmniPatientService bahmniPatientService = new BahmniPatientService(new PatientDAOImpl(), new PersonDAOImpl(), new PatientIdentityDAOImpl(), new PersonAddressDAOImpl(), new AddressPartDAOImpl(), new PatientIdentityTypeDAOImpl(), auditingService, new HealthCenterDAOImpl());
 
@@ -32,7 +30,7 @@ public class BahmniPatientServiceIT extends IT {
         OpenMRSPerson person = new OpenMRSPerson(new OpenMRSName("random", "lastName1"), UUID.randomUUID().toString(), "F", new LocalDate(2001, 11, 26).toDate(), address);
         OpenMRSPersonAttribute attribute1 = new OpenMRSPersonAttribute("value1", new OpenMRSPersonAttributeType(OpenMRSPersonAttributeType.MOTHERS_NAME));
         OpenMRSPersonAttribute attribute2 = new OpenMRSPersonAttribute("value2", new OpenMRSPersonAttributeType(OpenMRSPersonAttributeType.OCCUPATION));
-        OpenMRSPersonAttribute attribute3 = new OpenMRSPersonAttribute("GAN", new OpenMRSPersonAttributeType(OpenMRSPersonAttributeType.HEALTH_CENTER));
+        OpenMRSPersonAttribute attribute3 = new OpenMRSPersonAttribute("2", new OpenMRSPersonAttributeType(OpenMRSPersonAttributeType.HEALTH_CENTER));
         OpenMRSPatient patient = new OpenMRSPatient(person.addAttribute(attribute1).addAttribute(attribute2).addAttribute(attribute3));
         patient.addIdentifier(new OpenMRSPatientIdentifier("id1"));
 

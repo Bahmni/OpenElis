@@ -42,6 +42,7 @@
         <javac srcdir="${src}" destdir="${target}" encoding="iso-8859-1" classpathref="lib" source="1.7" target="1.7" debug="on"/>
         <copy todir="${target}">
             <fileset dir="${src}" includes="**/*.xml"/>
+            <fileset dir="${src}" includes="**/*.properties"/>
         </copy>
     </target>
 

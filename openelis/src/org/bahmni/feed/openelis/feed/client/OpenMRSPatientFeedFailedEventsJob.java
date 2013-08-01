@@ -6,17 +6,17 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 @DisallowConcurrentExecution
-public class OpenMRSPatientFeedReaderJob extends OpenMRSFeedReaderJob {
-    private static Logger logger = Logger.getLogger(OpenMRSPatientFeedReaderJob.class);
+public class OpenMRSPatientFeedFailedEventsJob extends OpenMRSFeedReaderJob {
+    private static Logger logger = Logger.getLogger(OpenMRSPatientFeedFailedEventsJob.class);
 
-    public OpenMRSPatientFeedReaderJob() {
+    public OpenMRSPatientFeedFailedEventsJob() {
         super(logger);
     }
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
-            atomFeedClient.processEvents();
+            atomFeedClient.processFailedEvents();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }

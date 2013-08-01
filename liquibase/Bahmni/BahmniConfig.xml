@@ -191,9 +191,6 @@
             <column name="display_key" value="schedule.name.openERPLabTestsFeed"/>
             <column name="description_key" value="schedule.name.openERPLabTestsFeed"/>
         </insert>
-    </changeSet>
-
-    <changeSet id="13" author="tw" runOnChange="true" context="bahmni">
         <createTable schemaName="clinlims" tableName="HEALTH_CENTER">
             <column name="id" type="numeric(10,0)" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -204,33 +201,35 @@
             <column name="description" type="varchar(50)"/>
             <column name="active" type="boolean"/>
         </createTable>
+    </changeSet>
 
+    <changeSet id="13" author="tw" runOnChange="true" context="bahmni">
         <insert schemaName="clinlims" tableName="HEALTH_CENTER">
-            <column name="id" valueNumeric=" nextval( 'health_center_id_seq' ) "/>
+            <column name="active" type="boolean" valueBoolean="false"/>
+            <column name="name" value="UNK"/>
+            <column name="description" value="UNKNOWN"/>
+        </insert>
+        <insert schemaName="clinlims" tableName="HEALTH_CENTER">
             <column name="active" type="boolean" valueBoolean="true"/>
             <column name="name" value="GAN"/>
             <column name="description" value="Ganiyari"/>
         </insert>
         <insert schemaName="clinlims" tableName="HEALTH_CENTER">
-            <column name="id" valueNumeric=" nextval( 'health_center_id_seq' ) "/>
             <column name="active" type="boolean" valueBoolean="true"/>
             <column name="name" value="SEM"/>
             <column name="description" value="Semariya"/>
         </insert>
         <insert schemaName="clinlims" tableName="HEALTH_CENTER">
-            <column name="id" valueNumeric=" nextval( 'health_center_id_seq' ) "/>
             <column name="active" type="boolean" valueBoolean="true"/>
             <column name="name" value="SIV"/>
             <column name="description" value="SHIVTARAI"/>
         </insert>
         <insert schemaName="clinlims" tableName="HEALTH_CENTER">
-            <column name="id" valueNumeric=" nextval( 'health_center_id_seq' ) "/>
             <column name="active" type="boolean" valueBoolean="true"/>
             <column name="name" value="BAM"/>
             <column name="description" value="Bahmni"/>
         </insert>
         <insert schemaName="clinlims" tableName="HEALTH_CENTER">
-            <column name="id" valueNumeric=" nextval( 'health_center_id_seq' ) "/>
             <column name="active" type="boolean" valueBoolean="true"/>
             <column name="name" value="CHP"/>
             <column name="description" value="CHP"/>
@@ -306,14 +305,6 @@
             <column name="feed_uri_for_last_read_entry" valueNumeric="'http://localhost:8080/openmrs/ws/atomfeed/patient/1'"/>
             <column name="feed_uri" valueNumeric="'http://localhost:8080/openmrs/ws/atomfeed/patient/recent'"/>
         </insert>
-        <!--<update schemaName="clinlims" tableName="quartz_cron_scheduler">-->
-            <!--<column name="cron_statement" value="0/5 * * * * *"/>-->
-            <!--<where>name='atom-feed-openmrs-patient'</where>-->
-        <!--</update>-->
-        <!--<update schemaName="clinlims" tableName="quartz_cron_scheduler">-->
-            <!--<column name="cron_statement" value="* 0/1 * * * *"/>-->
-            <!--<where>name='atom-feed-openmrs-patient'</where>-->
-        <!--</update>-->
     </changeSet>
     <changeSet id="21" author="tw">
         <comment>Add new table sample_source and link to sample table</comment>
@@ -414,5 +405,48 @@
             <column name="tool_tip_key"
                 value="banner.menu.resultvalidation.AllSections" />
         </insert>
-    </changeSet>        
+    </changeSet>
+    <changeSet id="26" author="tw" context="bahmni">
+        <update schemaName="clinlims" tableName="quartz_cron_scheduler">
+            <column name="cron_statement" value="never"/>
+            <where>job_name='sendMalariaSurviellanceReport'</where>
+        </update>
+        <update schemaName="clinlims" tableName="quartz_cron_scheduler">
+            <column name="cron_statement" value="never"/>
+            <where>job_name='sendSiteIndicators'</where>
+        </update>
+        <update schemaName="clinlims" tableName="quartz_cron_scheduler">
+            <column name="job_name" value="atom-feed-openerp-test"/>
+            <column name="name" value="atom-feed-openerp-test"/>
+            <column name="display_key" value="schedule.name.atomFeedOpenERPTest"/>
+            <column name="description_key" value="schedule.name.atomFeedOpenERPTest"/>
+            <column name="cron_statement" value="0 0/1 * * * ?"/>
+            <where>job_name='openERPLabTestsFeed'</where>
+        </update>
+        <insert schemaName="clinlims" tableName="quartz_cron_scheduler">
+            <column name="id" valueNumeric=" nextval( 'quartz_cron_scheduler_seq' ) "/>
+            <column name="active" type="boolean" valueBoolean="true"/>
+            <column name="name" value="atom-feed-openerp-test-failed"/>
+            <column name="job_name" value="atom-feed-openerp-test-failed"/>
+            <column name="display_key" value="schedule.name.atomFeedOpenERPTest.failed"/>
+            <column name="description_key" value="schedule.name.atomFeedOpenERPTest.failed"/>
+            <column name="cron_statement" value="0 0/1 * * * ?"/>
+        </insert>
+        <update schemaName="clinlims" tableName="quartz_cron_scheduler">
+            <column name="cron_statement" value="0/5 * * * * ?"/>
+            <where>name='atom-feed-openmrs-patient'</where>
+        </update>
+        <insert schemaName="clinlims" tableName="quartz_cron_scheduler">
+            <column name="id" valueNumeric=" nextval( 'quartz_cron_scheduler_seq' ) "/>
+            <column name="active" type="boolean" valueBoolean="true"/>
+            <column name="name" value="atom-feed-openmrs-patient-failed"/>
+            <column name="job_name" value="atom-feed-openmrs-patient-failed"/>
+            <column name="display_key" value="schedule.name.atomFeedOpenMRSPatient.failed"/>
+            <column name="description_key" value="schedule.name.atomFeedOpenMRSPatient.failed"/>
+            <column name="cron_statement" value="0 0/1 * * * ?"/>
+        </insert>
+        <addColumn tableName="failed_events" schemaName="clinlims">
+            <column name="error_hash_code" type="int"></column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

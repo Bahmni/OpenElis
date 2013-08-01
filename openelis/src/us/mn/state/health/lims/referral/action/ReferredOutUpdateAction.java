@@ -87,8 +87,6 @@ import us.mn.state.health.lims.testresult.daoimpl.TestResultDAOImpl;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
 
 public class ReferredOutUpdateAction extends BaseAction {
-
-	private List<ReferralSet> referralSetList;
 	private List<ReferralResult> removableReferralResults;
 	private List<ReferralItem> modifiedItems;
 	private List<ReferralItem> canceledItems;
@@ -145,9 +143,10 @@ public class ReferredOutUpdateAction extends BaseAction {
 			return mapping.findForward(IActionConstants.FWD_VALIDATION_ERROR);
 		}
 
-		try {
-			createReferralSets();
-		} catch (LIMSRuntimeException e) {
+        ArrayList<ReferralSet> referralSets;
+        try {
+            referralSets = createReferralSets();
+        } catch (LIMSRuntimeException e) {
 			saveErrors(request, errors);
 			request.setAttribute(Globals.ERROR_KEY, errors);
 
@@ -157,7 +156,7 @@ public class ReferredOutUpdateAction extends BaseAction {
 		Transaction tx = HibernateUtil.getSession().beginTransaction();
 
 		try {
-			for (ReferralSet referralSet : referralSetList) {
+			for (ReferralSet referralSet : referralSets) {
 				referralDAO.updateData(referralSet.referral);
 
 				for (ReferralResult referralResult : referralSet.existingReferralResults) {
@@ -283,8 +282,8 @@ public class ReferredOutUpdateAction extends BaseAction {
 		return !(GenericValidator.isBlankOrNull(resultTest.getReferredResult()) && "0".equals(resultTest.getReferredDictionaryResult()));
 	}
 
-	private void createReferralSets() throws LIMSRuntimeException {
-		referralSetList = new ArrayList<ReferralSet>();
+	private ArrayList<ReferralSet> createReferralSets() throws LIMSRuntimeException {
+        ArrayList<ReferralSet> referralSetList = new ArrayList<ReferralSet>();
 		removableReferralResults = new ArrayList<ReferralResult>();
 
 		for (ReferralItem item : canceledItems) {
@@ -294,6 +293,7 @@ public class ReferredOutUpdateAction extends BaseAction {
 		for (ReferralItem item : modifiedItems) {
 			referralSetList.add(createModifiedSet(item));
 		}
+        return referralSetList;
 	}
 
 	private ReferralSet createCanceledReferralSet(ReferralItem item) {

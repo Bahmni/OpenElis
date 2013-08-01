@@ -87,7 +87,7 @@ public class TestUsageConfigurationUpdateAction extends BaseAction {
 
 		if( refreash){
 			ConfigurationProperties.forceReload();
-			new LateStartScheduler().restartSchedules();
+			if (false) new LateStartScheduler().restartSchedules();
 			new TestUsageBacklog().run();
 		}
 		

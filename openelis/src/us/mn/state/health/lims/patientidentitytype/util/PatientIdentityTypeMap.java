@@ -51,32 +51,10 @@ public class PatientIdentityTypeMap {
 		}
 		
 		String upperType = type.toUpperCase();
-		String id = m_map.get(upperType);
-		
-		if( id == null){
-			id = insertNewIdentityType(upperType);
-		}
-		
-		return id;
+        return m_map.get(upperType);
 	}
 
-	private String insertNewIdentityType(String type) {
-		String id;
-		PatientIdentityType patientIdentityType = new PatientIdentityType();
-		patientIdentityType.setIdentityType(type);
-		PatientIdentityTypeDAO patientIdentityTypeDAO = new PatientIdentityTypeDAOImpl();
-		patientIdentityTypeDAO.insertData(patientIdentityType);
-		
-		id = patientIdentityType.getId();
-		
-		if( !GenericValidator.isBlankOrNull(id)){
-			m_map.put(type, id);
-		}
-		
-		return id;
-	}
-	
-	public String getIdentityValue(List<PatientIdentity> identityList, String type) {
+    public String getIdentityValue(List<PatientIdentity> identityList, String type) {
 
 		String id = getIDForType(type);
 

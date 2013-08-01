@@ -38,7 +38,6 @@ public class HibernateUtil {
     private static Configuration configuration;
     private static SessionFactory sessionFactory;
     private static final ThreadLocal threadSession = new ThreadLocal();
-    private static final ThreadLocal threadTransaction = new ThreadLocal();
     private static final ThreadLocal threadInterceptor = new ThreadLocal();
     private static String CONFIG_FILE_LOCATION = "/us/mn/state/health/lims/hibernate/hibernate.cfg.xml";
     

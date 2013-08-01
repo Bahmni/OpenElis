@@ -17,10 +17,13 @@
 package us.mn.state.health.lims.scheduler;
 
 import org.apache.log4j.Logger;
+import org.bahmni.feed.openelis.feed.client.OpenERPLabTestFailedEventsJob;
 import org.bahmni.feed.openelis.feed.client.OpenERPLabTestFeedJob;
+import org.bahmni.feed.openelis.feed.client.OpenMRSPatientFeedFailedEventsJob;
+import org.bahmni.feed.openelis.feed.client.OpenMRSPatientFeedReaderJob;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
-import us.mn.state.health.lims.common.util.DateUtil;
+import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.dataexchange.MalariaSurveilance.MalariaSurveilanceJob;
 import us.mn.state.health.lims.dataexchange.aggregatereporting.AggregateReportJob;
 import us.mn.state.health.lims.scheduler.daoimpl.CronSchedulerDAOImpl;
@@ -38,15 +41,20 @@ import static org.quartz.TriggerBuilder.newTrigger;
 public class LateStartScheduler {
     private static final String NEVER = "never";
     private static Map<String, Class<? extends Job>> scheduleJobMap;
+    private static Logger logger = Logger.getLogger(LateStartScheduler.class);
 
     private Scheduler scheduler;
 
     static {
-        scheduleJobMap = new HashMap<String, Class<? extends Job>>();
+        scheduleJobMap = new HashMap<>();
         scheduleJobMap.put("sendSiteIndicators", AggregateReportJob.class);
         scheduleJobMap.put("sendMalariaSurviellanceReport", MalariaSurveilanceJob.class);
-        scheduleJobMap.put("openERPLabTestsFeed", OpenERPLabTestFeedJob.class);
-//        scheduleJobMap.put("atom-feed-openmrs-patient", OpenMRSPatientFeedReaderJob.class);
+
+        scheduleJobMap.put("atom-feed-openerp-test", OpenERPLabTestFeedJob.class);
+        scheduleJobMap.put("atom-feed-openerp-test-failed", OpenERPLabTestFailedEventsJob.class);
+
+        scheduleJobMap.put("atom-feed-openmrs-patient", OpenMRSPatientFeedReaderJob.class);
+        scheduleJobMap.put("atom-feed-openmrs-patient-failed", OpenMRSPatientFeedFailedEventsJob.class);
     }
 
     public void restartSchedules() {
@@ -60,7 +68,7 @@ public class LateStartScheduler {
                 scheduler.shutdown();
                 checkAndStartScheduler();
             } catch (SchedulerException e) {
-                e.printStackTrace();
+                logger.error("", e);
             }
         }
     }
@@ -68,88 +76,38 @@ public class LateStartScheduler {
     public void checkAndStartScheduler() {
         try {
             scheduler = StdSchedulerFactory.getDefaultScheduler();
-
             List<CronScheduler> schedulers = new CronSchedulerDAOImpl().getAllCronSchedules();
-
             for (CronScheduler schedule : schedulers) {
-                addOrRunSchedule(schedule);
+                scheduleJob(schedule);
             }
-
-            scheduler.start();
-        } catch (SchedulerException se) {
-            se.printStackTrace();
-        } catch (ParseException pe) {
-            pe.printStackTrace();
+            scheduler.startDelayed(120);
+        } catch (SchedulerException | ParseException e) {
+            throw new LIMSRuntimeException(e);
         }
     }
 
-    private void addOrRunSchedule(CronScheduler schedule) throws SchedulerException, ParseException {
-        int currentHour = DateUtil.getCuurentHour();
-        int currentMin = DateUtil.getCuurentMinute();
-
-        if (!schedule.getActive() || NEVER.equals(schedule.getCronStatement())) {
-            return;
-        }
-
-        String jobName = schedule.getJobName();
-        System.out.println("Adding cron job: " + jobName);
-
-        Class<? extends Job> targetJob = scheduleJobMap.get(jobName);
-
-        if (targetJob == null) {
-            return;
-        }
-
-        JobDetail job = newJob(targetJob).withIdentity(jobName + "Job", jobName).build();
-
-        Trigger trigger = newTrigger().withIdentity(jobName + "Trigger", jobName).withSchedule(cronSchedule(schedule.getCronStatement()))
-                .forJob(jobName + "Job", jobName).build();
-
-        scheduler.scheduleJob(job, trigger);
-
-        String[] cronParts = schedule.getCronStatement().split(" ");
-
+    private void scheduleJob(CronScheduler schedule) throws SchedulerException, ParseException {
         try {
-            int cronHour = Integer.parseInt(cronParts[2]);
-
-            if (cronHour < currentHour || (cronHour == currentHour && Integer.parseInt(cronParts[1]) < currentMin)) {
-                new ImmediateRunner(scheduler, jobName).start();
+            if (!schedule.getActive() || NEVER.equals(schedule.getCronStatement())) {
+                return;
             }
-        } catch (NumberFormatException e) {
-            System.out.println("Malformed cron statement." + schedule.getCronStatement());
+
+            logger.info(String.format("Scheduling %s, with cron=%s", schedule.getJobName(), schedule.getCronStatement()));
+            String jobName = schedule.getJobName();
+            Class<? extends Job> targetJob = scheduleJobMap.get(jobName);
+            if (targetJob == null) {
+                return;
+            }
+            JobDetail job = newJob(targetJob).withIdentity(jobName + "Job", jobName).build();
+            Trigger trigger = newTrigger().withIdentity(jobName + "Trigger", jobName).withSchedule(cronSchedule(schedule.getCronStatement()))
+                    .forJob(jobName + "Job", jobName).build();
+            scheduler.scheduleJob(job, trigger);
+        } catch (Exception e) {
+            logger.error(String.format("Scheduling of job %s failed", schedule.getJobName()), e);
         }
     }
 
     public void shutdown() throws SchedulerException {
         scheduler.shutdown();
-    }
-
-    class ImmediateRunner extends Thread {
-        private Scheduler scheduler;
-        private String jobName;
-
-        public ImmediateRunner(Scheduler scheduler, String jobName) {
-            this.scheduler = scheduler;
-            this.jobName = jobName;
-        }
-
-        @Override
-        public void run() {
-            try {
-                // so everything doesn't happen at once
-                long delay = 2000L * (Long) Math.round(Math.random() * 10);
-                sleep(delay);
-                synchronized (scheduler) {
-                    if (!scheduler.isShutdown()) {
-                        scheduler.triggerJob(new JobKey(jobName + "Job", jobName));
-                    }
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (SchedulerException e) {
-                e.printStackTrace();
-            }
-        }
-
     }
 }

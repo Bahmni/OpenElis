@@ -1,58 +1,41 @@
 package us.mn.state.health.lims.common.servlet.startup;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-
+import org.apache.log4j.Logger;
 import org.quartz.SchedulerException;
-
 import us.mn.state.health.lims.scheduler.IndependentThreadStarter;
 import us.mn.state.health.lims.scheduler.LateStartScheduler;
 
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+
 public final class StartStopListener implements ServletContextListener {
+    private LateStartScheduler scheduler;
+    private IndependentThreadStarter threadStarter;
+    private static Logger logger = Logger.getLogger(StartStopListener.class);
 
-	private ServletContext context = null;
-	private LateStartScheduler scheduler;
-	private IndependentThreadStarter threadStarter;
+    public void contextDestroyed(ServletContextEvent event) {
+        if (threadStarter != null) {
+            threadStarter.stopThreads();
+        }
 
-	public StartStopListener() {
+        try {
+            scheduler.shutdown();
+        } catch (SchedulerException e) {
+            logger.warn("Scheduler shutdown failed", e);
+        }
 
-	}
+        logger.info(String.format("Shutting down"));
+    }
 
-	// This method is invoked when the Web Application
-	// has been removed and is no longer able to accept
-	// requests
+    public void contextInitialized(ServletContextEvent event) {
+        logger.info(String.format("Initializing"));
+        scheduler = new LateStartScheduler();
+        scheduler.checkAndStartScheduler();
 
-	public void contextDestroyed(ServletContextEvent event) {
-
-		this.context = null;
-		if (threadStarter != null) {
-			threadStarter.stopThreads();
-		}
-
-		try {
-			scheduler.shutdown();
-		} catch (SchedulerException e) {
-			e.printStackTrace();
-		}
-
-		System.out.println("\nShutting down context\n");
-	}
-
-	// This method is invoked when the Web Application
-	// is ready to service requests
-
-	public void contextInitialized(ServletContextEvent event) {
-		this.context = event.getServletContext();
-
-		scheduler = new LateStartScheduler();
-		scheduler.checkAndStartScheduler();
-
-		System.out.println("Scheduler started");
-
-		threadStarter = new IndependentThreadStarter();
-		threadStarter.startThreads();
-
-		System.out.println("Threads started");
-	}
+        if (false) {
+            threadStarter = new IndependentThreadStarter();
+            threadStarter.startThreads();
+        }
+        logger.info("Initialized");
+    }
 }

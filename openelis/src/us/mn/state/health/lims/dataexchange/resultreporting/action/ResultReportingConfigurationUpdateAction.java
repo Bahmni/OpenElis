@@ -92,9 +92,12 @@ public class ResultReportingConfigurationUpdateAction extends BaseAction {
 		}
 
 		ConfigurationProperties.forceReload();
-		new LateStartScheduler().restartSchedules();
-		
-		return mapping.findForward(FWD_SUCCESS);
+
+        if (false) {
+            new LateStartScheduler().restartSchedules();
+        }
+
+        return mapping.findForward(FWD_SUCCESS);
 	}
 
 	private CronScheduler setScheduleInformationFor(ReportingConfiguration config) {

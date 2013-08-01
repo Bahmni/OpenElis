@@ -25,7 +25,7 @@ package us.mn.state.health.lims.common.exception;
  * Specialized exceptions should extend this class.
  */
 //bugzilla 1417
-public class LIMSDuplicateRecordException extends LIMSException {
+public class LIMSDuplicateRecordException extends LIMSRuntimeException {
 	public LIMSDuplicateRecordException(String message) {
 		super(message);
 	}

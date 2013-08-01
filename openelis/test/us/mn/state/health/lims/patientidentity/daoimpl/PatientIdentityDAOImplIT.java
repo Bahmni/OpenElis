@@ -2,6 +2,7 @@ package us.mn.state.health.lims.patientidentity.daoimpl;
 
 import org.bahmni.feed.openelis.IT;
 import org.junit.Test;
+import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSValidationException;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.patient.daoimpl.PatientDAOImpl;
@@ -12,8 +13,7 @@ import us.mn.state.health.lims.person.daoimpl.PersonDAOImpl;
 import us.mn.state.health.lims.person.valueholder.Person;
 
 public class PatientIdentityDAOImplIT extends IT {
-
-    @Test(expected = LIMSValidationException.class)
+    @Test(expected = LIMSDuplicateRecordException.class)
     public void insertData_checks_for_presence_of_duplicate_ST_Number() {
         String patientIdentityTypeId = PatientIdentityTypeMap.getInstance().getIDForType("ST");
         Patient patient_1 = createPatient("name1");

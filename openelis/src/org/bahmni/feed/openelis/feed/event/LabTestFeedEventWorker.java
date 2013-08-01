@@ -1,6 +1,5 @@
 package org.bahmni.feed.openelis.feed.event;
 
-
 import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.feed.domain.LabObject;
 import org.bahmni.feed.openelis.feed.mapper.OpenERPLabTestMapper;
@@ -13,7 +12,7 @@ import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
 import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 
-public class LabTestFeedEventWorker implements EventWorker {
+public class LabTestFeedEventWorker extends OpenElisEventWorker {
     private AuditingService auditingService;
     private OpenERPLabTestMapper labTestMapper;
 
@@ -35,5 +34,4 @@ public class LabTestFeedEventWorker implements EventWorker {
             throw new LIMSRuntimeException(e);
         }
     }
-
 }
