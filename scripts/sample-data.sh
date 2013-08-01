@@ -1,0 +1,2 @@
+psql clinlims -U postgres -h 192.168.33.10 -c "insert into clinlims.referral_reason (id, name, display_key) values (1, 'facility NA', 'facility.na')"
+psql clinlims -U postgres -h 192.168.33.10 -c "insert into clinlims.referral_type (id, name, description, display_key) values (1, 'Confirmation', 'Confirmation', 'rt.confirmation')"

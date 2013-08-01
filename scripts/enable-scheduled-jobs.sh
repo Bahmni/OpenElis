@@ -1,0 +1,1 @@
+psql clinlims -U postgres -c 'update clinlims.quartz_cron_scheduler set active=true'

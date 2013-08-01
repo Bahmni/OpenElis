@@ -446,7 +446,7 @@
             <column name="cron_statement" value="0 0/1 * * * ?"/>
         </insert>
         <addColumn tableName="failed_events" schemaName="clinlims">
-            <column name="error_hash_code" type="int"></column>
+            <column name="error_hash_code" type="int"/>
         </addColumn>
     </changeSet>
     <changeSet author="tw" id="27" context="bahmni">
