@@ -85,7 +85,6 @@ public class SampleEditUpdateAction extends BaseAction {
 	private ObservationHistoryDAO observationDAO = new ObservationHistoryDAOImpl();
 	private static String INITIAL_CONDITION_OBSERVATION_ID;
 	private TypeOfSampleDAO typeOfSampleDAO = new TypeOfSampleDAOImpl();
-    private final AnalysisBuilder analysisBuilder = new AnalysisBuilder();
 
 	static {
 		ObservationHistoryTypeDAO ohtDAO = new ObservationHistoryTypeDAOImpl();
@@ -107,7 +106,8 @@ public class SampleEditUpdateAction extends BaseAction {
 	protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 
-		String forward = "success";
+        AnalysisBuilder analysisBuilder = new AnalysisBuilder();
+        String forward = "success";
 
 		ActionMessages errors = null;
 		request.getSession().setAttribute(SAVE_DISABLED, TRUE);
@@ -139,7 +139,7 @@ public class SampleEditUpdateAction extends BaseAction {
 					cancelAnalysisList);
 			List<Analysis> addAnalysisList = createAddAanlysisList((List<SampleEditItem>) dynaForm.get("possibleTests"));
 
-			List<SampleTestCollection> addedSamples = createAddSampleList(dynaForm, addAnalysisList, updatedSample);
+			List<SampleTestCollection> addedSamples = createAddSampleList(dynaForm, updatedSample, analysisBuilder);
 			Transaction tx = HibernateUtil.getSession().beginTransaction();
 
 			try {
@@ -229,7 +229,7 @@ public class SampleEditUpdateAction extends BaseAction {
 		}
 	}
 
-    private List<SampleTestCollection> createAddSampleList(DynaActionForm dynaForm, List<Analysis> addAnalysisList, Sample sample) {
+    private List<SampleTestCollection> createAddSampleList(DynaActionForm dynaForm, Sample sample, AnalysisBuilder analysisBuilder) {
 		if( sample == null){
 			sample = sampleDAO.getSampleByAccessionNumber(dynaForm.getString("accessionNumber"));
 		}

@@ -121,7 +121,6 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 
 	public static long ORGANIZATION_REQUESTER_TYPE_ID;
 	private static long PROVIDER_REQUESTER_TYPE_ID;
-    private final AnalysisBuilder analysisBuilder = new AnalysisBuilder();
     private boolean savePatient = false;
 	private Person providerPerson;
 	private Provider provider;
@@ -224,6 +223,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 
 		String forward = FWD_SUCCESS;
 
+        AnalysisBuilder analysisBuilder = new AnalysisBuilder();
         orgAddressExtra = new ArrayList<OrganizationAddress>();
 		observations = new ArrayList<ObservationHistory>();
 		boolean useInitialSampleCondition = FormFields.getInstance().useField(Field.InitialSampleCondition);
@@ -258,7 +258,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 		initAccesionNumber(dynaForm);
 		initProvider(dynaForm);
 		initSampleData(dynaForm, receivedDateForDisplay, useInitialSampleCondition, trackPayments,
-				!GenericValidator.isBlankOrNull(receivedTime));
+				!GenericValidator.isBlankOrNull(receivedTime), analysisBuilder);
 		initSampleHumanData();
 		validateSample(errors);
 
@@ -280,7 +280,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 			patientId = patientUpdate.getPatientId(dynaForm);
 
 			persistProviderData();
-			persistSampleData();
+			persistSampleData(analysisBuilder);
 			persistRequesterData();
 			if (useInitialSampleCondition) {
 				persistInitialSampleConditions();
@@ -435,7 +435,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 	}
 
 	private void initSampleData(BaseActionForm dynaForm, String recievedDate, boolean useInitialSampleCondition, boolean trackPayments,
-			boolean useReceiveTimestamp) {
+                                boolean useReceiveTimestamp, AnalysisBuilder analysisBuilder) {
 		sampleItemsTests = new ArrayList<SampleTestCollection>();
         String sampleSourceId = dynaForm.getString("sampleSourceId");
         if (sampleSourceId != null) {
@@ -661,7 +661,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 		}
 	}
 
-	private void persistSampleData() {
+	private void persistSampleData(AnalysisBuilder analysisBuilder) {
 		SampleDAO sampleDAO = new SampleDAOImpl();
 		SampleHumanDAO sampleHumanDAO = new SampleHumanDAOImpl();
 		SampleItemDAO sampleItemDAO = new SampleItemDAOImpl();
