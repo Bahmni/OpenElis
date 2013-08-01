@@ -14,7 +14,7 @@
 
     String allowEdits = "true";
     //bugzilla 1494
-    String errorMessageNumericDictValue = "";
+    String errorMessageNotRequiredDictionaryValue = "";
 
     String path = "";
     String basePath = "";
@@ -28,17 +28,25 @@
     }
 //bugzilla 1494
     java.util.Locale locale = (java.util.Locale) request.getSession().getAttribute(org.apache.struts.Globals.LOCALE_KEY);
-    errorMessageNumericDictValue =
-            us.mn.state.health.lims.common.util.resources.ResourceLocator.getInstance().getMessageResources().getMessage(
-                    locale,
-                    "testresult.error.dictionary.numericvalue");
+    errorMessageNotRequiredDictionaryValue = us.mn.state.health.lims.common.util.resources.ResourceLocator.getInstance().getMessageResources().getMessage(
+            locale,"testresult.error.dictionary.notRequired");
 %>
 
 
 <script language="JavaScript1.2">
     function validateForm(form) {
-        // Do not remove. [SuperStar!]
-        return validateTestResultForm(form);
+        var validated = validateTestResultForm(form);
+        if (validated) {
+            //check if value is numeric (foreign key to dictionary) if type id D
+            var type = document.getElementById("testResultType");
+            var val = document.getElementById("resultValue");
+
+            if (type.value == 'R' && !val.value.empty()) {
+                alert('<%=errorMessageNotRequiredDictionaryValue%>');
+                validated = false;
+            }
+        }
+        return validated;
     }
 </script>
 
