@@ -15,24 +15,23 @@
 */
 package us.mn.state.health.lims.scriptlet.daoimpl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-
 import org.apache.commons.beanutils.PropertyUtils;
-
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
 import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.daoimpl.BaseDAOImpl;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
+import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
-import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.scriptlet.dao.ScriptletDAO;
 import us.mn.state.health.lims.scriptlet.valueholder.Scriptlet;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * @author diane benz
@@ -276,8 +275,25 @@ public class ScriptletDAOImpl extends BaseDAOImpl implements ScriptletDAO {
 			throw new LIMSRuntimeException("Error in Scriptlet getScriptletByName()", e);
 		}
 	}
-	
-	//bugzilla 1411
+
+    @Override
+    public Scriptlet getScriptletByName(String scriptletName) throws LIMSRuntimeException {
+        try {
+            String sql = "from Scriptlet s where s.scriptletName = :param";
+            org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
+            query.setParameter("param", scriptletName);
+
+            List list = query.list();
+            HibernateUtil.getSession().flush();
+            HibernateUtil.getSession().clear();
+            return list.isEmpty() ? null : (Scriptlet) list.get(0);
+        } catch (Exception e) {
+            LogEvent.logErrorStack("ScriptletDAOImpl","getScriptletByName(String scriptletName)",e);
+            throw new LIMSRuntimeException("Error in Scriptlet getScriptletByName()", e);
+        }
+    }
+
+    //bugzilla 1411
 	public Integer getTotalScriptletCount() throws LIMSRuntimeException {
 		return getTotalCount("Scriptlet", Scriptlet.class);
 	}

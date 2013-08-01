@@ -21,6 +21,7 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
+import org.hibernate.Transaction;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
@@ -43,6 +44,7 @@ import us.mn.state.health.lims.testresult.valueholder.TestResult;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 /**
@@ -103,37 +105,12 @@ public class TestResultUpdateAction extends BaseAction {
 			return mapping.findForward(FWD_FAIL);
 		}
 
-		String start = (String) request.getParameter("startingRecNo");
-		String direction = (String) request.getParameter("direction");
+		String start = request.getParameter("startingRecNo");
+		String direction = request.getParameter("direction");
 
-		// System.out.println("This is ID from request " + id);
-		TestResult testResult = new TestResult();
-		//get sysUserId from login module
-		UserSessionData usd = (UserSessionData)request.getSession().getAttribute(USER_SESSION_DATA);
-		String sysUserId = String.valueOf(usd.getSystemUserId());	
-		testResult.setSysUserId(sysUserId);			
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
-		
-		Test test = new Test();
-		String testName = (String) dynaForm.get("testName");
-		test.setTestName(testName);
+		Transaction tx = HibernateUtil.getSession().beginTransaction();
 
-		TestDAO testDAO = new TestDAOImpl();
-		test = testDAO.getTestByName(test);
-
-		Scriptlet scriptlet = new Scriptlet();
-		String scriptletName = (String) dynaForm.get("scriptletName");
-		scriptlet.setScriptletName(scriptletName);
-
-		ScriptletDAO scriptletDAO = new ScriptletDAOImpl();
-		Scriptlet s = scriptletDAO.getScriptletByName(scriptlet);
-
-		// populate valueholder from form
-		PropertyUtils.copyProperties(testResult, dynaForm);
-
-        testResult = setTestResultType(testResult, dynaForm);
-		testResult.setTest(test);
-		testResult.setScriptlet(s);
+        TestResult testResult = setTestResultProperties(dynaForm, request);
 
 		try {
 
@@ -145,19 +122,16 @@ public class TestResultUpdateAction extends BaseAction {
 				testResultDAO.updateData(testResult);
 
 				if (FWD_NEXT.equals(direction)) {
-					List testResults = testResultDAO
-							.getNextTestResultRecord(testResult.getId());
+					List testResults = testResultDAO.getNextTestResultRecord(testResult.getId());
 					if (testResults != null && testResults.size() > 0) {
 						testResult = (TestResult) testResults.get(0);
 						testResultDAO.getData(testResult);
 						if (testResults.size() < 2) {
-							// disable next button
-							request.setAttribute(NEXT_DISABLED, "true");
-						}
+                            disableNextButton(request);
+                        }
 						id = testResult.getId();
 					} else {
-						// just disable next button
-						request.setAttribute(NEXT_DISABLED, "true");
+						disableNextButton(request);
 					}
 					forward = FWD_NEXT;
 				}
@@ -179,9 +153,9 @@ public class TestResultUpdateAction extends BaseAction {
 					}
 					forward = FWD_PREVIOUS;
 				}
-			} else {
+			}
+            else {
 				// INSERT
-
 				testResultDAO.insertData(testResult);
 			}
 			tx.commit();
@@ -208,7 +182,7 @@ public class TestResultUpdateAction extends BaseAction {
 			request.setAttribute(ALLOW_EDITS_KEY, "false");
 			// disable previous and next
 			request.setAttribute(PREVIOUS_DISABLED, "true");
-			request.setAttribute(NEXT_DISABLED, "true");
+			disableNextButton(request);
 			forward = FWD_FAIL;
 			
 		} finally {
@@ -227,9 +201,12 @@ public class TestResultUpdateAction extends BaseAction {
 		}
 
 		if (testResult.getId() != null && !testResult.getId().equals("0")) {
-			request.setAttribute(ID, testResult.getId());
-
+            request.setAttribute(ID, testResult.getId());
+            if(id != null){
+                id = testResult.getId();
+            }
 		}
+
 
 		//bugzilla 1400
 		if (isNew) forward = FWD_SUCCESS_INSERT;
@@ -237,7 +214,39 @@ public class TestResultUpdateAction extends BaseAction {
 
 	}
 
-    private TestResult setTestResultType(TestResult testResult, BaseActionForm dynaForm) {
+    private void disableNextButton(HttpServletRequest request) {
+        request.setAttribute(NEXT_DISABLED, "true");
+    }
+
+    private TestResult setTestResultProperties(BaseActionForm dynaForm, HttpServletRequest request) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        TestResult testResult = new TestResult();
+
+        UserSessionData usd = (UserSessionData)request.getSession().getAttribute(USER_SESSION_DATA);
+        String sysUserId = String.valueOf(usd.getSystemUserId());
+        testResult.setSysUserId(sysUserId);
+
+        PropertyUtils.copyProperties(testResult, dynaForm);
+
+        String testName = (String) dynaForm.get("testName");
+        TestDAO testDAO = new TestDAOImpl();
+        Test test = testDAO.getTestByName(testName);
+
+        String scriptletName = (String) dynaForm.get("scriptletName");
+        ScriptletDAO scriptletDAO = new ScriptletDAOImpl();
+        Scriptlet scriptlet = scriptletDAO.getScriptletByName(scriptletName);
+
+        String testResultType = (String) dynaForm.get("testResultType");
+        if (isDictionaryTestResultType(testResultType)) {
+            testResult = setTestResultValue(testResult, dynaForm);
+        }
+
+        testResult.setTest(test);
+        testResult.setScriptlet(scriptlet);
+
+        return testResult;
+    }
+
+    private TestResult setTestResultValue(TestResult testResult, BaseActionForm dynaForm) {
         String testResultTypeName = (String) dynaForm.get("value");
         Dictionary dictionary = dictionaryDAO.getDictionaryByDictEntry(testResultTypeName);
         testResult.setValue(dictionary.getId());

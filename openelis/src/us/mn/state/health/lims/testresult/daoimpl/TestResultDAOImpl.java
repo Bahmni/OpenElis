@@ -103,7 +103,7 @@ public class TestResultDAOImpl extends BaseDAOImpl implements TestResultDAO {
 
 	public void updateData(TestResult testResult) throws LIMSRuntimeException {
 
-		TestResult oldData = (TestResult)readTestResult(testResult.getId());
+		TestResult oldData = readTestResult(testResult.getId());
 		TestResult newData = testResult;
 
 		//add to audit trail
@@ -206,9 +206,7 @@ public class TestResultDAOImpl extends BaseDAOImpl implements TestResultDAO {
 
 
 	public List getNextTestResultRecord(String id) throws LIMSRuntimeException {
-
 		return getNextRecord(id, "TestResult", TestResult.class);
-
 	}
 
 	public List getPreviousTestResultRecord(String id)

@@ -15,11 +15,11 @@
 */
 package us.mn.state.health.lims.scriptlet.dao;
 
-import java.util.List;
-
 import us.mn.state.health.lims.common.dao.BaseDAO;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.scriptlet.valueholder.Scriptlet;
+
+import java.util.List;
 
 /**
  * @author diane benz
@@ -52,6 +52,8 @@ public interface ScriptletDAO extends BaseDAO {
 
 	public Scriptlet getScriptletByName(Scriptlet scriptlet)
 			throws LIMSRuntimeException;
+
+    public Scriptlet getScriptletByName(String scriptletName) throws LIMSRuntimeException;
 
 	public Integer getTotalScriptletCount() throws LIMSRuntimeException; 
 	
