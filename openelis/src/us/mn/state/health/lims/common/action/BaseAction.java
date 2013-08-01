@@ -95,7 +95,8 @@ public abstract class BaseAction extends Action implements IActionConstants {
             pageTitleKeyParameter = getPageTitleKeyParameter(request, form);
             pageSubtitleKeyParameter = getPageSubtitleKeyParameter(request, form);
         } catch (Throwable e) {
-            logger.error(e);
+            logger.error("Exception occurred", e);
+            throw e;
         }
 
         // bugzilla 1512 internationalization

@@ -17,17 +17,29 @@
 */
 package us.mn.state.health.lims.common.util;
 
-import java.io.IOException;
-import javax.servlet.*;
+import org.apache.log4j.Logger;
+import us.mn.state.health.lims.hibernate.HibernateUtil;
 
-public class UTF8Filter implements Filter {
+import javax.servlet.*;
+import java.io.IOException;
+
+public class OpenElisRequestFilter implements Filter {
+    private Logger logger = Logger.getLogger(this.getClass());
+
 	public void destroy() {
 	}
 
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
 		request.setCharacterEncoding("UTF8");
-		chain.doFilter(request, response);
+        try {
+            chain.doFilter(request, response);
+            HibernateUtil.closeSession();
+        } catch (Throwable t) {
+            logger.error("Exception in request ", t);
+            throw t;
+        }
+
 	}
 
 	public void init(FilterConfig filterConfig) throws ServletException {

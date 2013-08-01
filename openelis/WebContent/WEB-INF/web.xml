@@ -17,7 +17,7 @@
 
 <filter>
    <filter-name>UTF8Filter</filter-name>
-   <filter-class>us.mn.state.health.lims.common.util.UTF8Filter</filter-class>
+   <filter-class>us.mn.state.health.lims.common.util.OpenElisRequestFilter</filter-class>
   </filter>
   <filter-mapping>
    <filter-name>UTF8Filter</filter-name>

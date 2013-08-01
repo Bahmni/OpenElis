@@ -142,11 +142,11 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 					}
 				}
 			}
-
 			tx.commit();
 
 		} catch (LIMSRuntimeException lre) {
 			tx.rollback();
+            throw lre;
 		}
 
 		if (GenericValidator.isBlankOrNull(testSectionName)) {
@@ -199,13 +199,12 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 					}
 				}
 
-				createNote(analysisItem);
-
 				if (areResults(analysisItem)) {
 					Result result = createResultFromAnalysisItem(analysisItem, analysis);
 					resultUpdateList.add(result);
 				}
 			}
+            createNote(analysisItem);
 		}
 	}
 
