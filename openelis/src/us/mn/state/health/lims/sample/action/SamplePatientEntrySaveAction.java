@@ -668,7 +668,6 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 		AnalysisDAO analysisDAO = new AnalysisDAOImpl();
 		TestDAO testDAO = new TestDAOImpl();
 		String analysisRevision = SystemConfiguration.getInstance().getAnalysisDefaultRevision();
-        sample.setSampleSource(new SampleSourceDAOImpl().getByName("IPD"));
 
 		sampleDAO.insertDataWithAccessionNumber(sample);
 
