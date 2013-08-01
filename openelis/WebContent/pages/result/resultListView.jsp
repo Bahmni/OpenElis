@@ -723,7 +723,6 @@ function /*void*/ processTestReflexCD4Success(xhr)
 						  onkeyup='<%="value = value.substr(0, 200); markUpdated(" + index + ");"  +
 						               ((noteRequired && !"".equals(testResult.getResultValue()) ) ? "showNote( " + index + ");" : "")%>'
 						  />
-				<bean:write name="testResult" property="unitsOfMeasure"/>
 			</logic:equal>
 			<% if( "D".equals(testResult.getResultType()) || "Q".equals(testResult.getResultType()) ){ %>
 			<!-- dictionary results -->

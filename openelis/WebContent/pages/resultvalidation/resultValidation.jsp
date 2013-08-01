@@ -456,8 +456,7 @@ function /*boolean*/ handleEnterEvent(){
 								  styleId='<%="results_" + index %>'
 								  onkeyup='value = value.substr(0, 200); markUpdated();'
 								  />
-						<bean:write name="resultList" property="units"/>
-			 			<br/>200 char max
+						<br/>200 char max
 					</logic:equal>
 					<% if(resultList.isDisplayResultAsLog()){ %>
 						<br/>

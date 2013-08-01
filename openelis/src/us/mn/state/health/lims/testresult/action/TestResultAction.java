@@ -21,6 +21,9 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.DynaActionForm;
 import us.mn.state.health.lims.common.action.BaseAction;
+import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
+import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
+import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
 import us.mn.state.health.lims.testresult.daoimpl.TestResultDAOImpl;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
 import us.mn.state.health.lims.typeoftestresult.dao.TypeOfTestResultDAO;
@@ -82,6 +85,13 @@ public class TestResultAction extends BaseAction {
 				testResult.setScriptletName(testResult.getScriptlet().getScriptletName());
 			}
 
+            String dictionaryId = testResult.getValue();
+            if(dictionaryId != null && isOfTypeDictionary(testResult.getTestResultType())){
+                DictionaryDAO dictionaryDAO = new DictionaryDAOImpl();
+                Dictionary dictionary = dictionaryDAO.getDataForId(dictionaryId);
+                testResult.setValue(dictionary.getDictEntry());
+            }
+
 			isNew = false; // this is to set correct page title
 
 			// do we need to enable next or previous?
@@ -114,6 +124,7 @@ public class TestResultAction extends BaseAction {
         return (id != null) && (!"0".equals(id));
     }
 
+    //TODO: see if this is required [RT,Sush]
     private Collection getDictionaryAndRemarkResultType() {
         TypeOfTestResultDAO resultTypeDAO = new TypeOfTestResultDAOImpl();
         Collection<TypeOfTestResult> resultTypes = resultTypeDAO.getAllTypeOfTestResults();
@@ -121,12 +132,16 @@ public class TestResultAction extends BaseAction {
 
 
         for (TypeOfTestResult resultType : resultTypes) {
-            if ("D".equals(resultType.getTestResultType()) || "R".equals(resultType.getTestResultType())) {
+            if (isOfTypeDictionary(resultType.getTestResultType()) || "R".equals(resultType.getTestResultType())) {
                 filteredResultTypes.add(resultType);
             }
         }
 
         return filteredResultTypes;
+    }
+
+    private boolean isOfTypeDictionary(String resultType) {
+        return "D".equals(resultType);
     }
 
     protected String getPageTitleKey() {

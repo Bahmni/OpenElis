@@ -267,17 +267,13 @@ public class TestResultUpdateAction extends BaseAction {
 		String testNameSelected = (String) dynaForm.get("testName");
 
 		if (!StringUtil.isNullorNill(testNameSelected)) {
-			Test test = new Test();
-			test.setTestName(testNameSelected);
 			TestDAO testDAO = new TestDAOImpl();
-			test = testDAO.getTestByName(test);
+            Test test = testDAO.getTestByName(testNameSelected);
 
-			String messageKey = "testresult.testName";
-
-			if (test == null) {
+            if (test == null) {
 				// the test is not in database - not valid
 				// testName
-				addErrorMessage(errors, messageKey);
+				addErrorMessage(errors, "testresult.testName");
 			}
 		}
 

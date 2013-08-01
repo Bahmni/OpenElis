@@ -15,21 +15,18 @@
 */
 package us.mn.state.health.lims.testresult.action;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
-
 import us.mn.state.health.lims.common.action.BaseMenuAction;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.testresult.dao.TestResultDAO;
 import us.mn.state.health.lims.testresult.daoimpl.TestResultDAOImpl;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author diane benz
@@ -61,12 +58,6 @@ public class TestResultMenuAction extends BaseMenuAction {
 		int numOfRecs = 0;
 		if( !testResults.isEmpty()){
 			numOfRecs = Math.min(testResults.size(),SystemConfiguration.getInstance().getDefaultPageSize() ) - 1;
-			
-			java.util.Collections.sort(testResults, new Comparator<TestResult>(){
-				public int compare(TestResult a, TestResult b){
-					return a.getTest().getTestName().compareTo(b.getTest().getTestName());
-				}
-			});
 		}
 				
 		int endingRecNo = startingRecNo + numOfRecs;
