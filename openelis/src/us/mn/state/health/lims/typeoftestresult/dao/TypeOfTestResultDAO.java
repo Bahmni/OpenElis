@@ -15,11 +15,11 @@
 */
 package us.mn.state.health.lims.typeoftestresult.dao;
 
-import java.util.List;
-
 import us.mn.state.health.lims.common.dao.BaseDAO;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.typeoftestresult.valueholder.TypeOfTestResult;
+
+import java.util.List;
 
 /**
  * @author diane benz
@@ -50,6 +50,7 @@ public interface TypeOfTestResultDAO extends BaseDAO {
 	public Integer getTotalTypeOfTestResultCount() throws LIMSRuntimeException;
 	
 	//bugzilla 1866
-	public TypeOfTestResult getTypeOfTestResultByType(
-			TypeOfTestResult typeOfTestResult) throws LIMSRuntimeException;
+	public TypeOfTestResult getTypeOfTestResultByType(TypeOfTestResult typeOfTestResult) throws LIMSRuntimeException;
+
+    public TypeOfTestResult getTypeOfTestResultByType(String type) throws LIMSRuntimeException;
 }

@@ -15,24 +15,24 @@
 */
 package us.mn.state.health.lims.typeoftestresult.daoimpl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-
 import org.apache.commons.beanutils.PropertyUtils;
-
+import org.hibernate.Query;
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
 import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.daoimpl.BaseDAOImpl;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
+import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
-import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.typeoftestresult.dao.TypeOfTestResultDAO;
 import us.mn.state.health.lims.typeoftestresult.valueholder.TypeOfTestResult;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * @author diane benz
@@ -167,22 +167,17 @@ public class TypeOfTestResultDAOImpl extends BaseDAOImpl implements TypeOfTestRe
 	}
 
 	public List getAllTypeOfTestResults() throws LIMSRuntimeException {
-		List list = new Vector();
 		try {
 			String sql = "from TypeOfTestResult";
-			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
-			//query.setMaxResults(10);
-			//query.setFirstResult(3);				
-			list = query.list();
+			Query query = HibernateUtil.getSession().createQuery(sql);
+			List list = query.list();
 			HibernateUtil.getSession().flush();
 			HibernateUtil.getSession().clear();
+            return list;
 		} catch (Exception e) {
-			//bugzilla 2154
-			LogEvent.logError("TypeOfTestResultDAOImpl","getAllTypeOfTestResults()",e.toString());
+			LogEvent.logErrorStack("TypeOfTestResultDAOImpl","getAllTypeOfTestResults()",e);
 			throw new LIMSRuntimeException("Error in TypeOfTestResult getAllTypeOfTestResults()", e);
 		}
-
-		return list;
 	}
 
 	public List getPageOfTypeOfTestResults(int startingRecNo) throws LIMSRuntimeException {
@@ -297,13 +292,13 @@ public class TypeOfTestResultDAOImpl extends BaseDAOImpl implements TypeOfTestRe
 	
 			// initialize with 0 (for new records where no id has been generated
 			// yet
-			String typeOfTestResultId = "0";
-			if (!StringUtil.isNullorNill(typeOfTestResult.getId())) {
-				typeOfTestResultId = typeOfTestResult.getId();
-			}
-			query.setParameter("param2", typeOfTestResultId);
+            String typeOfTestResultId = "0";
+            if (!StringUtil.isNullorNill(typeOfTestResult.getId())) {
+                typeOfTestResultId = typeOfTestResult.getId();
+            }
+            query.setParameter("param2", typeOfTestResultId);
 
-			list = query.list();
+            list = query.list();
 			HibernateUtil.getSession().flush();
 			HibernateUtil.getSession().clear();
 
@@ -322,15 +317,12 @@ public class TypeOfTestResultDAOImpl extends BaseDAOImpl implements TypeOfTestRe
 	}
 	
 	//bugzilla 1866 to get HL7 value
-	public TypeOfTestResult getTypeOfTestResultByType(
-			TypeOfTestResult typeOfTestResult) throws LIMSRuntimeException {
+	public TypeOfTestResult getTypeOfTestResultByType(TypeOfTestResult typeOfTestResult) throws LIMSRuntimeException {
 		TypeOfTestResult totr = null;
 		try {
 			String sql = "from TypeOfTestResult totr where upper(totr.testResultType) = :param";
-			org.hibernate.Query query = HibernateUtil.getSession().createQuery(
-					sql);
-			query.setParameter("param", typeOfTestResult.getTestResultType().trim()
-					.toUpperCase());
+			Query query = HibernateUtil.getSession().createQuery(sql);
+			query.setParameter("param", typeOfTestResult.getTestResultType().trim().toUpperCase());
 	
 			List list = query.list();
 
@@ -349,4 +341,20 @@ public class TypeOfTestResultDAOImpl extends BaseDAOImpl implements TypeOfTestRe
 
 		return totr;
 	}
+
+    @Override
+    public TypeOfTestResult getTypeOfTestResultByType(String testResultType) throws LIMSRuntimeException {
+        try {
+            String sql = "from TypeOfTestResult where upper(testResultType) = :param";
+            Query query = HibernateUtil.getSession().createQuery(sql);
+            query.setParameter("param", testResultType.trim().toUpperCase());
+            List list = query.list();
+            HibernateUtil.getSession().flush();
+            HibernateUtil.getSession().clear();
+            return list.isEmpty() ? null : (TypeOfTestResult) list.get(0);
+        } catch (Exception e) {
+            LogEvent.logErrorStack("TypeOfTestResultDAOImpl", "getTypeOfTestResultByType(String)", e);
+            throw new LIMSRuntimeException("Error in getTypeOfTestResultByType()", e);
+        }
+    }
 }

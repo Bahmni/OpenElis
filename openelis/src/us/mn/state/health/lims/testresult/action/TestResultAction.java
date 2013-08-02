@@ -21,19 +21,14 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.DynaActionForm;
 import us.mn.state.health.lims.common.action.BaseAction;
-import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
 import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
 import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
 import us.mn.state.health.lims.testresult.daoimpl.TestResultDAOImpl;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
-import us.mn.state.health.lims.typeoftestresult.dao.TypeOfTestResultDAO;
 import us.mn.state.health.lims.typeoftestresult.daoimpl.TypeOfTestResultDAOImpl;
-import us.mn.state.health.lims.typeoftestresult.valueholder.TypeOfTestResult;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -45,12 +40,20 @@ import java.util.List;
  */
 public class TestResultAction extends BaseAction {
 
-	private boolean isNew = false;
-    private TestResultDAOImpl testResultDAO = new TestResultDAOImpl();
+    private TypeOfTestResultDAOImpl typeOfTestResultDAO;
+    private TestResultDAOImpl testResultDAO;
+    private DictionaryDAOImpl dictionaryDAO;
+    private final String NUMERIC_TEST_RESULT_TYPE = "N";
+    private boolean isNew = false;
 
-    protected ActionForward performAction(ActionMapping mapping,
-			ActionForm form, HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
+    public TestResultAction() {
+        typeOfTestResultDAO = new TypeOfTestResultDAOImpl();
+        testResultDAO = new TestResultDAOImpl();
+        dictionaryDAO = new DictionaryDAOImpl();
+    }
+
+    protected ActionForward performAction(ActionMapping mapping,ActionForm form,
+                                          HttpServletRequest request,HttpServletResponse response) throws Exception {
 		// The first job is to determine if we are coming to this action with an
 		// ID parameter in the request. If there is no parameter, we are
 		// creating a new TestResult.
@@ -64,48 +67,28 @@ public class TestResultAction extends BaseAction {
 		request.setAttribute(NEXT_DISABLED, "true");
 
 		DynaActionForm dynaForm = (DynaActionForm) form;
-
-		// initialize the form
-		dynaForm.initialize(mapping);
-
+        // initialize the form
+        dynaForm.initialize(mapping);
 		TestResult testResult = new TestResult();
 
-		if (isNewTestResult(id)) { // this is an existing
-			// testResult
+		if (isExistingTestResult(id)) {
 			testResult.setId(id);
 			testResultDAO.getData(testResult);
 
-			// initialize testName
 			if (testResult.getTest() != null) {
 				testResult.setTestName(testResult.getTest().getTestName());
 			}
 			
-			// initialize scriptletName
 			if (testResult.getScriptlet() != null) {
 				testResult.setScriptletName(testResult.getScriptlet().getScriptletName());
 			}
 
-            String dictionaryId = testResult.getValue();
-            if(dictionaryId != null && isOfTypeDictionary(testResult.getTestResultType())){
-                DictionaryDAO dictionaryDAO = new DictionaryDAOImpl();
-                Dictionary dictionary = dictionaryDAO.getDataForId(dictionaryId);
-                testResult.setValue(dictionary.getDictEntry());
+            String value = testResult.getValue();
+            if(value != null && isOfTypeDictionary(testResult.getTestResultType())){
+                testResult.setValue(getDictionaryDescription(value));
             }
-
 			isNew = false; // this is to set correct page title
-
-			// do we need to enable next or previous?
-			List testResults = testResultDAO.getNextTestResultRecord(testResult
-					.getId());
-			if (testResults.size() > 0) {
-				request.setAttribute(NEXT_DISABLED, "false");  // enable next button
-			}
-
-			testResults = testResultDAO.getPreviousTestResultRecord(testResult.getId());
-			if (testResults.size() > 0) {
-				request.setAttribute(PREVIOUS_DISABLED, "false");  // enable next button
-			}
-			// end of logic to enable next or previous button
+			enableNextAndPreviousButtons(request, testResult);
 		} else { // this is a new testResult
 			isNew = true; // this is to set correct page title
 		}
@@ -120,24 +103,25 @@ public class TestResultAction extends BaseAction {
 		return mapping.findForward(forward);
 	}
 
-    private boolean isNewTestResult(String id) {
-        return (id != null) && (!"0".equals(id));
-    }
-
-    //TODO: see if this is required [RT,Sush]
-    private Collection getDictionaryAndRemarkResultType() {
-        TypeOfTestResultDAO resultTypeDAO = new TypeOfTestResultDAOImpl();
-        Collection<TypeOfTestResult> resultTypes = resultTypeDAO.getAllTypeOfTestResults();
-        Collection filteredResultTypes = new ArrayList();
-
-
-        for (TypeOfTestResult resultType : resultTypes) {
-            if (isOfTypeDictionary(resultType.getTestResultType()) || "R".equals(resultType.getTestResultType())) {
-                filteredResultTypes.add(resultType);
-            }
+    private void enableNextAndPreviousButtons(HttpServletRequest request, TestResult testResult) {
+        List testResults = testResultDAO.getNextTestResultRecord(testResult.getId());
+        if (testResults.size() > 0) {
+            request.setAttribute(NEXT_DISABLED, "false");  // enable next button
         }
 
-        return filteredResultTypes;
+        testResults = testResultDAO.getPreviousTestResultRecord(testResult.getId());
+        if (testResults.size() > 0) {
+            request.setAttribute(PREVIOUS_DISABLED, "false");  // enable next button
+        }
+    }
+
+    private String getDictionaryDescription(String value) {
+        Dictionary dictionary = dictionaryDAO.getDataForId(value);
+        return dictionary.getDictEntry();
+    }
+
+    private boolean isExistingTestResult(String id) {
+        return (id != null) && (!"0".equals(id));
     }
 
     private boolean isOfTypeDictionary(String resultType) {
