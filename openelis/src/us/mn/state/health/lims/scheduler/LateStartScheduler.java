@@ -108,6 +108,7 @@ public class LateStartScheduler {
     }
 
     public void shutdown() throws SchedulerException {
-        scheduler.shutdown();
+        if (scheduler.isStarted())
+            scheduler.shutdown();
     }
 }

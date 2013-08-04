@@ -21,13 +21,5 @@
         <property name="text" type="java.lang.String">
             <column name="TEXT" length="0" />
         </property>
-<!--         
-        <set name="tests" inverse="true">
-            <key>
-                <column name="TEST_TRAILER_ID" precision="10" scale="0" />
-            </key>
-            <one-to-many class="us.mn.state.health.lims.test.valueholder.Test" />
-        </set>
--->        
     </class>
 </hibernate-mapping>

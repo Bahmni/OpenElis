@@ -14,7 +14,8 @@
         <version name="lastupdated" column="LASTUPDATED" type="timestamp" access="field"/>
         <property name="referralId" column="referral_id" type="us.mn.state.health.lims.hibernate.resources.usertype.LIMSStringNumberUserType" />
         <property name="testId" column="test_id" type="us.mn.state.health.lims.hibernate.resources.usertype.LIMSStringNumberUserType" />
-		<many-to-one name="result" class="us.mn.state.health.lims.result.valueholder.Result" >
+        <!-- Follow relationship is managed in the dao and not via hibernate, though the result is owned by ReferralResult -->
+		<many-to-one name="result" class="us.mn.state.health.lims.result.valueholder.Result" cascade="none" fetch="select" insert="false" update="false">
 			<column name="result_id" />
 		</many-to-one>
 		<property name="referralReportDate" column="referral_report_date" type="timestamp" />

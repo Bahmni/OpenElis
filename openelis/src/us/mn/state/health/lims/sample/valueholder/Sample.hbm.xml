@@ -66,25 +66,5 @@
         <many-to-one name="sampleSource" class="us.mn.state.health.lims.samplesource.valueholder.SampleSource" fetch="select" lazy="false">
             <column name="sample_source_id" precision="10" scale="0" />
         </many-to-one>
-<!--
-        <set name="sampleOrganizations" inverse="true">
-            <key>
-                <column name="SAMP_ID" precision="10" scale="0" />
-            </key>
-            <one-to-many class="us.mn.state.health.lims.sampleorganization.valueholder.SampleOrganization" />
-        </set>
-        <set name="sampleEnvironmentals" inverse="true">
-            <key>
-                <column name="SAMP_ID" precision="10" scale="0" not-null="true" />
-            </key>
-            <one-to-many class="us.mn.state.health.lims.sampleenvironmental.valueholder.SampleEnvironmental" />
-        </set>
-        <set name="sampleAnimals" inverse="true">
-            <key>
-                <column name="SAMP_ID" precision="10" scale="0" not-null="true" />
-            </key>
-            <one-to-many class="us.mn.state.health.lims.sampleanimal.valueholder.SampleAnimal" />
-        </set>
--->
     </class>
 </hibernate-mapping>

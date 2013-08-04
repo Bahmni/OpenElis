@@ -47,13 +47,5 @@
         <property name="contLevel" type="java.lang.String">
             <column name="CONT_LEVEL" length="30" />
         </property>
-<!--
-        <set name="results" inverse="true">
-            <key>
-                <column name="TEST_RESULT_ID" precision="10" scale="0" />
-            </key>
-            <one-to-many class="us.mn.state.health.lims.result.valueholder.Result" />
-        </set>
--->
     </class>
 </hibernate-mapping>

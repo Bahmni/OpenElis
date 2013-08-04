@@ -24,13 +24,5 @@
         <property name="printerType" type="java.lang.String">
             <column name="PRINTER_TYPE" length="1" />
         </property>
-<!--
-        <set name="tests" inverse="true">
-            <key>
-                <column name="LABEL_ID" precision="10" scale="0" />
-            </key>
-            <one-to-many class="us.mn.state.health.lims.test.valueholder.Test" />
-        </set>
--->    
     </class>
 </hibernate-mapping>

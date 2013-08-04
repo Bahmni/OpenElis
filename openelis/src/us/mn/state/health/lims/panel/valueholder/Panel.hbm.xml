@@ -23,13 +23,5 @@
         </property>
         <property name="sortOrderInt" column="sort_order" type="integer" />
         <property name="isActive" column="is_active" type="java.lang.String" />
-<!--         
-        <set name="panelItems" inverse="true">
-            <key>
-                <column name="PANEL_ID" precision="10" scale="0" not-null="true" />
-            </key>
-            <one-to-many class="us.mn.state.health.lims.panelitem.valueholder.PanelItem" />
-        </set>
--->        
     </class>
 </hibernate-mapping>

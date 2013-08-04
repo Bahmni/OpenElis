@@ -88,26 +88,16 @@ public class PatientSearchLocalAndClinicWorker extends PatientSearchWorker {
 		List<PatientSearchResults> localResults = null;
 		List<PatientDemographicsSearchResults> clinicResults = null;
 		List<PatientDemographicsSearchResults> newPatientsFromClinic = new ArrayList<PatientDemographicsSearchResults>();
+        SearchResultsDAO localSearch = createLocalSearchResultDAOImp();
+        localResults = localSearch.getSearchResults(lastName, firstName, STNumber, subjectNumber, nationalID, nationalID, patientID);
 
-		try {
+//			searchThread.start();
+//			searchThread.join(SystemConfiguration.getInstance().getSearchTimeLimit() + 500);
 
-			searchThread.start();
-			SearchResultsDAO localSearch = createLocalSearchResultDAOImp();
-			localResults = localSearch.getSearchResults(lastName, firstName, STNumber, subjectNumber, nationalID, nationalID, patientID);
-
-			searchThread.join(SystemConfiguration.getInstance().getSearchTimeLimit() + 500);
-
-			if (externalSearch.getSearchResultStatus() == 200) {
-				clinicResults = externalSearch.getSearchResults();
-			} else {
-				// TODO do something with the errors
-			}
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalStateException ise) {
-
-		}
+//        if (externalSearch.getSearchResultStatus() == 200) {
+//            clinicResults = externalSearch.getSearchResults();
+            clinicResults = new ArrayList<>();
+//        }
 
 		findNewPatients(localResults, clinicResults, newPatientsFromClinic);
 		insertNewPatients(newPatientsFromClinic);
@@ -116,13 +106,12 @@ public class PatientSearchLocalAndClinicWorker extends PatientSearchWorker {
 
 		sortPatients(localResults);
 
-		if (localResults != null && localResults.size() > 0) {
+		if (localResults.size() > 0) {
 			for (PatientSearchResults singleResult : localResults) {
 				appendSearchResultRow(singleResult, xml);
 			}
 		} else {
 			success = IActionConstants.INVALID;
-
 			xml.append("No results were found for search.  Check spelling or remove some of the fields");
 		}
 

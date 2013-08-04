@@ -28,44 +28,5 @@
         <property name="localAbbreviation" type="java.lang.String">
              <column name="LOCAL_ABBREV" length="10" unique="true" />
         </property>
-
-<!--
-        <set name="qcAnalyteses" inverse="true">
-            <key>
-                <column name="ANALYTE_ID" precision="10" scale="0" />
-            </key>
-            <one-to-many class="us.mn.state.health.lims.qcanalytes.valueholder.QcAnalytes" />
-        </set>
-        <set name="auxFields" inverse="true">
-            <key>
-                <column name="ANALYTE_ID" precision="10" scale="0" />
-            </key>
-            <one-to-many class="us.mn.state.health.lims.auxfield.valueholder.AuxField" />
-        </set>
-        <set name="methodAnalytes" inverse="true">
-            <key>
-                <column name="ANALYTE_ID" precision="10" scale="0" />
-            </key>
-            <one-to-many class="us.mn.state.health.lims.methodanalyte.valueholder.MethodAnalyte" />
-        </set>
-        <set name="results" inverse="true">
-            <key>
-                <column name="ANALYTE_ID" precision="10" scale="0" />
-            </key>
-            <one-to-many class="us.mn.state.health.lims.result.valueholder.Result" />
-        </set>
-        <set name="instrumentAnalytes" inverse="true">
-            <key>
-                <column name="ANALYTE_ID" precision="10" scale="0" />
-            </key>
-            <one-to-many class="us.mn.state.health.lims.instrumentanalyte.valueholder.InstrumentAnalyte" />
-        </set>
-        <set name="testAnalytes" inverse="true">
-            <key>
-                <column name="ANALYTE_ID" precision="10" scale="0" />
-            </key>
-            <one-to-many class="us.mn.state.health.lims.testanalyte.valueholder.TestAnalyte" />
-        </set>
--->        
     </class>
 </hibernate-mapping>

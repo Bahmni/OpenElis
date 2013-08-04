@@ -30,32 +30,5 @@
         <property name="activeEndDate" type="java.sql.Date">
             <column name="ACTIVE_END" length="7" />
         </property>
-
-<!--         
-        <set name="instrumentAnalytes" inverse="true">
-            <key>
-                <column name="METHOD_ID" precision="10" scale="0" />
-            </key>
-            <one-to-many class="us.mn.state.health.lims.instrumentanalyte.valueholder.InstrumentAnalyte" />
-        </set>
-        <set name="methodResults" inverse="true">
-            <key>
-                <column name="METHOD_ID" precision="10" scale="0" />
-            </key>
-            <one-to-many class="us.mn.state.health.lims.methodresult.valueholder.MethodResult" />
-        </set>
-        <set name="methodAnalytes" inverse="true">
-            <key>
-                <column name="METHOD_ID" precision="10" scale="0" />
-            </key>
-            <one-to-many class="us.mn.state.health.lims.methodanalyte.valueholder.MethodAnalyte" />
-        </set>
-        <set name="tests" inverse="true">
-            <key>
-                <column name="METHOD_ID" precision="10" scale="0" />
-            </key>
-            <one-to-many class="us.mn.state.health.lims.test.valueholder.Test" />
-        </set>
--->        
     </class>
 </hibernate-mapping>

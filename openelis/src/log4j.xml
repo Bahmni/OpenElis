@@ -8,7 +8,7 @@
     </appender>
 
     <appender name="file" class="org.apache.log4j.RollingFileAppender">
-        <param name="File" value="/home/jss/apache-tomcat-7.0.22/logs/openelis.log" />
+        <param name="File" value="logs/openelis.log" />
         <param name="MaxFileSize" value="5000KB" />
         <param name="MaxBackupIndex" value="10" />
         <layout class="org.apache.log4j.PatternLayout">

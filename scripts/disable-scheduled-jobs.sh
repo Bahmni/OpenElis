@@ -1,1 +1,1 @@
-psql clinlims -U postgres -c 'update clinlims.quartz_cron_scheduler set active=false'
+psql clinlims -U postgres -h 192.168.33.10 -c 'update clinlims.quartz_cron_scheduler set active=false'

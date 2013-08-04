@@ -34,10 +34,11 @@ public class OpenElisRequestFilter implements Filter {
 		request.setCharacterEncoding("UTF8");
         try {
             chain.doFilter(request, response);
-            HibernateUtil.closeSession();
         } catch (Throwable t) {
             logger.error("Exception in request ", t);
             throw t;
+        } finally {
+            HibernateUtil.closeSession();
         }
 
 	}

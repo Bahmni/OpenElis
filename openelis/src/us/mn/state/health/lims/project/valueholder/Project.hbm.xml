@@ -53,13 +53,5 @@
             <key column="project_id" />
             <many-to-many column="org_id"  class="us.mn.state.health.lims.organization.valueholder.Organization" />
         </set>        
-<!-- 
-        <set name="projectParameters" inverse="true">
-            <key>
-                <column name="PROJECT_ID" precision="10" scale="0" />
-            </key>
-            <one-to-many class="us.mn.state.health.lims.projectparameter.valueholder.ProjectParameter" />
-        </set>
--->    
     </class>
 </hibernate-mapping>

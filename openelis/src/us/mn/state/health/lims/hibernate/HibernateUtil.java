@@ -175,12 +175,12 @@ public class HibernateUtil {
     public static void closeSession() throws LIMSRuntimeException {
         try {
             Session s = (Session) threadSession.get();
-            threadSession.set(null);
             if (s != null && s.isOpen()) {
                 //bugzilla 2154
                 LogEvent.logDebug("HibernateUtil","closeSession()","Closing Session of this thread.");
                 s.close();
             }
+            threadSession.remove();
         } catch (HibernateException ex) {
             //bugzilla 2154
 			LogEvent.logError("HibernateUtil","closeSession()",ex.toString());

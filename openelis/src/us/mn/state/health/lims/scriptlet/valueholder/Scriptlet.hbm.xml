@@ -21,44 +21,5 @@
         <property name="codeSource" type="java.lang.String">
             <column name="CODE_SOURCE" length="0" />
         </property>
-
-<!--         
-        <set name="tests" inverse="true">
-            <key>
-                <column name="SCRIPTLET_ID" precision="10" scale="0" />
-            </key>
-            <one-to-many class="us.mn.state.health.lims.test.valueholder.Test" />
-        </set>
-        <set name="testResults" inverse="true">
-            <key>
-                <column name="SCRIPTLET_ID" precision="10" scale="0" />
-            </key>
-            <one-to-many class="us.mn.state.health.lims.testresult.valueholder.TestResult" />
-        </set>
-        <set name="labels" inverse="true">
-            <key>
-                <column name="SCRIPTLET_ID" precision="10" scale="0" />
-            </key>
-            <one-to-many class="us.mn.state.health.lims.label.valueholder.Label" />
-        </set>
-        <set name="projects" inverse="true">
-            <key>
-                <column name="SCRIPTLET_ID" precision="10" scale="0" />
-            </key>
-            <one-to-many class="us.mn.state.health.lims.project.valueholder.Project" />
-        </set>
-        <set name="methodResults" inverse="true">
-            <key>
-                <column name="SCRIP_ID" precision="10" scale="0" />
-            </key>
-            <one-to-many class="us.mn.state.health.lims.methodresult.valueholder.MethodResult" />
-        </set>
-        <set name="auxFields" inverse="true">
-            <key>
-                <column name="SCRIPTLET_ID" precision="10" scale="0" />
-            </key>
-            <one-to-many class="us.mn.state.health.lims.auxfield.valueholder.AuxField" />
-        </set>
--->        
     </class>
 </hibernate-mapping>
