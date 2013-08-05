@@ -1095,12 +1095,12 @@ public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
     }
 
     @Override
-    public void deleteTestById(String testId, String sysUserId) {
+    public void deleteById(String testId, String sysUserId) {
         try {
             AuditTrailDAO auditDAO = new AuditTrailDAOImpl();
             Test testFromDB = readTest(testId);
-            Test newData = testFromDB;
-            testFromDB.setIsActive(IActionConstants.NO);
+            Test newData = (Test) testFromDB.clone();
+            newData.setIsActive(IActionConstants.NO);
 
             String event = IActionConstants.AUDIT_TRAIL_DELETE;
             String tableName = "TEST";
@@ -1117,4 +1117,7 @@ public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
         }
         clearIDMaps();
     }
+
+
+
 }

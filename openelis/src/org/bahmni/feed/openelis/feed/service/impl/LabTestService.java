@@ -59,17 +59,17 @@ public class LabTestService extends LabService {
 
     @Override
     protected void delete(LabObject labObject) {
-        ExternalReference externalReference = getexternalReference(labObject);
+        ExternalReference externalReference = getExternalReference(labObject);
         if(externalReference != null){
             org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
             externalReferenceDao.deleteData(externalReference);
             String testId = String.valueOf(externalReference.getItemId());
-            testDAO.deleteTestById(testId, labObject.getSysUserId());
+            testDAO.deleteById(testId, labObject.getSysUserId());
             tx.commit();
         }
     }
 
-    private ExternalReference getexternalReference(LabObject labObject) {
+    private ExternalReference getExternalReference(LabObject labObject) {
         return externalReferenceDao.getData(labObject.getExternalId(),labObject.getCategory());
     }
 

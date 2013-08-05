@@ -85,6 +85,31 @@ public class PanelDAOImpl extends BaseDAOImpl implements PanelDAO {
 		clearIDMaps();
 	}
 
+    @Override
+    public void deleteById(String panelId,String sysUserId) throws LIMSRuntimeException {
+        try {
+            AuditTrailDAO auditDAO = new AuditTrailDAOImpl();
+            Panel panelFromDb = readPanel(panelId);
+            Panel newData = (Panel) panelFromDb.clone();
+            newData.setIsActive(IActionConstants.NO);
+
+            String event = IActionConstants.AUDIT_TRAIL_DELETE;
+            String tableName = "PANEL";
+            auditDAO.saveHistory(newData,panelFromDb,sysUserId,event,tableName);
+
+            HibernateUtil.getSession().merge(newData);
+            HibernateUtil.getSession().flush();
+            HibernateUtil.getSession().clear();
+            HibernateUtil.getSession().evict(newData);
+            HibernateUtil.getSession().refresh(newData);
+        } catch (Exception e) {
+            LogEvent.logErrorStack("PanelDAOImpl", "deleteData()", e);
+            throw new LIMSRuntimeException("Error in Panel deleteData()", e);
+        }
+
+        clearIDMaps();
+    }
+
 	public boolean insertData(Panel panel) throws LIMSRuntimeException {
 		try {
 			// bugzilla 1482 throw Exception if record already exists

@@ -6,6 +6,8 @@ import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoIm
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import org.bahmni.feed.openelis.feed.domain.LabObject;
 import org.bahmni.feed.openelis.feed.service.LabService;
+import us.mn.state.health.lims.common.action.IActionConstants;
+import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.panel.dao.PanelDAO;
 import us.mn.state.health.lims.panel.daoimpl.PanelDAOImpl;
 import us.mn.state.health.lims.panel.valueholder.Panel;
@@ -24,6 +26,7 @@ public class LabPanelService extends LabService {
     }
 
     LabPanelService(PanelDAO panelDAO, ExternalReferenceDao externalReferenceDao) {
+        this();
         this.panelDAO = panelDAO;
         this.externalReferenceDao = externalReferenceDao;
     }
@@ -50,9 +53,19 @@ public class LabPanelService extends LabService {
 
     @Override
     protected void delete(LabObject labObject) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        ExternalReference externalReference = getExternalReference(labObject);
+        if(externalReference != null){
+            org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
+            externalReferenceDao.deleteData(externalReference);
+            String panelId = String.valueOf(externalReference.getItemId());
+            panelDAO.deleteById(panelId, labObject.getSysUserId());
+            tx.commit();
+        }
     }
 
+    private ExternalReference getExternalReference(LabObject labObject) {
+        return externalReferenceDao.getData(labObject.getExternalId(),labObject.getCategory());
+    }
 
     private boolean hasId(Panel panel) {
         return panel.getId() != null && !panel.getId().isEmpty();
@@ -68,6 +81,9 @@ public class LabPanelService extends LabService {
         if (isSet(panel.getSysUserId())) {
             panelById.setSysUserId(panel.getSysUserId());
         }
+        if(isSet(panel.getIsActive())){
+            panelById.setIsActive(panel.getIsActive());
+        }
     }
 
     private boolean isSet(String value) {
@@ -78,10 +94,20 @@ public class LabPanelService extends LabService {
     private Panel mapToPanel(LabObject labObject) throws IOException {
         Panel panel = new us.mn.state.health.lims.panel.valueholder.Panel();
         panel.setPanelName(labObject.getName());
-        panel.setDescription(labObject.getName());
+        String description = labObject.getDescription();
+        if(description == null || description.isEmpty()){
+            description = labObject.getName();
+        }
+        panel.setDescription(description);
         panel.setSysUserId(labObject.getSysUserId());
+        setActiveStatus(panel, labObject.getStatus());
         return panel;
     }
 
+    private void setActiveStatus(Panel panel, String status) {
+        if(status == null || status.isEmpty() )
+            return;
+        panel.setIsActive(status.equalsIgnoreCase("active") ? IActionConstants.YES : IActionConstants.NO);
+    }
 
 }

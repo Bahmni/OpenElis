@@ -176,8 +176,6 @@ public class LabTestServiceTest {
         labTestService.delete(labObject);
 
         verify(externalReferenceDao).deleteData(reference);
-        verify(testDao).deleteTestById("293", labObject.getSysUserId());
+        verify(testDao).deleteById("293", labObject.getSysUserId());
     }
-
-
 }

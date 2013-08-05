@@ -15,11 +15,11 @@
 */
 package us.mn.state.health.lims.panel.dao;
 
-import java.util.List;
-
 import us.mn.state.health.lims.common.dao.BaseDAO;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.panel.valueholder.Panel;
+
+import java.util.List;
 
 /**
  * @author diane benz
@@ -59,4 +59,5 @@ public interface PanelDAO extends BaseDAO {
 
 	public Panel getPanelById(String id) throws LIMSRuntimeException;
 
+    void deleteById(String panelId, String sysUserId) throws LIMSRuntimeException;
 }
