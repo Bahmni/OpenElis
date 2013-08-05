@@ -6,7 +6,7 @@ import org.ict4h.atomfeed.client.domain.Event;
 import org.junit.Test;
 
 public class OpenERPLabTestMapperTest {
-    static final String TEST_EVENT_CONTENT = " {\"category\": \"Test\",\"uuid\": \"07a5f352-ad6e-4638-9c99-2d5af364a920\", \"list_price\": \"0.0\", \"name\": \"ECHO\", \"type\": \"service\", \"standard_price\": \"0.0\", \"uom_id\": 1, \"uom_po_id\": 1, \"categ_id\": 33, \"id\": 193}";
+    static final String TEST_EVENT_CONTENT = " {\"category\": \"Test\",\"uuid\": \"07a5f352-ad6e-4638-9c99-2d5af364a920\", \"list_price\": \"0.0\", \"name\": \"ECHO\",\"status\": \"active\", \"type\": \"service\", \"standard_price\": \"0.0\", \"uom_id\": 1, \"uom_po_id\": 1, \"categ_id\": 33, \"id\": 193}";
 
     @Test
     public void shouldMapToTestObject() throws Exception {
@@ -15,6 +15,7 @@ public class OpenERPLabTestMapperTest {
         Assert.assertEquals("Test",labObject.getCategory());
         Assert.assertEquals("ECHO",labObject.getName());
         Assert.assertEquals("07a5f352-ad6e-4638-9c99-2d5af364a920",labObject.getExternalId());
+        Assert.assertEquals("active",labObject.getStatus());
 
     }
 }

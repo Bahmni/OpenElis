@@ -14,13 +14,11 @@ public class OpenERPLabTestMapper {
             LabObject lab = new LabObject();
             lab.setName((String) paramMap.get("name"));
             String desc = (String) paramMap.get("name");
-//            if (desc == null || desc.isEmpty()) {
-//                desc = (String) paramMap.get("name");
-//            }
             lab.setDescription(desc);
             lab.setExternalId((String)paramMap.get("uuid"));
             lab.setSysUserId(sysUserId);
             lab.setCategory((String) paramMap.get("category"));
+            lab.setStatus((String) paramMap.get("status"));
             return lab;
         }
 

@@ -18,7 +18,7 @@ import us.mn.state.health.lims.test.valueholder.TestSection;
 
 import java.io.IOException;
 
-public class LabTestService implements LabService {
+public class LabTestService extends LabService {
 
     private static Logger logger = Logger.getLogger(LabTestService.class);
 
@@ -38,7 +38,6 @@ public class LabTestService implements LabService {
         this.externalReferenceDao = externalReferenceDao;
     }
 
-    @Override
     public void save(LabObject labObject) throws IOException {
         Test test = mapToTest(labObject);
         ExternalReference data = externalReferenceDao.getData(labObject.getExternalId(),labObject.getCategory());
@@ -55,6 +54,16 @@ public class LabTestService implements LabService {
             updateTestFieldsIfNotEmpty(test, activeTestById);
             testDAO.updateData(activeTestById);
         }
+    }
+
+    @Override
+    protected void inactivate(LabObject labObject) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected void delete(LabObject labObject) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     private boolean isNotEmpty(String value) {
@@ -96,7 +105,6 @@ public class LabTestService implements LabService {
     private boolean isSet(String value){
         return value != null && !value.isEmpty();
     }
-
 }
 
 

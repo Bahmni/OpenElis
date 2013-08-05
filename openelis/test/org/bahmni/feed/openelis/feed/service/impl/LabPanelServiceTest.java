@@ -30,12 +30,12 @@ public class LabPanelServiceTest {
     public void shouldInsertNewIfExternalReferenceNotFound() throws Exception {
         when(externalReferenceDao.getData("193", "Panel")).thenReturn(null);
 
-        LabObject labObject = new LabObject("193","Lab Panel","lab panel desc","1", "Panel");
+        LabObject labObject = new LabObject("193","Lab Panel","lab panel desc","1", "Panel", "active");
         Panel panel = new Panel();
         panel.setPanelName("Lab Panel");
         panel.setDescription("Lab Panel");
 
-        labPanelService.save(labObject);
+        labPanelService.process(labObject);
         verify(panelDAO).insertData(panel);
     }
 
@@ -53,9 +53,9 @@ public class LabPanelServiceTest {
         when(panelDAO.getPanelById("293")).thenReturn(panel);
 
 
-        LabObject labObject = new LabObject("193","Lab Panel","lab panel desc","1", "Panel");
+        LabObject labObject = new LabObject("193","Lab Panel","lab panel desc","1", "Panel", "active");
 
-        labPanelService.save(labObject);
+        labPanelService.process(labObject);
 
 //        verify(panelDAO).updateData(panel);
     }

@@ -2,8 +2,22 @@ package org.bahmni.feed.openelis.feed.service;
 
 import org.bahmni.feed.openelis.feed.domain.LabObject;
 
-public interface LabService {
+public abstract class LabService {
 
-    void save(LabObject object) throws Exception;
+    public void process(LabObject labObject) throws Exception {
+    if (labObject.getStatus().equals("active"))
+        save(labObject);
+    else if (labObject.getStatus().equals("inactive"))
+        inactivate(labObject);
+    else if (labObject.getStatus().equals("deleted"))
+        delete(labObject);
+    }
+
+    protected abstract void inactivate(LabObject labObject);
+
+    protected abstract void delete(LabObject labObject);
+
+    protected abstract void save(LabObject labObject) throws Exception;
+
 
 }

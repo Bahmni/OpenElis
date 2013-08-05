@@ -7,7 +7,6 @@ import org.bahmni.feed.openelis.feed.service.LabService;
 import org.bahmni.feed.openelis.feed.service.LabTestServiceFactory;
 import org.bahmni.feed.openelis.utils.AuditingService;
 import org.ict4h.atomfeed.client.domain.Event;
-import org.ict4h.atomfeed.client.service.EventWorker;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
 import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
@@ -29,7 +28,7 @@ public class LabTestFeedEventWorker extends OpenElisEventWorker {
         try {
             LabObject labObject = labTestMapper.getLabObject(event,auditingService.getSysUserId());
             LabService labService = LabTestServiceFactory.getLabTestService(labObject.getCategory(), AtomFeedProperties.getInstance());
-            labService.save(labObject);
+            labService.process(labObject);
         } catch (Exception e) {
             throw new LIMSRuntimeException(e);
         }

@@ -13,7 +13,7 @@ import us.mn.state.health.lims.panel.valueholder.Panel;
 import java.io.IOException;
 
 
-public class LabPanelService implements LabService {
+public class LabPanelService extends LabService {
 
     private PanelDAO panelDAO = new PanelDAOImpl();
     private ExternalReferenceDao externalReferenceDao = new ExternalReferenceDaoImpl();
@@ -28,15 +28,17 @@ public class LabPanelService implements LabService {
         this.externalReferenceDao = externalReferenceDao;
     }
 
-    public void save(LabObject labObject) throws Exception {
+    @Override
+    protected void save(LabObject labObject) throws IOException {
         Panel panel = mapToPanel(labObject);
-        ExternalReference data = externalReferenceDao.getData(labObject.getExternalId(), labProductType);
+        String externalId = labObject.getExternalId();
+        ExternalReference data = externalReferenceDao.getData(externalId, labProductType);
         if (data == null) {
             panelDAO.insertData(panel);
-            if (isNotEmpty(panel)) {
-                data = new ExternalReference(Long.parseLong(panel.getId()), labObject.getExternalId(), labProductType);
+            if(hasId(panel)){
+                ExternalReference externalReference = new ExternalReference(Long.parseLong(panel.getId()), externalId, labProductType);
+                externalReferenceDao.insertData(externalReference);
             }
-            externalReferenceDao.insertData(data);
         } else {
             Panel panelById = panelDAO.getPanelById(String.valueOf(data.getItemId()));
             if (panelById != null) {
@@ -46,7 +48,18 @@ public class LabPanelService implements LabService {
         }
     }
 
-    private boolean isNotEmpty(Panel panel) {
+    @Override
+    protected void inactivate(LabObject labObject) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected void delete(LabObject labObject) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+
+    private boolean hasId(Panel panel) {
         return panel.getId() != null && !panel.getId().isEmpty();
     }
 
@@ -65,6 +78,7 @@ public class LabPanelService implements LabService {
     private boolean isSet(String value) {
         return value != null && !value.isEmpty();
     }
+
 
     private Panel mapToPanel(LabObject labObject) throws IOException {
         Panel panel = new us.mn.state.health.lims.panel.valueholder.Panel();

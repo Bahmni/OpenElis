@@ -46,7 +46,7 @@ public class LabTestServiceTest {
         when(externalReferenceDao.getData("193", "Test")).thenReturn(null);
         when(testSectionDAO.getTestSectionByName("New")).thenReturn(section);
 
-        LabObject labObject = new LabObject("193","Lab Test","lab test desc","1", "Test");
+        LabObject labObject = new LabObject("193","Lab Test","lab test desc","1", "Test","active");
         Test test = new Test();
         test.setTestSection(section);
         test.setTestName("Lab Test");
@@ -67,7 +67,7 @@ public class LabTestServiceTest {
         reference.setItemId(293);
         reference.setExternalId("193");
 
-        LabObject labObject = new LabObject("193","Lab Test","lab test desc","1", "Test");
+        LabObject labObject = new LabObject("193","Lab Test","lab test desc","1", "Test","active");
         Test test = new Test();
         test.setTestName("Lab Test");
         test.setDescription("lab test desc");

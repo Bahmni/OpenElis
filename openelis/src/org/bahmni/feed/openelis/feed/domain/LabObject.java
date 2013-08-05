@@ -6,6 +6,7 @@ public class LabObject {
     private String description;
     private String sysUserId;
     private String category;
+    private String status;
 
     public String getCategory() {
         return category;
@@ -21,11 +22,13 @@ public class LabObject {
 
     public LabObject (){}
 
-    public LabObject(String externalId, String name, String description, String sysUserId, String category) {
+    public LabObject(String externalId, String name, String description, String sysUserId, String category, String status) {
         this.externalId = externalId;
         this.name = name;
         this.description = description;
         this.sysUserId = sysUserId;
+        this.category = category;
+        this.status = status;
     }
 
     public String getExternalId() {
@@ -54,5 +57,13 @@ public class LabObject {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
