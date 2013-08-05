@@ -8,9 +8,9 @@ import org.bahmni.feed.openelis.feed.service.impl.LabTestService;
 import java.io.IOException;
 
 
-public class LabTestServiceFactory {
+public class LabServiceFactory {
 
-    public static LabService getLabTestService(String type, AtomFeedProperties properties) throws IOException {
+    public static LabService getLabService(String type, AtomFeedProperties properties) throws IOException {
         if(properties.getProductTypeLabTest().equals(type)){
             return  new LabTestService();
         }

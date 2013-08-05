@@ -62,48 +62,6 @@ public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
     private static Map<String, String> ID_NAME_MAP = null;
 	private static Map<String, String> ID_DESCRIPTION_MAP = null;
 
-	public void deleteData(List tests) throws LIMSRuntimeException {
-		// add to audit trail
-		try {
-			AuditTrailDAO auditDAO = new AuditTrailDAOImpl();
-			for (int i = 0; i < tests.size(); i++) {
-				Test data = (Test) tests.get(i);
-
-				Test oldData = readTest(data.getId());
-				Test newData = new Test();
-
-				String sysUserId = data.getSysUserId();
-				String event = IActionConstants.AUDIT_TRAIL_DELETE;
-				String tableName = "TEST";
-				auditDAO.saveHistory(newData,oldData,sysUserId,event,tableName);
-			}
-		} catch (Exception e) {
-    		//bugzilla 2154
-			LogEvent.logError("TestDAOImpl","AuditTrail deleteData()",e.toString());
-			throw new LIMSRuntimeException("Error in Test AuditTrail deleteData()", e);
-		}
-
-		try {
-			for (int i = 0; i < tests.size(); i++) {
-				Test data = (Test) tests.get(i);
-				Test cloneData = readTest(data.getId());
-
-				cloneData.setIsActive(IActionConstants.NO);
-				HibernateUtil.getSession().merge(cloneData);
-				HibernateUtil.getSession().flush();
-				HibernateUtil.getSession().clear();
-				HibernateUtil.getSession().evict(cloneData);
-				HibernateUtil.getSession().refresh(cloneData);
-			}
-		} catch (Exception e) {
-			//bugzilla 2154
-			LogEvent.logError("TestDAOImpl","deleteData()",e.toString());
-			throw new LIMSRuntimeException("Error in Test deleteData()", e);
-		}
-
-		clearIDMaps();
-	}
-
 	public boolean insertData(Test test) throws LIMSRuntimeException {
 
 		try {
@@ -893,35 +851,35 @@ public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
 	private boolean duplicateTestExists(Test test) throws LIMSRuntimeException {
 		try {
 
-			List list = new ArrayList();
+            List list = new ArrayList();
 
-			//only check if the test to be inserted/updated is active
-			if (test.getIsActive().equalsIgnoreCase("Y")) {
-			// not case sensitive hemolysis and Hemolysis are considered
-			// duplicates
-			String sql = "from Test t where ((trim(lower(t.testName)) = :param and t.isActive='Y' and t.id != :param2) or (trim(lower(t.description)) = :param3 and t.isActive='Y' and t.id != :param2))";
-			Query query = HibernateUtil.getSession().createQuery(
-					sql);
-			query.setParameter("param", test.getTestName().toLowerCase().trim());
+            //only check if the test to be inserted/updated is active
+            if (test.getIsActive().equalsIgnoreCase("Y")) {
+                // not case sensitive hemolysis and Hemolysis are considered
+                // duplicates
+                String sql = "from Test t where ((trim(lower(t.testName)) = :param and t.isActive='Y' and t.id != :param2) or (trim(lower(t.description)) = :param3 and t.isActive='Y' and t.id != :param2))";
+                Query query = HibernateUtil.getSession().createQuery(
+                        sql);
+                query.setParameter("param", test.getTestName().toLowerCase().trim());
 
-			//initialize with 0 (for new records where no id has been generated yet
-			String testId = "0";
-			if (!StringUtil.isNullorNill(test.getId())) {
-				testId = test.getId();
-			}
-			query.setInteger("param2", Integer.parseInt(testId));
-			query.setParameter("param3", test.getDescription().toLowerCase().trim());
+                //initialize with 0 (for new records where no id has been generated yet
+                String testId = "0";
+                if (!StringUtil.isNullorNill(test.getId())) {
+                    testId = test.getId();
+                }
+                query.setInteger("param2", Integer.parseInt(testId));
+                query.setParameter("param3", test.getDescription().toLowerCase().trim());
 
-			list = query.list();
-			}
+                list = query.list();
+            }
 
-			if (list.size() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+            if (list.size() > 0) {
+                return true;
+            } else {
+                return false;
+            }
 
-		} catch (Exception e) {
+        } catch (Exception e) {
 			//bugzilla 2154
 			LogEvent.logError("TestDAOImpl","duplicateTestExists()",e.toString());
 			throw new LIMSRuntimeException("Error in duplicateTestExists()", e);
@@ -1093,4 +1051,70 @@ public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
 
 		return null;
 	}
+
+    public void deleteData(List tests) throws LIMSRuntimeException {
+        // add to audit trail
+        try {
+            AuditTrailDAO auditDAO = new AuditTrailDAOImpl();
+            for (int i = 0; i < tests.size(); i++) {
+                Test data = (Test) tests.get(i);
+
+                Test oldData = readTest(data.getId());
+                Test newData = new Test();
+
+                String sysUserId = data.getSysUserId();
+                String event = IActionConstants.AUDIT_TRAIL_DELETE;
+                String tableName = "TEST";
+                auditDAO.saveHistory(newData,oldData,sysUserId,event,tableName);
+            }
+        } catch (Exception e) {
+            //bugzilla 2154
+            LogEvent.logError("TestDAOImpl","AuditTrail deleteData()",e.toString());
+            throw new LIMSRuntimeException("Error in Test AuditTrail deleteData()", e);
+        }
+
+        try {
+            for (int i = 0; i < tests.size(); i++) {
+                Test data = (Test) tests.get(i);
+                Test cloneData = readTest(data.getId());
+
+                cloneData.setIsActive(IActionConstants.NO);
+                HibernateUtil.getSession().merge(cloneData);
+                HibernateUtil.getSession().flush();
+                HibernateUtil.getSession().clear();
+                HibernateUtil.getSession().evict(cloneData);
+                HibernateUtil.getSession().refresh(cloneData);
+            }
+        } catch (Exception e) {
+            //bugzilla 2154
+            LogEvent.logError("TestDAOImpl","deleteData()",e.toString());
+            throw new LIMSRuntimeException("Error in Test deleteData()", e);
+        }
+
+        clearIDMaps();
+    }
+
+    @Override
+    public void deleteTestById(String testId, String sysUserId) {
+        try {
+            AuditTrailDAO auditDAO = new AuditTrailDAOImpl();
+            Test testFromDB = readTest(testId);
+            Test newData = testFromDB;
+            testFromDB.setIsActive(IActionConstants.NO);
+
+            String event = IActionConstants.AUDIT_TRAIL_DELETE;
+            String tableName = "TEST";
+            auditDAO.saveHistory(newData,testFromDB,sysUserId,event,tableName);
+
+            HibernateUtil.getSession().merge(newData);
+            HibernateUtil.getSession().flush();
+            HibernateUtil.getSession().clear();
+            HibernateUtil.getSession().evict(newData);
+            HibernateUtil.getSession().refresh(newData);
+        } catch (Exception e) {
+            LogEvent.logErrorStack("TestDAOImpl", "deleteData()", e);
+            throw new LIMSRuntimeException("Error in Test deleteData()", e);
+        }
+        clearIDMaps();
+    }
 }

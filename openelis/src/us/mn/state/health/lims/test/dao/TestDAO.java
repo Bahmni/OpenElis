@@ -15,13 +15,12 @@
 */
 package us.mn.state.health.lims.test.dao;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
 import us.mn.state.health.lims.common.dao.BaseDAO;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.test.valueholder.Test;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @author diane benz
@@ -36,14 +35,12 @@ public interface TestDAO extends BaseDAO {
 
 	public void deleteData(List tests) throws LIMSRuntimeException;
 
-	
 	public List<Test> getAllTests(boolean onlyTestsFullySetup) throws LIMSRuntimeException;
 
     public List<Test> getAllActiveTests(boolean onlyTestsFullySetup) throws LIMSRuntimeException;
 
 	public List<Test> getAllOrderBy(String columnName) throws LIMSRuntimeException;
 
-	
 	public List getAllTestsBySysUserId(int sysUserId, boolean onlyTestsFullySetup) throws LIMSRuntimeException;
 
 	public List getPageOfTests(int startingRecNo) throws LIMSRuntimeException;
@@ -54,7 +51,6 @@ public interface TestDAO extends BaseDAO {
 
 	public void updateData(Test test) throws LIMSRuntimeException;
 
-    
 	public List getTests(String filter, boolean onlyTestsFullySetup) throws LIMSRuntimeException;
 
 	public List getNextTestRecord(String id) throws LIMSRuntimeException;
@@ -62,7 +58,7 @@ public interface TestDAO extends BaseDAO {
 	public List getPreviousTestRecord(String id) throws LIMSRuntimeException;
 
 	public Test getTestByName(Test test) throws LIMSRuntimeException;
-	
+
 	public Test getTestByName(String testName) throws LIMSRuntimeException;
 
 	public Test getActiveTestByName(String testName) throws LIMSRuntimeException;
@@ -81,26 +77,17 @@ public interface TestDAO extends BaseDAO {
 
 	public Integer getTotalTestCount() throws LIMSRuntimeException;
 
-	
 	public boolean isTestFullySetup(Test test) throws LIMSRuntimeException;
 
-	
-	public List getPageOfSearchedTests(int startingRecNo, String searchString)
-	throws LIMSRuntimeException;
+	public List getPageOfSearchedTests(int startingRecNo, String searchString) throws LIMSRuntimeException;
 
-   
-    public Integer getAllSearchedTotalTestCount (HttpServletRequest request, String searchString)
-	 throws LIMSRuntimeException;
+    public Integer getAllSearchedTotalTestCount (HttpServletRequest request, String searchString) throws LIMSRuntimeException;
 
-    
-	public Integer getTotalSearchedTestCountBySysUserId(int sysUserId, String searchString)
-	throws LIMSRuntimeException;
+    public Integer getTotalSearchedTestCountBySysUserId(int sysUserId, String searchString) throws LIMSRuntimeException;
 
-	
-	public Integer getTotalSearchedTestCount (String searchString)
-	throws LIMSRuntimeException;
+    public Integer getTotalSearchedTestCount (String searchString)
+    throws LIMSRuntimeException;
 
-	
 	public List getPageOfSearchedTestsBySysUserId(int startingRecNo, int sysUserId, String searchString)
 	throws LIMSRuntimeException;
 	
@@ -111,5 +98,7 @@ public interface TestDAO extends BaseDAO {
 
 	public Test getTestById(String testId) throws LIMSRuntimeException;
 
-	public Test getTestByDescription(String description) throws LIMSRuntimeException; 
+	public Test getTestByDescription(String description) throws LIMSRuntimeException;
+
+    void deleteTestById(String testId, String sysUserId);
 }

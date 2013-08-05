@@ -7,17 +7,18 @@ import org.junit.Assert;
 import org.junit.Test;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 
-public class ExternalReferenceDaoImplTest {
+import static junit.framework.Assert.assertNull;
+
+public class ExternalReferenceDaoImplIT {
 
     ExternalReferenceDaoImpl externalReferenceDao = new ExternalReferenceDaoImpl();
 
 
     @Test
     public void testInsertData() throws Exception {
-        ExternalReference reference = new ExternalReference();
-
-
-        reference = externalReferenceDao.getData("1123456", "Panel");
+        String externalReferenceId = "1123456";
+        String panel = "Panel";
+        ExternalReference reference = externalReferenceDao.getData(externalReferenceId, panel);
 
         Transaction transaction = null;
         if(reference != null){
@@ -27,19 +28,21 @@ public class ExternalReferenceDaoImplTest {
         }
 
         reference = new ExternalReference();
-        reference.setExternalId("1123456");
+        reference.setExternalId(externalReferenceId);
         reference.setItemId(1123457);
-        reference.setType("Panel");
-
+        reference.setType(panel);
         transaction = HibernateUtil.getSession().beginTransaction();
+
         externalReferenceDao.insertData(reference);
 
-        reference = externalReferenceDao.getData("1123456", "Panel");
+        reference = externalReferenceDao.getData(externalReferenceId, panel);
         Assert.assertNotNull(reference);
 
         externalReferenceDao.deleteData(reference);
-        transaction.commit();
 
+        assertNull(externalReferenceDao.getData(externalReferenceId,panel));
+
+        transaction.commit();
     }
 
     @After

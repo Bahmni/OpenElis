@@ -27,24 +27,25 @@ public class ExternalReferenceDaoImpl extends BaseDAOImpl implements ExternalRef
 
     @Override
     public ExternalReference getData(String externalReferenceId, String type) throws LIMSRuntimeException {
-            String sql = "from ExternalReference e where e.externalId =:param1 and e.type=:param2 ";
-            org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
-            query.setParameter("param1", externalReferenceId);
-            query.setParameter("param2", type);
+        String sql = "from ExternalReference e where e.externalId =:param1 and e.type=:param2 ";
+        org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
+        query.setParameter("param1", externalReferenceId);
+        query.setParameter("param2", type);
 
-            List refs = query.list();
-            if(!refs.isEmpty())
-                 return (ExternalReference)refs.get(0);
-            return null;
+        List refs = query.list();
+        if (!refs.isEmpty())
+            return (ExternalReference) refs.get(0);
+        return null;
     }
 
+    @Override
     public void deleteData(ExternalReference data) throws LIMSRuntimeException {
-            data = getData(data.getExternalId(), data.getType());
-            if(data != null) {
-                HibernateUtil.getSession().delete(data);
-                HibernateUtil.getSession().flush();
-                HibernateUtil.getSession().clear();
-            }
+        data = getData(data.getExternalId(), data.getType());
+        if (data != null) {
+            HibernateUtil.getSession().delete(data);
+            HibernateUtil.getSession().flush();
+            HibernateUtil.getSession().clear();
+        }
     }
 
- }
+}

@@ -49,11 +49,6 @@ public class LabPanelService extends LabService {
     }
 
     @Override
-    protected void inactivate(LabObject labObject) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
     protected void delete(LabObject labObject) {
         //To change body of implemented methods use File | Settings | File Templates.
     }

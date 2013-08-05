@@ -9,4 +9,6 @@ public interface ExternalReferenceDao extends BaseDAO {
     ExternalReference getData(String externalReferenceId, String category) throws LIMSRuntimeException;
 
     boolean insertData(ExternalReference externalReference) throws LIMSRuntimeException;
+
+    void deleteData(ExternalReference data) throws LIMSRuntimeException;
 }
