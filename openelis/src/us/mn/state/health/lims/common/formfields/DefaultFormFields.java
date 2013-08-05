@@ -112,6 +112,7 @@ public class DefaultFormFields extends AFormFields {
         setFieldFalse(Field.FirstNameFirst);
         setFieldFalse(Field.UseSampleSource);
         setFieldTrue(Field.AllowEditOrRemoveTests);
+        setFieldFalse(Field.SupportPrimaryRelative);
     }
 
 	@Override

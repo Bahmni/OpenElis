@@ -449,4 +449,13 @@
             <column name="error_hash_code" type="int"></column>
         </addColumn>
     </changeSet>
+    <changeSet author="tw" id="27" context="bahmni">
+        <comment>Add primary relative</comment>
+        <insert schemaName="clinlims" tableName="patient_identity_type">
+            <column name="id" valueNumeric=" nextval( 'patient_identity_type_seq' ) "/>
+            <column name="identity_type" value="PRIMARYRELATIVE" />
+            <column name="description" value="Father's/Husband's name" />
+            <column name="lastupdated" valueDate=" now() "/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>

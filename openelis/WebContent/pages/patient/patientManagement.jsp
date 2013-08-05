@@ -46,6 +46,7 @@
     boolean supportDynamicAddresses = false;
     boolean supportfirstNameFirst;
     boolean supportHealthCenters = false;
+    boolean supportPrimaryRelative = false;
  %>
 <%
 	String path = request.getContextPath();
@@ -65,6 +66,7 @@
     supportDynamicAddresses = FormFields.getInstance().useField(Field.DynamicAddress);
     supportfirstNameFirst = FormFields.getInstance().useField(Field.FirstNameFirst);
     supportHealthCenters = FormFields.getInstance().useField(Field.HealthCenter);
+    supportPrimaryRelative = FormFields.getInstance().useField(Field.SupportPrimaryRelative);
 
 	if("SampleConfirmationEntryForm".equals( formName )){
 		patientIDRequired = FormFields.getInstance().useField(Field.PatientIDRequired_SampleConfirmation);
@@ -113,6 +115,7 @@ var supportMaritialStatus = <%= FormFields.getInstance().useField(Field.PatientM
 var supportHealthRegion = <%= FormFields.getInstance().useField(Field.PatientHealthRegion) %>;
 var supportHealthDistrict = <%= FormFields.getInstance().useField(Field.PatientHealthDistrict) %>;
 var supportHealthCenters = <%= supportHealthCenters %>;
+var supportPrimaryRelative = <%= supportPrimaryRelative %>;
 
 var pt_invalidElements = [];
 var pt_requiredFields = new Array( );
@@ -513,6 +516,7 @@ function  /*void*/ processSearchPopulateSuccess(xhr)
 	var maritialStatus = getSelectIndexFor( "maritialStatusID", getXMLValue(response, "maritialStatus"));
 	var healthRegion = getSelectIndexByTextFor( "healthRegionID", getXMLValue(response, "healthRegion"));
 	var healthDistrict = getXMLValue(response, "healthDistrict");
+	var primaryRelative = getXMLValue(response, "primaryRelative");
 
 
 	setPatientInfo( nationalIDValue,
@@ -539,7 +543,8 @@ function  /*void*/ processSearchPopulateSuccess(xhr)
 					otherNationality,
 					maritialStatus,
 					healthRegion,
-					healthDistrict );
+					healthDistrict,
+                    primaryRelative);
 
     setPatientAddress(response);
 
@@ -599,7 +604,7 @@ function /*void*/ clearErrors(){
 
 function  /*void*/ setPatientInfo(nationalID, ST_ID, subjectNumber, lastName, firstName, aka, mother, street, city, dob, gender,
 		patientType, insurance, occupation, patientUpdated, personUpdated, motherInitial, commune, addressDept, educationId, nationalId, nationalOther,
-		maritialStatusId, healthRegionId, healthDistrictId ) {
+		maritialStatusId, healthRegionId, healthDistrictId, primaryRelative ) {
 
 	clearErrors();
 
@@ -632,6 +637,9 @@ function  /*void*/ setPatientInfo(nationalID, ST_ID, subjectNumber, lastName, fi
 			getDistrictsForRegion( $("healthRegionID").value, healthDistrictId, healthDistrictSuccess, null);
 		} 
 	}
+    if(supportPrimaryRelative) {
+        $("primaryRelativeID").value = primaryRelative == undefined ? "" : primaryRelative;
+    }
 
 	if(supportAddressDepartment){
 		var deptMessage = $("deptMessage");
@@ -994,6 +1002,21 @@ function healthDistrictSuccess( xhr ){
 				      size="60" />
 		</td>
 	</tr>
+    <% } if( supportPrimaryRelative ){ %>
+    <tr>
+        <td></td>
+        <td align="right">
+            <bean:message key="patient.primaryRelative"/>:
+        </td>
+        <td>
+            <nested:text name='<%=formName%>'
+                         property="patientProperties.primaryRelative"
+                         onchange="updatePatientEditStatus();"
+                         styleId="primaryRelativeID"
+                         styleClass="text"
+                         size="60" />
+        </td>
+    </tr>
 	<% } if(supportMothersInitial){ %>
 	<tr>
 		<td></td>

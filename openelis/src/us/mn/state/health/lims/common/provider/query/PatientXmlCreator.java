@@ -82,6 +82,7 @@ public class PatientXmlCreator {
         XMLUtil.appendKeyValue("otherNationality", identityMap.getIdentityValue(identityList, "OTHER NATIONALITY"), xml);
         XMLUtil.appendKeyValue("healthDistrict", identityMap.getIdentityValue(identityList, "HEALTH DISTRICT"), xml);
         XMLUtil.appendKeyValue("healthRegion", identityMap.getIdentityValue(identityList, "HEALTH REGION"), xml);
+        XMLUtil.appendKeyValue("primaryRelative", identityMap.getIdentityValue(identityList, "PRIMARYRELATIVE"), xml);
 
         List<PersonAddress> addressParts = personAddressDAO.getAddressPartsByPersonId(person.getId());
         String addressPartsXML = createAddressPartsXML(addressParts);

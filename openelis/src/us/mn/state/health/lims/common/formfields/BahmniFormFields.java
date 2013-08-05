@@ -52,6 +52,8 @@ public class BahmniFormFields implements IFormFieldsForImplementation {
         settings.put(Field.PatientType, Boolean.FALSE);
         settings.put(Field.UseSampleSource, Boolean.TRUE);
         settings.put(Field.AllowEditOrRemoveTests, Boolean.FALSE);
+        settings.put(Field.MothersName, Boolean.FALSE);
+        settings.put(Field.SupportPrimaryRelative, Boolean.TRUE);
 		return settings;
 	}
 
