@@ -41,214 +41,192 @@ import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 import us.mn.state.health.lims.test.daoimpl.TestSectionDAOImpl;
 import us.mn.state.health.lims.test.valueholder.Test;
+import us.mn.state.health.lims.test.valueholder.TestComparator;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSamplePanelDAO;
 import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSamplePanelDAOImpl;
 import us.mn.state.health.lims.typeofsample.util.TypeOfSampleUtil;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSamplePanel;
 
 public class SampleEntryTestsForTypeProvider extends BaseQueryProvider {
-	private TestDAO testDAO = new TestDAOImpl();
-	private PanelDAO panelDAO = new PanelDAOImpl();
-	private static final String USER_TEST_SECTION_ID;
+    private TestDAO testDAO = new TestDAOImpl();
+    private PanelDAO panelDAO = new PanelDAOImpl();
+    private static final String USER_TEST_SECTION_ID;
 
-	static{
-		USER_TEST_SECTION_ID = new TestSectionDAOImpl().getTestSectionByName("user").getId();
-	}
-	
-	@Override
-	public void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    static {
+        USER_TEST_SECTION_ID = new TestSectionDAOImpl().getTestSectionByName("user").getId();
+    }
 
-		String sampleType = request.getParameter("sampleType");
-		String labOrderType = request.getParameter("labOrderType");
-		
-		StringBuilder xml = new StringBuilder();
+    @Override
+    public void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		String result = createSearchResultXML(sampleType, labOrderType, xml);
+        String sampleType = request.getParameter("sampleType");
+        String labOrderType = request.getParameter("labOrderType");
 
-		ajaxServlet.sendData(xml.toString(), result, request, response);
+        StringBuilder xml = new StringBuilder();
 
-	}
+        String result = createSearchResultXML(sampleType, labOrderType, xml);
 
-	private String createSearchResultXML(String sampleType, String labOrderType, StringBuilder xml) {
+        ajaxServlet.sendData(xml.toString(), result, request, response);
 
-		String success = VALID;
+    }
 
-		List<Test> tests = TypeOfSampleUtil.getTestListBySampleTypeId(sampleType, labOrderType, true);
+    private String createSearchResultXML(String sampleType, String labOrderType, StringBuilder xml) {
 
-		Collections.sort(tests, new Comparator<Test>() {
-			@Override
-			public int compare(Test t1, Test t2) {
-				if( GenericValidator.isBlankOrNull(t1.getSortOrder()) || GenericValidator.isBlankOrNull(t2.getSortOrder())){
-					return t1.getTestName().compareTo(t2.getTestName());
-				}
-				
-				try {
-					int t1Sort = Integer.parseInt(t1.getSortOrder());
-					int t2Sort = Integer.parseInt(t2.getSortOrder());
-					
-					if( t1Sort > t2Sort ){
-						return 1;
-					}else if( t1Sort < t2Sort ){
-						return -1;
-					}else{
-						return 0;
-					}
-					
-				} catch (NumberFormatException e) {
-					return t1.getTestName().compareTo(t2.getTestName());
-				}
-				
-			}
-		});
+        String success = VALID;
 
-		addTests(tests, xml);
+        List<Test> tests = TypeOfSampleUtil.getTestListBySampleTypeId(sampleType, labOrderType, true);
 
-		List<TypeOfSamplePanel> panelList = getPanelList(sampleType);
-		List<PanelTestMap> panelMap = linkTestsToPanels(panelList, tests);
+        // http://stackoverflow.com/questions/8327514/comparison-method-violates-its-general-contract
+        Collections.sort(tests, TestComparator.NAME_COMPARATOR); // Secondary Sorting
+        Collections.sort(tests, TestComparator.SORT_ORDER_COMPARATOR); // Primary Sorting
+        addTests(tests, xml);
 
-		addPanels(panelMap, xml);
+        List<TypeOfSamplePanel> panelList = getPanelList(sampleType);
+        List<PanelTestMap> panelMap = linkTestsToPanels(panelList, tests);
 
-		return success;
-	}
+        addPanels(panelMap, xml);
 
-	private void addTests(List<Test> tests, StringBuilder xml) {
-		xml.append("<tests>");
-		for (Test test : tests) {
-			addTest(test, xml);
-		}
+        return success;
+    }
 
-		xml.append("</tests>");
-	}
+    private void addTests(List<Test> tests, StringBuilder xml) {
+        xml.append("<tests>");
+        for (Test test : tests) {
+            addTest(test, xml);
+        }
 
-	private void addTest(Test test, StringBuilder xml) {
-		xml.append("<test>");
-		XMLUtil.appendKeyValue("name", StringEscapeUtils.escapeXml(test.getTestName()), xml);
-		XMLUtil.appendKeyValue("id", test.getId(), xml);
-		XMLUtil.appendKeyValue("userBenchChoice", String.valueOf(USER_TEST_SECTION_ID.equals(test.getTestSection().getId())), xml);
-		xml.append("</test>");
-	}
+        xml.append("</tests>");
+    }
 
-	private void addPanels(List<PanelTestMap> panelMap, StringBuilder xml) {
-		panelMap = sortPanels( panelMap );
-		
-		xml.append("<panels>");
-		for (PanelTestMap testMap : panelMap) {
-			addPanel(testMap, xml);
-		}
-		xml.append("</panels>");
-	}
+    private void addTest(Test test, StringBuilder xml) {
+        xml.append("<test>");
+        XMLUtil.appendKeyValue("name", StringEscapeUtils.escapeXml(test.getTestName()), xml);
+        XMLUtil.appendKeyValue("id", test.getId(), xml);
+        XMLUtil.appendKeyValue("userBenchChoice", String.valueOf(USER_TEST_SECTION_ID.equals(test.getTestSection().getId())), xml);
+        xml.append("</test>");
+    }
 
-	private List<PanelTestMap> sortPanels(List<PanelTestMap> panelMap) {
-		
-		Collections.sort(panelMap, new Comparator<PanelTestMap>(){
-			@Override
-			public int compare(PanelTestMap o1, PanelTestMap o2) {
-				return o1.getPanelOrder() - o2.getPanelOrder();
-			}
-		});
-		
-		return panelMap;
-	}
+    private void addPanels(List<PanelTestMap> panelMap, StringBuilder xml) {
+        panelMap = sortPanels(panelMap);
 
-	private void addPanel(PanelTestMap testMap, StringBuilder xml) {
-		xml.append("<panel>");
-		XMLUtil.appendKeyValue("name", testMap.getName(), xml);
-		XMLUtil.appendKeyValue("id", testMap.getPanelId(), xml);
-		XMLUtil.appendKeyValue("testMap", testMap.getTestMaps(), xml);
-		xml.append("</panel>");
-	}
+        xml.append("<panels>");
+        for (PanelTestMap testMap : panelMap) {
+            addPanel(testMap, xml);
+        }
+        xml.append("</panels>");
+    }
 
-	private List<TypeOfSamplePanel> getPanelList(String sampleType) {
-		TypeOfSamplePanelDAO samplePanelDAO = new TypeOfSamplePanelDAOImpl();
-		return samplePanelDAO.getTypeOfSamplePanelsForSampleType(sampleType);
-	}
+    private List<PanelTestMap> sortPanels(List<PanelTestMap> panelMap) {
 
-	private List<PanelTestMap> linkTestsToPanels(List<TypeOfSamplePanel> panelList, List<Test> tests) {
-		List<PanelTestMap> selected = new ArrayList<PanelTestMap>();
+        Collections.sort(panelMap, new Comparator<PanelTestMap>() {
+            @Override
+            public int compare(PanelTestMap o1, PanelTestMap o2) {
+                return o1.getPanelOrder() - o2.getPanelOrder();
+            }
+        });
 
-		Map<String, Integer> testNameOrderMap = new HashMap<String, Integer>();
-		PanelDAO panelDAO = new PanelDAOImpl();
+        return panelMap;
+    }
 
-		for (int i = 0; i < tests.size(); i++) {
-			testNameOrderMap.put(tests.get(i).getTestName(), new Integer(i));
-		}
+    private void addPanel(PanelTestMap testMap, StringBuilder xml) {
+        xml.append("<panel>");
+        XMLUtil.appendKeyValue("name", testMap.getName(), xml);
+        XMLUtil.appendKeyValue("id", testMap.getPanelId(), xml);
+        XMLUtil.appendKeyValue("testMap", testMap.getTestMaps(), xml);
+        xml.append("</panel>");
+    }
 
-		PanelItemDAO panelItemDAO = new PanelItemDAOImpl();
+    private List<TypeOfSamplePanel> getPanelList(String sampleType) {
+        TypeOfSamplePanelDAO samplePanelDAO = new TypeOfSamplePanelDAOImpl();
+        return samplePanelDAO.getTypeOfSamplePanelsForSampleType(sampleType);
+    }
 
-		for (TypeOfSamplePanel samplePanel : panelList) {
-			String panelName = panelDAO.getNameForPanelId(samplePanel.getPanelId());
-			String matchTests = getTestIndexesForPanels(samplePanel.getPanelId(), testNameOrderMap, panelItemDAO);
-			int panelOrder = panelDAO.getPanelById(samplePanel.getPanelId()).getSortOrderInt();
-			selected.add(new PanelTestMap(samplePanel.getPanelId(), panelOrder, panelName, matchTests));
-		}
+    private List<PanelTestMap> linkTestsToPanels(List<TypeOfSamplePanel> panelList, List<Test> tests) {
+        List<PanelTestMap> selected = new ArrayList<PanelTestMap>();
 
-		return selected;
-	}
+        Map<String, Integer> testNameOrderMap = new HashMap<String, Integer>();
+        PanelDAO panelDAO = new PanelDAOImpl();
 
-	@SuppressWarnings("unchecked")
-	private String getTestIndexesForPanels(String panelId, Map<String, Integer> testIdOrderMap, PanelItemDAO panelItemDAO) {
-		StringBuilder indexes = new StringBuilder();
-		List<PanelItem> items = panelItemDAO.getPanelItemsForPanel(panelId);
+        for (int i = 0; i < tests.size(); i++) {
+            testNameOrderMap.put(tests.get(i).getTestName(), new Integer(i));
+        }
 
-		for (PanelItem item : items) {
-			String derivedNameFromPanel = getDerivedNameFromPanel(item);
-			if (derivedNameFromPanel != null) {
-				Integer index = testIdOrderMap.get(derivedNameFromPanel);
-			
-				if (index != null) {
-					indexes.append(index.toString());
-					indexes.append(",");
-				}
-			}
-		}
+        PanelItemDAO panelItemDAO = new PanelItemDAOImpl();
 
-		String withExtraComma = indexes.toString();
-		return withExtraComma.length() > 0 ? withExtraComma.substring(0, withExtraComma.length() - 1) : "";
-	}
+        for (TypeOfSamplePanel samplePanel : panelList) {
+            String panelName = panelDAO.getNameForPanelId(samplePanel.getPanelId());
+            String matchTests = getTestIndexesForPanels(samplePanel.getPanelId(), testNameOrderMap, panelItemDAO);
+            int panelOrder = panelDAO.getPanelById(samplePanel.getPanelId()).getSortOrderInt();
+            selected.add(new PanelTestMap(samplePanel.getPanelId(), panelOrder, panelName, matchTests));
+        }
 
-	private String getDerivedNameFromPanel(PanelItem item) {
-		//This cover the transition in the DBbetween the panel_item being linked by name
-		//to being linked by id
-		if( item.getTest() != null){
-			Test test = testDAO.getTestById(item.getTest().getId());
-			if( test != null){
-				return test.getTestName();
-			}
-		}else{
-			return item.getTestName();
-		}
-		
-		return null;
-	}
+        return selected;
+    }
 
-	public class PanelTestMap {
-		private String name;
-		private String testMaps;
-		private String panelId;
-		private int panelOrder;
+    @SuppressWarnings("unchecked")
+    private String getTestIndexesForPanels(String panelId, Map<String, Integer> testIdOrderMap, PanelItemDAO panelItemDAO) {
+        StringBuilder indexes = new StringBuilder();
+        List<PanelItem> items = panelItemDAO.getPanelItemsForPanel(panelId);
 
-		public PanelTestMap(String panelId, int panelOrder, String panelName, String map){
-			name = panelName;
-			testMaps = map;
-			this.panelId = panelId;
-			this.panelOrder = panelOrder;
-		}
-		
-		public String getName() {
-			return name;
-		}
+        for (PanelItem item : items) {
+            String derivedNameFromPanel = getDerivedNameFromPanel(item);
+            if (derivedNameFromPanel != null) {
+                Integer index = testIdOrderMap.get(derivedNameFromPanel);
 
-		public String getTestMaps() {
-			return testMaps;
-		}
+                if (index != null) {
+                    indexes.append(index.toString());
+                    indexes.append(",");
+                }
+            }
+        }
 
-		public String getPanelId() {
-			return panelId;
-		}
+        String withExtraComma = indexes.toString();
+        return withExtraComma.length() > 0 ? withExtraComma.substring(0, withExtraComma.length() - 1) : "";
+    }
 
-		public int getPanelOrder() {
-			return panelOrder;
-		}
-	}
+    private String getDerivedNameFromPanel(PanelItem item) {
+        //This cover the transition in the DBbetween the panel_item being linked by name
+        //to being linked by id
+        if (item.getTest() != null) {
+            Test test = testDAO.getTestById(item.getTest().getId());
+            if (test != null) {
+                return test.getTestName();
+            }
+        } else {
+            return item.getTestName();
+        }
+
+        return null;
+    }
+
+    public class PanelTestMap {
+        private String name;
+        private String testMaps;
+        private String panelId;
+        private int panelOrder;
+
+        public PanelTestMap(String panelId, int panelOrder, String panelName, String map) {
+            name = panelName;
+            testMaps = map;
+            this.panelId = panelId;
+            this.panelOrder = panelOrder;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getTestMaps() {
+            return testMaps;
+        }
+
+        public String getPanelId() {
+            return panelId;
+        }
+
+        public int getPanelOrder() {
+            return panelOrder;
+        }
+    }
 
 }

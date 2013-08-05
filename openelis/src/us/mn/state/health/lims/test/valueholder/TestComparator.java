@@ -15,6 +15,9 @@
  */
 package us.mn.state.health.lims.test.valueholder;
 
+import us.mn.state.health.lims.common.util.IntegerUtil;
+import us.mn.state.health.lims.common.util.validator.GenericValidator;
+
 import java.util.Comparator;
 
 public class TestComparator implements Comparable<Test> {
@@ -37,4 +40,9 @@ public class TestComparator implements Comparable<Test> {
 		}
 	};
 
+	public static final Comparator<Test> SORT_ORDER_COMPARATOR = new Comparator<Test>() {
+		public int compare(Test a, Test b) {
+            return IntegerUtil.getParsedValueOrDefault(a.getSortOrder(), Integer.MAX_VALUE).compareTo(IntegerUtil.getParsedValueOrDefault(b.getSortOrder(), Integer.MAX_VALUE));
+        }
+	};
 }
