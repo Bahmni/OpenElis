@@ -22,7 +22,7 @@ public class TestComparatorTest {
         test3.setSortOrder("2");
         test3.setTestName("A");
 
-        List<Test> tests = Arrays.asList(test2, test3, test1);
+        List<Test> tests = Arrays.asList(test1, test2, test3);
 
         Collections.sort(tests, TestComparator.SORT_ORDER_COMPARATOR);
 
