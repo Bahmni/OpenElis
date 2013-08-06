@@ -8,7 +8,6 @@ import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import org.bahmni.feed.openelis.feed.domain.LabObject;
 import org.bahmni.feed.openelis.feed.service.LabService;
 import us.mn.state.health.lims.common.action.IActionConstants;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.dao.TestSectionDAO;
 import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
