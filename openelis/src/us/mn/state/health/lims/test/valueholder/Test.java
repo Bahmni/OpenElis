@@ -61,8 +61,6 @@ public class Test extends EnumValueItemImpl {
 
 	// private String testReflxId;
 
-	private String unitOfMeasureId;
-
 	private String testName;
 
 	private String description;
@@ -281,11 +279,7 @@ public class Test extends EnumValueItemImpl {
 	}
 
 	public String getUnitOfMeasureId() {
-		return unitOfMeasureId;
-	}
-
-	public void setUnitOfMeasureId(String unitOfMeasureId) {
-		this.unitOfMeasureId = unitOfMeasureId;
+		return unitOfMeasure == null ? null : unitOfMeasure.getId();
 	}
 
 	public String getTestName() {
@@ -518,7 +512,7 @@ public class Test extends EnumValueItemImpl {
         if (timeWarning != null ? !timeWarning.equals(test.timeWarning) : test.timeWarning != null) return false;
         if (unitOfMeasure != null ? !unitOfMeasure.equals(test.unitOfMeasure) : test.unitOfMeasure != null)
             return false;
-        if (unitOfMeasureId != null ? !unitOfMeasureId.equals(test.unitOfMeasureId) : test.unitOfMeasureId != null)
+        if (getUnitOfMeasureId() != null ? !getUnitOfMeasureId().equals(test.getUnitOfMeasureId()) : test.getUnitOfMeasureId() != null)
             return false;
 
         return true;
@@ -537,7 +531,7 @@ public class Test extends EnumValueItemImpl {
         result = 31 * result + (testSection != null ? testSection.hashCode() : 0);
         result = 31 * result + (scriptletName != null ? scriptletName.hashCode() : 0);
         result = 31 * result + (scriptlet != null ? scriptlet.hashCode() : 0);
-        result = 31 * result + (unitOfMeasureId != null ? unitOfMeasureId.hashCode() : 0);
+        result = 31 * result + (getUnitOfMeasureId() != null ? getUnitOfMeasureId().hashCode() : 0);
         result = 31 * result + testName.hashCode();
         result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + (loinc != null ? loinc.hashCode() : 0);
