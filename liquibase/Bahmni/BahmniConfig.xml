@@ -458,4 +458,11 @@
             <column name="lastupdated" valueDate=" now() "/>
         </insert>
     </changeSet>
+    <changeSet author="tw" id="28" context="bahmni">
+        <comment>Make validation of results compulsory</comment>
+        <update schemaName="clinlims" tableName="site_information">
+            <column name="value" value="true"/>
+            <where>name='validate all results'</where>
+        </update>
+    </changeSet>
 </databaseChangeLog>
