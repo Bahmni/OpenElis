@@ -34,14 +34,15 @@ public class LabPanelServiceTest {
     @Test
     public void shouldInsertNewIfExternalReferenceNotFound() throws Exception {
         LabObject labObject = new LabObject("193","Lab Panel","lab panel desc","1", "Panel", "active");
-        Panel panel = new Panel();
-        panel.setPanelName("Lab Panel");
-        panel.setDescription("Lab Panel");
         when(externalReferenceDao.getData("193", "Panel")).thenReturn(null);
 
         labPanelService.process(labObject);
 
-        verify(panelDAO).insertData(panel);
+        ArgumentCaptor<Panel> panelCaptor = ArgumentCaptor.forClass(Panel.class);
+        verify(panelDAO).insertData(panelCaptor.capture());
+        Panel savedPanel = panelCaptor.getValue();
+        assertEquals(labObject.getName(), savedPanel.getPanelName());
+        assertEquals(labObject.getDescription(), savedPanel.getDescription());
     }
 
     @Test
@@ -127,7 +128,7 @@ public class LabPanelServiceTest {
     }
 
     @Test
-    public void shouldDeletePanelIfNoReferencesExistToPanel() throws IOException {
+    public void shouldDeletePanelIfNoReferencesExistToPanel() throws Exception {
         ExternalReference reference = new ExternalReference(293, "193", "Panel");
         LabObject labObject = new LabObject("193","Lab Panel","lab panel desc new","1", "Panel","deleted");
         Panel panel = new Panel();
@@ -137,7 +138,7 @@ public class LabPanelServiceTest {
         panel.setIsActive("N");
         when(externalReferenceDao.getData(labObject.getExternalId(), labObject.getCategory())).thenReturn(reference);
 
-        labPanelService.delete(labObject);
+        labPanelService.process(labObject);
 
         verify(externalReferenceDao).deleteData(reference);
         verify(panelDAO).deleteById("293", labObject.getSysUserId());

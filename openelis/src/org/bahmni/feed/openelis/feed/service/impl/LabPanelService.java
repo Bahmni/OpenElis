@@ -55,11 +55,9 @@ public class LabPanelService extends LabService {
     protected void delete(LabObject labObject) {
         ExternalReference externalReference = getExternalReference(labObject);
         if(externalReference != null){
-            org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
             externalReferenceDao.deleteData(externalReference);
             String panelId = String.valueOf(externalReference.getItemId());
             panelDAO.deleteById(panelId, labObject.getSysUserId());
-            tx.commit();
         }
     }
 

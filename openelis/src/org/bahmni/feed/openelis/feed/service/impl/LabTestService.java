@@ -61,11 +61,9 @@ public class LabTestService extends LabService {
     protected void delete(LabObject labObject) {
         ExternalReference externalReference = getExternalReference(labObject);
         if(externalReference != null){
-            org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
             externalReferenceDao.deleteData(externalReference);
             String testId = String.valueOf(externalReference.getItemId());
             testDAO.deleteById(testId, labObject.getSysUserId());
-            tx.commit();
         }
     }
 
