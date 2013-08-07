@@ -53,14 +53,6 @@ public class LabTestServiceTest {
 
         Test testCaptorValue = testCaptor.getValue();
         assertEquals(labObject.getName(), testCaptorValue.getTestName());
-//          TODO : come back to here [Sush/ IN]
-//        ArgumentCaptor<ExternalReference> externalReferenceCaptor = ArgumentCaptor.forClass(ExternalReference.class);
-//
-//        verify(externalReferenceDao).insertData(externalReferenceCaptor.capture());
-//
-//        ExternalReference externalReference = externalReferenceCaptor.getValue();
-//        assertEquals(labObject.getExternalId(), externalReference.getExternalId());
-//        assertEquals("Test", externalReference.getType());
     }
 
     @org.junit.Test
