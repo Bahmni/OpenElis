@@ -1,6 +1,8 @@
 package us.mn.state.health.lims.dashboard.valueholder;
 
 public class Order {
+    private static final long serialVersionUID = 1L;
+
     private String accessionNumber;
     private String stNumber;
     private String firstName;
@@ -19,6 +21,62 @@ public class Order {
         this.lastName = lastName;
         this.source = source;
         this.pendingTestCount = pendingTestCount;
+        this.totalTestCount = totalTestCount;
+    }
+
+    public String getAccessionNumber() {
+        return accessionNumber;
+    }
+
+    public void setAccessionNumber(String accessionNumber) {
+        this.accessionNumber = accessionNumber;
+    }
+
+    public String getStNumber() {
+        return stNumber;
+    }
+
+    public void setStNumber(String stNumber) {
+        this.stNumber = stNumber;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public Integer getPendingTestCount() {
+        return pendingTestCount;
+    }
+
+    public void setPendingTestCount(Integer pendingTestCount) {
+        this.pendingTestCount = pendingTestCount;
+    }
+
+    public Integer getTotalTestCount() {
+        return totalTestCount;
+    }
+
+    public void setTotalTestCount(Integer totalTestCount) {
         this.totalTestCount = totalTestCount;
     }
 

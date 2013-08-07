@@ -662,6 +662,10 @@
             <form-property name="healthCenterSelect" type="java.util.List"  />
         </form-bean>
 
+        <form-bean name="DashboardForm" type="us.mn.state.health.lims.common.action.BaseActionForm">
+            <form-property name="inProgressOrderList" type="java.lang.String" />
+        </form-bean>
+
 	</form-beans>
 
 	
@@ -1457,6 +1461,10 @@
             <forward name="list" path="/HealthCenterMenu.do" redirect="true"/>
             <forward name="success" path="healthCenterMaster" />
             <forward name="fail" path="healthCenterMaster" />
+        </action>
+
+        <action path="/Dashboard"  name="DashboardForm" type="us.mn.state.health.lims.dashboard.action.DashboardAction">
+            <forward name="success" path="dashboardMaster" />
         </action>
 
         <action path="/rest/**"  type="us.mn.state.health.lims.ws.ResourceRetrieveAction">
