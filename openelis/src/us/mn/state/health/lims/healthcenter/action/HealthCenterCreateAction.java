@@ -42,7 +42,7 @@ public class HealthCenterCreateAction extends BaseAction {
             tx.commit();
         }catch(LIMSRuntimeException ex){
             tx.rollback();
-            return returnError("errors.DuplicateRecord","Health Center",mapping,request);
+            return returnError("errors.HealthCenter.DuplicateRecord","Health Center",mapping,request);
         }
         return mapping.findForward("list");
     }
