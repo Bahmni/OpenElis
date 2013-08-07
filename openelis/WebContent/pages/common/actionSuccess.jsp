@@ -11,14 +11,14 @@
 <script type="text/javascript">
 
 function /*void*/ showSuccessMessage( show ){
-	$("successMsg").style.visibility = show ? 'visible' : 'hidden';
+	$("successMsg").style.display = show ? 'block' : 'none';
 }
 
 </script>
 
 
 
-<div id="successMsg" style="text-align:center; color:#FF9999;  width : 100%;font-size:170%; visibility : hidden">
+<div id="successMsg" style="text-align:center; color:#FF9999;  width : 100%;font-size:170%; display:none">
 				<bean:message key="save.success"/>
 </div>
 
