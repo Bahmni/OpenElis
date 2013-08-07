@@ -284,7 +284,7 @@ public class TestResultUpdateAction extends BaseAction {
         TestDAO testDAO = new TestDAOImpl();
 
         if (!StringUtil.isNullorNill(testNameSelected)) {
-			test = testDAO.getTestByName(test);
+			test = testDAO.getTestByName(testNameSelected);
 			String messageKey = "testresult.testName";
 
             if (test == null) {
@@ -325,29 +325,36 @@ public class TestResultUpdateAction extends BaseAction {
 
         if(test != null) {
             String testId = test.getId();
-            List<TestResult> testResults = testResultDAO.getTestResultsByTest(testId);
-            for (TestResult testResult : testResults) {
-                if(!testResult.getTestResultType().equals(testResultType)){
-                    addErrorMessage(errors,"errors.TestResultType.DuplicateEntryException");
-                    break;
-                }
-            }
-
-            TypeOfTestResultDAO typeOfTestResultDAO = new TypeOfTestResultDAOImpl();
-            TypeOfTestResult typeOfTestResult = typeOfTestResultDAO.getTypeOfTestResultByName(testResultType);
-            String testResultTypeId = typeOfTestResult.getId();
-
-            ResultLimitDAO resultLimitDAO =  new ResultLimitDAOImpl();
-            List<ResultLimit> resultLimitsForTest = resultLimitDAO.getAllResultLimitsForTest(testId);
-            for (ResultLimit resultLimit : resultLimitsForTest) {
-                  if(!resultLimit.getResultTypeId().equals(testResultTypeId)){
-                      addErrorMessage(errors,"errors.TestResultType.DuplicateEntryException");
-                      break;
-                  }
-            }
+            validateDuplicateTestResultTypeInTestResults(errors, testResultType, testId);
+            validateDuplicateTestResultTypeInResultLimits(errors, testResultType, testId);
         }
 		return errors;
 	}
+
+    private void validateDuplicateTestResultTypeInResultLimits(ActionMessages errors, String testResultType, String testId) throws Exception {
+        TypeOfTestResultDAO typeOfTestResultDAO = new TypeOfTestResultDAOImpl();
+        TypeOfTestResult typeOfTestResult = typeOfTestResultDAO.getTypeOfTestResultByName(testResultType);
+        String testResultTypeId = typeOfTestResult.getId();
+
+        ResultLimitDAO resultLimitDAO =  new ResultLimitDAOImpl();
+        List<ResultLimit> resultLimitsForTest = resultLimitDAO.getAllResultLimitsForTest(testId);
+        for (ResultLimit resultLimit : resultLimitsForTest) {
+              if(!resultLimit.getResultTypeId().equals(testResultTypeId)){
+                  addErrorMessage(errors,"errors.TestResultType.DuplicateEntryException");
+                  break;
+              }
+        }
+    }
+
+    private void validateDuplicateTestResultTypeInTestResults(ActionMessages errors, String testResultType, String testId) throws Exception {
+        List<TestResult> testResults = testResultDAO.getTestResultsByTest(testId);
+        for (TestResult testResult : testResults) {
+            if(!testResult.getTestResultType().equals(testResultType)){
+                addErrorMessage(errors,"errors.TestResultType.DuplicateEntryException");
+                break;
+            }
+        }
+    }
 
     private boolean isNotValidDictionaryEntry(String dictionaryEntry){
         return dictionaryDAO.getDictionaryByDictEntry(dictionaryEntry) == null;
