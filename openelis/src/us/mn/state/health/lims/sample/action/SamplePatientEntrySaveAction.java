@@ -36,6 +36,7 @@ import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSInvalidSTNumberException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.exception.LIMSValidationException;
@@ -296,7 +297,10 @@ public class SamplePatientEntrySaveAction extends BaseAction {
         } catch (LIMSValidationException e) {
             tx.rollback();
             return addErrorMessageAndForward(mapping, request, new ActionError(e.getMessage(), null, null));
-        } catch (LIMSRuntimeException lre) {
+        } catch (LIMSDuplicateRecordException e){
+            tx.rollback();
+            return addErrorMessageAndForward(mapping, request, new ActionError("errors.duplicate.STNumber", null, null));
+        }catch (LIMSRuntimeException lre) {
             tx.rollback();
             if (lre.getException() instanceof StaleObjectStateException) {
                 return addErrorMessageAndForward(mapping, request, new ActionError("errors.OptimisticLockException", null, null));
