@@ -726,7 +726,8 @@ function /*void*/ makeDirty(){
 	window.onbeforeunload = formWarning;
 }
 
-function  /*void*/  addPatient(){
+function addPatient(){
+	$("PatientDetail").show();
 	clearPatientInfo();
     clearDynamicAddresses();
 	clearErrors();
@@ -809,12 +810,12 @@ function healthDistrictSuccess( xhr ){
 	<nested:hidden name='<%=formName%>' property="patientProperties.patientProcessingStatus" styleId="processingStatus" value="add" />
 	<nested:hidden name='<%=formName%>' property="patientProperties.patientPK" styleId="patientPK_ID" />
 	<br/>
-	<hr width="100%" />
+	<hr width="100%" class="hr-style-1"/>
 	<html:button property="newPatient"  onclick="addPatient()" >
 		<bean:message key="patient.new" />
 	</html:button>
 
-	<div id="PatientDetail"   >
+	<div id="PatientDetail" style="display:none;">
 	<h2><bean:message key="patient.information"/></h2>
 	<table width="80%" border="0">
 	<tr>
@@ -1065,7 +1066,7 @@ function healthDistrictSuccess( xhr ){
         <td>
             <bean:message  key="person.streetAddress" />
         </td>
-    <logic:iterate name="<%=formName%>" property="patientProperties.addressParts.addressPartForms"
+    	<logic:iterate name="<%=formName%>" property="patientProperties.addressParts.addressPartForms"
                    id="addressPart"
                    indexId="index">
             <td  align="right">

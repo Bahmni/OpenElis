@@ -451,7 +451,7 @@ function orderTypeSelected( radioElement){
 		$("followupLabOrderPeriodId").hide();
 	}
 	
-	$("sampleEntryPage").show();
+	//$("sampleEntryPage").show();
 }
 function labPeriodChanged( labOrderPeriodElement){
 	if( labOrderPeriodElement.length - 1 ==  labOrderPeriodElement.selectedIndex  ){
@@ -484,20 +484,13 @@ function capitalizeValue( text){
 <html:hidden property="domain" name="<%=formName%>" value="<%=genericDomain%>" styleId="domain"/>
 <html:hidden property="removedSampleItem" value="" styleId="removedSampleItem"/>
 <html:hidden property="newRequesterName" name='<%=formName %>' styleId="newRequesterName" />
-
 <div id=sampleEntryPage <%= (orderTypeList == null || orderTypeList.size() == 0)? "" : "style='display:none'"  %>>
-
     <jsp:include page="<%=fieldsetToJspMap.get(fieldsetOrder.get(0))%>" />
-
-<hr style="width: 100%; height: 5px" />
-
+<hr style="width: 100%;" class="hr-style-1"/>
     <jsp:include page="<%=fieldsetToJspMap.get(fieldsetOrder.get(1))%>" />
-
-<hr style="width: 100%; height: 5px" />
+<hr style="width: 100%;" class="hr-style-1"/>
 
     <jsp:include page="<%=fieldsetToJspMap.get(fieldsetOrder.get(2))%>" />
-
-
 </div>
 <script type="text/javascript" >
 

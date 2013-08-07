@@ -58,11 +58,12 @@
 <hr/>
 <% } %>
 
-<html:button property="showHide" value="+" onclick="showHideSection(this, 'orderDisplay');" styleId="orderDisplayButton"/>
-<%= StringUtil.getContextualMessageForKey("sample.entry.order.label") %>
-<span class="requiredlabel">*</span>
+<!-- <html:button property="showHide" value="-" onclick="showHideSection(this, 'orderDisplay');" styleId="orderDisplayButton"/>
+ -->
+ <h2><%= StringUtil.getContextualMessageForKey("sample.entry.order.label") %>
+<span class="requiredlabel">*</span></h2>
 
-<div id="orderDisplay" style="display:none;" >
+<div id="orderDisplay" style="display:block;" >
 <table  style="width:90%" >
 
 <tr>

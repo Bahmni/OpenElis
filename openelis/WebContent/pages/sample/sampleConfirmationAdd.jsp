@@ -975,7 +975,7 @@ function /*string*/ getNote( sampleIndex ){
 	   onclick="addNewRequesterSample( this )" />
 
 <hr/>
-<hr style="width: 100%; height: 5px" />
+<hr style="width: 100%;" class="hr-style-1" />
 <html:hidden name="<%=formName%>" property="patientPK" styleId="patientPK"/>
 <table style="width:100%">
 	<tr>

@@ -338,13 +338,13 @@ function /*void*/ processTestReflexCD4Success(xhr)
 
 <logic:notEqual name="testCount" value="0">
 <logic:equal name="<%=formName%>" property="displayTestKit" value="true">
-	<hr width="100%" />
+	<hr width="100%" class="hr-style-1"/>
 	<html:button property="showKit" onclick="toggleKitDisplay(this)" >+</html:button>
 	<bean:message key="inventory.testKits"/>
 	<div id="kitView" style="display: none;" class="colorFill" >
 		<tiles:insert attribute="testKitInfo" />
 		<br/>
-		<hr width="100%" />
+		<hr width="100%" class="hr-style-1" />
 	</div>
 </logic:equal>
 

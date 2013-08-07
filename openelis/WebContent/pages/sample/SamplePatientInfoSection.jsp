@@ -31,18 +31,24 @@
 
 <html:hidden name="<%=formName%>" property="patientPK" styleId="patientPK"/>
 
-<table style="width:100%">
+
+
+<div id="patientDisplay"  style="display:none;" >
+    <tiles:insert attribute="patientInfo" />
+    <tiles:insert attribute="patientClinicalInfo" />
+</div><!-- 
+<table style="width:100%" style="display:none;">
     <tr>
-        <td width="15%" align="left">
+        <td width="10%" align="left">
             <html:button styleId="patientDisplayButton" property="showPatient" onclick="showHideSection(this, 'patientDisplay');" value="+">+</html:button>
             <bean:message key="sample.entry.patient" />:
             <% if ( patientRequired ) { %><span class="requiredlabel">*</span><% } %>
         </td>
-        <td width="15%" id="firstName"><b>&nbsp;</b></td>
-        <td width="15%">
+        <td width="20%" id="firstName"><b>&nbsp;</b></td>
+        <td width="10%">
             <% if(useMothersName){ %><bean:message key="patient.mother.name"/>:<% } %>
         </td>
-        <td width="15%" id="mother"><b>&nbsp;</b></td>
+        <td width="20%" id="mother"><b>&nbsp;</b></td>
         <td width="10%">
             <% if( useSTNumber){ %><bean:message key="patient.ST.number"/>:<% } %>
         </td>
@@ -65,9 +71,4 @@
         </td>
         <td id="gender"><b>&nbsp;</b></td>
     </tr>
-</table>
-
-<div id="patientDisplay"  style="display:none;" >
-    <tiles:insert attribute="patientInfo" />
-    <tiles:insert attribute="patientClinicalInfo" />
-</div>
+</table> -->

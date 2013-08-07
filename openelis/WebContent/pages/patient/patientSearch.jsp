@@ -84,7 +84,6 @@ function searchPatients()
     var subjectNumber = supportSubjectNumber ? $("searchSubjectNumberID").value : "";
     var nationalID = supportNationalID ? $("searchNationalID").value : "";
     var labNumber = supportLabNumber ? $("searchLabNumber").value : "";
-
 	patientSearch(lastName, firstName, STNumber, subjectNumber, nationalID, labNumber, processSearchSuccess, processSearchFailure);
 }
 
@@ -271,7 +270,7 @@ function /*void*/ dirtySearchInfo(e){
 	if( code != 13 ){
 		newSearchInfo = true; 
 	}
-}
+}			
 </script>
 
 <div id="PatientPage" class="colorFill" style="display:inline" >
@@ -372,9 +371,9 @@ function /*void*/ dirtySearchInfo(e){
 <div id="noPatientFound" align="center" style="display: none" >
 	<h1><bean:message key="patient.search.not.found"/></h1>
 </div>
-	<div id="searchResultsDiv" class="colorFill" style="display: none" >
+	<div id="searchResultsDiv" class="colorFill" style="display: none;" >
 		<% if( localDBOnly.equals("false")){ %>
-		<table id="searchResultTable" style="width:90%">
+		<table id="searchResultTable" style="width:100%">
 			<tr>
 				<th width="2%"></th>
 				<th width="10%" >
