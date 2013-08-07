@@ -9,7 +9,7 @@ public class Handlers {
     private List<Handler> handlers;
 
     public Handlers() {
-        this(Arrays.<Handler>asList(new PatientHandler(new BahmniPatientService())));
+        this(Arrays.<Handler>asList(new PatientHandler(new BahmniPatientService()), new TestResultHandler()));
     }
 
     public Handlers(List<Handler> handlers) {

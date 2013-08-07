@@ -5,7 +5,7 @@ import org.bahmni.openelis.domain.CompletePatientDetails;
 
 public class PatientHandler implements Handler<CompletePatientDetails> {
 
-    private final String patient = "patient";
+    private final String PATIENT = "patient";
     private BahmniPatientService bahmniPatientService;
 
     public PatientHandler() {
@@ -18,7 +18,7 @@ public class PatientHandler implements Handler<CompletePatientDetails> {
 
     @Override
     public boolean canHandle(String resourceName) {
-        return resourceName.equalsIgnoreCase(patient);
+        return resourceName.equalsIgnoreCase(PATIENT);
     }
 
     @Override
