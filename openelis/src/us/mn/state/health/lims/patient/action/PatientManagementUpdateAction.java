@@ -24,8 +24,8 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
-import org.bahmni.feed.openelis.feed.service.PatientPublisherService;
-import org.bahmni.feed.openelis.feed.service.impl.PatientPublisherServiceImpl;
+import org.bahmni.feed.openelis.feed.service.EventPublishers;
+import org.bahmni.feed.openelis.feed.service.impl.OpenElisUrlPublisher;
 import org.hibernate.StaleObjectStateException;
 import org.hibernate.Transaction;
 import us.mn.state.health.lims.address.dao.AddressPartDAO;
@@ -81,7 +81,7 @@ public class PatientManagementUpdateAction extends BaseAction implements IPatien
 	private static PatientDAO patientDAO = new PatientDAOImpl();
 	private static PersonAddressDAO personAddressDAO = new PersonAddressDAOImpl();
     private static HealthCenterDAO healthCenterDAO = new HealthCenterDAOImpl();
-	private PatientPublisherService patientPublisherService = new PatientPublisherServiceImpl();
+	private OpenElisUrlPublisher patientPublisher = new EventPublishers().patientPublisher();
 
 	protected PatientUpdateStatus patientUpdateStatus = PatientUpdateStatus.NO_ACTION;
 
@@ -303,7 +303,7 @@ public class PatientManagementUpdateAction extends BaseAction implements IPatien
 		persistPatientRelatedInformation(patientInfo, patient);
 		patientID = patient.getId();
 
-        patientPublisherService.publish(patientInfo.getSTnumber(), contextPath);
+        patientPublisher.publish(patientInfo.getSTnumber(), contextPath);
 	}
 
     protected void persistPatientRelatedInformation(PatientManagmentInfo patientInfo, Patient patient) {

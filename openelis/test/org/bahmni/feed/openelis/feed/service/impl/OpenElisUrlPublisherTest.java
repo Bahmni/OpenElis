@@ -1,6 +1,5 @@
 package org.bahmni.feed.openelis.feed.service.impl;
 
-import org.bahmni.feed.openelis.feed.service.PatientPublisherService;
 import org.ict4h.atomfeed.server.service.Event;
 import org.ict4h.atomfeed.server.service.EventService;
 import org.junit.Before;
@@ -12,8 +11,8 @@ import static junit.framework.Assert.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class PatientPublisherServiceImplTest {
-    private final String SAMPLE_PATIENT_ID = "GAN12345";
+public class OpenElisUrlPublisherTest {
+    private final String SAMPLE_UUID = "GAN12345";
 
     @Mock
     EventService eventService;
@@ -24,22 +23,22 @@ public class PatientPublisherServiceImplTest {
     }
 
     @Test
-    public void shouldConstructUrlOfPatientFromPropertiesAndPatientIdentifier() {
-        PatientPublisherService patientPublisherService = new PatientPublisherServiceImpl(eventService);
+    public void shouldConstructUrlIdentifierAndProperties() {
+        OpenElisUrlPublisher publisher = new OpenElisUrlPublisher(eventService, "patient");
 
-        patientPublisherService.publish(SAMPLE_PATIENT_ID, "/openelis");
+        publisher.publish(SAMPLE_UUID, "/openelis");
 
         ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);
         verify(eventService).notify(captor.capture());
         Event event = captor.getValue();
-        assertEquals("/openelis/ws/rest/patient/" + SAMPLE_PATIENT_ID, event.getContents());
+        assertEquals("/openelis/ws/rest/patient/" + SAMPLE_UUID, event.getContents());
     }
 
     @Test
     public void shouldPopulateDefaultFieldsWhenCallingEventService() {
-        PatientPublisherService patientPublisherService = new PatientPublisherServiceImpl(eventService);
+        OpenElisUrlPublisher publisher = new OpenElisUrlPublisher(eventService, "patient");
 
-        patientPublisherService.publish(SAMPLE_PATIENT_ID, "/openelis");
+        publisher.publish(SAMPLE_UUID, "/openelis");
 
         ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);
         verify(eventService).notify(captor.capture());

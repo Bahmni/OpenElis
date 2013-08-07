@@ -21,6 +21,8 @@ import org.apache.commons.validator.GenericValidator;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.bahmni.feed.openelis.feed.service.EventPublishers;
+import org.bahmni.feed.openelis.feed.service.impl.OpenElisUrlPublisher;
 import org.hibernate.Transaction;
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
@@ -69,8 +71,10 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 	private TestAnalyteDAO testAnalyteDAO = new TestAnalyteDAOImpl();
 	private ResultDAO resultDAO = new ResultDAOImpl();
 	private final NoteDAO noteDAO = new NoteDAOImpl();
+    private OpenElisUrlPublisher resultPublisher = new EventPublishers().testResultPublisher();
 
-	// Update Lists
+
+    // Update Lists
 	private List<Analysis> analysisUpdateList;
 	private ArrayList<Sample> sampleUpdateList;
 	private ArrayList<Note> noteUpdateList;
@@ -81,8 +85,9 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 
 	private static final String RESULT_TYPE = "I";
 	private static final String RESULT_SUBJECT = "Result Note";
+    private Set<String> editedSamples;
 
-	@Override
+    @Override
 	protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 
@@ -142,7 +147,10 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 					}
 				}
 			}
-			tx.commit();
+
+            resultPublisher.publish(editedSamples, request.getContextPath());
+
+            tx.commit();
 
 		} catch (LIMSRuntimeException lre) {
 			tx.rollback();
@@ -295,6 +303,7 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 		String currentSampleId = "";
 		boolean sampleFinished = true;
 		List<Analysis> analysisList = new ArrayList<Analysis>();
+        editedSamples = new HashSet<>();
 
 		for (AnalysisItem analysisItem : resultItemList) {
 
@@ -312,15 +321,18 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 					}
 				}
 
-				if (sampleFinished) {
-					Sample sample = new Sample();
-					sample.setId(currentSampleId);
-					sampleDAO.getData(sample);
-					sample.setStatusId(StatusOfSampleUtil.getStatusID(OrderStatus.Finished));
-					sampleUpdateList.add(sample);
-				}
+                Sample sample = new Sample();
+                sample.setId(currentSampleId);
+                sampleDAO.getData(sample);
+                if (analysisItem.getIsAccepted()) {
+                    editedSamples.add(sample.getAccessionNumber());
+                }
+                if (sampleFinished) {
+                    sample.setStatusId(StatusOfSampleUtil.getStatusID(OrderStatus.Finished));
+                    sampleUpdateList.add(sample);
+                }
 
-				sampleFinished = true;
+                sampleFinished = true;
 
 			}
 
