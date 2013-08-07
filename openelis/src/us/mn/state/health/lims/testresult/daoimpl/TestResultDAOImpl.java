@@ -18,6 +18,8 @@
 package us.mn.state.health.lims.testresult.daoimpl;
 
 import org.apache.commons.beanutils.PropertyUtils;
+
+import org.hibernate.Query;
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
 import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
 import us.mn.state.health.lims.common.action.IActionConstants;
@@ -280,7 +282,30 @@ public class TestResultDAOImpl extends BaseDAOImpl implements TestResultDAO {
 		return list;
 	}
 
-	@SuppressWarnings("unchecked")
+    @Override
+    public List getAllTestResultsPerTest(String testId) throws LIMSRuntimeException {
+        if ( (testId == null) || (testId.length()==0) )
+            return null;
+
+        List list = new Vector();
+        try {
+            String sql = "from TestResult t where t.test = :testId order by t.resultGroup, t.id asc";
+            Query query = HibernateUtil.getSession().createQuery(sql);
+            query.setInteger("testId", Integer.parseInt(testId));
+
+            list = query.list();
+            HibernateUtil.getSession().flush();
+            HibernateUtil.getSession().clear();
+        } catch (Exception e) {
+            //bugzilla 2154
+            LogEvent.logErrorStack("TestResultDAOImpl","getAllTestResultsPerTest(String testId)",e);
+            throw new LIMSRuntimeException("Error in TestResult getAllTestResultsPerTest(String testId)",e);
+        }
+
+        return list;
+    }
+
+    @SuppressWarnings("unchecked")
 	public TestResult getTestResultsByTestAndDictonaryResult(String testId, String result) throws LIMSRuntimeException {
 		if( StringUtil.isInteger( result )){
 			List<TestResult> list = null;

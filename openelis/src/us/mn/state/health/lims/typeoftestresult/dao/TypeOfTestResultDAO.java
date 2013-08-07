@@ -53,4 +53,8 @@ public interface TypeOfTestResultDAO extends BaseDAO {
 	public TypeOfTestResult getTypeOfTestResultByType(TypeOfTestResult typeOfTestResult) throws LIMSRuntimeException;
 
     public TypeOfTestResult getTypeOfTestResultByType(String type) throws LIMSRuntimeException;
+
+	public TypeOfTestResult getTypeOfTestResultByName(String typeOfTestResultName) throws LIMSRuntimeException;
+
+    public TypeOfTestResult getTypeOfTestResultById(String resultTypeId) throws LIMSRuntimeException;
 }

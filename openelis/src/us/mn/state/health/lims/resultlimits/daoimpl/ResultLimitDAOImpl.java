@@ -23,6 +23,7 @@ import java.util.Vector;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.validator.GenericValidator;
 
+import org.hibernate.Query;
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
 import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
 import us.mn.state.health.lims.common.action.IActionConstants;
@@ -219,6 +220,28 @@ public class ResultLimitDAOImpl extends BaseDAOImpl implements ResultLimitDAO {
 
 		return list;
 	}
+
+    public List getAllResultLimitsForTest(String testId) throws LIMSRuntimeException {
+
+        if (GenericValidator.isBlankOrNull(testId))
+            return null;
+
+        List list = new Vector();
+        try {
+            String sql = "from ResultLimit rl where rl.testId = :test_id";
+            Query query = HibernateUtil.getSession().createQuery(sql);
+            query.setInteger("test_id", Integer.parseInt(testId));
+
+            list = query.list();
+            HibernateUtil.getSession().flush();
+            HibernateUtil.getSession().clear();
+        } catch (Exception e) {
+            LogEvent.logErrorStack("ResultLimitDAOImpl", "getAllResultLimitsPerTest(String testId)", e);
+            throw new LIMSRuntimeException("Error in ResultLimitDAOImpl getAllResultLimitsForTest(String testId)", e);
+        }
+
+        return list;
+    }
 
 	@Override
 	public ResultLimit getResultLimitById(String resultLimitId) throws LIMSRuntimeException {

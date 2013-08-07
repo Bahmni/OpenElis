@@ -32,6 +32,9 @@ import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
 import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
+import us.mn.state.health.lims.resultlimits.dao.ResultLimitDAO;
+import us.mn.state.health.lims.resultlimits.daoimpl.ResultLimitDAOImpl;
+import us.mn.state.health.lims.resultlimits.valueholder.ResultLimit;
 import us.mn.state.health.lims.scriptlet.dao.ScriptletDAO;
 import us.mn.state.health.lims.scriptlet.daoimpl.ScriptletDAOImpl;
 import us.mn.state.health.lims.scriptlet.valueholder.Scriptlet;
@@ -41,6 +44,9 @@ import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.testresult.dao.TestResultDAO;
 import us.mn.state.health.lims.testresult.daoimpl.TestResultDAOImpl;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
+import us.mn.state.health.lims.typeoftestresult.dao.TypeOfTestResultDAO;
+import us.mn.state.health.lims.typeoftestresult.daoimpl.TypeOfTestResultDAOImpl;
+import us.mn.state.health.lims.typeoftestresult.valueholder.TypeOfTestResult;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -59,6 +65,7 @@ public class TestResultUpdateAction extends BaseAction {
 	private boolean isNew = false;
     private DictionaryDAOImpl dictionaryDAO = new DictionaryDAOImpl();
     ScriptletDAO scriptletDAO = new ScriptletDAOImpl();
+    TestResultDAO testResultDAO = new TestResultDAOImpl();
 
     protected ActionForward performAction(ActionMapping mapping,
 			ActionForm form, HttpServletRequest request,
@@ -113,8 +120,6 @@ public class TestResultUpdateAction extends BaseAction {
         TestResult testResult = setTestResultProperties(dynaForm, request);
 
 		try {
-
-			TestResultDAO testResultDAO = new TestResultDAOImpl();
 
 			if (!isNew) {
 				// UPDATE
@@ -273,11 +278,14 @@ public class TestResultUpdateAction extends BaseAction {
 			ActionMessages errors, BaseActionForm dynaForm) throws Exception {
 
 		// test validation against database
-		String testNameSelected = (String) dynaForm.get("testName");
+        String testNameSelected = (String) dynaForm.get("testName");
 
-		if (!StringUtil.isNullorNill(testNameSelected)) {
-			TestDAO testDAO = new TestDAOImpl();
-            Test test = testDAO.getTestByName(testNameSelected);
+        Test test = new Test();
+        TestDAO testDAO = new TestDAOImpl();
+
+        if (!StringUtil.isNullorNill(testNameSelected)) {
+			test = testDAO.getTestByName(test);
+			String messageKey = "testresult.testName";
 
             if (test == null) {
 				// the test is not in database - not valid
@@ -285,6 +293,8 @@ public class TestResultUpdateAction extends BaseAction {
 				addErrorMessage(errors, "testresult.testName");
 			}
 		}
+
+
 
 		// scriptlet validation against database
 		String scriptletSelected = (String) dynaForm.get("scriptletName");
@@ -311,6 +321,30 @@ public class TestResultUpdateAction extends BaseAction {
             if (isNotValidDictionaryEntry(dictionaryEntry)) {
                 addErrorMessage(errors, "testresult.value");
             }
+         }
+
+        if(test != null) {
+            String testId = test.getId();
+            List<TestResult> testResults = testResultDAO.getTestResultsByTest(testId);
+            for (TestResult testResult : testResults) {
+                if(!testResult.getTestResultType().equals(testResultType)){
+                    addErrorMessage(errors,"errors.TestResultType.DuplicateEntryException");
+                    break;
+                }
+            }
+
+            TypeOfTestResultDAO typeOfTestResultDAO = new TypeOfTestResultDAOImpl();
+            TypeOfTestResult typeOfTestResult = typeOfTestResultDAO.getTypeOfTestResultByName(testResultType);
+            String testResultTypeId = typeOfTestResult.getId();
+
+            ResultLimitDAO resultLimitDAO =  new ResultLimitDAOImpl();
+            List<ResultLimit> resultLimitsForTest = resultLimitDAO.getAllResultLimitsForTest(testId);
+            for (ResultLimit resultLimit : resultLimitsForTest) {
+                  if(!resultLimit.getResultTypeId().equals(testResultTypeId)){
+                      addErrorMessage(errors,"errors.TestResultType.DuplicateEntryException");
+                      break;
+                  }
+            }
         }
 		return errors;
 	}
@@ -325,8 +359,7 @@ public class TestResultUpdateAction extends BaseAction {
     }
 
     private void addErrorMessage(ActionMessages errors, String messageKey) throws Exception {
-        ActionError error = new ActionError("errors.invalid",
-                getMessageForKey(messageKey), null);
+        ActionError error = new ActionError("errors.invalid",getMessageForKey(messageKey), null);
         errors.add(ActionMessages.GLOBAL_MESSAGE, error);
     }
 

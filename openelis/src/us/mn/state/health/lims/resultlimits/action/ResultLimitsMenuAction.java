@@ -79,8 +79,8 @@ public class ResultLimitsMenuAction extends BaseMenuAction {
 		ResultLimitsLink link = new ResultLimitsLink();
 		link.setReadWrite(false);
 		link.setResultLimit(resultLimit);
-		String testName = getTestMap().get(link.getTestId());
-		String resultName = getResultTypeMap().get(link.getResultTypeId());
+		String testName = getTestName(link);
+		String resultName = getResultName(link);
 
 		if( !GenericValidator.isBlankOrNull(testName)){
 			link.setTestName(testName);
@@ -97,7 +97,31 @@ public class ResultLimitsMenuAction extends BaseMenuAction {
 		return link;
 	}
 
-	protected String getPageTitleKey() {
+    private String getResultName(ResultLimitsLink link) {
+        if(resultTypeMap == null){
+            getResultTypeMap();
+        }
+        String resultName = getResultTypeMap().get(link.getResultTypeId());
+        if(resultName == null){
+            resultName = getResultTypeMap().get(link.getResultTypeId());
+        }
+        return resultName;
+    }
+
+    private String getTestName(ResultLimitsLink link) {
+        if(testMap == null){
+            getTestMap();
+        }
+        String testName = testMap.get(link.getTestId());
+        if(testName == null) {
+            testName = getTestMap().get(link.getTestId());
+        }
+        return testName;
+    }
+
+
+
+    protected String getPageTitleKey() {
 		return "resultlimits.browse.title";
 	}
 
@@ -123,7 +147,6 @@ public class ResultLimitsMenuAction extends BaseMenuAction {
 
 	@SuppressWarnings("unchecked")
 	public Map<String, String> getTestMap() {
-		if( testMap == null){
 			testMap = new HashMap<String, String>();
 
 			TestDAO testDAO = new TestDAOImpl();
@@ -132,14 +155,12 @@ public class ResultLimitsMenuAction extends BaseMenuAction {
 			for( Test test: testList){
 				testMap.put(test.getId(), test.getDescription());
 			}
-		}
 
 		return testMap;
 	}
 
 	@SuppressWarnings("unchecked")
 	public Map<String, String> getResultTypeMap() {
-		if( resultTypeMap == null){
 			resultTypeMap = new HashMap<String, String>();
 
 			TypeOfTestResultDAO resultTypeDAO = new TypeOfTestResultDAOImpl();
@@ -148,8 +169,6 @@ public class ResultLimitsMenuAction extends BaseMenuAction {
 			for( TypeOfTestResult resultType : resultTypes){
 				resultTypeMap.put(resultType.getId(), resultType.getDescription());
 			}
-		}
-
 		return resultTypeMap;
 	}
 

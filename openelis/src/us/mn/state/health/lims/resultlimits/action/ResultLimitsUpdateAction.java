@@ -25,9 +25,13 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
 
+import org.hibernate.StaleObjectStateException;
+import org.hibernate.Transaction;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
+import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.validator.ActionError;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.resultlimits.dao.ResultLimitDAO;
@@ -37,14 +41,23 @@ import us.mn.state.health.lims.resultlimits.valueholder.ResultLimit;
 import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 import us.mn.state.health.lims.test.valueholder.Test;
+import us.mn.state.health.lims.testresult.dao.TestResultDAO;
+import us.mn.state.health.lims.testresult.daoimpl.TestResultDAOImpl;
+import us.mn.state.health.lims.testresult.valueholder.TestResult;
+import us.mn.state.health.lims.typeoftestresult.dao.TypeOfTestResultDAO;
+import us.mn.state.health.lims.typeoftestresult.daoimpl.TypeOfTestResultDAOImpl;
+import us.mn.state.health.lims.typeoftestresult.valueholder.TypeOfTestResult;
 import us.mn.state.health.lims.unitofmeasure.dao.UnitOfMeasureDAO;
 import us.mn.state.health.lims.unitofmeasure.daoimpl.UnitOfMeasureDAOImpl;
 import us.mn.state.health.lims.unitofmeasure.valueholder.UnitOfMeasure;
+
+import java.util.List;
 
 public class ResultLimitsUpdateAction extends BaseAction {
 
 	private boolean isNew = false;
 	private static TestDAO testDAO = new TestDAOImpl();
+    ResultLimitDAO resultLimitDAO = new ResultLimitDAOImpl();
 
 	protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
@@ -60,14 +73,11 @@ public class ResultLimitsUpdateAction extends BaseAction {
 
 		BaseActionForm dynaForm = (BaseActionForm) form;
 
-		String start = (String) request.getParameter("startingRecNo");
-		String direction = (String) request.getParameter("direction");
-
+		String start = request.getParameter("startingRecNo");
+		String direction = request.getParameter("direction");
 
 		forward = validateAndUpdateResultLimits(mapping, request, dynaForm, isNew);
-
-		return getForward(mapping.findForward(forward), id, start, direction);
-
+        return mapping.findForward(forward);
 	}
 
 	public String validateAndUpdateResultLimits(ActionMapping mapping, HttpServletRequest request,
@@ -75,61 +85,81 @@ public class ResultLimitsUpdateAction extends BaseAction {
 		String forward;
 		// server-side validation (validation.xml)
 		ActionMessages errors = dynaForm.validate(mapping, request);
-		// if (errors != null && errors.size() > 0) {
-		// saveErrors(request, errors);
-
-		// return mapping.findForward(FWD_FAIL);
-		// }
-        org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
+        Transaction tx = HibernateUtil.getSession().beginTransaction();
 
         try {
-
             ResultLimitsLink limitsLink = (ResultLimitsLink) dynaForm.get("limit");
             ResultLimit resultLimit = limitsLink.populateResultLimit(null);
 
             //the session.merge is not loading the resultLimit from the DB correctly
             //I don't understand why but this block is the workaround until I do.
             if (!newLimit) {
-                ResultLimitDAO resultLimitDAO = new ResultLimitDAOImpl();
                 resultLimitDAO.getData(resultLimit);
                 limitsLink.populateResultLimit(resultLimit);
             }
 
             resultLimit.setSysUserId(getSysUserId(request));
 
+            validateForAllDuplicateEntries(resultLimit);
+
             persistLimit(resultLimit);
-
             tx.commit();
-
             forward = FWD_SUCCESS_INSERT;
+        } catch (LIMSDuplicateRecordException e) {
+            tx.rollback();
+            ActionError error = new ActionError("errors.ResultLimits.DuplicateEntryException", null, null);
+            return addErrors(request, error, errors);
         } catch (LIMSRuntimeException lre) {
 			tx.rollback();
-			errors = new ActionMessages();
 			ActionError error = null;
-			if (lre.getException() instanceof org.hibernate.StaleObjectStateException) {
-
+			if (lre.getException() instanceof StaleObjectStateException) {
 				error = new ActionError("errors.OptimisticLockException", null, null);
-
-			} else {
+			}else {
 				error = new ActionError("errors.UpdateException", null, null);
 			}
-
-			errors.add(ActionMessages.GLOBAL_MESSAGE, error);
-			saveErrors(request, errors);
-			request.setAttribute(Globals.ERROR_KEY, errors);
-
-			// disable previous and next
-			request.setAttribute(PREVIOUS_DISABLED, TRUE);
-			request.setAttribute(NEXT_DISABLED, TRUE);
-			forward = FWD_FAIL;
-
+            return addErrors(request, error, errors);
 		} finally {
 			HibernateUtil.closeSession();
 		}
 		return forward;
 	}
 
-	private void persistLimit(ResultLimit resultLimit) {
+    private void validateForAllDuplicateEntries(ResultLimit resultLimit) throws LIMSDuplicateRecordException {
+        String testId = resultLimit.getTestId();
+        if(resultLimit.ageLimitsAreDefault()){
+            List<ResultLimit> resultLimits = resultLimitDAO.getAllResultLimitsForTest(testId);
+            String gender = resultLimit.getGender();
+            for (ResultLimit limit : resultLimits) {
+                if(limit.getGender().equals(gender))
+                    throw new LIMSDuplicateRecordException("duplicateEntry");
+            }
+        }
+
+        TestResultDAO testResultDAO = new TestResultDAOImpl();
+        TypeOfTestResultDAO typeOfTestResultDAO = new TypeOfTestResultDAOImpl();
+        TypeOfTestResult typeOfTestResult = typeOfTestResultDAO.getTypeOfTestResultById(resultLimit.getResultTypeId());
+        String testResultTypeName = typeOfTestResult.getTestResultType();
+
+        List<TestResult> testResults = testResultDAO.getAllTestResultsPerTest(testId);
+        for (TestResult testResult : testResults) {
+            if(!testResult.getTestResultType().equals(testResultTypeName)){
+                throw new LIMSDuplicateRecordException("duplicateEntry");
+            }
+        }
+
+    }
+
+    private String addErrors(HttpServletRequest request, ActionError error, ActionMessages errors) {
+        errors.add(ActionMessages.GLOBAL_MESSAGE, error);
+        saveErrors(request, errors);
+        request.setAttribute(Globals.ERROR_KEY, errors);
+        // disable previous and next
+        request.setAttribute(PREVIOUS_DISABLED, TRUE);
+        request.setAttribute(NEXT_DISABLED, TRUE);
+        return FWD_FAIL;
+    }
+
+    private void persistLimit(ResultLimit resultLimit) {
 		ResultLimitDAO resultLimitDAO = new ResultLimitDAOImpl();
 		if (GenericValidator.isBlankOrNull(resultLimit.getId())) {
 			resultLimitDAO.insertData(resultLimit);

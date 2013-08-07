@@ -5,6 +5,7 @@
 
 
 <tiles-definitions>
+
     <definition name="databaseCleaningDefinition" extends="baseMenuDefinition">
 		<put name="body" value="/pages/common/databaseCleaner.jsp"/>
     </definition>

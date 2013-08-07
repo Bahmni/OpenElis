@@ -59,11 +59,14 @@ public interface TestResultDAO extends BaseDAO {
 
 	public List getAllTestResultsPerTest(Test test) throws LIMSRuntimeException;
 
+	public List getAllTestResultsPerTest(String testId) throws LIMSRuntimeException;
+
 	/*
 	 * Finds a TestResult by a test id and dictionary result id
 	 */
 	public TestResult getTestResultsByTestAndDictonaryResult(String testId, String result)throws LIMSRuntimeException;
 
 	public List<TestResult> getTestResultsByTest(String testId)throws LIMSRuntimeException;
+
 
 }

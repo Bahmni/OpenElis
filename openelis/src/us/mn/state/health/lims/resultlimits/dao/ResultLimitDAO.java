@@ -44,6 +44,8 @@ public interface ResultLimitDAO extends BaseDAO {
 			throws LIMSRuntimeException;
 
 	public List getAllResultLimitsForTest(Test test) throws LIMSRuntimeException;
-	
+
+	public List getAllResultLimitsForTest(String testId) throws LIMSRuntimeException;
+
 	public ResultLimit getResultLimitById( String resultLimitId) throws LIMSRuntimeException;
 }

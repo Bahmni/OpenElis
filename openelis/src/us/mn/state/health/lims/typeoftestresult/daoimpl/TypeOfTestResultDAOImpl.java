@@ -342,6 +342,7 @@ public class TypeOfTestResultDAOImpl extends BaseDAOImpl implements TypeOfTestRe
 		return totr;
 	}
 
+
     @Override
     public TypeOfTestResult getTypeOfTestResultByType(String testResultType) throws LIMSRuntimeException {
         try {
@@ -356,5 +357,50 @@ public class TypeOfTestResultDAOImpl extends BaseDAOImpl implements TypeOfTestRe
             LogEvent.logErrorStack("TypeOfTestResultDAOImpl", "getTypeOfTestResultByType(String)", e);
             throw new LIMSRuntimeException("Error in getTypeOfTestResultByType()", e);
         }
+    }
+
+    public TypeOfTestResult getTypeOfTestResultByName(String typeOfTestResultName) throws LIMSRuntimeException {
+        try {
+            String sql = "from TypeOfTestResult totr where upper(totr.testResultType) = :param";
+            Query query = HibernateUtil.getSession().createQuery(sql);
+            query.setParameter("param", typeOfTestResultName.trim().toUpperCase());
+
+            List list = query.list();
+
+            HibernateUtil.getSession().flush();
+            HibernateUtil.getSession().clear();
+
+            if (list != null && list.size() > 0) {
+                return (TypeOfTestResult) list.get(0);
+            }
+        } catch (Exception e) {
+            LogEvent.logErrorStack("TypeOfTestResultDAOImpl", "getTypeOfTestResultByName(String typeOfTestResultName)", e);
+            throw new LIMSRuntimeException("Error in getTypeOfTestResultByType(String typeOfTestResultName)", e);
+        }
+
+        return null;
+    }
+
+    @Override
+    public TypeOfTestResult getTypeOfTestResultById(String resultTypeId) throws LIMSRuntimeException {
+        try {
+            String sql = "from TypeOfTestResult totr where totr.id = :param";
+            Query query = HibernateUtil.getSession().createQuery(sql);
+            query.setParameter("param", Integer.parseInt(resultTypeId));
+
+            List list = query.list();
+
+            HibernateUtil.getSession().flush();
+            HibernateUtil.getSession().clear();
+
+            if (list != null && list.size() > 0) {
+                return (TypeOfTestResult) list.get(0);
+            }
+        } catch (Exception e) {
+            LogEvent.logErrorStack("TypeOfTestResultDAOImpl", "getTypeOfTestResultById(String resultTypeId)", e);
+            throw new LIMSRuntimeException("Error in getTypeOfTestResultByType(String resultTypeId)", e);
+        }
+
+        return null;
     }
 }

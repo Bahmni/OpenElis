@@ -31,8 +31,8 @@ public class ResultLimitsLink{
 	private static final double POS_DEFAULT = Double.POSITIVE_INFINITY;
 	private static final double NEG_DEFAULT = Double.NEGATIVE_INFINITY;
 	private static final double ZERO_DEFAULT = 0;
-	private static final double MONTH_TO_DAY = 362.0/12.0;
-	
+	private static final double DAYS_IN_YEAR = 365.242;
+
 	private boolean readWrite = true;
 	
 	private static DictionaryDAO dictionaryDAO = new DictionaryDAOImpl();
@@ -76,7 +76,6 @@ public class ResultLimitsLink{
 	
 	public ResultLimit getResultLimit(){
 		ResultLimit limit = new ResultLimit();
-		
 		return populateResultLimit(limit);
 	}
 	
@@ -96,12 +95,21 @@ public class ResultLimitsLink{
 		limit.setHighNormal(getHighNormal());
 		limit.setLowValid(getLowValid());
 		limit.setHighValid(getHighValid());
-		limit.setDictionaryNormalId(getDictionaryNormal());
+		limit = setLowAsZeroIfHighExist(limit);
+        limit.setDictionaryNormalId(getDictionaryNormal());
 
 		return limit;
 	}
 
-	public String getId() {
+    private ResultLimit setLowAsZeroIfHighExist(ResultLimit limit) {
+        if(limit.getHighNormal() != POS_DEFAULT  && limit.getLowNormal() == NEG_DEFAULT)
+            limit.setLowNormal(0.0);
+        if(limit.getHighValid() != POS_DEFAULT && limit.getLowNormal() == NEG_DEFAULT)
+            limit.setLowValid(0.0);
+        return limit;
+    }
+
+    public String getId() {
 		return id;
 	}
 
@@ -123,81 +131,91 @@ public class ResultLimitsLink{
 
 	public void setResultTypeId(String resultTypeId) {
 		this.resultTypeId = resultTypeId;
-	}
+}
 
-	public String getMinAgeDisplay() {
-		return getDisplayValue(minAge);
-	}
+    private String getDisplayAgeValue(double age) {
+        return String.valueOf(Math.floor(age));
+    }
 
-	public String getMinDayAgeDisplay() {
-		int dayAge = minAge == Double.NEGATIVE_INFINITY ? Integer.MIN_VALUE : (int)(minAge * MONTH_TO_DAY + (minAge/48.0));
-		return getIntDisplayValue(dayAge);
-	}
-	
-	public void setMinAgeDisplay(String minAgeDisplay) {
-		this.minAge = saftelyGetValue(minAgeDisplay, ZERO_DEFAULT);
-	}
+    public String getMinAgeDisplay() {
+    return getDisplayAgeValue(minAge);
+}
 
-	public String getMaxAgeDisplay() {
-		return getDisplayValue(maxAge);
-	}
+    public String getMinDayAgeDisplay() {
+    int dayAge = minAge == Double.NEGATIVE_INFINITY ? Integer.MIN_VALUE : getAgeInDays(minAge);
+    return getIntDisplayValue(dayAge);
+}
 
-	public String getMaxDayAgeDisplay() {
-		int dayAge = maxAge == Double.POSITIVE_INFINITY ? Integer.MAX_VALUE : (int)(maxAge * MONTH_TO_DAY + (maxAge/48.0));
-		return getIntDisplayValue(dayAge);
-	}
-	
-	public void setMaxAgeDisplay(String maxAgeDisplay) {
-		this.maxAge = saftelyGetValue(maxAgeDisplay, POS_DEFAULT);
-	}
+    public void setMinAgeDisplay(String minAgeDisplay) {
+    this.minAge = saftelyGetValue(minAgeDisplay, ZERO_DEFAULT);
+}
 
-	public String getLowNormalDisplay() {
-		return getDisplayValue(lowNormal);
-	}
+    public String getMaxAgeDisplay() {
+    return getDisplayAgeValue(maxAge);
+}
 
-	public void setLowNormalDisplay(String lowNormalDisplay) {
-		this.lowNormal = saftelyGetValue(lowNormalDisplay, NEG_DEFAULT);
-	}
+    public String getMaxDayAgeDisplay() {
+    int dayAge = maxAge == Double.POSITIVE_INFINITY ? Integer.MAX_VALUE : getAgeInDays(maxAge);
+    return getIntDisplayValue(dayAge);
+}
 
-	public String getHighNormalDisplay() {
-		return getDisplayValue(highNormal);
-	}
+    private int getAgeInDays(double age) {
+        return (int) ((age - Math.floor(age)) * DAYS_IN_YEAR);
+    }
 
-	public void setHighNormalDisplay(String highNormalDisplay) {
-		this.highNormal= saftelyGetValue(highNormalDisplay, POS_DEFAULT);
-	}
+    public void setMaxAgeDisplay(String maxAgeDisplay) {
+    this.maxAge = saftelyGetValue(maxAgeDisplay, POS_DEFAULT);
+}
 
-	public String getLowValidDisplay() {
-		return getDisplayValue(lowValid);
-	}
+    public String getLowNormalDisplay() {
+    return getDisplayValue(lowNormal);
+}
 
-	public void setLowValidDisplay(String lowValidDisplay) {
-		this.lowValid = saftelyGetValue(lowValidDisplay, NEG_DEFAULT);
-	}
+    public void setLowNormalDisplay(String lowNormalDisplay) {
+    this.lowNormal = saftelyGetValue(lowNormalDisplay, NEG_DEFAULT);
+}
 
-	public String getHighValidDisplay() {
-		return getDisplayValue(highValid);
-	}
+    public String getHighNormalDisplay() {
+    return getDisplayValue(highNormal);
+}
 
-	public void setHighValidDisplay(String highValidDisplay) {
-		this.highValid = saftelyGetValue(highValidDisplay, POS_DEFAULT);
-	}
-	
-	private double getMinAge() {
-		return  minAge;
-	}
-	
-	private void setMinAge(double minAge) {
-		this.minAge = minAge;
-	}
-	
-	private double getMaxAge() {
-		return maxAge;
-	}
-	private void setMaxAge(double maxAge) {
-		this.maxAge = maxAge;
-	}
-	private double getLowNormal() {
+    public void setHighNormalDisplay(String highNormalDisplay) {
+    this.highNormal= saftelyGetValue(highNormalDisplay, POS_DEFAULT);
+}
+
+    public String getLowValidDisplay() {
+    return getDisplayValue(lowValid);
+}
+
+    public void setLowValidDisplay(String lowValidDisplay) {
+    this.lowValid = saftelyGetValue(lowValidDisplay, NEG_DEFAULT);
+}
+
+    public String getHighValidDisplay() {
+    return getDisplayValue(highValid);
+}
+
+    public void setHighValidDisplay(String highValidDisplay) {
+    this.highValid = saftelyGetValue(highValidDisplay, POS_DEFAULT);
+}
+
+    private double getMinAge() {
+    return  minAge;
+}
+
+    private void setMinAge(double minAge) {
+    this.minAge = minAge;
+}
+
+    private double getMaxAge() {
+    return maxAge;
+}
+
+    private void setMaxAge(double maxAge) {
+    this.maxAge = maxAge;
+    }
+
+    private double getLowNormal() {
 		return lowNormal;
 	}
 	private void setLowNormal(double lowNormal) {
@@ -249,7 +267,7 @@ public class ResultLimitsLink{
 		if(value == Double.POSITIVE_INFINITY || value == Double.NEGATIVE_INFINITY ){
 			return readWrite ? NO_VALUE_READ_WRITE : NO_VALUE_READ_ONLY;
 		}else{
-			return Double.toString( Math.floor(value/12.0));
+			return Double.toString(value);
 		}
 	}
 
@@ -263,7 +281,7 @@ public class ResultLimitsLink{
 
 
 	private double saftelyGetValue(String value, double defaultValue) {
-		
+
 		try
 		{
 			return Double.parseDouble(value);
