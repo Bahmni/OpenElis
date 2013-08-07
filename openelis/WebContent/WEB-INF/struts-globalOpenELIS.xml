@@ -1462,6 +1462,9 @@
         <action path="/rest/**"  type="us.mn.state.health.lims.ws.ResourceRetrieveAction">
         </action>
 
+        <action path="/rest/scheduledTasks"  type="us.mn.state.health.lims.ws.TasksMonitoringAction">
+        </action>
+
         <action path="/feed/**"  type="us.mn.state.health.lims.feed.AtomFeedAction">
         </action>
 
