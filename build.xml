@@ -66,6 +66,20 @@
 
     <target name="build" depends="clean, compile, resetDB, test, report, dist"/>
     <target name="devbuild" depends="clean, compile, updateDB, test, report, dist"/>
+    <target name="useHaitiDB" depends="dropDB, initHaitiDB, updateHaitiDB, updateDB" />
+
+    <target name="initHaitiDB">
+        <chmod file="scripts/initDB.sh" perm="a+x"/>
+        <exec executable="scripts/initDB.sh">
+            <arg value="haitiClinical.backup"/>
+        </exec>
+    </target>
+    <target name="updateHaitiDB">
+        <echo message="Running migration for contexts : Haiti"/>
+        <exec executable="java" failonerror="true" dir="${liquibase}">
+            <arg line="-jar -Dfile.encoding=utf-8 lib/liquibase-1.9.5.jar --changeLogFile=./changeLogs.xml --defaultsFile=liquibase.properties --contexts=haiti --url=jdbc:postgresql://localhost:5432/clinlims update"/>
+        </exec>
+    </target>
 
     <target name="clean">
         <delete dir="${target}"/>
@@ -78,7 +92,9 @@
 
     <target name="initDB">
         <chmod file="scripts/initDB.sh" perm="a+x"/>
-        <exec executable="scripts/initDB.sh"/>
+        <exec executable="scripts/initDB.sh">
+            <arg value="bahmni-base.dump"/>
+        </exec>
     </target>
 
     <target name="dropDB">
