@@ -77,10 +77,12 @@
     <target name="setupDB" depends="initDB, updateDB"/>
 
     <target name="initDB">
+        <chmod file="scripts/initDB.sh" perm="a+x"/>
         <exec executable="scripts/initDB.sh"/>
     </target>
 
     <target name="dropDB">
+        <chmod file="scripts/dropDB.sh" perm="a+x"/>
         <exec executable="scripts/dropDB.sh"/>
     </target>
 
