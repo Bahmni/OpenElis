@@ -33,7 +33,7 @@
  %>
 
  <%
- 	supportSTNumber = FormFields.getInstance().useField(Field.StNumber);
+	supportSTNumber = FormFields.getInstance().useField(Field.StNumber);
  	supportMothersName = FormFields.getInstance().useField(Field.MothersName);
  	supportSubjectNumber = FormFields.getInstance().useField(Field.SubjectNumber);
  	supportNationalID = FormFields.getInstance().useField(Field.NationalID);
@@ -176,16 +176,12 @@ function createRow(table, firstName, lastName, gender, DOB, stNumber, subjectNum
 		var cellCounter = -1;
 
 		var selectionCell = newRow.insertCell(++cellCounter);
-		if( !localDB){
-			var dataSourceCell = newRow.insertCell(++cellCounter);
-			dataSourceCell.innerHTML = nonNullString( dataSourceName );
-		}
-		var lastNameCell = newRow.insertCell(++cellCounter);
+        var stCell = supportSTNumber ? newRow.insertCell(++cellCounter) : null;
+        var lastNameCell = newRow.insertCell(++cellCounter);
 		var firstNameCell = newRow.insertCell(++cellCounter);
 		var genderCell = newRow.insertCell(++cellCounter);
 		var dobCell = newRow.insertCell(++cellCounter);
 		var motherCell = supportMothersName ? newRow.insertCell(++cellCounter) : null;
-		var stCell = supportSTNumber ? newRow.insertCell(++cellCounter) : null;
 		var subjectNumberCell = supportSubjectNumber ? newRow.insertCell(++cellCounter) : null;
 		var nationalCell = supportNationalID ? newRow.insertCell(++cellCounter) : null;
 
@@ -372,18 +368,14 @@ function /*void*/ dirtySearchInfo(e){
 	<h1><bean:message key="patient.search.not.found"/></h1>
 </div>
 	<div id="searchResultsDiv" class="colorFill" style="display: none;" >
-		<% if( localDBOnly.equals("false")){ %>
-		<table id="searchResultTable" style="width:100%">
-			<tr>
-				<th width="2%"></th>
-				<th width="10%" >
-					<bean:message key="patient.data.source" />
-				</th>
-		<% } else { %>
-		<table id="searchResultTable" width="70%">
-			<tr>
-				<th width="2%"></th>
-		<% } %>
+                <table id="searchResultTable" style="width:100%">
+                <tr>
+                <th width="2%"></th>
+                <% if(supportSTNumber){ %>
+                <th width="12%">
+                    <bean:message key="patient.ST.number"/>
+                </th>
+                <% } %>
 				<th class="lastName" width="18%">
 					<bean:message key="patient.epiLastName"/>
 				</th>
@@ -400,14 +392,10 @@ function /*void*/ dirtySearchInfo(e){
 				<th width="20%">
 					<bean:message key="patient.mother.name"/>
 				</th>
-				<% } if(supportSTNumber){ %>
-				<th width="12%">
-					<bean:message key="patient.ST.number"/>
-				</th>
-				<% } %>
-				<% if(supportSubjectNumber){ %>
-				<th width="12%">
-					<bean:message key="patient.subject.number"/>
+                <% } %>
+                <% if(supportSubjectNumber){ %>
+                <th width="12%">
+                <bean:message key="patient.subject.number"/>
 				</th>
 				<% } %>
 				<% if(supportNationalID){ %>
