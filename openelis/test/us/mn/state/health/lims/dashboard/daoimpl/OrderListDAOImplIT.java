@@ -2,9 +2,10 @@ package us.mn.state.health.lims.dashboard.daoimpl;
 
 import junit.framework.Assert;
 import org.bahmni.feed.openelis.IT;
-import org.junit.Before;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
+import us.mn.state.health.lims.analyte.daoimpl.AnalyteDAOImpl;
+import us.mn.state.health.lims.analyte.valueholder.Analyte;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.dashboard.valueholder.Order;
@@ -12,7 +13,6 @@ import us.mn.state.health.lims.patient.daoimpl.PatientDAOImpl;
 import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.patientidentity.daoimpl.PatientIdentityDAOImpl;
 import us.mn.state.health.lims.patientidentity.valueholder.PatientIdentity;
-import us.mn.state.health.lims.patientidentitytype.daoimpl.PatientIdentityTypeDAOImpl;
 import us.mn.state.health.lims.patientidentitytype.util.PatientIdentityTypeMap;
 import us.mn.state.health.lims.person.daoimpl.PersonDAOImpl;
 import us.mn.state.health.lims.person.valueholder.Person;
@@ -32,6 +32,8 @@ import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 import us.mn.state.health.lims.test.daoimpl.TestSectionDAOImpl;
 import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.test.valueholder.TestSection;
+import us.mn.state.health.lims.testanalyte.daoimpl.TestAnalyteDAOImpl;
+import us.mn.state.health.lims.testanalyte.valueholder.TestAnalyte;
 
 import java.util.List;
 
@@ -47,7 +49,14 @@ public class OrderListDAOImplIT extends IT {
         Patient patient = createPatient(firstName, lastName, patientIdentityData);
         createSampleHuman(sample, patient);
         SampleItem sampleItem = createSampleItem(sample);
-        List<Test> allTests = new TestDAOImpl().getAllTests(true);
+
+
+        TestDAOImpl testDAO = new TestDAOImpl();
+        createATest(testDAO, "SampleTest1");
+        createATest(testDAO, "SampleTest2");
+        createATest(testDAO, "SampleTest3");
+
+        List<Test> allTests = testDAO.getAllTests(true);
         Analysis analysis_1 = createAnalysis(sampleItem, StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance, "Hematology", allTests.get(0));
         Analysis analysis_2 = createAnalysis(sampleItem, StatusOfSampleUtil.AnalysisStatus.NotStarted, "Hematology", allTests.get(1));
         Analysis analysis_3 = createAnalysis(sampleItem, StatusOfSampleUtil.AnalysisStatus.NotStarted, "Hematology", allTests.get(2));
@@ -58,6 +67,34 @@ public class OrderListDAOImplIT extends IT {
         List<Order> inProgress = orderListDAO.getAllInProgress();
 
         Assert.assertTrue(inProgress.contains(new Order(accessionNumber, patientIdentityData, firstName, lastName, sample.getSampleSource().getName(), 2, 3)));
+    }
+
+    private Test createATest(TestDAOImpl testDAO, String testName) {
+        Test test = createTest(testName);
+        testDAO.insertData(test);
+        TestAnalyteDAOImpl testAnalyteDAO = new TestAnalyteDAOImpl();
+        testAnalyteDAO.insertData(createTestAnalyte(test, new AnalyteDAOImpl().readAnalyte("1")));
+        return test;
+    }
+
+    private TestAnalyte createTestAnalyte(Test test, Analyte analyte) {
+        TestAnalyte testAnalyte = new TestAnalyte();
+        testAnalyte.setTest(test);
+        testAnalyte.setAnalyte(analyte);
+        testAnalyte.setSysUserId("1");
+        testAnalyte.setResultGroup("1");
+        return testAnalyte;
+    }
+
+    private Test createTest(String testName) {
+        Test test = new Test();
+        test.setTestName(testName);
+        test.setDescription(testName);
+        test.setIsActive(IActionConstants.YES);
+        test.setSortOrder("1");
+        test.setOrderable(Boolean.TRUE);
+        test.setSysUserId("1");
+        return test;
     }
 
     private Result createResult(Analysis analysis) {
@@ -98,7 +135,6 @@ public class OrderListDAOImplIT extends IT {
         SampleHuman sampleHuman = new SampleHuman();
         sampleHuman.setPatientId(patient.getId());
         sampleHuman.setSampleId(sample.getId());
-        sampleHuman.setProviderId("1");
         sampleHuman.setSysUserId("1");
 
         new SampleHumanDAOImpl().insertData(sampleHuman);

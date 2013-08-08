@@ -21,8 +21,11 @@ public abstract class IT {
 
     @After
     public void after() {
-        session.flush();
-        ((ElisHibernateSession)session).clearSession();
-        transaction.rollback();
+        try {
+            session.flush();
+            ((ElisHibernateSession)session).clearSession();
+        } finally {
+            transaction.rollback();
+        }
     }
 }
