@@ -13,3 +13,4 @@ dist
 junit
 build.sh
 .svn/
+deploy.sh

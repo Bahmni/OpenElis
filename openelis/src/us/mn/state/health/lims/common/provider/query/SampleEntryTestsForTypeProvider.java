@@ -16,21 +16,7 @@
  */
 package us.mn.state.health.lims.common.provider.query;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.validator.GenericValidator;
-
 import us.mn.state.health.lims.common.util.XMLUtil;
 import us.mn.state.health.lims.panel.dao.PanelDAO;
 import us.mn.state.health.lims.panel.daoimpl.PanelDAOImpl;
@@ -46,6 +32,11 @@ import us.mn.state.health.lims.typeofsample.dao.TypeOfSamplePanelDAO;
 import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSamplePanelDAOImpl;
 import us.mn.state.health.lims.typeofsample.util.TypeOfSampleUtil;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSamplePanel;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.*;
 
 public class SampleEntryTestsForTypeProvider extends BaseQueryProvider {
     private TestDAO testDAO = new TestDAOImpl();
@@ -155,6 +146,8 @@ public class SampleEntryTestsForTypeProvider extends BaseQueryProvider {
 
         for (TypeOfSamplePanel samplePanel : panelList) {
             String panelName = panelDAO.getNameForPanelId(samplePanel.getPanelId());
+            if(panelName == null || panelName.isEmpty())
+                continue;
             String matchTests = getTestIndexesForPanels(samplePanel.getPanelId(), testNameOrderMap, panelItemDAO);
             int panelOrder = panelDAO.getPanelById(samplePanel.getPanelId()).getSortOrderInt();
             selected.add(new PanelTestMap(samplePanel.getPanelId(), panelOrder, panelName, matchTests));
