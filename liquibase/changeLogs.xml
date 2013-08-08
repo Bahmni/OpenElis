@@ -2209,5 +2209,5 @@ ALTER TABLE sampletracking OWNER TO clinlims;
 <include file="OE2.9/MetaData.xml"/>
 <include file="OE2.9/HaitiClinicalData.xml"/>
 <include file="OE2.9/HaitiLNSPData.xml"/>
-<include file="Bahmni/BahmniConfig.xml" />
+<!-- <include file="Bahmni/BahmniConfig.xml" /> -->
 </databaseChangeLog>
