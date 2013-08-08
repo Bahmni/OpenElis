@@ -88,9 +88,8 @@ public class DictionaryDAOImpl extends BaseDAOImpl implements DictionaryDAO {
     public boolean insertData(Dictionary dictionary) throws LIMSRuntimeException {
         try {
             // bugzilla 1386 throw Exception if record already exists
-            if (duplicateDictionaryExists(dictionary)) {
-                throw new LIMSDuplicateRecordException("Duplicate record or abrevation exists for "
-                                + dictionary.getDictEntry());
+            if (duplicateDictionaryExists(dictionary, true)) {
+                throw new LIMSDuplicateRecordException("Duplicate record or abrevation exists for " + dictionary.getDictEntry());
             }
 
             String id = (String) HibernateUtil.getSession().save(dictionary);
@@ -104,6 +103,10 @@ public class DictionaryDAOImpl extends BaseDAOImpl implements DictionaryDAO {
 
             HibernateUtil.getSession().flush();
             HibernateUtil.getSession().clear();
+        } catch (LIMSDuplicateRecordException e) {
+            // bugzilla 2154
+            LogEvent.logError("DictionaryDAOImpl", "insertData()", e.toString());
+            throw new LIMSDuplicateRecordException(e.getMessage());
         } catch (Exception e) {
             // bugzilla 2154
             LogEvent.logError("DictionaryDAOImpl", "insertData()", e.toString());
@@ -118,7 +121,7 @@ public class DictionaryDAOImpl extends BaseDAOImpl implements DictionaryDAO {
 
         // bugzilla 1386 throw Exception if record already exists
         try {
-            if (duplicateDictionaryExists(dictionary)) {
+            if (duplicateDictionaryExists(dictionary, false)) {
                 throw new LIMSDuplicateRecordException("Duplicate record exists for " + dictionary.getDictEntry());
             }
         } catch (Exception e) {
@@ -163,6 +166,10 @@ public class DictionaryDAOImpl extends BaseDAOImpl implements DictionaryDAO {
             HibernateUtil.getSession().clear();
             HibernateUtil.getSession().evict(dictionary);
             HibernateUtil.getSession().refresh(dictionary);
+        } catch (LIMSDuplicateRecordException e) {
+            // bugzilla 2154
+            LogEvent.logError("DictionaryDAOImpl", "insertData()", e.toString());
+            throw new LIMSDuplicateRecordException(e.getMessage());
         } catch (Exception e) {
             // bugzilla 2154
             LogEvent.logError("DictionaryDAOImpl", "updateData()", e.toString());
@@ -493,49 +500,23 @@ public class DictionaryDAOImpl extends BaseDAOImpl implements DictionaryDAO {
      * postgres note 2: The error message claims that there is a duplicate
      * entry, it can also be a duplicate abbreviation in the same category
      */
-    private boolean duplicateDictionaryExists(Dictionary dictionary) throws LIMSRuntimeException {
+    private boolean duplicateDictionaryExists(Dictionary dictionary,Boolean isNew) throws LIMSRuntimeException {
         try {
 
             List list = new ArrayList();
-
-            // not case sensitive hemolysis and Hemolysis are considered
-            // duplicates
-            // description within category is unique AND local abbreviation
-            // within category is unique
-            String sql = null;
-            if (dictionary.getDictionaryCategory() != null) {
-                sql = "from Dictionary t where "
-                                + "((trim(lower(t.dictEntry)) = :param and trim(lower(t.dictionaryCategory.categoryName)) = :param2 and t.id != :dictId) "
-                                + "or "
-                                + "(trim(lower(t.localAbbreviation)) = :param4 and trim(lower(t.dictionaryCategory.categoryName)) = :param2 and t.id != :dictId)) ";
-
-            } else {
-                sql = "from Dictionary t where "
-                                + "((trim(lower(t.dictEntry)) = :param and t.dictionaryCategory is null and t.id != :param3) "
-                                + "or "
-                                + "(trim(lower(t.localAbbreviation)) = :param4 and t.dictionaryCategory is null and t.id != :param3)) ";
-
-            }
+            // checks for unique dictEntry
+            //ignoring the fact that in DB category and dictEntry as a compositon is pk
+            //not doing check for unique local_abbrev
+            String sql = "from Dictionary t where trim(lower(t.dictEntry)) = :param ";
             Query query = HibernateUtil.getSession().createQuery(sql);
             query.setParameter("param", dictionary.getDictEntry().toLowerCase().trim());
-            query.setParameter("param4", dictionary.getLocalAbbreviation().toLowerCase().trim());
-            if (dictionary.getDictionaryCategory() != null) {
-                query.setParameter("param2", dictionary.getDictionaryCategory().getCategoryName().toLowerCase().trim());
-            }
-
-            // initialize with 0 (for new records where no id has been generated
-            // yet
-            String dictId = "0";
-            if (!StringUtil.isNullorNill(dictionary.getId())) {
-                dictId = dictionary.getId();
-            }
-            query.setInteger("dictId", Integer.parseInt(dictId));
-
             list = query.list();
             HibernateUtil.getSession().flush();
             HibernateUtil.getSession().clear();
 
-            if (list.size() > 0) {
+            if (list.size() > 0 && isNew) {
+                return true;
+            } else if(list.size() > 1 && !isNew) {
                 return true;
             } else {
                 return false;
@@ -543,7 +524,7 @@ public class DictionaryDAOImpl extends BaseDAOImpl implements DictionaryDAO {
 
         } catch (Exception e) {
             // bugzilla 2154
-            LogEvent.logError("DictionaryDAOImpl", "duplicateDictionaryExists()", e.toString());
+            LogEvent.logErrorStack("DictionaryDAOImpl", "duplicateDictionaryExists()", e);
             throw new LIMSRuntimeException("Error in duplicateDictionaryExists()", e);
         }
     }

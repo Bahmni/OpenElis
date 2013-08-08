@@ -17,6 +17,7 @@ package us.mn.state.health.lims.dictionary.action;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,6 +29,7 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
 
+import org.hibernate.StaleObjectStateException;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
@@ -178,7 +180,8 @@ public class DictionaryUpdateAction extends BaseAction {
 				}
 
 	   
-				dictionaryDAO.updateData(dictionary, isDictionaryFrozenCheckRequired);
+				dictionaryDAO.
+                        updateData(dictionary, isDictionaryFrozenCheckRequired);
 
 		} else {
 				// INSERT
@@ -192,19 +195,13 @@ public class DictionaryUpdateAction extends BaseAction {
 			tx.rollback();
 			errors = new ActionMessages();
 			//1482
-			java.util.Locale locale = (java.util.Locale) request.getSession()
-			.getAttribute("org.apache.struts.action.LOCALE");
+			Locale locale = (java.util.Locale) request.getSession().getAttribute("org.apache.struts.action.LOCALE");
 			ActionError error = null;
-			if (lre.getException() instanceof org.hibernate.StaleObjectStateException) {
-				// how can I get popup instead of struts error at the top of
-				// page?
-				// ActionMessages errors = dynaForm.validate(mapping, request);
-				error = new ActionError("errors.OptimisticLockException", null,
-						null);
-
+			if (lre.getException() instanceof StaleObjectStateException) {
+				error = new ActionError("errors.OptimisticLockException", null,null);
 			} else {
 				//bugzilla 1386
-				if (lre.getException() instanceof LIMSDuplicateRecordException) {
+				if (lre instanceof LIMSDuplicateRecordException) {
 					String messageKey = "dictionary.dictEntryByCategory";
 					String msg =  ResourceLocator.getInstance().getMessageResources().getMessage(
 							locale, messageKey);
@@ -228,15 +225,7 @@ public class DictionaryUpdateAction extends BaseAction {
 				}
 			}
 
-			errors.add(ActionMessages.GLOBAL_MESSAGE, error);
-			saveErrors(request, errors);
-			request.setAttribute(Globals.ERROR_KEY, errors);
-			//bugzilla 1485: allow change and try updating again (enable save button)
-			//request.setAttribute(IActionConstants.ALLOW_EDITS_KEY, "false");
-			// disable previous and next
-			request.setAttribute(PREVIOUS_DISABLED, "true");
-			request.setAttribute(NEXT_DISABLED, "true");
-			forward = FWD_FAIL;
+            forward = addErrors(request, errors, error);
 		
 			
 		} finally {
@@ -267,7 +256,21 @@ public class DictionaryUpdateAction extends BaseAction {
 
 	}
 
-	protected String getPageTitleKey() {
+    private String addErrors(HttpServletRequest request, ActionMessages errors, ActionError error) {
+        String forward;
+        errors.add(ActionMessages.GLOBAL_MESSAGE, error);
+        saveErrors(request, errors);
+        request.setAttribute(Globals.ERROR_KEY, errors);
+        //bugzilla 1485: allow change and try updating again (enable save button)
+        //request.setAttribute(IActionConstants.ALLOW_EDITS_KEY, "false");
+        // disable previous and next
+        request.setAttribute(PREVIOUS_DISABLED, "true");
+        request.setAttribute(NEXT_DISABLED, "true");
+        forward = FWD_FAIL;
+        return forward;
+    }
+
+    protected String getPageTitleKey() {
 		if (isNew) {
 			return "dictionary.add.title";
 		} else {
