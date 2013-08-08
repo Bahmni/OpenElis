@@ -1,4 +1,12 @@
 -- This will delete all haiti openelis data that is not needed for Bahmni.
+--http://192.168.33.10:8080/openelis/TypeOfSample.do
+--http://192.168.33.10:8080/openelis/Organization.do
+--http://192.168.33.10:8080/openelis/TestSection.do
+--http://192.168.33.10:8080/openelis/ws/UnitOfMeasureMenu
+--http://192.168.33.10:8080/openelis/Test.do
+--http://192.168.33.10:8080/openelis/ws/TypeOfSampleTestMenu
+
+--  pg_dump -U clinlims -Fc clinlims > bahmni-base.dump
 
 begin;
 
@@ -34,9 +42,10 @@ delete from test_result;
 delete from test_analyte;
 delete from sampletype_test;
 delete from test;
-delete from test_section;
+delete from test_section where name not in ('user');
 delete from inventory_receipt;
-delete from organization;
+delete from organization where name not in ('Haiti');
+
 
 delete from organization_organization_type;
 
@@ -50,8 +59,8 @@ delete from patient_patient_type;
 delete from patient;
 
 delete from provider;
-delete from person;
 delete from person_address;
+delete from person;
 delete from qa_observation;
 delete from region;
 delete from report_external_export;
@@ -68,6 +77,6 @@ delete from test_trailer;
 delete from type_of_sample;
 delete from unit_of_measure;
 
-delete from databasechangelog where filename not ilike '%bahmni%';
+delete from databasechangelog;
 
 commit;
