@@ -407,6 +407,16 @@
 			<column name="display_key" value="banner.menu.results.status" />
 			<column name="tool_tip_key" value="tooltip.banner.menu.results.status" />
 		</insert>
+        <insert schemaName="clinlims" tableName="menu">
+            <column name="id" valueNumeric=" nextval( 'menu_seq' ) " />
+            <column name="parent_id"
+                    valueNumeric=" ( select id from clinlims.menu where element_id = 'menu_results' ) " />
+            <column name="presentation_order" valueNumeric="3" />
+            <column name="element_id" value="menu_results_referredOut" />
+            <column name="action_url" value="/ReferredOutTests.do"/>
+            <column name="display_key" value="banner.menu.referredOut" />
+            <column name="tool_tip_key" value="tooltip.banner.menu.referredOut" />
+        </insert>
 		<insert schemaName="clinlims" tableName="menu">
 			<column name="id" valueNumeric=" nextval( 'menu_seq' ) " />
 			<column name="presentation_order" valueNumeric="7" />
@@ -2477,6 +2487,16 @@
 			<column name="display_key" value="banner.menu.results.status" />
 			<column name="tool_tip_key" value="tooltip.banner.menu.results.status" />
 		</insert>
+        <insert schemaName="clinlims" tableName="menu">
+            <column name="id" valueNumeric=" nextval( 'menu_seq' ) " />
+            <column name="parent_id"
+                    valueNumeric=" ( select id from clinlims.menu where element_id = 'menu_results' ) " />
+            <column name="presentation_order" valueNumeric="3" />
+            <column name="element_id" value="menu_results_referredOut" />
+            <column name="action_url" value="/ReferredOutTests.do"/>
+            <column name="display_key" value="banner.menu.referredOut" />
+            <column name="tool_tip_key" value="tooltip.banner.menu.referredOut" />
+        </insert>
 		<insert schemaName="clinlims" tableName="menu">
 			<column name="id" valueNumeric=" nextval( 'menu_seq' ) " />
 			<column name="parent_id"
