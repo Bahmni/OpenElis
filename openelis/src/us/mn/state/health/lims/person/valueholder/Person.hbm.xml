@@ -54,5 +54,8 @@
         <property name="email" type="java.lang.String">
             <column name="EMAIL" length="60" />
         </property>
+        <property name="isActive" type="java.lang.Boolean">
+            <column name="IS_ACTIVE"  />
+        </property>
      </class>
 </hibernate-mapping>

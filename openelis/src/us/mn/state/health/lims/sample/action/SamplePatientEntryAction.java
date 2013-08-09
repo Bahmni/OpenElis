@@ -29,6 +29,8 @@ import us.mn.state.health.lims.common.util.ConfigurationProperties;
 import us.mn.state.health.lims.common.util.ConfigurationProperties.Property;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.patient.action.bean.PatientManagmentInfo;
+import us.mn.state.health.lims.provider.dao.ProviderDAO;
+import us.mn.state.health.lims.provider.daoimpl.ProviderDAOImpl;
 import us.mn.state.health.lims.samplesource.dao.SampleSourceDAO;
 import us.mn.state.health.lims.samplesource.daoimpl.SampleSourceDAOImpl;
 import us.mn.state.health.lims.siteinformation.dao.SiteInformationDAO;
@@ -47,9 +49,11 @@ import java.util.Arrays;
 public class SamplePatientEntryAction extends BaseSampleEntryAction {
 
     private SampleSourceDAO sampleSourceDAO;
+    private ProviderDAO providerDAO;
 
     public SamplePatientEntryAction() {
         this.sampleSourceDAO = new SampleSourceDAOImpl();
+        this.providerDAO = new ProviderDAOImpl();
     }
 
     protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
@@ -82,6 +86,8 @@ public class SamplePatientEntryAction extends BaseSampleEntryAction {
             fieldsetOrder = sampleEntryFieldsetOrder.getValue().split("\\|");
         }
 
+
+
         PropertyUtils.setProperty(dynaForm, "receivedDateForDisplay", dateAsText);
 		PropertyUtils.setProperty(dynaForm, "requestDate", dateAsText);
 		PropertyUtils.setProperty(dynaForm, "patientProperties", new PatientManagmentInfo());
@@ -93,6 +99,7 @@ public class SamplePatientEntryAction extends BaseSampleEntryAction {
 		PropertyUtils.setProperty(dynaForm, "labNo", "");
 		PropertyUtils.setProperty(dynaForm, "sampleEntryFieldsetOrder", Arrays.asList(fieldsetOrder));
         PropertyUtils.setProperty(dynaForm, "sampleSourceList", sampleSourceDAO.getAll());
+        PropertyUtils.setProperty(dynaForm, "providerList", providerDAO.getAllActiveProviders());
 
 		addProjectList(dynaForm);
 

@@ -465,4 +465,10 @@
             <where>name='validate all results'</where>
         </update>
     </changeSet>
+    <changeSet author="tw" id="29" context="bahmni">
+        <comment>Add isActive column to Person</comment>
+        <addColumn tableName="person" schemaName="clinlims">
+            <column name="is_active" type="boolean" defaultValue="true"></column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

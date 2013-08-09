@@ -55,4 +55,6 @@ public interface ProviderDAO extends BaseDAO {
 	 */
 	public Provider getProviderByPerson(Person person)  throws LIMSRuntimeException;;
 
+    public List getAllActiveProviders() throws LIMSRuntimeException;
+
 }

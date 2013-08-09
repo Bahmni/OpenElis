@@ -17,7 +17,6 @@
  */
 package us.mn.state.health.lims.sample.action;
 
-import org.apache.commons.validator.GenericValidator;
 import org.apache.struts.Globals;
 import org.apache.struts.action.*;
 import org.dom4j.Document;
@@ -70,16 +69,9 @@ import us.mn.state.health.lims.organization.valueholder.OrganizationType;
 import us.mn.state.health.lims.patient.action.IPatientUpdate;
 import us.mn.state.health.lims.patient.action.PatientManagementUpdateAction;
 import us.mn.state.health.lims.patient.action.bean.PatientManagmentInfo;
-import us.mn.state.health.lims.patient.util.PatientUtil;
-import us.mn.state.health.lims.person.dao.PersonDAO;
-import us.mn.state.health.lims.person.daoimpl.PersonDAOImpl;
-import us.mn.state.health.lims.person.valueholder.Person;
 import us.mn.state.health.lims.project.dao.ProjectDAO;
 import us.mn.state.health.lims.project.daoimpl.ProjectDAOImpl;
 import us.mn.state.health.lims.project.valueholder.Project;
-import us.mn.state.health.lims.provider.dao.ProviderDAO;
-import us.mn.state.health.lims.provider.daoimpl.ProviderDAOImpl;
-import us.mn.state.health.lims.provider.valueholder.Provider;
 import us.mn.state.health.lims.requester.dao.RequesterTypeDAO;
 import us.mn.state.health.lims.requester.dao.SampleRequesterDAO;
 import us.mn.state.health.lims.requester.daoimpl.RequesterTypeDAOImpl;
@@ -116,15 +108,21 @@ import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleDAOImpl;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import static org.apache.commons.validator.GenericValidator.isBlankOrNull;
 
 public class SamplePatientEntrySaveAction extends BaseAction {
 
 	public static long ORGANIZATION_REQUESTER_TYPE_ID;
 	private static long PROVIDER_REQUESTER_TYPE_ID;
     private boolean savePatient = false;
-	private Person providerPerson;
-	private Provider provider;
+    private String providerId;
+    //	private Person providerPerson;
+    //	private Provider provider;
 	private String patientId;
 	private String accessionNumber;
 	private Sample sample;
@@ -207,7 +205,6 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 		}
 	}
 
-
     private static String getObservationHistoryTypeId(ObservationHistoryTypeDAO ohtDAO, String name) {
 		ObservationHistoryType oht;
 		oht = ohtDAO.getByName(name);
@@ -225,8 +222,8 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 		String forward = FWD_SUCCESS;
 
         AnalysisBuilder analysisBuilder = new AnalysisBuilder();
-        orgAddressExtra = new ArrayList<OrganizationAddress>();
-		observations = new ArrayList<ObservationHistory>();
+        orgAddressExtra = new ArrayList<>();
+		observations = new ArrayList<>();
 		boolean useInitialSampleCondition = FormFields.getInstance().useField(Field.InitialSampleCondition);
 		BaseActionForm dynaForm = (BaseActionForm) form;
 		PatientManagmentInfo patientInfo = (PatientManagmentInfo) dynaForm.get("patientProperties");
@@ -244,7 +241,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 		}
 
 		String receivedTime = dynaForm.getString("recievedTime");
-		if (!GenericValidator.isBlankOrNull(receivedTime)) {
+		if (!isBlankOrNull(receivedTime)) {
 			receivedDateForDisplay += " " + receivedTime;
 		}
 
@@ -257,9 +254,9 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 		testAndInitializePatientForSaving(mapping, request, patientInfo, patientUpdate);
 
 		initAccesionNumber(dynaForm);
-		initProvider(dynaForm);
+//		initProvider(dynaForm);
 		initSampleData(dynaForm, receivedDateForDisplay, useInitialSampleCondition, trackPayments,
-				!GenericValidator.isBlankOrNull(receivedTime), analysisBuilder);
+				!isBlankOrNull(receivedTime), analysisBuilder);
 		initSampleHumanData();
 		validateSample(errors);
 
@@ -280,7 +277,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 
 			patientId = patientUpdate.getPatientId(dynaForm);
 
-			persistProviderData();
+//			persistProviderData();
 			persistSampleData(analysisBuilder);
 			persistRequesterData();
 			if (useInitialSampleCondition) {
@@ -342,9 +339,9 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 		String orgId = dynaForm.getString("referringSiteId");
 		String newOrgName = dynaForm.getString("newRequesterName");
 
-		if (!GenericValidator.isBlankOrNull(orgId)) {
+		if (!isBlankOrNull(orgId)) {
 			requester = createSiteRequester(orgId);
-		} else if (!GenericValidator.isBlankOrNull(newOrgName)) {
+		} else if (!isBlankOrNull(newOrgName)) {
 			//will be corrected after newOrg is persisted
 			requester = createSiteRequester("0"); 
 
@@ -387,7 +384,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 	}
 
 	private void addOrgAddressExtra(String value, String type, String addressPart) {
-		if (!GenericValidator.isBlankOrNull(value)) {
+		if (!isBlankOrNull(value)) {
 			OrganizationAddress orgAddress = new OrganizationAddress();
 			orgAddress.setSysUserId(currentUserId);
 			orgAddress.setType(type);
@@ -440,13 +437,13 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 
 	private void initSampleData(BaseActionForm dynaForm, String recievedDate, boolean useInitialSampleCondition, boolean trackPayments,
                                 boolean useReceiveTimestamp, AnalysisBuilder analysisBuilder) {
-		sampleItemsTests = new ArrayList<SampleTestCollection>();
+		sampleItemsTests = new ArrayList<>();
         String sampleSourceId = dynaForm.getString("sampleSourceId");
         if (sampleSourceId != null) {
             sampleSource = sampleSourceDAO.get(sampleSourceId);
         }
-		createPopulatedSample(recievedDate, useReceiveTimestamp);
-
+        providerId = dynaForm.getString("providerId");
+        createPopulatedSample(recievedDate, useReceiveTimestamp);
 		addObservations(dynaForm, trackPayments);
 
 		try {
@@ -478,7 +475,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 				item.setStatusId(StatusOfSampleUtil.getStatusID(SampleStatus.Entered));
 				item.setCollector(sampleItem.attributeValue("collector"));
 
-				List<Test> tests = new ArrayList<Test>();
+				List<Test> tests = new ArrayList<>();
 
 				addTests(testIDs, tests);
 
@@ -517,24 +514,24 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 
 	private List<ObservationHistory> addInitialSampleConditions(Element sampleItem, List<ObservationHistory> initialConditionList) {
 		String initialSampleConditionIdString = sampleItem.attributeValue("initialConditionIds");
-		if (!GenericValidator.isBlankOrNull(initialSampleConditionIdString)) {
+		if (!isBlankOrNull(initialSampleConditionIdString)) {
 			String[] initialSampleConditionIds = initialSampleConditionIdString.split(",");
-			initialConditionList = new ArrayList<ObservationHistory>();
+			initialConditionList = new ArrayList<>();
 
-			for (int j = 0; j < initialSampleConditionIds.length; ++j) {
-				ObservationHistory initialSampleConditions = new ObservationHistory();
-				initialSampleConditions.setValue(initialSampleConditionIds[j]);
-				initialSampleConditions.setValueType(ObservationHistory.ValueType.DICTIONARY);
-				initialSampleConditions.setObservationHistoryTypeId(INITIAL_CONDITION_OBSERVATION_ID);
-				initialConditionList.add(initialSampleConditions);
-			}
+            for (String initialSampleConditionId : initialSampleConditionIds) {
+                ObservationHistory initialSampleConditions = new ObservationHistory();
+                initialSampleConditions.setValue(initialSampleConditionId);
+                initialSampleConditions.setValueType(ValueType.DICTIONARY);
+                initialSampleConditions.setObservationHistoryTypeId(INITIAL_CONDITION_OBSERVATION_ID);
+                initialConditionList.add(initialSampleConditions);
+            }
 		}
 		return initialConditionList;
 	}
 
 	private void createOrderTypeObservation(BaseActionForm dynaForm, String property, String observationType, ValueType valueType) {
 		String observationData = dynaForm.getString(property);
-		if (!GenericValidator.isBlankOrNull(observationData) && !GenericValidator.isBlankOrNull(observationType)) {
+		if (!isBlankOrNull(observationData) && !isBlankOrNull(observationType)) {
 			LabOrderType labOrderType = labOrderTypeDAO.getLabOrderTypeById(observationData);
 			// should notify end user if null
 			if (labOrderType != null) {
@@ -550,7 +547,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 
 	private void createObservation(BaseActionForm dynaForm, String property, String observationType, ValueType valueType) {
 		String observationData = dynaForm.getString(property);
-		if (!GenericValidator.isBlankOrNull(observationData) && !GenericValidator.isBlankOrNull(observationType)) {
+		if (!isBlankOrNull(observationData) && !isBlankOrNull(observationType)) {
 			ObservationHistory observation = new ObservationHistory();
 			observation.setObservationHistoryTypeId(observationType);
 			observation.setSysUserId(currentUserId);
@@ -598,41 +595,41 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 		}
 	}
 
-	private void initProvider(BaseActionForm dynaForm) {
-
-		String requesterSpecimanID = dynaForm.getString("requesterSampleID");
-		String requesterFirstName = dynaForm.getString("providerFirstName");
-		String requesterLastName = dynaForm.getString("providerLastName");
-		String requesterPhoneNumber = dynaForm.getString("providerWorkPhone");
-		String requesterFax = dynaForm.getString("providerFax");
-		String requesterEmail = dynaForm.getString("providerEmail");
-
-		if (noRequesterInformation(requesterSpecimanID, requesterFirstName, requesterLastName, requesterPhoneNumber, requesterFax, requesterEmail)) {
-			provider = PatientUtil.getUnownProvider();
-		} else {
-			providerPerson = new Person();
-			provider = new Provider();
-
-			providerPerson.setFirstName(requesterFirstName);
-			providerPerson.setLastName(requesterLastName);
-			providerPerson.setWorkPhone(requesterPhoneNumber);
-			providerPerson.setFax(requesterFax);
-			providerPerson.setEmail(requesterEmail);
-			providerPerson.setSysUserId(currentUserId);
-			provider.setExternalId(requesterSpecimanID);
-		}
-
-		provider.setSysUserId(currentUserId);
-	}
+//	private void initProvider(BaseActionForm dynaForm) {
+//
+//        String requesterSpecimanID = dynaForm.getString("requesterSampleID");
+//		String requesterFirstName = dynaForm.getString("providerFirstName");
+//		String requesterLastName = dynaForm.getString("providerLastName");
+//		String requesterPhoneNumber = dynaForm.getString("providerWorkPhone");
+//		String requesterFax = dynaForm.getString("providerFax");
+//		String requesterEmail = dynaForm.getString("providerEmail");
+//
+//		if (noRequesterInformation(requesterSpecimanID, requesterFirstName, requesterLastName, requesterPhoneNumber, requesterFax, requesterEmail)) {
+//			provider = PatientUtil.getUnownProvider();
+//		} else {
+//			providerPerson = new Person();
+//			provider = new Provider();
+//
+//			providerPerson.setFirstName(requesterFirstName);
+//			providerPerson.setLastName(requesterLastName);
+//			providerPerson.setWorkPhone(requesterPhoneNumber);
+//			providerPerson.setFax(requesterFax);
+//			providerPerson.setEmail(requesterEmail);
+//			providerPerson.setSysUserId(currentUserId);
+//			provider.setExternalId(requesterSpecimanID);
+//		}
+//
+//		provider.setSysUserId(currentUserId);
+//	}
 
 	
-	private boolean noRequesterInformation(String requesterSpecimanID, String requesterFirstName, String requesterLastName,
-			String requesterPhoneNumber, String requesterFax, String requesterEmail) {
-
-		return (GenericValidator.isBlankOrNull(requesterFirstName) && GenericValidator.isBlankOrNull(requesterPhoneNumber)
-				&& GenericValidator.isBlankOrNull(requesterLastName) && GenericValidator.isBlankOrNull(requesterSpecimanID)
-				&& GenericValidator.isBlankOrNull(requesterFax) && GenericValidator.isBlankOrNull(requesterEmail));
-	}
+//	private boolean noRequesterInformation(String requesterSpecimanID, String requesterFirstName, String requesterLastName,
+//			String requesterPhoneNumber, String requesterFax, String requesterEmail) {
+//
+//		return (isBlankOrNull(requesterFirstName) && isBlankOrNull(requesterPhoneNumber)
+//				&& isBlankOrNull(requesterLastName) && isBlankOrNull(requesterSpecimanID)
+//				&& isBlankOrNull(requesterFax) && isBlankOrNull(requesterEmail));
+//	}
 
 	private void persistOrganizationData() {
 
@@ -653,17 +650,17 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 
 	}
 
-	private void persistProviderData() {
-		if (providerPerson != null && provider != null) {
-			PersonDAO personDAO = new PersonDAOImpl();
-			ProviderDAO providerDAO = new ProviderDAOImpl();
-
-			personDAO.insertData(providerPerson);
-			provider.setPerson(providerPerson);
-
-			providerDAO.insertData(provider);
-		}
-	}
+//	private void persistProviderData() {
+//		if (providerPerson != null && provider != null) {
+//			PersonDAO personDAO = new PersonDAOImpl();
+//			ProviderDAO providerDAO = new ProviderDAOImpl();
+//
+//			personDAO.insertData(providerPerson);
+//			provider.setPerson(providerPerson);
+//
+//			providerDAO.insertData(provider);
+//		}
+//	}
 
 	private void persistSampleData(AnalysisBuilder analysisBuilder) {
 		SampleDAO sampleDAO = new SampleDAOImpl();
@@ -675,7 +672,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 
 		sampleDAO.insertDataWithAccessionNumber(sample);
 
-		if (!GenericValidator.isBlankOrNull(projectId)) {
+		if (!isBlankOrNull(projectId)) {
 			persistSampleProject();
 		}
 
@@ -695,9 +692,10 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 
 		sampleHuman.setSampleId(sample.getId());
 		sampleHuman.setPatientId(patientId);
-		if (provider != null) {
-			sampleHuman.setProviderId(provider.getId());
-		}
+        sampleHuman.setProviderId(providerId);
+//		if (provider != null) {
+//			sampleHuman.setProviderId(provider.getId());
+//		}
 		sampleHumanDAO.insertData(sampleHuman);
 
 	}
@@ -718,9 +716,9 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 
 	private void persistRequesterData() {
 		SampleRequesterDAO sampleRequesterDAO = new SampleRequesterDAOImpl();
-		if (providerPerson != null && !GenericValidator.isBlankOrNull(providerPerson.getId())) {
+		if (providerId != null && !isBlankOrNull(providerId)) {
 			SampleRequester sampleRequester = new SampleRequester();
-			sampleRequester.setRequesterId(providerPerson.getId());
+			sampleRequester.setRequesterId(providerId);
 			sampleRequester.setRequesterTypeId(PROVIDER_REQUESTER_TYPE_ID);
 			sampleRequester.setSampleId(sample.getId());
 			sampleRequester.setSysUserId(currentUserId);

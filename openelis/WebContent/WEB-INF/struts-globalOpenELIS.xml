@@ -16,10 +16,16 @@
 			<form-property name="lastupdated" type="java.sql.Timestamp" initial="" />
 			<form-property name="sampItemCount" type="java.lang.Integer" initial="" />
 			<form-property name="requesterSampleID" type="java.lang.String" initial="" />
+
+			<form-property name="providerId" type="java.lang.String" initial="" />
 			<form-property name="providerLastName" type="java.lang.String" initial="" />
 			<form-property name="providerFirstName" type="java.lang.String" initial="" />
 			<form-property name="providerWorkPhone" type="java.lang.String" initial="" />
-			<form-property name="project" type="java.lang.String" initial="" />
+            <form-property name="providerFax" type="java.lang.String" initial=""/>
+            <form-property name="providerEmail" type="java.lang.String" initial=""/>
+            <form-property name="providerList" type="java.util.Collection" />
+
+            <form-property name="project" type="java.lang.String" initial="" />
 			<form-property name="projects" type="java.util.Collection" />
 			<form-property name="patientSearchSelection" type="java.lang.String" initial="" />
 			<form-property name="patientSearchList" type="java.util.List" />
@@ -30,8 +36,6 @@
 			<form-property name="requesterSelection" type="java.lang.String" initial="" />
 			<form-property name="newRequesterName" type="java.lang.String" initial="" />
 			<form-property name="referringSiteCode" type="java.lang.String" initial="" />
-			<form-property name="providerFax" type="java.lang.String" initial=""/>
-			<form-property name="providerEmail" type="java.lang.String" initial=""/>
 			<form-property name="facilityAddressStreet" type="java.lang.String" initial="" />
 			<form-property name="facilityAddressCommune" type="java.lang.String" initial="" />
 			<form-property name="facilityPhone" type="java.lang.String" initial="" />

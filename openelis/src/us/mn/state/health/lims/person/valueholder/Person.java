@@ -53,8 +53,10 @@ public class Person extends BaseObject {
 	private String email;
 
 	private Set patients = new HashSet(0);
-	
-	public Person() {
+
+    private Boolean isActive;
+
+    public Person() {
 		super();
 
 	}
@@ -185,5 +187,14 @@ public class Person extends BaseObject {
     
     public void setPatients(Set patients) {
         this.patients = patients;
-    }    	
+    }
+
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Boolean active) {
+        isActive = active;
+    }
 }

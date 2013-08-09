@@ -215,24 +215,38 @@
 <% if(supportfirstNameFirst) { %>
 <tr>
     <td class="firstNameLabel">
-        <bean:message key="sample.entry.provider.firstName"/>:
+    <bean:message key="sample.entry.provider.firstName"/>:
     </td>
-    <td class="firstName">
-        <html:text name="<%=formName%>"
-                   property="providerFirstName"
-                   styleId="providerFirstNameID"
-                   onchange="makeDirty();"
-                   size="30" />
-        <%= StringUtil.getContextualMessageForKey("sample.entry.provider.name") %>:
-        <% if(requesterLastNameRequired ){ %>
-        <span class="requiredlabel">*</span>
-        <% } %>
-        <html:text name="<%=formName%>"
-                   property="providerLastName"
-                   styleId="providerLastNameID"
-                   onchange="makeDirty();setSave()"
-                   size="30" />
+    <td>
+        <html:select name="<%=formName%>" property="providerId" styleId="providerId">
+            <app:optionsCollection
+                    name="<%=formName%>"
+                    property="providerList"
+                    label="fullName"
+                    value="id"
+                    allowEdits="true"
+                    />
+        </html:select>
     </td>
+    <%--<td class="firstNameLabel">--%>
+        <%--<bean:message key="sample.entry.provider.firstName"/>:--%>
+    <%--</td>--%>
+    <%--<td class="firstName">--%>
+        <%--<html:text name="<%=formName%>"--%>
+                   <%--property="providerFirstName"--%>
+                   <%--styleId="providerFirstNameID"--%>
+                   <%--onchange="makeDirty();"--%>
+                   <%--size="30" />--%>
+        <%--<%= StringUtil.getContextualMessageForKey("sample.entry.provider.name") %>:--%>
+        <%--<% if(requesterLastNameRequired ){ %>--%>
+        <%--<span class="requiredlabel">*</span>--%>
+        <%--<% } %>--%>
+        <%--<html:text name="<%=formName%>"--%>
+                   <%--property="providerLastName"--%>
+                   <%--styleId="providerLastNameID"--%>
+                   <%--onchange="makeDirty();setSave()"--%>
+                   <%--size="30" />--%>
+    <%--</td>--%>
 </tr>
 <% } else { %>
 <tr>
