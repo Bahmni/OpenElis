@@ -5,4 +5,6 @@ import java.util.List;
 
 public interface OrderListDAO {
     public List<Order> getAllInProgress();
+
+    List<Order> getAllCompleted();
 }

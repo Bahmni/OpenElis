@@ -664,6 +664,7 @@
 
         <form-bean name="DashboardForm" type="us.mn.state.health.lims.common.action.BaseActionForm">
             <form-property name="inProgressOrderList" type="java.lang.String" />
+            <form-property name="completedOrderList" type="java.lang.String" />
         </form-bean>
 
 	</form-beans>

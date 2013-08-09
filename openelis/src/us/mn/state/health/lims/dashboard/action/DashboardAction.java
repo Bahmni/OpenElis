@@ -18,11 +18,20 @@ import java.util.List;
 public class DashboardAction extends BaseAction {
     @Override
     protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        List<Order> allInProgress = new OrderListDAOImpl().getAllInProgress();
         DynaActionForm dynaForm = (DynaActionForm) form;
-        String orderListJson = ObjectMapperRepository.objectMapper.writeValueAsString(allInProgress);
-        String escapedOrderListJson = JSONObject.escape(orderListJson);
-        dynaForm.set("inProgressOrderList", escapedOrderListJson);
+
+        OrderListDAOImpl orderListDAO = new OrderListDAOImpl();
+
+        List<Order> allInProgress = orderListDAO.getAllInProgress();
+        String pendingOrderListJson = ObjectMapperRepository.objectMapper.writeValueAsString(allInProgress);
+        String escapedPendingOrderListJson = JSONObject.escape(pendingOrderListJson);
+
+        List<Order> allCompleted = orderListDAO.getAllCompleted();
+        String completedOrderListJson = ObjectMapperRepository.objectMapper.writeValueAsString(allCompleted);
+        String escapedCompletedOrderListJson = JSONObject.escape(completedOrderListJson);
+
+        dynaForm.set("inProgressOrderList", escapedPendingOrderListJson);
+        dynaForm.set("completedOrderList", escapedCompletedOrderListJson);
 
         return mapping.findForward("success");
     }

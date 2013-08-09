@@ -2,6 +2,7 @@ package us.mn.state.health.lims.dashboard.daoimpl;
 
 import junit.framework.Assert;
 import org.bahmni.feed.openelis.IT;
+import org.junit.Before;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.analyte.daoimpl.AnalyteDAOImpl;
@@ -37,36 +38,78 @@ import us.mn.state.health.lims.testanalyte.valueholder.TestAnalyte;
 
 import java.util.List;
 
+import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.NotStarted;
+import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.ReferedOut;
+import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance;
+
 public class OrderListDAOImplIT extends IT {
+
+    private String accessionNumber;
+    private String patientIdentityData;
+    private String firstName;
+    private String lastName;
+    private OrderListDAOImpl orderListDAO;
+
+    @Before
+    public void setUp() throws Exception {
+        accessionNumber = "05082013-001";
+        patientIdentityData = "TEST1234567";
+        firstName = "Some";
+        lastName = "One";
+        orderListDAO = new OrderListDAOImpl();
+    }
 
     @org.junit.Test
     public void getAllInProgress_shouldReturnAllOrdersWhichAreInProgress() {
-        String accessionNumber = "05082013-001";
-        String patientIdentityData = "TEST1234567";
-        String firstName = "Some";
-        String lastName = "One";
         Sample sample = createSample(accessionNumber);
         Patient patient = createPatient(firstName, lastName, patientIdentityData);
         createSampleHuman(sample, patient);
         SampleItem sampleItem = createSampleItem(sample);
 
 
-        TestDAOImpl testDAO = new TestDAOImpl();
-        createATest(testDAO, "SampleTest1");
-        createATest(testDAO, "SampleTest2");
-        createATest(testDAO, "SampleTest3");
+        TestDAOImpl testDAO = createTests("SampleTest1", "SampleTest2", "SampleTest3", "SampleTest4");
 
         List<Test> allTests = testDAO.getAllTests(true);
-        Analysis analysis_1 = createAnalysis(sampleItem, StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance, "Hematology", allTests.get(0));
-        Analysis analysis_2 = createAnalysis(sampleItem, StatusOfSampleUtil.AnalysisStatus.NotStarted, "Hematology", allTests.get(1));
-        Analysis analysis_3 = createAnalysis(sampleItem, StatusOfSampleUtil.AnalysisStatus.NotStarted, "Hematology", allTests.get(2));
 
+        Analysis analysis_1 = createAnalysis(sampleItem, TechnicalAcceptance, "Hematology", allTests.get(0));
+        Analysis analysis_2 = createAnalysis(sampleItem, NotStarted, "Hematology", allTests.get(1));
+
+        Analysis analysis_3 = createAnalysis(sampleItem, NotStarted, "Hematology", allTests.get(2));
         createResult(analysis_3);
 
-        OrderListDAOImpl orderListDAO = new OrderListDAOImpl();
+        Analysis analysis_4 = createAnalysis(sampleItem, ReferedOut, "Hematology", allTests.get(3));
+
         List<Order> inProgress = orderListDAO.getAllInProgress();
 
         Assert.assertTrue(inProgress.contains(new Order(accessionNumber, patientIdentityData, firstName, lastName, sample.getSampleSource().getName(), 2, 3)));
+    }
+
+    @org.junit.Test
+    public void getAllCompleted_shouldReturnAllOrdersWhichAreCompletedBefore24Hours() {
+        Sample sample = createSample(accessionNumber);
+        Patient patient = createPatient(firstName, lastName, patientIdentityData);
+        createSampleHuman(sample, patient);
+        SampleItem sampleItem = createSampleItem(sample);
+
+        TestDAOImpl testDAO = createTests("SampleTest1", "SampleTest2", "SampleTest3", "SampleTest4");
+
+        List<Test> allTests = testDAO.getAllTests(true);
+
+        createAnalysis(sampleItem, StatusOfSampleUtil.AnalysisStatus.Finalized, "Hematology", allTests.get(0));
+        createAnalysis(sampleItem, StatusOfSampleUtil.AnalysisStatus.Canceled, "Hematology", allTests.get(1));
+
+        List<Order> completedOrders = orderListDAO.getAllCompleted();
+
+        Assert.assertTrue(completedOrders.contains(new Order(accessionNumber, patientIdentityData, firstName, lastName, sample.getSampleSource().getName(), -1, -1)));
+    }
+
+
+    private TestDAOImpl createTests(String... samples) {
+        TestDAOImpl testDAO = new TestDAOImpl();
+        for (String sample : samples) {
+            createATest(testDAO, sample);
+        }
+        return testDAO;
     }
 
     private Test createATest(TestDAOImpl testDAO, String testName) {
