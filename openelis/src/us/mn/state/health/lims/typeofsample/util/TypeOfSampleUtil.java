@@ -20,19 +20,17 @@ import java.util.*;
 public class TypeOfSampleUtil {
 
     private static Map<String, List<Test>> sampleIdTestMap = new HashMap<>();
-    private static Map<String, String> typeOfSampleIdToNameMap;
-    private static Map<String, List<String>> labOrderTypeToTestMap = null;
-    private static Map<String, TypeOfSample> testIdToTypeOfSampleMap = null;
+    private static Map<String, String> typeOfSampleIdToNameMap = new HashMap<>();
+    private static Map<String, List<String>> labOrderTypeToTestMap = new HashMap<>();
+    private static Map<String, TypeOfSample> testIdToTypeOfSampleMap = new HashMap<>();
     private static final Object LOCK_OBJECT = new Object();
 
     public static List<Test> getTestListBySampleTypeId(String sampleTypeId, String labOrderTypeId, boolean orderableOnly) {
-        if (sampleIdTestMap == null || hasNoEntryFor(sampleTypeId, sampleIdTestMap)) {
+        HashMap<String, List<Test>> sampleIdToTestMap = new HashMap<>(sampleIdTestMap);
+        if (isEmpty(sampleIdToTestMap) || hasNoEntryFor(sampleTypeId, sampleIdToTestMap)) {
             createSampleIdTestMap(sampleTypeId);
         }
-
-        HashMap<String, List<Test>> sampleIdToTestMap = new HashMap<>(sampleIdTestMap);
         List<Test> testList = sampleIdToTestMap.get(sampleTypeId);
-
         if (hasNoLabOrderType(labOrderTypeId)) {
             return orderableOnly ? getOrderableTests(testList) : testList;
         }
@@ -68,10 +66,11 @@ public class TypeOfSampleUtil {
 
     @SuppressWarnings("unchecked")
     public static String getTypeOfSampleNameForId(String id) {
-        if (typeOfSampleIdToNameMap == null) {
+        HashMap<String, String> map = new HashMap<>(typeOfSampleIdToNameMap);
+        if (isEmpty(map)) {
             createTypeOfSampleNameForIdMap();
         }
-        return typeOfSampleIdToNameMap.get(id);
+        return map.get(id);
     }
 
     private static boolean hasNoEntryFor(String key, Map<String, List<Test>> map) {
@@ -94,7 +93,6 @@ public class TypeOfSampleUtil {
 
     private static void createTestIdToTypeOfSampleMap() {
         synchronized (LOCK_OBJECT) {
-            testIdToTypeOfSampleMap = new HashMap<>();
             List<TypeOfSampleTest> typeOfSampleTestList = new TypeOfSampleTestDAOImpl().getAllTypeOfSampleTests();
             TypeOfSampleDAO typeOfSampleDAO = new TypeOfSampleDAOImpl();
             for (TypeOfSampleTest typeTest : typeOfSampleTestList) {
@@ -107,7 +105,6 @@ public class TypeOfSampleUtil {
 
     private static void createLabOrderToTestMap() {
         synchronized (LOCK_OBJECT) {
-            labOrderTypeToTestMap = new HashMap<>();
             String testTableId = new ReferenceTablesDAOImpl().getReferenceTableByName("TEST").getId();
             List<LabOrderItem> orderItems = new LabOrderItemDAOImpl().getLabOrderItemsByTableAndAction(testTableId, "DISPLAY");
             List<String> tests = new ArrayList<>();
@@ -120,9 +117,6 @@ public class TypeOfSampleUtil {
 
     private static void createSampleIdTestMap(String sampleTypeId) {
         synchronized (LOCK_OBJECT) {
-            if (sampleIdTestMap == null) {
-                sampleIdTestMap = new HashMap<>();
-            }
             TypeOfSampleTestDAO sampleTestsDAO = new TypeOfSampleTestDAOImpl();
             List<TypeOfSampleTest> typeOfSampleTests = sampleTestsDAO.getTypeOfSampleTestsForSampleType(sampleTypeId);
 
@@ -135,14 +129,12 @@ public class TypeOfSampleUtil {
                 }
             }
             Collections.sort(testList, TestComparator.NAME_COMPARATOR);
-
             sampleIdTestMap.put(sampleTypeId, testList);
         }
     }
 
     private static void createTypeOfSampleNameForIdMap() {
         synchronized (LOCK_OBJECT) {
-            typeOfSampleIdToNameMap = new HashMap<>();
             TypeOfSampleDAO tosDAO = new TypeOfSampleDAOImpl();
             List<TypeOfSample> allTypes = tosDAO.getAllTypeOfSamples();
             for (TypeOfSample typeOfSample : allTypes) {
@@ -161,8 +153,9 @@ public class TypeOfSampleUtil {
     public static void clearTestCache() {
         synchronized (LOCK_OBJECT) {
             sampleIdTestMap.clear();
-            typeOfSampleIdToNameMap = null;
-            testIdToTypeOfSampleMap = null;
+            typeOfSampleIdToNameMap.clear();
+            testIdToTypeOfSampleMap.clear();
+            labOrderTypeToTestMap.clear();
         }
     }
 }
