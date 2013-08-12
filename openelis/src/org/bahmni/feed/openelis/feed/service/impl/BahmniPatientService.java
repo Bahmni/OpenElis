@@ -1,9 +1,6 @@
 package org.bahmni.feed.openelis.feed.service.impl;
 
-import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPatient;
-import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPerson;
-import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPersonAttribute;
-import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPersonAttributeType;
+import org.bahmni.feed.openelis.feed.contract.openmrs.*;
 import org.bahmni.feed.openelis.utils.AuditingService;
 import org.bahmni.openelis.domain.Attribute;
 import org.bahmni.openelis.domain.CompletePatientDetails;
@@ -77,13 +74,16 @@ public class BahmniPatientService {
         personDAO.insertData(person);
 
         AddressParts addressParts = new AddressParts(addressPartDAO.getAll());
-        List<PersonAddress> personAddressList = new ArrayList<PersonAddress>(addressParts.size());
-        personAddressList.add(PersonAddress.create(person, addressParts, "level1", openMRSPerson.getPreferredAddress().getAddress1(), sysUserId));
-        personAddressList.add(PersonAddress.create(person, addressParts, "level2", openMRSPerson.getPreferredAddress().getCityVillage(), sysUserId));
-        personAddressList.add(PersonAddress.create(person, addressParts, "level3", openMRSPerson.getPreferredAddress().getAddress2(), sysUserId));
-        personAddressList.add(PersonAddress.create(person, addressParts, "level4", openMRSPerson.getPreferredAddress().getAddress3(), sysUserId));
-        personAddressList.add(PersonAddress.create(person, addressParts, "level5", openMRSPerson.getPreferredAddress().getCountyDistrict(), sysUserId));
-        personAddressList.add(PersonAddress.create(person, addressParts, "level6", openMRSPerson.getPreferredAddress().getStateProvince(), sysUserId));
+        List<PersonAddress> personAddressList = new ArrayList<>(addressParts.size());
+        OpenMRSPersonAddress preferredAddress = openMRSPerson.getPreferredAddress();
+        if(preferredAddress != null) {
+            personAddressList.add(PersonAddress.create(person, addressParts, "level1", preferredAddress.getAddress1(), sysUserId));
+            personAddressList.add(PersonAddress.create(person, addressParts, "level2", preferredAddress.getCityVillage(), sysUserId));
+            personAddressList.add(PersonAddress.create(person, addressParts, "level3", preferredAddress.getAddress2(), sysUserId));
+            personAddressList.add(PersonAddress.create(person, addressParts, "level4", preferredAddress.getAddress3(), sysUserId));
+            personAddressList.add(PersonAddress.create(person, addressParts, "level5", preferredAddress.getCountyDistrict(), sysUserId));
+            personAddressList.add(PersonAddress.create(person, addressParts, "level6", preferredAddress.getStateProvince(), sysUserId));
+        }
         personAddressDAO.insert(personAddressList);
 
         Patient patient = new Patient();
@@ -92,7 +92,8 @@ public class BahmniPatientService {
         patient.setSysUserId(sysUserId);
         patient.setPerson(person);
         OpenMRSPersonAttribute healthCenterAttribute = openMRSPerson.findAttributeByAttributeTypeDisplayName(OpenMRSPersonAttributeType.HEALTH_CENTER);
-        patient.setHealthCenter(healthCenterOf(healthCenterAttribute.getValue()));
+        if(healthCenterAttribute != null)
+            patient.setHealthCenter(healthCenterOf(healthCenterAttribute.getValue()));
         patientDAO.insertData(patient);
 
         PatientIdentityTypes patientIdentityTypes = new PatientIdentityTypes(patientIdentityTypeDAO.getAllPatientIdenityTypes());
