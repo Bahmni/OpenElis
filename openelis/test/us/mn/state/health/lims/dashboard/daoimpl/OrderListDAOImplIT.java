@@ -98,7 +98,7 @@ public class OrderListDAOImplIT extends IT {
         createAnalysis(sampleItem, StatusOfSampleUtil.AnalysisStatus.Finalized, "Hematology", allTests.get(0));
         createAnalysis(sampleItem, StatusOfSampleUtil.AnalysisStatus.Canceled, "Hematology", allTests.get(1));
 
-        List<Order> completedOrders = orderListDAO.getAllCompleted();
+        List<Order> completedOrders = orderListDAO.getAllCompletedBefore24Hours();
 
         Assert.assertTrue(completedOrders.contains(new Order(accessionNumber, patientIdentityData, firstName, lastName, sample.getSampleSource().getName(), -1, -1)));
     }

@@ -5,7 +5,6 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.DynaActionForm;
 import org.bahmni.feed.openelis.ObjectMapperRepository;
-import org.codehaus.jackson.JsonGenerator;
 import org.json.simple.JSONObject;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.dashboard.daoimpl.OrderListDAOImpl;
@@ -26,7 +25,7 @@ public class DashboardAction extends BaseAction {
         String pendingOrderListJson = ObjectMapperRepository.objectMapper.writeValueAsString(allInProgress);
         String escapedPendingOrderListJson = JSONObject.escape(pendingOrderListJson);
 
-        List<Order> allCompleted = orderListDAO.getAllCompleted();
+        List<Order> allCompleted = orderListDAO.getAllCompletedBefore24Hours();
         String completedOrderListJson = ObjectMapperRepository.objectMapper.writeValueAsString(allCompleted);
         String escapedCompletedOrderListJson = JSONObject.escape(completedOrderListJson);
 

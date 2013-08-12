@@ -1468,7 +1468,7 @@
             <forward name="fail" path="healthCenterMaster" />
         </action>
 
-        <action path="/Dashboard"  name="DashboardForm" type="us.mn.state.health.lims.dashboard.action.DashboardAction">
+        <action path="/LabDashboard"  name="DashboardForm" type="us.mn.state.health.lims.dashboard.action.DashboardAction">
             <forward name="success" path="dashboardMaster" />
         </action>
 

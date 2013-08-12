@@ -17,6 +17,8 @@ import java.util.List;
 import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.Canceled;
 import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.Finalized;
 import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.NotStarted;
+import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.ReferedOut;
+import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.ReferredIn;
 import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance;
 
 public class OrderListDAOImpl implements OrderListDAO {
@@ -79,9 +81,9 @@ public class OrderListDAOImpl implements OrderListDAO {
     }
 
     @Override
-    public List<Order> getAllCompleted() {
+    public List<Order> getAllCompletedBefore24Hours() {
         List<Order> orderList = new ArrayList<>();
-        String inProgressAnalysisStatus = getInProgressAnalysisStatus();
+        String inProgressAnalysisStatus = getInProgressAndReferredAnalysisStatus();
 
         String sql =
                 "select " +
@@ -90,7 +92,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                         "person.last_name as last_name, " +
                         "patient_identity.identity_data as st_number, " +
                         "sample_source.name as sample_source, " +
-                        "count(pending_analysis.id)" +
+                        "count(pending_analysis.id) " +
                  "from clinlims.sample as sample " +
                  "left outer join clinlims.sample_Human as sampleHuman on sampleHuman.samp_Id = sample.id " +
                  "left  join clinlims.sample_source on sample_source.id = sample.sample_source_id " +
@@ -100,6 +102,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                  "inner join clinlims.patient_identity_type on patient_identity.identity_type_id = patient_identity_type.id and patient_identity_type.identity_type='ST' " +
                  "inner join clinlims.sample_item on sample_item.samp_id = sample.id " +
                  "left join clinlims.analysis as pending_analysis on pending_analysis.sampitem_id = sample_item.id and pending_analysis.status_id in ("+ inProgressAnalysisStatus +") " +
+                 "where age(entered_date) <= '1 day' " +
                  "group by sample.accession_number, person.first_name, person.last_name, patient_identity.identity_data, sample_source.name " +
                  "having count(pending_analysis.id) = 0 ";
 
@@ -123,5 +126,18 @@ public class OrderListDAOImpl implements OrderListDAO {
         }
 
         return orderList;
+    }
+
+    private String getInProgressAndReferredAnalysisStatus() {
+        String inProgressAnalysisStatus = getInProgressAnalysisStatus();
+        String referredStatus = getReferredAnalysisStatus();
+        return inProgressAnalysisStatus.concat(",").concat(referredStatus);
+    }
+
+    private String getReferredAnalysisStatus() {
+        List<Object> referredStatus = new ArrayList<>();
+        referredStatus.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(ReferedOut)));
+        referredStatus.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(ReferredIn)));
+        return StringUtils.join(referredStatus.iterator(), ',');
     }
 }
