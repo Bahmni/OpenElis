@@ -14,6 +14,7 @@ import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 import us.mn.state.health.lims.test.daoimpl.TestSectionDAOImpl;
 import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.test.valueholder.TestSection;
+import us.mn.state.health.lims.typeofsample.util.TypeOfSampleUtil;
 
 import java.io.IOException;
 
@@ -54,6 +55,7 @@ public class LabTestService extends LabService {
             updateTestFieldsIfNotEmpty(test, activeTestById);
             testDAO.updateData(activeTestById);
         }
+        TypeOfSampleUtil.clearTestCache();
     }
 
     @Override
@@ -64,6 +66,7 @@ public class LabTestService extends LabService {
             String testId = String.valueOf(externalReference.getItemId());
             testDAO.deleteById(testId, labObject.getSysUserId());
         }
+        TypeOfSampleUtil.clearTestCache();
     }
 
     private ExternalReference getExternalReference(LabObject labObject) {
@@ -84,6 +87,7 @@ public class LabTestService extends LabService {
         }
         test.setDescription(description);
         test.setSysUserId(labObject.getSysUserId());
+        test.setOrderable(true);
         setActiveStatus(test, labObject.getStatus());
         updateSection(test);
         return test;

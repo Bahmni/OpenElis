@@ -4,7 +4,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
-
+import junit.framework.TestListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +24,7 @@ public class AnalysisDAOImplTest {
 
     @Test
     public void getAllByAccessionNumberAndStatus_returns_empty_list_for_empty_statuses() {
-        List<Analysis> actualAnalysises = new AnalysisDAOImpl().getAllAnalysisByAccessionNumberAndStatus("12345", new ArrayList());
+        List<Analysis> actualAnalysises = new AnalysisDAOImpl().getAllAnalysisByAccessionNumberAndStatus("12345", new ArrayList<StatusOfSampleUtil.AnalysisStatus>());
         Assert.assertTrue("should not return analysis for null status", actualAnalysises.isEmpty());
     }
 }
