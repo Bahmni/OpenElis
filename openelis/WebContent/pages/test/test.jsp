@@ -120,10 +120,11 @@ function getNextSortOrder() {
       </tr>
     <tr>
         <td class="label">
-            <bean:message key="test.unitOfMeasure"/>:<span class="requiredlabel">*</span>
+            <bean:message key="test.unitOfMeasure"/>:</span>
         </td>
         <td width="1">
-            <html:select name="<%=formName%>" property="unitOfMeasureId" value="unitOfMeasureId">
+            <html:select name="<%=formName%>" property="unitOfMeasureId">
+                <html:option value=""/>
                 <html:optionsCollection name="<%=formName%>" property="unitOfMeasureList" label="unitOfMeasureName" value="id" />
             </html:select>
         </td>

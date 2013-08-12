@@ -179,12 +179,8 @@ public class TestAction extends BaseAction {
 		Collections.sort(labels, LabelComparator.NAME_COMPARATOR);		
 		PropertyUtils.setProperty(form, "scriptlets", scriptlets);
 		PropertyUtils.setProperty(form, "labels", labels);
-        UnitOfMeasure unitOfMeasure = test.getUnitOfMeasure();
-        if (unitOfMeasure != null) {
-            PropertyUtils.setProperty(form, "unitOfMeasureId", unitOfMeasure.getId());
-        }
 
-		
+
 		PropertyUtils.copyProperties(dynaForm, test);
 
 		//System.out.println("I am in TestAction this is forward " + forward);
