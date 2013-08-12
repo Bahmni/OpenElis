@@ -221,8 +221,9 @@ public class PatientHaitiClinical extends HaitiPatientReport implements IReportC
 				currentPanelId = null;
 				reportItem.setSeparator(true);
 			}
-			
-			reportItem.setAccessionNumber(reportItem.getAccessionNumber().split("-")[0]);
+
+            int hyphenPosition = reportItem.getAccessionNumber().lastIndexOf("-");
+            reportItem.setAccessionNumber(reportItem.getAccessionNumber().substring(0, hyphenPosition));
 			reportItem.setCompleteFlag(StringUtil.getMessageForKey(sampleCompleteMap.get(reportItem.getAccessionNumber()) ? "report.status.complete" : "report.status.partial"));
 		}
 	}
