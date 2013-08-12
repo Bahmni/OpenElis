@@ -71,10 +71,6 @@ public class ResultUtil {
 		return !GenericValidator.isBlankOrNull(item.getNote());
 	}
 	
-	public static boolean isReferred(TestResultItem testResultItem) {
-		return testResultItem.isReferredOut();
-	}
-	
 	public static boolean areResults(TestResultItem item) {
 		return !(GenericValidator.isBlankOrNull(item.getResultValue()) || 
 				("D".equals(item.getResultType()) && "0".equals(item.getResultValue()))) || 

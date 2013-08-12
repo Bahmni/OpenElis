@@ -370,7 +370,7 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
 		modifiedItems = new ArrayList<TestResultItem>();
 
 		for (TestResultItem item : allItems) {
-			if (item.getIsModified() && (ResultUtil.areResults(item) || ResultUtil.areNotes(item) || ResultUtil.isReferred(item))) {
+			if (item.getIsModified() && (ResultUtil.areResults(item) || ResultUtil.areNotes(item) || item.isReferredOut())) {
 				modifiedItems.add(item);
 			}
 		}
@@ -402,7 +402,7 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
 
 	protected boolean resultHasValueOrIsReferral(TestResultItem testResultItem, Result result) {
 		return result != null && !GenericValidator.isBlankOrNull(result.getValue())
-				|| (supportReferrals && ResultUtil.isReferred(testResultItem));
+				|| (supportReferrals && testResultItem.isReferredOut());
 	}
 
 	private void addResult(Result result, TestResultItem testResultItem, Analysis analysis) {
@@ -485,7 +485,7 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
 	}
 
 	private String getStatusForTestResult(TestResultItem testResult) {
-		if (supportReferrals && ResultUtil.isReferred(testResult)) {
+		if (supportReferrals && testResult.isReferredOut()) {
 			return StatusOfSampleUtil.getStatusID(AnalysisStatus.ReferedOut);
 		}else if(alwaysValidate || !testResult.isValid()){
 			return StatusOfSampleUtil.getStatusID(AnalysisStatus.TechnicalAcceptance);

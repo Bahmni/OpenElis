@@ -471,4 +471,24 @@
             <column name="is_active" type="boolean" defaultValue="true"></column>
         </addColumn>
     </changeSet>
+    <changeSet author="tw" id="30" context="bahmni">
+        <comment>Adds referral types</comment>
+        <insert schemaName="clinlims" tableName="referral_type">
+            <column name="id" valueNumeric=" nextval( 'referral_type_seq' ) "/>
+            <column name="name" value="Confirmation"/>
+            <column name="description" value="Sent out to confirm result"/>
+            <column name="display_key" value="referral.type.confirmation"/>
+            <column name="lastupdated" valueDate=" now() "/>
+        </insert>
+    </changeSet>
+    <!--<changeSet author="tw" id="30" context="bahmni">-->
+        <!--<comment>Add referral reasons to DB</comment>-->
+        <!--<loadData file="Bahmni/Bahmni_Referral_Reasons.csv" schemaName="clinlims" tableName="referral_reason">-->
+            <!--<column name="id" header="id" type="NUMERIC"/>-->
+            <!--<column name="name" header="name" type="STRING"/>-->
+            <!--<column name="description" header="description" type="STRING"/>-->
+            <!--<column name="display_key" header="display_key" type="STRING"/>-->
+            <!--<column name="lastupdated" header="lastUpdated" type="DATE"/>-->
+        <!--</loadData>-->
+    <!--</changeSet>-->
 </databaseChangeLog>

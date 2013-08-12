@@ -68,12 +68,10 @@ public class TypeOfSampleUtil {
 
     @SuppressWarnings("unchecked")
     public static String getTypeOfSampleNameForId(String id) {
-        Map<String, String> map = new HashMap<>(typeOfSampleIdToNameMap);
         if (typeOfSampleIdToNameMap == null) {
             createTypeOfSampleNameForIdMap();
-            map = new HashMap<>(typeOfSampleIdToNameMap);
         }
-        return map.get(id);
+        return typeOfSampleIdToNameMap.get(id);
     }
 
     private static boolean hasNoEntryFor(String key, Map<String, List<Test>> map) {

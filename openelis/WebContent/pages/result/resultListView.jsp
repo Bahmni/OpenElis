@@ -144,7 +144,9 @@ $jq(document).ready( function() {
 			if( searchTerm != "null" ){
 				 pageSearch.highlightSearch( searchTerm, false );
 			}
-			
+
+            $jq(".referralCheckBox").trigger('change');
+
 			});
 
 function handleMultiSelectChange( e, data ){
@@ -252,7 +254,12 @@ function validateForm(){
 function /*void*/ handleReferralCheckChange(checkbox,  index ){
 	var referralReason = $( "referralReasonId_" + index );
 	referralReason.value = 0;
-	referralReason.disabled = !checkbox.checked;
+    referralReason.disabled = !checkbox.checked;
+
+    var result = $( "results_" + index );
+    result.value = "";
+    result.style.background = "#ffffff";
+    result.disabled = checkbox.checked;
 }
 
 function /*void*/ handleReferralReasonChange(select,  index ){
@@ -704,7 +711,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 						  property="resultValue"
 						  size="20"
 						  disabled='<%= testResult.isReadOnly() %>'
-						  style='<%="background: " + (testResult.isValid() ? testResult.isNormal() ? "#ffffff" : "#ffffa0" : "#ffa0a0") %>'
+                          style='<%="background: " + (testResult.isValid() ? testResult.isNormal() ? "#ffffff" : "#ffffa0" : "#ffa0a0") %>'
 						  title='<%= (testResult.isValid() ? testResult.isNormal() ? "" : StringUtil.getMessageForKey("result.value.abnormal") : StringUtil.getMessageForKey("result.value.invalid")) %>' 
 						  styleId='<%="results_" + index %>'
 						  onchange='<%="markUpdated(" + index + ");"  +
@@ -730,7 +737,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 			        onchange="<%="markUpdated(" + index + ", " + testResult.isUserChoiceReflex() +  ", \'" + testResult.getSiblingReflexKey() + "\');"   +
 						               ((noteRequired && !"".equals(testResult.getResultValue()) )? "showNote( " + index + ");" : "") +
 						               (testResult.getQualifiedDictonaryId() != null ? "showQuanitiy( this, "+ index + ", " + testResult.getQualifiedDictonaryId() + ");" :"") %>"
-			        id='<%="resultId_" + index%>'
+			        id='<%="results_" + index%>'
 			        <%=testResult.isReadOnly()? "disabled=\'true\'" : "" %> >
 					<option value="0"></option>
 					<logic:iterate id="optionValue" name="testResult" property="dictionaryResults" type="IdValuePair" >
@@ -748,7 +755,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 			<% } %><logic:equal name="testResult" property="resultType" value="M">
 			<!-- multiple results -->
 			<select name="<%="testResult[" + index + "].multiSelectResultValues" %>"
-					id='<%="resultId_" + index%>'
+					id='<%="results_" + index%>'
 					multiple="multiple"
 					<%=testResult.isReadOnly()? "disabled=\'disabled\'" : "" %> 
 						 title='<%= StringUtil.getMessageForKey("result.multiple_select")%>'
@@ -785,6 +792,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 						   property="referredOut"
 						   indexed="true"
 						   styleId='<%="referralId_" + index %>'
+                           styleClass="referralCheckBox"
 						   onchange='<%="markUpdated(" + index + "); handleReferralCheckChange( this, " + index + ")" %>'/>
 		<% } else {%>
 			<html:checkbox name="testResult"

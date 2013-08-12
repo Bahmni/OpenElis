@@ -89,7 +89,7 @@ public class ResultsValidation {
 	
 	private void validateResult(TestResultItem testResultItem, List<ActionError> errors) {
 
-		if (!(ResultUtil.areNotes(testResultItem) || (supportReferrals && ResultUtil.isReferred(testResultItem)) || ResultUtil.areResults(testResultItem))) { // only
+		if (!(ResultUtil.areNotes(testResultItem) || (supportReferrals && testResultItem.isReferredOut()) || ResultUtil.areResults(testResultItem))) { // only
 			errors.add(new ActionError("errors.result.required"));
 		}
 

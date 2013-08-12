@@ -569,7 +569,7 @@ public class TestReflexUtil {
 		for (TestReflexBean bean : reflexBeanList) {
 			List<TestReflexBean> beanList;
 			if (groupedBeans.containsKey(bean.getSample())) {
-				beanList = groupedBeans.get(bean);
+				beanList = groupedBeans.get(bean.getSample());
 			} else {
 				beanList = new ArrayList<TestReflexBean>();
 				groupedBeans.put(bean.getSample(), beanList);

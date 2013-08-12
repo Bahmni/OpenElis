@@ -206,6 +206,7 @@ public class ReferredOutAction extends BaseAction {
 		referralItem.setSampleType(typeOfSample.getLocalizedName());
 
 		referralItem.setReferringTestName(referral.getAnalysis().getTest().getLocalizedName());
+		referralItem.setReferredTestId(referral.getAnalysis().getTest().getId());
 
 		List<Result> resultList = resultDAO.getResultsByAnalysis(analysis);
 		String resultString = "";
@@ -295,7 +296,7 @@ public class ReferredOutAction extends BaseAction {
 	    List<ReferralResult> leftOvers = new ArrayList<ReferralResult>(referralResults);
 		ReferralResult baseResult = referralResults.remove(0);
 		leftOvers.remove(0);
-		referralItem.setReferredTestId(baseResult.getTestId());
+//		referralItem.setReferredTestId(baseResult.getTestId());
 		referralItem.setReferredReportDate(DateUtil.convertTimestampToStringDate(baseResult.getReferralReportDate()));
 		Result result = baseResult.getResult();
 		String resultType = (result != null)?result.getResultType():"N";

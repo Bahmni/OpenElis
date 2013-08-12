@@ -252,7 +252,7 @@
 <tr>
 
     <td class="lastNameLabel">
-        <%= StringUtil.getContextualMessageForKey("sample.entry.provider.name") %>:
+        <%= StringUtil.getContextualMessageForKey("sample.entry.provider.fullName") %>:
         <% if(requesterLastNameRequired ){ %>
         <span class="requiredlabel">*</span>
         <% } %>
