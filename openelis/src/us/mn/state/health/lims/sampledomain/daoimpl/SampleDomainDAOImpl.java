@@ -303,17 +303,11 @@ public class SampleDomainDAOImpl extends BaseDAOImpl implements SampleDomainDAO 
 			if (!StringUtil.isNullorNill(sampleDomain.getId())) {
 				sampleDomainId = sampleDomain.getId();
 			}
-			query.setParameter("param2", sampleDomainId);
+			query.setParameter("param2", Integer.parseInt(sampleDomainId));
 
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
 
-			if (list.size() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+            return list.size() > 0;
 
 		} catch (Exception e) {
 			//bugzilla 2154

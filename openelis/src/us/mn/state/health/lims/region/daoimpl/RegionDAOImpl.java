@@ -297,17 +297,11 @@ public class RegionDAOImpl extends BaseDAOImpl implements RegionDAO {
 			if (!StringUtil.isNullorNill(region.getId())) {
 				regionId = region.getId();
 			}
-			query.setParameter("param2", regionId);
+			query.setParameter("param2", Integer.parseInt(regionId));
 
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
 
-			if (list.size() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+            return list.size() > 0;
 
 		} catch (Exception e) {
 			//bugzilla 2154

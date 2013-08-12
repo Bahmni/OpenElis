@@ -15,24 +15,23 @@
 */
 package us.mn.state.health.lims.gender.daoimpl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-
 import org.apache.commons.beanutils.PropertyUtils;
-
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
 import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.daoimpl.BaseDAOImpl;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
+import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
-import us.mn.state.health.lims.common.log.LogEvent; 
 import us.mn.state.health.lims.gender.dao.GenderDAO;
 import us.mn.state.health.lims.gender.valueholder.Gender;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * @author diane benz
@@ -329,14 +328,12 @@ public class GenderDAOImpl extends BaseDAOImpl implements GenderDAO {
 			query.setInteger("genderId", Integer.parseInt(genderId));
 
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
 
 			return list.size() > 0;
 
 		} catch (Exception e) {
 			//bugzilla 2154
-			LogEvent.logError("GenderDAOImpl","duplicateGenderExists()",e.toString());
+			LogEvent.logErrorStack("GenderDAOImpl","duplicateGenderExists()",e);
 			throw new LIMSRuntimeException(
 					"Error in duplicateGenderExists()", e);
 		}

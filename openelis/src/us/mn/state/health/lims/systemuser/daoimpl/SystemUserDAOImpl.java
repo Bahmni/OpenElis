@@ -317,7 +317,7 @@ public class SystemUserDAOImpl extends BaseDAOImpl implements SystemUserDAO {
 	private boolean duplicateSystemUserExists(SystemUser systemUser) throws LIMSRuntimeException {
 		try {
 			
-			List list = new ArrayList();
+			List list;
 			
 			// not case sensitive hemolysis and Hemolysis are considered
 			// duplicates
@@ -335,15 +335,8 @@ public class SystemUserDAOImpl extends BaseDAOImpl implements SystemUserDAO {
 			query.setInteger("id", Integer.parseInt(sysUserId));
 
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
-		
-						
-			if (list.size() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+
+            return list.size() > 0;
 
 		} catch (Exception e) {
 			//bugzilla 2154

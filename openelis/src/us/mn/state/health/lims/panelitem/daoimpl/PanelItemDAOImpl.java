@@ -383,14 +383,8 @@ public class PanelItemDAOImpl extends BaseDAOImpl implements PanelItemDAO {
 			query.setInteger("panelItemId", Integer.parseInt(panelItemId));
 
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
 
-			if (list.size() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+            return list.size() > 0;
 
 		} catch (Exception e) {
 			//bugzilla 2154

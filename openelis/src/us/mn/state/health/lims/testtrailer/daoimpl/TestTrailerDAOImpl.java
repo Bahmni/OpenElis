@@ -327,8 +327,6 @@ public class TestTrailerDAOImpl extends BaseDAOImpl implements TestTrailerDAO {
 	private boolean duplicateTestTrailerExists(TestTrailer testTrailer) throws LIMSRuntimeException {
 		try {
 
-			List list = new ArrayList();
-
 			// not case sensitive hemolysis and Hemolysis are considered
 			// duplicates
 			String sql = "from TestTrailer t where trim(lower(t.testTrailerName)) = :param and t.id != :param2";
@@ -342,17 +340,11 @@ public class TestTrailerDAOImpl extends BaseDAOImpl implements TestTrailerDAO {
 			if (!StringUtil.isNullorNill(testTrailer.getId())) {
 				testTrailerId = testTrailer.getId();
 			}
-			query.setParameter("param2", testTrailerId);
+			query.setParameter("param2", Integer.parseInt(testTrailerId));
 
-			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
+			List list = query.list();
 
-			if (list.size() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+            return list.size() > 0;
 
 		} catch (Exception e) {
 			//bugzilla 2154

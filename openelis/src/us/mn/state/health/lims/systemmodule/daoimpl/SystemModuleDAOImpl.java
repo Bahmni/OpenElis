@@ -15,24 +15,22 @@
 */
 package us.mn.state.health.lims.systemmodule.daoimpl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-
 import org.apache.commons.beanutils.PropertyUtils;
-
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
 import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.daoimpl.BaseDAOImpl;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
+import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
-import us.mn.state.health.lims.common.log.LogEvent;
+import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.systemmodule.dao.SystemModuleDAO;
 import us.mn.state.health.lims.systemmodule.valueholder.SystemModule;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
+
+import java.util.List;
+import java.util.Vector;
 
 /**
  *  @author     Hung Nguyen (Hung.Nguyen@health.state.mn.us)
@@ -290,7 +288,7 @@ public class SystemModuleDAOImpl extends BaseDAOImpl implements SystemModuleDAO 
 	private boolean duplicateSystemModuleExists(SystemModule systemModule) throws LIMSRuntimeException {
 		try {
 
-			List list = new ArrayList();
+			List list;
 
 			String sql = "from SystemModule s where trim(lower(s.systemModuleName)) = :moduleName and s.id != :moduleId";
 			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
@@ -303,14 +301,8 @@ public class SystemModuleDAOImpl extends BaseDAOImpl implements SystemModuleDAO 
 			query.setInteger("moduleId", Integer.parseInt(systemModuleId));
 
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
 
-			if (list.size() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+            return list.size() > 0;
 
 		} catch (Exception e) {
 			//bugzilla 2154

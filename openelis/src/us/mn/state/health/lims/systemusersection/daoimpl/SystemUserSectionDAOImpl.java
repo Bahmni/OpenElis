@@ -15,12 +15,7 @@
 */
 package us.mn.state.health.lims.systemusersection.daoimpl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-
 import org.apache.commons.beanutils.PropertyUtils;
-
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
 import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
 import us.mn.state.health.lims.common.action.IActionConstants;
@@ -33,6 +28,9 @@ import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.systemusersection.dao.SystemUserSectionDAO;
 import us.mn.state.health.lims.systemusersection.valueholder.SystemUserSection;
+
+import java.util.List;
+import java.util.Vector;
 
 /**
  *  @author     Hung Nguyen (Hung.Nguyen@health.state.mn.us)
@@ -309,7 +307,7 @@ public class SystemUserSectionDAOImpl extends BaseDAOImpl implements SystemUserS
 	private boolean duplicateSystemUserSectionExists(SystemUserSection systemUserSection) throws LIMSRuntimeException {
 		try {
 
-			List list = new ArrayList();
+			List list;
 
 			String sql = "from SystemUserSection s where s.systemUser.id = :param and s.testSection.id = :param2 and s.id != :param3";
 			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
@@ -320,17 +318,11 @@ public class SystemUserSectionDAOImpl extends BaseDAOImpl implements SystemUserS
 			if (!StringUtil.isNullorNill(systemUserSection.getId())) {
 				systemUserSectionId = systemUserSection.getId();
 			}
-			query.setParameter("param3", systemUserSectionId);
+			query.setParameter("param3", Integer.parseInt(systemUserSectionId));
 
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
 
-			if (list.size() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+            return list.size() > 0;
 
 		} catch (Exception e) {
 			//bugzilla 2154

@@ -985,18 +985,10 @@ public class AnalysisDAOImpl extends BaseDAOImpl implements AnalysisDAO {
 			query.setParameterList("param3", statusesToExclude);
 
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
-
-			if (list.size() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+			return (list.size() > 0);
 
 		} catch (Exception e) {
-
-			LogEvent.logError("AnalysisDAOImpl", "duplicateAnalysisExists()", e.toString());
+			LogEvent.logErrorStack("AnalysisDAOImpl", "duplicateAnalysisExists()", e);
 			throw new LIMSRuntimeException("Error in duplicateAnalysisExists()", e);
 		}
 	}

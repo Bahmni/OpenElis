@@ -302,21 +302,15 @@ public class CountyDAOImpl extends BaseDAOImpl implements CountyDAO {
 			if (!StringUtil.isNullorNill(county.getId())) {
 				countyId = county.getId();
 			}
-			query.setParameter("param3", countyId);
+			query.setParameter("param3", Integer.parseInt(countyId));
 
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
 
-			if (list.size() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+            return list.size() > 0;
 
 		} catch (Exception e) {
 			//bugzilla 2154
-			LogEvent.logError("CountyDAOImpl","duplicateCountyExists()",e.toString());
+			LogEvent.logErrorStack("CountyDAOImpl","duplicateCountyExists()",e);
 			throw new LIMSRuntimeException(
 					"Error in duplicateCountyExists()", e);
 		}

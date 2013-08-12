@@ -386,10 +386,8 @@ public class ProjectDAOImpl extends BaseDAOImpl implements ProjectDAO {
 	//bugzilla 1482
 	private boolean duplicateProjectExists(Project project) throws LIMSRuntimeException {
 		try {
-			
-			List list = new ArrayList();
-			
-			// not case sensitive hemolysis and Hemolysis are considered
+
+            // not case sensitive hemolysis and Hemolysis are considered
 			// duplicates
 
 			//bugzilla 2438 adding local abbreviation to duplicate check
@@ -404,18 +402,9 @@ public class ProjectDAOImpl extends BaseDAOImpl implements ProjectDAO {
 			if (!StringUtil.isNullorNill(project.getId())) {
 				projId = project.getId();
 			}
-			query.setParameter("param2", projId);
+			query.setParameter("param2", Integer.parseInt(projId));
 
-			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
-		
-						
-			if (list.size() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+            return query.list().size() > 0;
 
 		} catch (Exception e) {
 			//bugzilla 2154

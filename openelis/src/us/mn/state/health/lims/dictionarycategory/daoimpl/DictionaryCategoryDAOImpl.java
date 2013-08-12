@@ -18,14 +18,9 @@
 */
 package us.mn.state.health.lims.dictionarycategory.daoimpl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.Query;
 import org.hibernate.criterion.Example;
-
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
 import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
 import us.mn.state.health.lims.common.action.IActionConstants;
@@ -38,6 +33,10 @@ import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.dictionarycategory.dao.DictionaryCategoryDAO;
 import us.mn.state.health.lims.dictionarycategory.valueholder.DictionaryCategory;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * @author diane benz
@@ -103,7 +102,10 @@ public class DictionaryCategoryDAOImpl extends BaseDAOImpl implements Dictionary
 
 			HibernateUtil.getSession().flush();
 			HibernateUtil.getSession().clear();
-		} catch (Exception e) {
+		} catch (LIMSDuplicateRecordException e) {
+            throw e;
+        }
+        catch (Exception e) {
 			//bugzilla 2154
 			LogEvent.logError("DictionaryCategoryDAOImpl","insertData()",e.toString());
 			throw new LIMSRuntimeException("Error in DictionaryCategory insertData()", e);
@@ -351,22 +353,15 @@ public class DictionaryCategoryDAOImpl extends BaseDAOImpl implements Dictionary
 			if (!StringUtil.isNullorNill(dictionaryCategory.getId())) {
 				dictId = dictionaryCategory.getId();
 			}
-			query.setParameter("param3", dictId);
+			query.setParameter("param3", Integer.parseInt(dictId));
 
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
 
-
-			if (list.size() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+            return list.size() > 0;
 
 		} catch (Exception e) {
 			//bugzilla 2154
-			LogEvent.logError("DictionaryCategoryDAOImpl","duplicateDictionaryExists()",e.toString());
+			LogEvent.logErrorStack("DictionaryCategoryDAOImpl","duplicateDictionaryExists()",e);
 			throw new LIMSRuntimeException(
 					"Error in duplicateDictionaryExists()", e);
 		}

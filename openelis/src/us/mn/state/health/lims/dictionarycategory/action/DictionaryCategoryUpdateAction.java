@@ -87,7 +87,7 @@ public class DictionaryCategoryUpdateAction extends BaseAction {
 		DictionaryCategory dictionaryCategory = new DictionaryCategory();
 		//get sysUserId from login module
 		UserSessionData usd = (UserSessionData)request.getSession().getAttribute(USER_SESSION_DATA);
-		String sysUserId = String.valueOf(usd.getSystemUserId());	
+		String sysUserId = String.valueOf(usd.getSystemUserId());
 		dictionaryCategory.setSysUserId(sysUserId);				
 		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
 		
@@ -108,6 +108,7 @@ public class DictionaryCategoryUpdateAction extends BaseAction {
 		} catch (LIMSRuntimeException lre) {
             //bugzilla 2154
 			LogEvent.logError("DictionaryCategoryUpdateAction","performAction()",lre.toString());    		
+			LogEvent.logErrorStack("DictionaryCategoryUpdateAction","performAction()",lre);
 			tx.rollback();
 			errors = new ActionMessages();
 			ActionError error = null;

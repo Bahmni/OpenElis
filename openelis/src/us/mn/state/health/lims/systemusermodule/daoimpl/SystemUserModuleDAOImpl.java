@@ -324,17 +324,11 @@ public class SystemUserModuleDAOImpl extends BaseDAOImpl implements PermissionAg
 			if (!StringUtil.isNullorNill(systemUserModule.getId())) {
 				systemUserModuleId = systemUserModule.getId();
 			}
-			query.setParameter("param3", systemUserModuleId);
+			query.setParameter("param3", Integer.parseInt(systemUserModuleId));
 
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
 
-			if (list.size() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+            return list.size() > 0;
 
 		} catch (Exception e) {
 			//bugzilla 2154

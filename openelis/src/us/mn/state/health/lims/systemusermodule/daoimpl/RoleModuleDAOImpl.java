@@ -317,8 +317,6 @@ public class RoleModuleDAOImpl extends BaseDAOImpl implements PermissionAgentMod
 			query.setInteger("param3", Integer.parseInt(systemUserModuleId));
 
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
 
 			return list.size() > 0;
 

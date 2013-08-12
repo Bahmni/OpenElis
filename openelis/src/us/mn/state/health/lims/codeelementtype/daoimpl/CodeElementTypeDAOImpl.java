@@ -329,16 +329,14 @@ public class CodeElementTypeDAOImpl extends BaseDAOImpl implements CodeElementTy
 	private boolean duplicateCodeElementTypeExists(CodeElementType codeElementType) throws LIMSRuntimeException {
 		try {
 
-			List list = new ArrayList();
-
 			// not case sensitive hemolysis and Hemolysis are considered
 			// duplicates
 			//bugzilla 2571 go through ReferenceTablesDAO to get reference tables info
-			String sql = "from CodeElementType t where trim(lower(t.referenceTables.id)) = :param and t.id != :param2";
+			String sql = "from CodeElementType t where t.referenceTables.id = :param and t.id != :param2";
 			org.hibernate.Query query = HibernateUtil.getSession().createQuery(
 					sql);
 			//bugzilla 2571 go through ReferenceTablesDAO to get reference tables info
-			query.setParameter("param", codeElementType.getReferenceTables().getId().toLowerCase().trim());
+			query.setParameter("param", Integer.parseInt(codeElementType.getReferenceTables().getId().toLowerCase().trim()));
 	
 			// initialize with 0 (for new records where no id has been generated
 			// yet
@@ -346,17 +344,10 @@ public class CodeElementTypeDAOImpl extends BaseDAOImpl implements CodeElementTy
 			if (!StringUtil.isNullorNill(codeElementType.getId())) {
 				codeElementTypeId = codeElementType.getId();
 			}
-			query.setParameter("param2", codeElementTypeId);
+			query.setParameter("param2", Integer.parseInt(codeElementTypeId));
 
-			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
-
-			if (list.size() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+			List list = query.list();
+			return (list.size() > 0);
 
 		} catch (Exception e) {
 			//buzilla 2154

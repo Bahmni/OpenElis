@@ -380,14 +380,8 @@ public class PanelDAOImpl extends BaseDAOImpl implements PanelDAO {
 			query.setInteger("panelId", Integer.parseInt(panelId));
 
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
 
-			if (list.size() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+            return list.size() > 0;
 
 		} catch (Exception e) {
 			LogEvent.logError("PanelDAOImpl","duplicatePanelExists()",e.toString());
@@ -417,14 +411,8 @@ public class PanelDAOImpl extends BaseDAOImpl implements PanelDAO {
 			query.setInteger("panelId", Integer.parseInt(panelId));
 
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
 
-			if (list.size() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+            return list.size() > 0;
 
 		} catch (Exception e) {
 			LogEvent.logError("PanelDAOImpl","duplicatePanelDescriptionExists()",e.toString());

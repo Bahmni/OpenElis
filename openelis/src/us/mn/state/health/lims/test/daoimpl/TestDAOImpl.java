@@ -873,11 +873,7 @@ public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
                 list = query.list();
             }
 
-            if (list.size() > 0) {
-                return true;
-            } else {
-                return false;
-            }
+            return list.size() > 0;
 
         } catch (Exception e) {
 			//bugzilla 2154

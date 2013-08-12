@@ -436,14 +436,11 @@ public class AnalyteDAOImpl extends BaseDAOImpl implements AnalyteDAO {
 			query.setInteger("id", Integer.parseInt(analyteId));
 
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
-				
 			return list.size() > 0;
 			
 		} catch (Exception e) {
 			//buzilla 2154
-			LogEvent.logError("AnalyteDAOImpl","duplicateAnalyteExists()",e.toString());
+			LogEvent.logErrorStack("AnalyteDAOImpl","duplicateAnalyteExists()",e);
 			throw new LIMSRuntimeException("Error in duplicateAnalyteExists()", e);
 		}
 	}

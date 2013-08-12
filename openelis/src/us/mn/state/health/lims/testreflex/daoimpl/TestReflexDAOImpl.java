@@ -459,14 +459,8 @@ public class TestReflexDAOImpl extends BaseDAOImpl implements TestReflexDAO {
 			query.setInteger("testId", Integer.parseInt(testReflexId));
 
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
 
-			if (list.size() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+            return list.size() > 0;
 
 		} catch (Exception e) {
 			LogEvent.logError("TestReflexDAOImpl", "duplicateTestReflexExists()", e.toString());

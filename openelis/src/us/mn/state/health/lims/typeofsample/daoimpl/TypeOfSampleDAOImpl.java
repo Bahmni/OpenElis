@@ -530,14 +530,8 @@ public class TypeOfSampleDAOImpl extends BaseDAOImpl implements TypeOfSampleDAO 
 			query.setInteger("id", Integer.parseInt(typeOfSampleId));
 
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
 
-			if (list.size() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+            return list.size() > 0;
 
 		} catch (Exception e) {
 			//bugzilla 2154

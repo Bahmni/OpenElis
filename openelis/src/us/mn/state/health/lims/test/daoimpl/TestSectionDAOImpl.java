@@ -449,14 +449,8 @@ public class TestSectionDAOImpl extends BaseDAOImpl implements TestSectionDAO {
 			query.setInteger("param3", Integer.parseInt(testSectionId));
 
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
 
-			if (list.size() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+            return list.size() > 0;
 
 		} catch (Exception e) {
 			//bugzilla 2154

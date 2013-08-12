@@ -358,17 +358,11 @@ public class ScriptletDAOImpl extends BaseDAOImpl implements ScriptletDAO {
 			if (!StringUtil.isNullorNill(scriptlet.getId())) {
 				scriptletId = scriptlet.getId();
 			}
-			query.setParameter("param2", scriptletId);
+			query.setParameter("param2", Integer.parseInt(scriptletId));
 
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
 
-			if (list.size() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+            return list.size() > 0;
 
 		} catch (Exception e) {
 			//bugzilla 2154

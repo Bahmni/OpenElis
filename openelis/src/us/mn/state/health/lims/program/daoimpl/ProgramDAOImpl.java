@@ -285,7 +285,7 @@ public class ProgramDAOImpl extends BaseDAOImpl implements ProgramDAO {
 	private boolean duplicateProgramExists(Program program) throws LIMSRuntimeException {
 		try {
 
-			List list = new ArrayList();
+			List list;
 
 			// not case sensitive hemolysis and Hemolysis are considered
 			// duplicates
@@ -304,18 +304,12 @@ public class ProgramDAOImpl extends BaseDAOImpl implements ProgramDAO {
 			if (!StringUtil.isNullorNill(program.getCode())) {
 				programCode = program.getCode().trim().toLowerCase();
 			}
-			query.setParameter("param2", programId);
+			query.setParameter("param2", Integer.parseInt(programId));
 			query.setParameter("param3", programCode);
 
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
 
-			if (list.size() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+            return list.size() > 0;
 
 		} catch (Exception e) {
 			//bugzilla 2154

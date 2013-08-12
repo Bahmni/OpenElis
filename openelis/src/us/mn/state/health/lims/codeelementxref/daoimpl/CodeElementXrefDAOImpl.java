@@ -383,21 +383,14 @@ public class CodeElementXrefDAOImpl extends BaseDAOImpl implements
 					.getText().trim().toLowerCase());
 			query.setParameter("param3", codeElementXref
 					.getSelectedLocalCodeElementId().trim());
-			query.setParameter("param4", codeElementXrefId);
+			query.setParameter("param4", Integer.parseInt(codeElementXrefId));
 
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
-
-			if (list.size() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+            return list.size() > 0;
 
 		} catch (Exception e) {
 			//buzilla 2154
-			LogEvent.logError("CodeElementXref","duplicateCodeElementXrefExists()",e.toString());
+			LogEvent.logErrorStack("CodeElementXref","duplicateCodeElementXrefExists()",e);
 			throw new LIMSRuntimeException(
 					"Error in duplicateCodeElementXrefExists()", e);
 		}

@@ -340,21 +340,15 @@ public class LabelDAOImpl extends BaseDAOImpl implements LabelDAO {
 			if (!StringUtil.isNullorNill(label.getId())) {
 				labelId = label.getId();
 			}
-			query.setParameter("param2", labelId);
+			query.setInteger("param2", Integer.parseInt(labelId));
 
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
 
-			if (list.size() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+            return list.size() > 0;
 
 		} catch (Exception e) {
 			//bugzilla 2154
-			LogEvent.logError("LabelDAOImpl","duplicateLabelExists()",e.toString());
+			LogEvent.logErrorStack("LabelDAOImpl","duplicateLabelExists()",e);
 			throw new LIMSRuntimeException(
 					"Error in duplicateLabelExists()", e);
 		}

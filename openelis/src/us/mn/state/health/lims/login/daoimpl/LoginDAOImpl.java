@@ -17,12 +17,7 @@
  */
 package us.mn.state.health.lims.login.daoimpl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-
 import org.apache.commons.beanutils.PropertyUtils;
-
 import phl.util.Crypto;
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
 import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
@@ -36,6 +31,10 @@ import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.dao.LoginDAO;
 import us.mn.state.health.lims.login.valueholder.Login;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * @author Hung Nguyen (Hung.Nguyen@health.state.mn.us)
@@ -311,14 +310,12 @@ public class LoginDAOImpl extends BaseDAOImpl implements LoginDAO {
 			query.setInteger("loginId", Integer.parseInt(loginId));
 
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
 
 			return list.size() > 0;
 
 		} catch (Exception e) {
 			// bugzilla 2154
-			LogEvent.logError("LoginDAOImpl", "duplicateLoginNameExists()", e.toString());
+			LogEvent.logErrorStack("LoginDAOImpl", "duplicateLoginNameExists()", e);
 			throw new LIMSRuntimeException("Error in duplicateLoginNameExists()", e);
 		}
 	}

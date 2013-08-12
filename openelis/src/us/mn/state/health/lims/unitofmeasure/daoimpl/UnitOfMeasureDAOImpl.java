@@ -311,8 +311,6 @@ public class UnitOfMeasureDAOImpl extends BaseDAOImpl implements
 	private boolean duplicateUnitOfMeasureExists(UnitOfMeasure unitOfMeasure) throws LIMSRuntimeException {
 		try {
 
-			List list = new ArrayList();
-
 			// not case sensitive hemolysis and Hemolysis are considered
 			// duplicates
 			String sql = "from UnitOfMeasure t where trim(lower(t.unitOfMeasureName)) = :param and t.id != :param2";
@@ -328,15 +326,9 @@ public class UnitOfMeasureDAOImpl extends BaseDAOImpl implements
 			}
 			query.setInteger("param2", Integer.parseInt(unitOfMeasureId));
 
-			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
+			List list = query.list();
 
-			if (list.size() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+            return list.size() > 0;
 
 		} catch (Exception e) {
 			//bugzilla 2154

@@ -15,24 +15,22 @@
 */
 package us.mn.state.health.lims.sourceofsample.daoimpl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-
 import org.apache.commons.beanutils.PropertyUtils;
-
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
 import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.daoimpl.BaseDAOImpl;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
+import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
-import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.sourceofsample.dao.SourceOfSampleDAO;
 import us.mn.state.health.lims.sourceofsample.valueholder.SourceOfSample;
+
+import java.util.List;
+import java.util.Vector;
 
 /**
  * @author diane benz
@@ -424,7 +422,7 @@ public class SourceOfSampleDAOImpl extends BaseDAOImpl implements
 	private boolean duplicateSourceOfSampleExists(SourceOfSample sourceOfSample) throws LIMSRuntimeException {
 		try {
 
-			List list = new ArrayList();
+			List list;
 
 			// not case sensitive hemolysis and Hemolysis are considered
 			// duplicates
@@ -441,17 +439,11 @@ public class SourceOfSampleDAOImpl extends BaseDAOImpl implements
 			if (!StringUtil.isNullorNill(sourceOfSample.getId())) {
 				sourceOfSampleId = sourceOfSample.getId();
 			}
-			query.setParameter("param3", sourceOfSampleId);
+			query.setParameter("param3", Integer.parseInt(sourceOfSampleId));
 
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
 
-			if (list.size() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+            return list.size() > 0;
 
 		} catch (Exception e) {
 			//bugzilla 2154

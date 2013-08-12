@@ -280,8 +280,6 @@ public class TypeOfTestResultDAOImpl extends BaseDAOImpl implements TypeOfTestRe
 	private boolean duplicateTypeOfTestResultExists(TypeOfTestResult typeOfTestResult) throws LIMSRuntimeException {
 		try {
 
-			List list = new ArrayList();
-
 			// not case sensitive hemolysis and Hemolysis are considered
 			// duplicates
 			String sql = "from TypeOfTestResult t where (trim(lower(t.description)) = :param and t.id != :param2) or (trim(lower(t.testResultType)) = :param3 and t.id != :param2)";
@@ -296,17 +294,11 @@ public class TypeOfTestResultDAOImpl extends BaseDAOImpl implements TypeOfTestRe
             if (!StringUtil.isNullorNill(typeOfTestResult.getId())) {
                 typeOfTestResultId = typeOfTestResult.getId();
             }
-            query.setParameter("param2", typeOfTestResultId);
+            query.setParameter("param2", Integer.parseInt(typeOfTestResultId));
 
-            list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
+            List list = query.list();
 
-			if (list.size() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+            return list.size() > 0;
 
 		} catch (Exception e) {
 			//bugzilla 2154

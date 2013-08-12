@@ -370,22 +370,16 @@ public class MethodDAOImpl extends BaseDAOImpl implements MethodDAO {
 			if (!StringUtil.isNullorNill(method.getId())) {
 				methodId = method.getId();
 			}
-			query.setParameter("param2", methodId);
+			query.setParameter("param2", Integer.parseInt(methodId));
 
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
-		
-						
-			if (list.size() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+
+
+            return list.size() > 0;
 
 		} catch (Exception e) {
 			//bugzilla 2154
-			LogEvent.logError("MethodDAOImpl","duplicateMethodExists()",e.toString());
+			LogEvent.logErrorStack("MethodDAOImpl","duplicateMethodExists()",e);
 			throw new LIMSRuntimeException("Error in duplicateMethodExists()", e);
 		}
 	}
