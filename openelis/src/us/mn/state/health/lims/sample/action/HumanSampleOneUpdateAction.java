@@ -15,22 +15,9 @@
 */
 package us.mn.state.health.lims.sample.action;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts.Globals;
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
-import org.apache.struts.action.ActionMessages;
-import org.apache.struts.action.ActionRedirect;
-
+import org.apache.struts.action.*;
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
@@ -41,12 +28,7 @@ import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
-import us.mn.state.health.lims.common.provider.validation.CityStateZipComboValidationProvider;
-import us.mn.state.health.lims.common.provider.validation.CityValidationProvider;
-import us.mn.state.health.lims.common.provider.validation.OrganizationLocalAbbreviationValidationProvider;
-import us.mn.state.health.lims.common.provider.validation.ProjectIdOrNameValidationProvider;
-import us.mn.state.health.lims.common.provider.validation.StateValidationProvider;
-import us.mn.state.health.lims.common.provider.validation.ZipValidationProvider;
+import us.mn.state.health.lims.common.provider.validation.*;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.common.util.validator.ActionError;
@@ -97,6 +79,13 @@ import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleDAO;
 import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleDAOImpl;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSample;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 /**
  * @author diane benz
@@ -591,7 +580,7 @@ public class HumanSampleOneUpdateAction extends BaseAction {
 		// overriding getForward in this class
 		String accessionNumber = sample.getAccessionNumber();
 		// return getForward(mapping.findForward(forward), id, start);
-		return getForward(mapping.findForward(forward), id, start,
+		return getForward(mapping.findForward(forward), sample.getId(), start,
 				accessionNumber);
 
 	}

@@ -15,16 +15,12 @@
 */
 package us.mn.state.health.lims.action.action;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts.Globals;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
-
 import us.mn.state.health.lims.action.dao.ActionDAO;
 import us.mn.state.health.lims.action.daoimpl.ActionDAOImpl;
 import us.mn.state.health.lims.action.valueholder.Action;
@@ -38,6 +34,9 @@ import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 import us.mn.state.health.lims.common.util.validator.ActionError;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author diane benz
@@ -173,7 +172,7 @@ public class ActionUpdateAction extends BaseAction {
 		//bugzilla 1400
 		if (isNew) forward = FWD_SUCCESS_INSERT;
 		//bugzilla 1467 added direction for redirect to NextPreviousAction
-		return getForward(mapping.findForward(forward), id, start, direction);
+		return getForward(mapping.findForward(forward), action.getId(), start, direction);
 
 	}
 

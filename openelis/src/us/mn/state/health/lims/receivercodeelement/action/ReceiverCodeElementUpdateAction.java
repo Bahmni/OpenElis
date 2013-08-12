@@ -228,7 +228,7 @@ public class ReceiverCodeElementUpdateAction extends BaseAction {
 		//bugzilla 1400
 		if (isNew) forward = FWD_SUCCESS_INSERT;
 		//bugzilla 1467 added direction for redirect to NextPreviousAction
-		return getForward(mapping.findForward(forward), id, start, direction, messageOrganizationId, codeElementTypeId);
+		return getForward(mapping.findForward(forward), receiverCodeElement.getId(), start, direction, messageOrganizationId, codeElementTypeId);
 
 	}
 

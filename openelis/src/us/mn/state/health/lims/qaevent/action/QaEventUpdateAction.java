@@ -15,31 +15,24 @@
 */
 package us.mn.state.health.lims.qaevent.action;
 
-import java.util.Collections;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts.Globals;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
-
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
+import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
-import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
 import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
+import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.dao.UserTestSectionDAO;
 import us.mn.state.health.lims.login.daoimpl.UserTestSectionDAOImpl;
@@ -51,6 +44,11 @@ import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.test.valueholder.TestComparator;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author diane benz
@@ -224,7 +222,7 @@ public class QaEventUpdateAction extends BaseAction {
 
 		if (isNew)
 			forward = FWD_SUCCESS_INSERT;
-		return getForward(mapping.findForward(forward), id, start, direction);
+		return getForward(mapping.findForward(forward), qaEvent.getId(), start, direction);
 	}
 
 	protected String getPageTitleKey() {

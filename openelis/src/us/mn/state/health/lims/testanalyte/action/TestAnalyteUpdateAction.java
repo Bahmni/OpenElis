@@ -15,27 +15,21 @@
 */
 package us.mn.state.health.lims.testanalyte.action;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts.Globals;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
-
 import us.mn.state.health.lims.analyte.dao.AnalyteDAO;
 import us.mn.state.health.lims.analyte.daoimpl.AnalyteDAOImpl;
 import us.mn.state.health.lims.analyte.valueholder.Analyte;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
+import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
 import us.mn.state.health.lims.test.dao.TestDAO;
@@ -44,6 +38,10 @@ import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.testanalyte.dao.TestAnalyteDAO;
 import us.mn.state.health.lims.testanalyte.daoimpl.TestAnalyteDAOImpl;
 import us.mn.state.health.lims.testanalyte.valueholder.TestAnalyte;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * @author diane benz
@@ -234,7 +232,7 @@ public class TestAnalyteUpdateAction extends BaseAction {
 
 		//bugzilla 1400
 		if (isNew) forward = FWD_SUCCESS_INSERT;
-		return getForward(mapping.findForward(forward), id, start);
+		return getForward(mapping.findForward(forward), testAnalyte.getId(), start);
 
 	}
 

@@ -198,7 +198,7 @@ public class PanelItemUpdateAction extends BaseAction {
 		//bugzilla 1400
 		if (isNew) forward = FWD_SUCCESS_INSERT;
 		//bugzilla 1467 added direction for redirect to NextPreviousAction
-		return getForward(mapping.findForward(forward), id, start, direction);
+		return getForward(mapping.findForward(forward), panelItem.getId(), start, direction);
 
 	}
 

@@ -17,9 +17,6 @@
  */
 package us.mn.state.health.lims.testreflex.action;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.validator.GenericValidator;
 import org.apache.struts.Globals;
@@ -27,7 +24,6 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
-
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
@@ -52,6 +48,9 @@ import us.mn.state.health.lims.testreflex.valueholder.TestReflex;
 import us.mn.state.health.lims.testresult.dao.TestResultDAO;
 import us.mn.state.health.lims.testresult.daoimpl.TestResultDAOImpl;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author diane benz
@@ -198,7 +197,7 @@ public class TestReflexUpdateAction extends BaseAction {
 			forward = FWD_SUCCESS_INSERT;
 		}
 
-		return getForward(mapping.findForward(forward), id, start, direction);
+		return getForward(mapping.findForward(forward), testReflex.getId(), start, direction);
 
 	}
 

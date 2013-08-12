@@ -72,7 +72,7 @@ public class TypeOfSampleTestUpdateAction extends BaseAction {
         }
 
 		String forward = FWD_SUCCESS_INSERT;
-		return getForward(mapping.findForward(forward), id, start, direction);
+		return getForward(mapping.findForward(forward), sampleTest.getId(), start, direction);
 	}
 
 	protected String getPageTitleKey() {

@@ -215,7 +215,7 @@ public class TestResultUpdateAction extends BaseAction {
 
 		//bugzilla 1400
 		if (isNew) forward = FWD_SUCCESS_INSERT;
-		return getForward(mapping.findForward(forward), id, start);
+		return getForward(mapping.findForward(forward), testResult.getId(), start);
 
 	}
 

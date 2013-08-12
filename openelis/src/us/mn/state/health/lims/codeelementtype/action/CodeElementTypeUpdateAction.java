@@ -15,19 +15,12 @@
 */
 package us.mn.state.health.lims.codeelementtype.action;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts.Globals;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
-
 import us.mn.state.health.lims.codeelementtype.dao.CodeElementTypeDAO;
 import us.mn.state.health.lims.codeelementtype.daoimpl.CodeElementTypeDAOImpl;
 import us.mn.state.health.lims.codeelementtype.valueholder.CodeElementType;
@@ -44,6 +37,11 @@ import us.mn.state.health.lims.login.valueholder.UserSessionData;
 import us.mn.state.health.lims.referencetables.dao.ReferenceTablesDAO;
 import us.mn.state.health.lims.referencetables.daoimpl.ReferenceTablesDAOImpl;
 import us.mn.state.health.lims.referencetables.valueholder.ReferenceTables;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author diane benz
@@ -217,7 +215,7 @@ public class CodeElementTypeUpdateAction extends BaseAction {
 		//bugzilla 1400
 		if (isNew) forward = FWD_SUCCESS_INSERT;
 		//bugzilla 1467 added direction for redirect to NextPreviousAction
-		return getForward(mapping.findForward(forward), id, start, direction);
+		return getForward(mapping.findForward(forward), codeElementType.getId(), start, direction);
 
 	}
 
