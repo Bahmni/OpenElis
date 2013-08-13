@@ -472,6 +472,7 @@
         </addColumn>
     </changeSet>
     <changeSet author="tw" id="30" context="bahmni">
+
         <comment>Adds referral types</comment>
         <insert schemaName="clinlims" tableName="referral_type">
             <column name="id" valueNumeric=" nextval( 'referral_type_seq' ) "/>
@@ -491,4 +492,20 @@
             <!--<column name="lastupdated" header="lastUpdated" type="DATE"/>-->
         <!--</loadData>-->
     <!--</changeSet>-->
+     <changeSet author="tw" id="31" context="bahmni">
+        <comment>Adding labDashboard menu</comment>
+        <update schemaName="clinlims" tableName="menu">
+            <column name="presentation_order" valueNumeric="presentation_order+1"/>
+            <where>parent_id is null and presentation_order > 1</where>
+        </update>
+        <insert schemaName="clinlims" tableName="menu">
+            <column name="id" valueNumeric=" nextVal( 'menu_seq' ) "/>
+            <column name="presentation_order" valueNumeric="2"/>
+            <column name="element_id" value="menu_labDashboard"/>
+            <column name="action_url" value="/LabDashboard.do"/>
+            <column name="display_key" value="banner.menu.labdashboard"/>
+            <column name="tool_tip_key" value="tooltip.banner.menu.labdashboard"/>
+            <column name="new_window" value="f"/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>

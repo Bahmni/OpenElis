@@ -37,6 +37,7 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
 <script type="text/javascript" src="<%=basePath%>scripts/ui/jquery.ui.widget.js"></script>
 <script type="text/javascript" src="<%=basePath%>scripts/ui/jquery.ui.tabs.js"></script>
 <script type="text/javascript" src="<%=basePath%>scripts/dashBoard/orders.js"></script>
+<script type="text/javascript" src="<%=basePath%>scripts/dashBoard/createGrid.js"></script>
 
 <input id="refreshButton" type="button" value="Refresh">
 
@@ -52,187 +53,41 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
 
 <script type="text/javascript">
 
-    function formatter(row, cell, value, columnDef, dataContext) {
-        return value;
-    }
 
-    var grid;
-    var dataView;
-    var dataView1;
+    var gridForInProgressOrder;
+    var gridForCompletedOrder;
+    var dataViewForInProgressTab;
+    var dataViewForCompletedTab;
     var columnFilters = {};
-    var columnFilters2 = {};
+    var inProgressObject;
+    var completedOrderObject;
 
     var options = {
         enableColumnReorder: false,
         autoHeight:true,
         autoWidth: true,
-        showHeaderRow: true,
         enableCellNavigation: true,
         showHeaderRow: true,
         headerRowHeight: 30,
         explicitInitialization: true
     };
-
-    function filter(item) {
-        for (var columnId in columnFilters) {
-          if (columnId !== undefined && columnFilters[columnId] !== "") {
-            var c = grid.getColumns()[grid.getColumnIndex(columnId)];
-            if (item[c.field].indexOf(columnFilters[columnId]) == -1 ) {
-              return false;
-            }
-          }
-        }
-        return true;
-      }
-
-      function filter2(item) {
-              for (var columnId in columnFilters2) {
-                if (columnId !== undefined && columnFilters2[columnId] !== "") {
-                  var c = grid.getColumns()[grid.getColumnIndex(columnId)];
-                  if (item[c.field].indexOf(columnFilters2[columnId]) == -1 ) {
-                    return false;
-                  }
-                }
-              }
-              return true;
-            }
-
-
     jQuery(document).ready(function() {
-        var inProgressObject = new inProgressOrder("#inProgressListContainer", formatter, "<%= inProgressOrderListJson %>");
-
-         var indexesOfNonSearchableColumns = inProgressObject.indexesOfNonSearchableColumns();
-
-
-
-        dataView = new Slick.Data.DataView();
-        grid = new Slick.Grid(inProgressObject.div, dataView, inProgressObject.columns,options);
-
-        grid.onSort.subscribe(function(e, args){ // args: sort information.
-           var field = args.sortCol.field;
-               data = inProgressObject.orderList().mergeSort(function (a, b) {
-                  var result =
-                      a[field] > b[field] ? 1 :
-                      a[field] < b[field] ? -1 :
-                      0;
-                  return args.sortAsc ? result : -result;
-               });
-           grid.invalidate();
-           grid.setData(data);
-           grid.render();
-        });
+        inProgressObject = new order("#inProgressListContainer", "<%= inProgressOrderListJson %>", generateLinkForInProgressOrder, getColumnsForInProgressOrder);
+        dataViewForInProgressTab = new Slick.Data.DataView({ inlineFilters: true });
+        gridForInProgressOrder = new Slick.Grid(inProgressObject.div, dataViewForInProgressTab, inProgressObject.columns,options);
+        createGrid(gridForInProgressOrder, dataViewForInProgressTab, inProgressObject);
 
 
-         dataView.onRowCountChanged.subscribe(function (e, args) {
-              grid.updateRowCount();
-              grid.render();
-            });
+        completedOrderObject = new order("#completedListContainer", "<%= completedOrderListJson %>", generateLinkForCompletedOrder, getColumnsForCompletedOrder);
+        dataViewForCompletedTab = new Slick.Data.DataView();
+        gridForCompletedOrder = new Slick.Grid(completedOrderObject.div, dataViewForCompletedTab, completedOrderObject.columns, options);
+        createGrid(gridForCompletedOrder, dataViewForCompletedTab, completedOrderObject);
 
-            dataView.onRowsChanged.subscribe(function (e, args) {
-              grid.invalidateRows(args.rows);
-              grid.render();
-            });
+        var activeTab = <%= request.getParameter("activeTab") %>;
 
-
-            jQuery(grid.getHeaderRow()).delegate(":input", "change keyup", function (e) {
-              var columnId = jQuery(this).data("columnId");
-              if (columnId != null) {
-                columnFilters[columnId] = jQuery.trim(jQuery(this).val());
-                dataView.refresh();
-              }
-            });
-
-            grid.onHeaderRowCellRendered.subscribe(function(e, args) {
-                jQuery(args.node).empty();
-                jQuery("<input type='text'>")
-                   .data("columnId", args.column.id)
-                   .val(columnFilters[args.column.id])
-                   .appendTo(args.node);
-            });
-
-            grid.init();
-
-            dataView.beginUpdate();
-            dataView.setItems(inProgressObject.orderList());
-            dataView.setFilter(filter);
-            dataView.endUpdate();
-
-            jQuery.each(indexesOfNonSearchableColumns, function(id, index){
-                jQuery(".slick-headerrow-column.l" + index).find("input").hide();
-            });
-
-
-
-        var completedOrderObject = new completedOrder("#completedListContainer", formatter, "<%= completedOrderListJson %>" );
-
-              var indexesOfNonSearchableColumns = completedOrderObject.indexesOfNonSearchableColumns();
-
-
-              dataView1 = new Slick.Data.DataView();
-              grid2 = new Slick.Grid(completedOrderObject.div, dataView1, completedOrderObject.columns, options);
-
-
-
-            grid2.onSort.subscribe(function(e, args){ // args: sort information.
-               var field = args.sortCol.field;
-                 data = completedOrderObject.orderList().mergeSort(function (a, b) {
-                    var result =
-                        a[field] > b[field] ? 1 :
-                        a[field] < b[field] ? -1 :
-                        0;
-                    return args.sortAsc ? result : -result;
-                 });
-                grid2.invalidate();
-                grid2.setData(data);
-                grid2.render();
-            });
-
-            dataView1.onRowCountChanged.subscribe(function (e, args) {
-              grid2.updateRowCount();
-              grid2.render();
-            });
-
-            dataView1.onRowsChanged.subscribe(function (e, args) {
-              grid2.invalidateRows(args.rows);
-              grid2.render();
-            });
-
-
-            jQuery(grid2.getHeaderRow()).delegate(":input", "change keyup", function (e) {
-              var columnId = jQuery(this).data("columnId");
-              if (columnId != null) {
-                columnFilters2[columnId] = jQuery.trim(jQuery(this).val());
-                dataView1.refresh();
-              }
-            });
-
-            grid2.onHeaderRowCellRendered.subscribe(function(e, args) {
-                jQuery(args.node).empty();
-                jQuery("<input type='text'>")
-                   .data("columnId", args.column.id)
-                   .val(columnFilters2[args.column.id])
-                   .appendTo(args.node);
-            });
-
-            grid2.init();
-
-            dataView1.beginUpdate();
-            dataView1.setItems(completedOrderObject.orderList());
-            dataView1.setFilter(filter2);
-            dataView1.endUpdate();
-
-            jQuery.each(indexesOfNonSearchableColumns, function(id, index){
-                jQuery(".slick-headerrow-column.l" + index).find("input").hide();
-            });
-
-
-
-
-         var activeTab = <%= request.getParameter("activeTab") %>;
-
-         var tabOptions = {
+        var tabOptions = {
                         collapsible: true
-                        };
+                    };
 
         if (activeTab){
             tabOptions.selected = activeTab;
@@ -240,9 +95,12 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
 
          jQuery("#tabs").tabs(tabOptions);
 
+
          jQuery("#refreshButton").on("click",function(){
             var index = jQuery( "#tabs" ).tabs( "option", "selected" );
-            location.href +="?activeTab=" + index;
+            //making sure to delete all the parameters on location href
+            var link =location.href.split("?")[0];
+            location.href = link + "?activeTab=" + index;
             return false;
          })
 

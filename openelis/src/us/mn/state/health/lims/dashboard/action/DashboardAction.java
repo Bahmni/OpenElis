@@ -12,27 +12,31 @@ import us.mn.state.health.lims.dashboard.valueholder.Order;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 public class DashboardAction extends BaseAction {
+
+
     @Override
     protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         DynaActionForm dynaForm = (DynaActionForm) form;
 
         OrderListDAOImpl orderListDAO = new OrderListDAOImpl();
 
-        List<Order> allInProgress = orderListDAO.getAllInProgress();
-        String pendingOrderListJson = ObjectMapperRepository.objectMapper.writeValueAsString(allInProgress);
-        String escapedPendingOrderListJson = JSONObject.escape(pendingOrderListJson);
+        String escapedPendingOrderListJson = getAllOrdersJson(orderListDAO.getAllInProgress());
 
-        List<Order> allCompleted = orderListDAO.getAllCompletedBefore24Hours();
-        String completedOrderListJson = ObjectMapperRepository.objectMapper.writeValueAsString(allCompleted);
-        String escapedCompletedOrderListJson = JSONObject.escape(completedOrderListJson);
+        String escapedCompletedOrderListJson = getAllOrdersJson(orderListDAO.getAllCompletedBefore24Hours());
 
         dynaForm.set("inProgressOrderList", escapedPendingOrderListJson);
         dynaForm.set("completedOrderList", escapedCompletedOrderListJson);
 
         return mapping.findForward("success");
+    }
+
+    private String getAllOrdersJson(List<Order> orders) throws IOException {
+        String orderListJson = ObjectMapperRepository.objectMapper.writeValueAsString(orders);
+        return JSONObject.escape(orderListJson);
     }
 
     @Override
