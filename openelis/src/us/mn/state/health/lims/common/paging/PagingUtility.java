@@ -16,29 +16,34 @@
  */
 package us.mn.state.health.lims.common.paging;
 
+import us.mn.state.health.lims.common.util.IdValuePair;
+
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpSession;
-
-import us.mn.state.health.lims.common.action.IActionConstants;
-import us.mn.state.health.lims.common.util.IdValuePair;
-
 public class PagingUtility<E> {
 	private int totalPages = 0;
-	
-	/**
+    private String resultsSessionCacheKey;
+    private String resultsPageMappingSessionCacheKey;
+
+    public PagingUtility(String resultsSessionCacheKey, String resultsPageMappingSessionCacheKey) {
+        this.resultsSessionCacheKey = resultsSessionCacheKey;
+        this.resultsPageMappingSessionCacheKey = resultsPageMappingSessionCacheKey;
+    }
+
+    /**
 	 * @param session the Session for the current HttpRequest
 	 * @param items The items which will be divided into pages
 	 * @param divider The object which knows how to divide the objects into pages
 	 */
 	public void setDatabaseResults(HttpSession session, E items, IPageDivider<E> divider ) {
 
-		List<E> pagedResults = new ArrayList<E>();
+		List<E> pagedResults = new ArrayList<>();
 		divider.createPages(items, pagedResults);
-		session.setAttribute(IActionConstants.RESULTS_SESSION_CACHE, pagedResults);
+        session.setAttribute(resultsSessionCacheKey, pagedResults);
 		List<IdValuePair> searchPageMapping = divider.createSearchToPageMapping(pagedResults);
-		session.setAttribute(IActionConstants.RESULTS_PAGE_MAPPING_SESSION_CACHE, searchPageMapping);
+        session.setAttribute(resultsPageMappingSessionCacheKey, searchPageMapping);
 		totalPages = pagedResults.size();
 	}
 
@@ -50,7 +55,7 @@ public class PagingUtility<E> {
 	 */
 	public E getPage(int page, HttpSession session) {
 		if (page > 0) {
-			 List<E> pagedResults = (List<E>) session.getAttribute(IActionConstants.RESULTS_SESSION_CACHE);
+			 List<E> pagedResults = (List<E>) session.getAttribute(resultsSessionCacheKey);
 
 			 if( pagedResults != null && pagedResults.size() >= page ){
 				 return pagedResults.get(page - 1);
@@ -61,17 +66,16 @@ public class PagingUtility<E> {
 	}
 
 	/**
-	 * @param session the Session for the current HttpRequest
-	 * @param clientItems The items from the client which may have been edited
-	 * @param paging The paging bean, it knows the current page
-	 * @param updater The object which knows how to update the cache
-	 */
+     * @param session the Session for the current HttpRequest
+     * @param paging The paging bean, it knows the current page
+     * @param updater The object which knows how to update the cache
+     */
 	@SuppressWarnings("unchecked")
-	public void updatePagedResults(HttpSession session, E clientItems, PagingBean paging, IPageUpdater<E> updater) {
-		List<E> pagedResults = (List<E>) session.getAttribute(IActionConstants.RESULTS_SESSION_CACHE);
+	public void updatePagedResults(HttpSession session, PagingBean paging, IPageUpdater<E> updater) {
+		List<E> pagedResults = (List<E>) session.getAttribute(resultsSessionCacheKey);
 
 		if( pagedResults != null){
-			updateSessionResultCache(pagedResults, clientItems, paging, updater);
+			updateSessionResultCache(pagedResults, paging, updater);
 			totalPages = pagedResults.size();
 		}
 	}
@@ -86,7 +90,7 @@ public class PagingUtility<E> {
 		return flattener.flattenPages(pagedResults);
 	}
 
-	private void updateSessionResultCache(List<E> pagedResults, E clientTests, PagingBean paging, IPageUpdater<E> updater) {
+	private void updateSessionResultCache(List<E> pagedResults, PagingBean paging, IPageUpdater<E> updater) {
 
 		int currentPage = Integer.parseInt(paging.getCurrentPage()) - 1;
 
@@ -109,7 +113,7 @@ public class PagingUtility<E> {
 
 	/**
 	 * @param currentPage The new current page
-	 * @param the session which will cause the mapping from search terms to pages to be loaded
+	 * @param session which will cause the mapping from search terms to pages to be loaded
 	 * @return The bean with the new current page and the total pages
 	 */
 	public PagingBean getPagingBeanWithSearchMapping(int currentPage, HttpSession session) {
@@ -128,14 +132,14 @@ public class PagingUtility<E> {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<E> getAllPages( HttpSession session){
-		return (List<E>) session.getAttribute(IActionConstants.RESULTS_SESSION_CACHE);
+		return (List<E>) session.getAttribute(resultsSessionCacheKey);
 	}
 	
 	@SuppressWarnings("unchecked")
 	public List<IdValuePair> getPageMapping( HttpSession session){
-		List<IdValuePair> pairList = (List<IdValuePair>)session.getAttribute(IActionConstants.RESULTS_PAGE_MAPPING_SESSION_CACHE);
+		List<IdValuePair> pairList = (List<IdValuePair>)session.getAttribute(resultsPageMappingSessionCacheKey);
 		if( pairList == null){
-			pairList = new ArrayList<IdValuePair>();
+			pairList = new ArrayList<>();
 		}
 		
 		return pairList;

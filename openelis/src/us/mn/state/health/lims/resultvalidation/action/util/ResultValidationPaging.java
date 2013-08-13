@@ -16,28 +16,23 @@
 */
 package us.mn.state.health.lims.resultvalidation.action.util;
 
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.struts.action.DynaActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
+import us.mn.state.health.lims.common.paging.*;
+import us.mn.state.health.lims.common.util.IdValuePair;
+import us.mn.state.health.lims.resultvalidation.bean.AnalysisItem;
+
+import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.struts.action.DynaActionForm;
-
-import us.mn.state.health.lims.common.action.IActionConstants;
-import us.mn.state.health.lims.common.paging.IPageDivider;
-import us.mn.state.health.lims.common.paging.IPageFlattener;
-import us.mn.state.health.lims.common.paging.IPageUpdater;
-import us.mn.state.health.lims.common.paging.PagingBean;
-import us.mn.state.health.lims.common.paging.PagingUtility;
-import us.mn.state.health.lims.common.util.IdValuePair;
-import us.mn.state.health.lims.resultvalidation.bean.AnalysisItem;
-
 
 public class ResultValidationPaging {
-	public static final int VALIDATION_PAGING_SIZE = 240;
-	private PagingUtility<List<AnalysisItem>> paging = new PagingUtility<List<AnalysisItem>>();
+	public static final int VALIDATION_PAGING_SIZE = 2;
+	private PagingUtility<List<AnalysisItem>> paging = new PagingUtility<>(
+            IActionConstants.ANALYSIS_RESULTS_SESSION_CACHE, IActionConstants.ANALYSIS_RESULTS_PAGE_MAPPING_SESSION_CACHE);
 	private static AnalysisItemPageHelper pagingHelper = new AnalysisItemPageHelper();
 
 	public void setDatabaseResults(HttpServletRequest request, DynaActionForm dynaForm, List<AnalysisItem> analysisItems)
@@ -58,10 +53,9 @@ public class ResultValidationPaging {
 			InvocationTargetException, NoSuchMethodException {
 
 		request.getSession().setAttribute(IActionConstants.SAVE_DISABLED, IActionConstants.FALSE);
-		List<AnalysisItem> clientAnalysis = (List<AnalysisItem>) dynaForm.get("resultList");
-		PagingBean bean = (PagingBean) dynaForm.get("paging");
+        PagingBean bean = (PagingBean) dynaForm.get("paging");
 
-		paging.updatePagedResults(request.getSession(), clientAnalysis, bean, pagingHelper);
+		paging.updatePagedResults(request.getSession(), bean, pagingHelper);
 
 		int page = Integer.parseInt(newPage);
 
@@ -74,10 +68,9 @@ public class ResultValidationPaging {
 
 	@SuppressWarnings("unchecked")
 	public void updatePagedResults(HttpServletRequest request, DynaActionForm dynaForm) {
-		List<AnalysisItem> clientAnalysis = (List<AnalysisItem>) dynaForm.get("resultList");
-		PagingBean bean = (PagingBean) dynaForm.get("paging");
+        PagingBean bean = (PagingBean) dynaForm.get("paging");
 
-		paging.updatePagedResults(request.getSession(), clientAnalysis, bean, pagingHelper);
+		paging.updatePagedResults(request.getSession(), bean, pagingHelper);
 	}
 
 	public List<AnalysisItem> getResults(HttpServletRequest request) {
@@ -88,7 +81,7 @@ public class ResultValidationPaging {
 			IPageFlattener<List<AnalysisItem>> {
 
 		public void createPages(List<AnalysisItem> analysisList, List<List<AnalysisItem>> pagedResults) {
-			List<AnalysisItem> page = new ArrayList<AnalysisItem>();
+			List<AnalysisItem> page = new ArrayList<>();
 
 			String currentAccessionNumber = null;
 			int resultCount = 0;
@@ -98,7 +91,7 @@ public class ResultValidationPaging {
 					resultCount = 0;
 					currentAccessionNumber = null;
 					pagedResults.add(page);
-					page = new ArrayList<AnalysisItem>();
+					page = new ArrayList<>();
 				}
 				if (resultCount >= VALIDATION_PAGING_SIZE) {
 					currentAccessionNumber = item.getAccessionNumber();
@@ -122,7 +115,7 @@ public class ResultValidationPaging {
 
 		public List<AnalysisItem> flattenPages(List<List<AnalysisItem>> pages) {
 
-			List<AnalysisItem> allResults = new ArrayList<AnalysisItem>();
+			List<AnalysisItem> allResults = new ArrayList<>();
 
 			for (List<AnalysisItem> page : pages) {
 				for (AnalysisItem item : page) {
@@ -136,7 +129,7 @@ public class ResultValidationPaging {
 
 		@Override
 		public List<IdValuePair> createSearchToPageMapping(List<List<AnalysisItem>> allPages) {
-			List<IdValuePair> mappingList = new ArrayList<IdValuePair>();
+			List<IdValuePair> mappingList = new ArrayList<>();
 			
 			int page = 0;
 			for( List<AnalysisItem> analysisList : allPages){

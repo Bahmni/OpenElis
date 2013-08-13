@@ -16,28 +16,24 @@
  */
 package us.mn.state.health.lims.analyzerresults.action;
 
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.struts.action.DynaActionForm;
+import us.mn.state.health.lims.analyzerresults.action.beanitems.AnalyzerResultItem;
+import us.mn.state.health.lims.common.action.IActionConstants;
+import us.mn.state.health.lims.common.paging.*;
+import us.mn.state.health.lims.common.util.IdValuePair;
+
+import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.struts.action.DynaActionForm;
-
-import us.mn.state.health.lims.analyzerresults.action.beanitems.AnalyzerResultItem;
-import us.mn.state.health.lims.common.action.IActionConstants;
-import us.mn.state.health.lims.common.paging.IPageDivider;
-import us.mn.state.health.lims.common.paging.IPageFlattener;
-import us.mn.state.health.lims.common.paging.IPageUpdater;
-import us.mn.state.health.lims.common.paging.PagingBean;
-import us.mn.state.health.lims.common.paging.PagingUtility;
-import us.mn.state.health.lims.common.util.IdValuePair;
-
 public class AnalyzerResultsPaging {
+    private static TestItemPageHelper pagingHelper = new TestItemPageHelper();
 
-	private PagingUtility<List<AnalyzerResultItem>> paging = new PagingUtility<List<AnalyzerResultItem>>();
-	private static TestItemPageHelper pagingHelper = new TestItemPageHelper();
+	private PagingUtility<List<AnalyzerResultItem>> paging = new PagingUtility<>(
+            IActionConstants.ANALYZER_RESULTS_SESSION_CACHE, IActionConstants.ANALYZER_RESULTS_PAGE_MAPPING_SESSION_CACHE);
+
 
 	public void setDatabaseResults(HttpServletRequest request, DynaActionForm dynaForm, List<AnalyzerResultItem> tests)
 			throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
@@ -56,10 +52,9 @@ public class AnalyzerResultsPaging {
 			InvocationTargetException, NoSuchMethodException {
 
 		request.getSession().setAttribute(IActionConstants.SAVE_DISABLED, IActionConstants.FALSE);
-		List<AnalyzerResultItem> clientTests = (List<AnalyzerResultItem>) dynaForm.get("resultList");
-		PagingBean bean = (PagingBean) dynaForm.get("paging");
+        PagingBean bean = (PagingBean) dynaForm.get("paging");
 
-		paging.updatePagedResults(request.getSession(), clientTests, bean, pagingHelper);
+		paging.updatePagedResults(request.getSession(), bean, pagingHelper);
 
 		int page = Integer.parseInt(newPage);
 
@@ -72,10 +67,9 @@ public class AnalyzerResultsPaging {
 
 	@SuppressWarnings("unchecked")
 	public void updatePagedResults(HttpServletRequest request, DynaActionForm dynaForm) {
-		List<AnalyzerResultItem> clientTests = (List<AnalyzerResultItem>) dynaForm.get("resultList");
-		PagingBean bean = (PagingBean) dynaForm.get("paging");
+        PagingBean bean = (PagingBean) dynaForm.get("paging");
 
-		paging.updatePagedResults(request.getSession(), clientTests, bean, pagingHelper);
+		paging.updatePagedResults(request.getSession(), bean, pagingHelper);
 	}
 
 	public List<AnalyzerResultItem> getResults(HttpServletRequest request) {
@@ -90,7 +84,7 @@ public class AnalyzerResultsPaging {
 			IPageFlattener<List<AnalyzerResultItem>> {
 
 		public void createPages(List<AnalyzerResultItem> tests, List<List<AnalyzerResultItem>> pagedResults) {
-			List<AnalyzerResultItem> page = new ArrayList<AnalyzerResultItem>();
+			List<AnalyzerResultItem> page = new ArrayList<>();
 
 			int sampleGroupingNumber = -1;
 			int resultCount = 0;
@@ -100,7 +94,7 @@ public class AnalyzerResultsPaging {
 					resultCount = 0;
 					sampleGroupingNumber = -1;
 					pagedResults.add(page);
-					page = new ArrayList<AnalyzerResultItem>();
+					page = new ArrayList<>();
 				}
 				if (resultCount >= IActionConstants.PAGING_SIZE) {
 					sampleGroupingNumber = item.getSampleGroupingNumber();
@@ -124,7 +118,7 @@ public class AnalyzerResultsPaging {
 
 		public List<AnalyzerResultItem> flattenPages(List<List<AnalyzerResultItem>> pages) {
 
-			List<AnalyzerResultItem> allResults = new ArrayList<AnalyzerResultItem>();
+			List<AnalyzerResultItem> allResults = new ArrayList<>();
 
 			for (List<AnalyzerResultItem> page : pages) {
 				for (AnalyzerResultItem item : page) {
@@ -136,7 +130,7 @@ public class AnalyzerResultsPaging {
 
 		@Override
 		public List<IdValuePair> createSearchToPageMapping(List<List<AnalyzerResultItem>> allPages) {
-			List<IdValuePair> mappingList = new ArrayList<IdValuePair>();
+			List<IdValuePair> mappingList = new ArrayList<>();
 
 			int page = 0;
 			for (List<AnalyzerResultItem> resultList : allPages) {

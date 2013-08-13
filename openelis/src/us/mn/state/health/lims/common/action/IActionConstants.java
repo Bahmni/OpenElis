@@ -288,9 +288,13 @@ public interface IActionConstants {
 	public static final String STATUS_RULES_RETROCI = "RETROCI";
 	public static final String SAMPLE_EDIT_WRITABLE = "SampleEditWritable";
 
-	public static final String RESULTS_SESSION_CACHE = "ResultsSessionCache";
-	public static final String RESULTS_PAGE_MAPPING_SESSION_CACHE = "ResultsPageMappingSessionCache";
-	public static final int PAGING_SIZE = 60;
+	public static final String ANALYZER_RESULTS_SESSION_CACHE = "AnalyzerResultsSessionCache";
+	public static final String ANALYZER_RESULTS_PAGE_MAPPING_SESSION_CACHE = "AnalyzerResultsPageMappingSessionCache";
+	public static final String TEST_RESULTS_SESSION_CACHE = "TestResultsSessionCache";
+	public static final String TEST_RESULTS_PAGE_MAPPING_SESSION_CACHE = "TestResultsPageMappingSessionCache";
+	public static final String ANALYSIS_RESULTS_SESSION_CACHE = "AnalysisResultsSessionCache";
+	public static final String ANALYSIS_RESULTS_PAGE_MAPPING_SESSION_CACHE = "AnalysisResultsPageMappingSessionCache";
+	public static final int PAGING_SIZE = 3;
 
 	public static final String ACCESSION_SEARCH_WITH_PATIENT = "UseAccessionInSearch";
 	

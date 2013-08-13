@@ -16,26 +16,21 @@
 */
 package us.mn.state.health.lims.result.action.util;
 
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.struts.action.DynaActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
+import us.mn.state.health.lims.common.paging.*;
+import us.mn.state.health.lims.common.util.IdValuePair;
+import us.mn.state.health.lims.test.beanItems.TestResultItem;
+
+import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.struts.action.DynaActionForm;
-
-import us.mn.state.health.lims.common.action.IActionConstants;
-import us.mn.state.health.lims.common.paging.IPageDivider;
-import us.mn.state.health.lims.common.paging.IPageFlattener;
-import us.mn.state.health.lims.common.paging.IPageUpdater;
-import us.mn.state.health.lims.common.paging.PagingBean;
-import us.mn.state.health.lims.common.paging.PagingUtility;
-import us.mn.state.health.lims.common.util.IdValuePair;
-import us.mn.state.health.lims.test.beanItems.TestResultItem;
-
 public class ResultsPaging {
-	private PagingUtility<List<TestResultItem>> paging = new PagingUtility<List<TestResultItem>>();
+	private PagingUtility<List<TestResultItem>> paging = new PagingUtility<>(
+            IActionConstants.TEST_RESULTS_SESSION_CACHE, IActionConstants.TEST_RESULTS_PAGE_MAPPING_SESSION_CACHE);
 	
 	private static TestItemPageHelper pagingHelper = new TestItemPageHelper();
 
@@ -56,10 +51,9 @@ public class ResultsPaging {
 			InvocationTargetException, NoSuchMethodException {
 
 		request.getSession().setAttribute(IActionConstants.SAVE_DISABLED, IActionConstants.FALSE);
-		List<TestResultItem> clientTests = (List<TestResultItem>) dynaForm.get("testResult");
-		PagingBean bean = (PagingBean) dynaForm.get("paging");
+        PagingBean bean = (PagingBean) dynaForm.get("paging");
 
-		paging.updatePagedResults(request.getSession(), clientTests, bean, pagingHelper);
+		paging.updatePagedResults(request.getSession(), bean, pagingHelper);
 
 		int page = Integer.parseInt(newPage);
 
@@ -73,10 +67,9 @@ public class ResultsPaging {
 
 	@SuppressWarnings("unchecked")
 	public void updatePagedResults(HttpServletRequest request, DynaActionForm dynaForm) {
-		List<TestResultItem> clientTests = (List<TestResultItem>) dynaForm.get("testResult");
-		PagingBean bean = (PagingBean) dynaForm.get("paging");
+        PagingBean bean = (PagingBean) dynaForm.get("paging");
 
-		paging.updatePagedResults(request.getSession(), clientTests, bean, pagingHelper);
+		paging.updatePagedResults(request.getSession(), bean, pagingHelper);
 	}
 
 	public List<TestResultItem> getResults(HttpServletRequest request) {
@@ -87,7 +80,7 @@ public class ResultsPaging {
 			IPageFlattener<List<TestResultItem>> {
 
 		public void createPages(List<TestResultItem> tests, List<List<TestResultItem>> pagedResults) {
-			List<TestResultItem> page = new ArrayList<TestResultItem>();
+			List<TestResultItem> page = new ArrayList<>();
 
 			String accessionSequenceNumber = null;
 			int resultCount = 0;
@@ -97,7 +90,7 @@ public class ResultsPaging {
 					resultCount = 0;
 					accessionSequenceNumber = null;
 					pagedResults.add(page);
-					page = new ArrayList<TestResultItem>();
+					page = new ArrayList<>();
 				}
 				if (resultCount >= IActionConstants.PAGING_SIZE) {
 					accessionSequenceNumber = item.getSequenceAccessionNumber();
@@ -123,7 +116,7 @@ public class ResultsPaging {
 
 		public List<TestResultItem> flattenPages(List<List<TestResultItem>> pages) {
 
-			List<TestResultItem> allResults = new ArrayList<TestResultItem>();
+			List<TestResultItem> allResults = new ArrayList<>();
 
 			for (List<TestResultItem> page : pages) {
 				for (TestResultItem item : page) {
@@ -136,7 +129,7 @@ public class ResultsPaging {
 		}
 
 		public List<IdValuePair> createSearchToPageMapping(List<List<TestResultItem>> allPages) {
-			List<IdValuePair> mappingList = new ArrayList<IdValuePair>();
+			List<IdValuePair> mappingList = new ArrayList<>();
 			
 			int page = 0;
 			for( List<TestResultItem> resultList : allPages){
