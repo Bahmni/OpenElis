@@ -17,19 +17,16 @@
  */
 package us.mn.state.health.lims.result.daoimpl;
 
-import java.util.List;
-import java.util.Vector;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
-
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.analyte.valueholder.Analyte;
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
 import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.daoimpl.BaseDAOImpl;
+import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
@@ -39,6 +36,9 @@ import us.mn.state.health.lims.result.valueholder.Result;
 import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.testanalyte.valueholder.TestAnalyte;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
+
+import java.util.List;
+import java.util.Vector;
 
 /**
  * @author diane benz
@@ -101,8 +101,12 @@ public class ResultDAOImpl extends BaseDAOImpl implements ResultDAO {
 	}
 
 	public boolean insertData(Result result) throws LIMSRuntimeException {
+        if (!result.canHaveMultipleValues() && duplicateResultExists(result)) {
+            throw new LIMSDuplicateRecordException("Duplicate record exists for result " + result, "something");
+        }
 
 		try {
+
 			String id = (String) HibernateUtil.getSession().save(result);
 			result.setId(id);
 
@@ -124,7 +128,15 @@ public class ResultDAOImpl extends BaseDAOImpl implements ResultDAO {
 		return true;
 	}
 
-	public void updateData(Result result) throws LIMSRuntimeException {
+    private boolean duplicateResultExists(Result result) {
+            String hql = "from Result r  where r.analysis.id = :analysisId";
+            org.hibernate.Query query = HibernateUtil.getSession().createQuery(hql);
+            query.setInteger("analysisId", Integer.parseInt(result.getAnalysisId()));
+
+            return query.list().size() > 0;
+    }
+
+    public void updateData(Result result) throws LIMSRuntimeException {
 
 		Result oldData = (Result) readResult(result.getId());
 		Result newData = result;

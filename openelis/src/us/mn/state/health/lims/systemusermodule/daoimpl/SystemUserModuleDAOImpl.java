@@ -188,8 +188,6 @@ public class SystemUserModuleDAOImpl extends BaseDAOImpl implements PermissionAg
 			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
 			query.setParameter("param", systemUserId);
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
 		} catch(Exception e) {
 			//bugzilla 2154
 			LogEvent.logError("SystemUserModuleDAOImpl","getAllSystemUserModulesBySystemUserId()",e.toString());

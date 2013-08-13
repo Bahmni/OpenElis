@@ -211,4 +211,28 @@ public class Result extends EnumValueItemImpl {
 		this.parentResult.setValue( parentResult );
 	}
 
+    public boolean canHaveMultipleValues() {
+        TestResult testResultValue = (TestResult) this.testResult.getValue();
+        return testResultValue != null && testResultValue.canHaveMultipleValues();
+    }
+
+    @Override
+    public String toString() {
+        return "Result{" +
+                "id='" + id + '\'' +
+                ", analysis=" + analysis +
+                ", analysisId='" + analysisId + '\'' +
+                ", analyte=" + analyte +
+                ", analyteId='" + analyteId + '\'' +
+                ", testResult=" + testResult +
+                ", testResultId='" + testResultId + '\'' +
+                ", sortOrder='" + sortOrder + '\'' +
+                ", isReportable='" + isReportable + '\'' +
+                ", resultType='" + resultType + '\'' +
+                ", value='" + value + '\'' +
+                ", minNormal=" + minNormal +
+                ", maxNormal=" + maxNormal +
+                ", parentResult=" + parentResult +
+                '}';
+    }
 }

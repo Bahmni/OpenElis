@@ -51,7 +51,9 @@ public class TestResult extends EnumValueItemImpl {
 
 	private ValueHolderInterface scriptlet;
 
-	public TestResult() {
+    public static final String MULTI_RESULT_TYPE = "M";
+
+    public TestResult() {
 		super();
 		this.test = new ValueHolder();
 		this.scriptlet = new ValueHolder();
@@ -181,4 +183,8 @@ public class TestResult extends EnumValueItemImpl {
 	public void setSortOrder(String sortOrder) {
 		this.sortOrder = sortOrder;
 	}
+
+    public boolean canHaveMultipleValues() {
+        return testResultType.equalsIgnoreCase(MULTI_RESULT_TYPE);
+    }
 }

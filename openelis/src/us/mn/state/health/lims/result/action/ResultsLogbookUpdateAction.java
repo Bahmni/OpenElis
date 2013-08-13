@@ -16,34 +16,20 @@
  */
 package us.mn.state.health.lims.result.action;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.validator.GenericValidator;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.apache.struts.Globals;
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
-import org.apache.struts.action.ActionMessages;
-import org.apache.struts.action.ActionRedirect;
+import org.apache.struts.action.*;
 import org.hibernate.StaleObjectStateException;
 import org.hibernate.Transaction;
-
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
 import us.mn.state.health.lims.common.action.IActionConstants;
+import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.formfields.FormFields;
 import us.mn.state.health.lims.common.formfields.FormFields.Field;
@@ -70,11 +56,7 @@ import us.mn.state.health.lims.referral.daoimpl.ReferralTypeDAOImpl;
 import us.mn.state.health.lims.referral.valueholder.Referral;
 import us.mn.state.health.lims.referral.valueholder.ReferralResult;
 import us.mn.state.health.lims.referral.valueholder.ReferralType;
-import us.mn.state.health.lims.result.action.util.ResultSet;
-import us.mn.state.health.lims.result.action.util.ResultUtil;
-import us.mn.state.health.lims.result.action.util.ResultsLoadUtility;
-import us.mn.state.health.lims.result.action.util.ResultsPaging;
-import us.mn.state.health.lims.result.action.util.ResultsValidation;
+import us.mn.state.health.lims.result.action.util.*;
 import us.mn.state.health.lims.result.dao.ResultDAO;
 import us.mn.state.health.lims.result.dao.ResultInventoryDAO;
 import us.mn.state.health.lims.result.dao.ResultSignatureDAO;
@@ -104,6 +86,11 @@ import us.mn.state.health.lims.testresult.dao.TestResultDAO;
 import us.mn.state.health.lims.testresult.daoimpl.TestResultDAOImpl;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.sql.Timestamp;
+import java.util.*;
+
 public class ResultsLogbookUpdateAction extends BaseAction implements IResultSaveService {
 
 	private List<TestResultItem> modifiedItems;
@@ -122,6 +109,7 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
 	private ReferralDAO referralDAO = new ReferralDAOImpl();
 	private ReferralResultDAO referralResultDAO = new ReferralResultDAOImpl();
 	private ResultLimitDAO resultLimitDAO = new ResultLimitDAOImpl();
+    private static Logger logger = LogManager.getLogger(ResultsLogbookUpdateAction.class);
 
 	private static final String RESULT_SUBJECT = "Result Note";
 	private static String REFERRAL_CONFORMATION_ID;
@@ -257,12 +245,23 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
 			tx.commit();
 
 		} catch (LIMSRuntimeException lre) {
+            logger.error("Could not update Results", lre);
+
 			tx.rollback();
 
+
 			ActionError error = null;
-			if (lre.getException() instanceof StaleObjectStateException) {
+
+            if (lre instanceof LIMSDuplicateRecordException) {
+                //error = new ActionError("errors.StaleViewException", ((LIMSDuplicateRecordException) lre).getObjectDescription(), "http://google.com?q=mujir", null);
+                error = new ActionError("errors.StaleViewException", null, null);
+            }
+
+            if (lre.getException() instanceof StaleObjectStateException) {
 				error = new ActionError("errors.OptimisticLockException", null, null);
-			} else {
+			}
+
+            if (error == null) {
 				lre.printStackTrace();
 				error = new ActionError("errors.UpdateException", null, null);
 			}
@@ -271,8 +270,7 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
 			saveErrors(request, errors);
 			request.setAttribute(Globals.ERROR_KEY, errors);
 
-			return mapping.findForward(FWD_FAIL);
-
+			return mapping.findForward("error");
 		}
 
 		for (IResultUpdate updater : updaters) {

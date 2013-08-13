@@ -377,8 +377,6 @@ public class LoginDAOImpl extends BaseDAOImpl implements LoginDAO {
 			query.setParameter("param", loginName);
 
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
 
 			if (list.size() > 0) {
 				login = (Login) list.get(0);
@@ -417,10 +415,7 @@ public class LoginDAOImpl extends BaseDAOImpl implements LoginDAO {
 			// bugzilla 2154
 			LogEvent.logError("LoginDAOImpl", "getPasswordExpiredDayNo()", e.toString());
 			throw new LIMSRuntimeException("Error in getPasswordExpiredDayNo()", e);
-		} finally {
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
-		}
+        }
 
 		return retVal;
 
@@ -447,9 +442,6 @@ public class LoginDAOImpl extends BaseDAOImpl implements LoginDAO {
 			// bugzilla 2154
 			LogEvent.logError("LoginDAOImpl", "getSystemUserId()", e.toString());
 			throw new LIMSRuntimeException("Error in getSystemUserId()", e);
-		} finally {
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
 		}
 
 		return retVal;

@@ -26,7 +26,18 @@ package us.mn.state.health.lims.common.exception;
  */
 //bugzilla 1417
 public class LIMSDuplicateRecordException extends LIMSRuntimeException {
-	public LIMSDuplicateRecordException(String message) {
+    private String objectDescription;
+
+    public LIMSDuplicateRecordException(String message) {
 		super(message);
 	}
+
+    public LIMSDuplicateRecordException(String message, String objectDescription) {
+        super(message);
+        this.objectDescription = objectDescription;
+    }
+
+    public String getObjectDescription() {
+        return objectDescription;
+    }
 }

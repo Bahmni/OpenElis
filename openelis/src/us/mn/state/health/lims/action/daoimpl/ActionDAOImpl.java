@@ -15,13 +15,8 @@
 */
 package us.mn.state.health.lims.action.daoimpl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.Query;
-
 import us.mn.state.health.lims.action.dao.ActionDAO;
 import us.mn.state.health.lims.action.valueholder.Action;
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
@@ -30,10 +25,14 @@ import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.daoimpl.BaseDAOImpl;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
-import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.log.LogEvent;
+import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * @author diane benz
@@ -368,17 +367,11 @@ public class ActionDAOImpl extends BaseDAOImpl implements ActionDAO {
 			if (!StringUtil.isNullorNill(action.getId())) {
 				actionId = action.getId();
 			}
-			query.setParameter("param4", actionId);
+			query.setParameter("param4", Integer.parseInt(actionId));
 
 			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
 
-			if (list.size() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+            return list.size() > 0;
 
 		} catch (Exception e) {
 			//bugzilla 2154
