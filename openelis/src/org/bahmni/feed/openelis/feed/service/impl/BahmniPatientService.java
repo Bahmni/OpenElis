@@ -11,6 +11,7 @@ import us.mn.state.health.lims.address.daoimpl.PersonAddressDAOImpl;
 import us.mn.state.health.lims.address.valueholder.AddressPart;
 import us.mn.state.health.lims.address.valueholder.AddressParts;
 import us.mn.state.health.lims.address.valueholder.PersonAddress;
+import us.mn.state.health.lims.address.valueholder.PersonAddresses;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.healthcenter.dao.HealthCenterDAO;
 import us.mn.state.health.lims.healthcenter.daoimpl.HealthCenterDAOImpl;
@@ -21,6 +22,7 @@ import us.mn.state.health.lims.patient.daoimpl.PatientDAOImpl;
 import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.patientidentity.dao.PatientIdentityDAO;
 import us.mn.state.health.lims.patientidentity.daoimpl.PatientIdentityDAOImpl;
+import us.mn.state.health.lims.patientidentity.valueholder.PatientIdentities;
 import us.mn.state.health.lims.patientidentity.valueholder.PatientIdentity;
 import us.mn.state.health.lims.patientidentitytype.dao.PatientIdentityTypeDAO;
 import us.mn.state.health.lims.patientidentitytype.daoimpl.PatientIdentityTypeDAOImpl;
@@ -45,6 +47,9 @@ public class BahmniPatientService {
     private AuditingService auditingService;
     private HealthCenterDAO healthCenterDAO;
 
+    private static final String MOTHER_KEY_NAME = "MOTHER";
+    private static final String OCCUPATION_KEY_NAME = "OCCUPATION";
+
     public BahmniPatientService() {
         this(new PatientDAOImpl(), new PersonDAOImpl(), new PatientIdentityDAOImpl(),
                 new PersonAddressDAOImpl(), new AddressPartDAOImpl(), new PatientIdentityTypeDAOImpl(),
@@ -64,19 +69,64 @@ public class BahmniPatientService {
         this.healthCenterDAO = healthCenterDAO;
     }
 
-    public void create(OpenMRSPatient openMRSPatient) {
+    public void createOrUpdate(OpenMRSPatient openMRSPatient) {
         String sysUserId = auditingService.getSysUserId();
-        Person person = new Person();
+        Patient patient = patientDAO.getPatientByUUID(openMRSPatient.getPerson().getUuid());
+        if (patient == null) {
+            create(openMRSPatient, sysUserId);
+        } else {
+            update(patient, openMRSPatient, sysUserId);
+        }
+    }
+
+    private void update(Patient patient, OpenMRSPatient openMRSPatient, String sysUserId) {
+        Person person = patient.getPerson();
+        populatePerson(openMRSPatient, sysUserId, person);
+        personDAO.updateData(person);
+
         OpenMRSPerson openMRSPerson = openMRSPatient.getPerson();
-        person.setFirstName(openMRSPerson.getPreferredName().getGivenName());
-        person.setLastName(openMRSPerson.getPreferredName().getFamilyName());
-        person.setSysUserId(sysUserId);
+        OpenMRSPersonAddress preferredAddress = openMRSPerson.getPreferredAddress();
+        AddressParts addressParts = new AddressParts(addressPartDAO.getAll());
+        if (preferredAddress != null) {
+            PersonAddresses personAddresses = new PersonAddresses(personAddressDAO.getAddressPartsByPersonId(person.getId()));
+            PersonAddress level1Address = personAddresses.findByPartName("level1", addressParts);
+            level1Address.updateValue(preferredAddress.getAddress1(), sysUserId);
+            PersonAddress level2Address = personAddresses.findByPartName("level2", addressParts);
+            level2Address.updateValue(preferredAddress.getCityVillage(), sysUserId);
+            PersonAddress level3Address = personAddresses.findByPartName("level3", addressParts);
+            level3Address.updateValue(preferredAddress.getAddress2(), sysUserId);
+            PersonAddress level4Address = personAddresses.findByPartName("level4", addressParts);
+            level4Address.updateValue(preferredAddress.getAddress3(), sysUserId);
+            PersonAddress level5Address = personAddresses.findByPartName("level5", addressParts);
+            level5Address.updateValue(preferredAddress.getCountyDistrict(), sysUserId);
+            PersonAddress level6Address = personAddresses.findByPartName("level6", addressParts);
+            level6Address.updateValue(preferredAddress.getStateProvince(), sysUserId);
+        }
+
+        populatePatient(sysUserId, openMRSPerson, patient);
+
+        PatientIdentityTypes patientIdentityTypes = new PatientIdentityTypes(patientIdentityTypeDAO.getAllPatientIdenityTypes());
+        PatientIdentities patientIdentities = new PatientIdentities(patientIdentityDAO.getPatientIdentitiesForPatient(patient.getId()));
+
+        setIdentityData(openMRSPerson, patientIdentityTypes, patientIdentities, OpenMRSPersonAttributeType.MOTHERS_NAME, MOTHER_KEY_NAME);
+        setIdentityData(openMRSPerson, patientIdentityTypes, patientIdentities, OpenMRSPersonAttributeType.OCCUPATION, OCCUPATION_KEY_NAME);
+    }
+
+    private void setIdentityData(OpenMRSPerson openMRSPerson, PatientIdentityTypes patientIdentityTypes, PatientIdentities patientIdentities, String displayName, String identityName) {
+        OpenMRSPersonAttribute openMRSPersonAttribute = openMRSPerson.findAttributeByAttributeTypeDisplayName(displayName);
+        PatientIdentity patientIdentity = patientIdentities.findIdentity(identityName, patientIdentityTypes);
+        patientIdentity.setIdentityData(openMRSPersonAttribute.getValue());
+    }
+
+    private void create(OpenMRSPatient openMRSPatient, String sysUserId) {
+        Person person = new Person();
+        OpenMRSPerson openMRSPerson = populatePerson(openMRSPatient, sysUserId, person);
         personDAO.insertData(person);
 
         AddressParts addressParts = new AddressParts(addressPartDAO.getAll());
         List<PersonAddress> personAddressList = new ArrayList<>(addressParts.size());
         OpenMRSPersonAddress preferredAddress = openMRSPerson.getPreferredAddress();
-        if(preferredAddress != null) {
+        if (preferredAddress != null) {
             personAddressList.add(PersonAddress.create(person, addressParts, "level1", preferredAddress.getAddress1(), sysUserId));
             personAddressList.add(PersonAddress.create(person, addressParts, "level2", preferredAddress.getCityVillage(), sysUserId));
             personAddressList.add(PersonAddress.create(person, addressParts, "level3", preferredAddress.getAddress2(), sysUserId));
@@ -87,24 +137,38 @@ public class BahmniPatientService {
         personAddressDAO.insert(personAddressList);
 
         Patient patient = new Patient();
-        patient.setGender(openMRSPerson.getGender());
-        patient.setBirthDate(new Timestamp(openMRSPerson.getBirthdate().getTime()));
-        patient.setSysUserId(sysUserId);
         patient.setPerson(person);
-        OpenMRSPersonAttribute healthCenterAttribute = openMRSPerson.findAttributeByAttributeTypeDisplayName(OpenMRSPersonAttributeType.HEALTH_CENTER);
-        if(healthCenterAttribute != null)
-            patient.setHealthCenter(healthCenterOf(healthCenterAttribute.getValue()));
+        populatePatient(sysUserId, openMRSPerson, patient);
         patientDAO.insertData(patient);
 
         PatientIdentityTypes patientIdentityTypes = new PatientIdentityTypes(patientIdentityTypeDAO.getAllPatientIdenityTypes());
         addPatientIdentity(patient, patientIdentityTypes, "ST", openMRSPatient.getIdentifiers().get(0).getIdentifier(), sysUserId);
         OpenMRSPersonAttribute primaryRelativeAttribute = openMRSPerson.findAttributeByAttributeTypeDisplayName(OpenMRSPersonAttributeType.MOTHERS_NAME);
-        if (primaryRelativeAttribute != null)
-            addPatientIdentity(patient, patientIdentityTypes, "MOTHER", primaryRelativeAttribute.getValue(), sysUserId);
+        if (primaryRelativeAttribute != null) {
+            addPatientIdentity(patient, patientIdentityTypes, MOTHER_KEY_NAME, primaryRelativeAttribute.getValue(), sysUserId);
+        }
 
         OpenMRSPersonAttribute occupationAttribute = openMRSPerson.findAttributeByAttributeTypeDisplayName(OpenMRSPersonAttributeType.OCCUPATION);
         if (occupationAttribute != null)
-            addPatientIdentity(patient, patientIdentityTypes, "OCCUPATION", occupationAttribute.getValue(), sysUserId);
+            addPatientIdentity(patient, patientIdentityTypes, OCCUPATION_KEY_NAME, occupationAttribute.getValue(), sysUserId);
+    }
+
+    private void populatePatient(String sysUserId, OpenMRSPerson openMRSPerson, Patient patient) {
+        patient.setGender(openMRSPerson.getGender());
+        patient.setBirthDate(new Timestamp(openMRSPerson.getBirthdate().getTime()));
+        patient.setSysUserId(sysUserId);
+        patient.setUuid(openMRSPerson.getUuid());
+        OpenMRSPersonAttribute healthCenterAttribute = openMRSPerson.findAttributeByAttributeTypeDisplayName(OpenMRSPersonAttributeType.HEALTH_CENTER);
+        if (healthCenterAttribute != null)
+            patient.setHealthCenter(healthCenterOf(healthCenterAttribute.getValue()));
+    }
+
+    private OpenMRSPerson populatePerson(OpenMRSPatient openMRSPatient, String sysUserId, Person person) {
+        OpenMRSPerson openMRSPerson = openMRSPatient.getPerson();
+        person.setFirstName(openMRSPerson.getPreferredName().getGivenName());
+        person.setLastName(openMRSPerson.getPreferredName().getFamilyName());
+        person.setSysUserId(sysUserId);
+        return openMRSPerson;
     }
 
     private HealthCenter healthCenterOf(String healthCenterString) {
@@ -118,7 +182,7 @@ public class BahmniPatientService {
         return healthCenterString == null || healthCenterString.isEmpty();
     }
 
-    public CompletePatientDetails getCompletePatientDetails(String patientId){
+    public CompletePatientDetails getCompletePatientDetails(String patientId) {
         PatientIdentityType identityType = primaryIdentityType();
         List<PatientIdentity> patientIdentities = patientIdentityDAO.getPatientIdentitiesByValueAndType(patientId, identityType.getId());
         if (patientIdentities == null || patientIdentities.size() == 0) {
@@ -132,7 +196,7 @@ public class BahmniPatientService {
         List<AddressPart> addressParts = addressPartDAO.getAll();
         List<Attribute> attributes = getAttributes(patient);
 
-        return new CompletePatientDetails(patient,person, identity, personAddresses, addressParts, attributes);
+        return new CompletePatientDetails(patient, person, identity, personAddresses, addressParts, attributes);
     }
 
     private PatientIdentityType primaryIdentityType() {

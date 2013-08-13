@@ -19,6 +19,7 @@ package us.mn.state.health.lims.address.dao;
 import java.util.List;
 
 import us.mn.state.health.lims.address.valueholder.PersonAddress;
+import us.mn.state.health.lims.address.valueholder.PersonAddresses;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.person.valueholder.Person;
 

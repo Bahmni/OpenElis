@@ -32,7 +32,6 @@ import us.mn.state.health.lims.person.valueholder.Person;
 import java.util.List;
 
 public class PersonAddressDAOImpl extends BaseDAOImpl implements PersonAddressDAO {
-
     private static AuditTrailDAO auditDAO = new AuditTrailDAOImpl();
 
     @SuppressWarnings("unchecked")

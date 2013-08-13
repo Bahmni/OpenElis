@@ -31,9 +31,13 @@ public class BahmniPatientServiceIT extends IT {
         OpenMRSPersonAttribute attribute1 = new OpenMRSPersonAttribute("value1", new OpenMRSPersonAttributeType(OpenMRSPersonAttributeType.MOTHERS_NAME));
         OpenMRSPersonAttribute attribute2 = new OpenMRSPersonAttribute("value2", new OpenMRSPersonAttributeType(OpenMRSPersonAttributeType.OCCUPATION));
         OpenMRSPersonAttribute attribute3 = new OpenMRSPersonAttribute("2", new OpenMRSPersonAttributeType(OpenMRSPersonAttributeType.HEALTH_CENTER));
-        OpenMRSPatient patient = new OpenMRSPatient(person.addAttribute(attribute1).addAttribute(attribute2).addAttribute(attribute3));
-        patient.addIdentifier(new OpenMRSPatientIdentifier("id1"));
+        OpenMRSPatient openMRSPatient = new OpenMRSPatient(person.addAttribute(attribute1).addAttribute(attribute2).addAttribute(attribute3));
+        openMRSPatient.addIdentifier(new OpenMRSPatientIdentifier("id1"));
 
-        bahmniPatientService.create(patient);
+        bahmniPatientService.createOrUpdate(openMRSPatient);
+        HibernateUtil.getSession().flush();
+        //this would result in call to update
+        bahmniPatientService.createOrUpdate(openMRSPatient);
+        HibernateUtil.getSession().flush();
     }
 }

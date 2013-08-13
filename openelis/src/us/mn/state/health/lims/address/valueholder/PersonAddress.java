@@ -93,5 +93,10 @@ public class PersonAddress extends BaseObject {
 
 		return uniqueIdentifyer;
 	}
+
+    public void updateValue(String value, String userId) {
+        this.setValue(value);
+        this.setSysUserId(userId);
+    }
 }
 

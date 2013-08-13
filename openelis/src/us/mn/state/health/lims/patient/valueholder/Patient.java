@@ -76,6 +76,8 @@ public class Patient extends BaseObject {
 
     private HealthCenter healthCenter;
 
+    private String uuid;
+
     public String getChartNumber() {
 		return chartNumber;
 	}
@@ -284,5 +286,9 @@ public class Patient extends BaseObject {
 
     public void setHealthCenter(HealthCenter healthCenter) {
         this.healthCenter = healthCenter;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 }

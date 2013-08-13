@@ -472,7 +472,6 @@
         </addColumn>
     </changeSet>
     <changeSet author="tw" id="30" context="bahmni">
-
         <comment>Adds referral types</comment>
         <insert schemaName="clinlims" tableName="referral_type">
             <column name="id" valueNumeric=" nextval( 'referral_type_seq' ) "/>
@@ -482,16 +481,6 @@
             <column name="lastupdated" valueDate=" now() "/>
         </insert>
     </changeSet>
-    <!--<changeSet author="tw" id="30" context="bahmni">-->
-        <!--<comment>Add referral reasons to DB</comment>-->
-        <!--<loadData file="Bahmni/Bahmni_Referral_Reasons.csv" schemaName="clinlims" tableName="referral_reason">-->
-            <!--<column name="id" header="id" type="NUMERIC"/>-->
-            <!--<column name="name" header="name" type="STRING"/>-->
-            <!--<column name="description" header="description" type="STRING"/>-->
-            <!--<column name="display_key" header="display_key" type="STRING"/>-->
-            <!--<column name="lastupdated" header="lastUpdated" type="DATE"/>-->
-        <!--</loadData>-->
-    <!--</changeSet>-->
      <changeSet author="tw" id="31" context="bahmni">
         <comment>Adding labDashboard menu</comment>
         <update schemaName="clinlims" tableName="menu">
@@ -507,5 +496,11 @@
             <column name="tool_tip_key" value="tooltip.banner.menu.labdashboard"/>
             <column name="new_window" value="f"/>
         </insert>
+    </changeSet>
+    <changeSet author="tw" id="32" context="bahmni">
+        <comment>Adds uuid for the patient</comment>
+        <addColumn tableName="patient" schemaName="clinlims">
+            <column name="uuid" type="varchar(100)"></column>
+        </addColumn>
     </changeSet>
 </databaseChangeLog>

@@ -61,4 +61,6 @@ public interface PatientDAO extends BaseDAO {
 	public List<String> getPatientIdentityBySampleStatusIdAndProject(List<Integer> inclusiveStatusIdList, String study)throws LIMSRuntimeException;
 
 	public Patient getData(String patientId) throws LIMSRuntimeException;
+
+    Patient getPatientByUUID(String uuid);
 }

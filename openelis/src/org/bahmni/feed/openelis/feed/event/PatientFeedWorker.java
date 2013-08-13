@@ -46,7 +46,7 @@ public class PatientFeedWorker extends OpenElisEventWorker {
             OpenMRSPatient openMRSPatient = openMRSPatientMapper.map(patientJSON);
             logInfo(openMRSPatient);
             BahmniPatientService bahmniPatientService = new BahmniPatientService();
-            bahmniPatientService.create(openMRSPatient);
+            bahmniPatientService.createOrUpdate(openMRSPatient);
         } catch (IOException e) {
             throw new LIMSRuntimeException(e);
         } finally {

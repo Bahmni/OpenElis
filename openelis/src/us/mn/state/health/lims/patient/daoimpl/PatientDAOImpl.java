@@ -148,8 +148,13 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 
 		return null;
 	}
-	
-	public void getData(Patient patient) throws LIMSRuntimeException {
+
+    @Override
+    public Patient getPatientByUUID(String uuid) {
+        return getPatientByStringProperty("uuid", uuid);
+    }
+
+    public void getData(Patient patient) throws LIMSRuntimeException {
 		try {
 			Patient pat = (Patient) HibernateUtil.getSession().get(	Patient.class, patient.getId());
 			HibernateUtil.getSession().flush();
@@ -278,13 +283,13 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-    protected Patient getPatientByStringProperty(String propertyName, String nationalId) {
+    protected Patient getPatientByStringProperty(String propertyName, String propertyValue) {
         List<Patient> patients;
 
         try {
             String sql = "From Patient p where p." + propertyName + " = :" + propertyName;
             Query query = HibernateUtil.getSession().createQuery(sql);
-            query.setString(propertyName, nationalId);
+            query.setString(propertyName, propertyValue);
             patients = query.list();
             HibernateUtil.getSession().flush();
             HibernateUtil.getSession().clear();
