@@ -61,6 +61,7 @@ public class Result extends EnumValueItemImpl {
 
 	public void setAnalysis(Analysis analysis) {
 		this.analysis.setValue(analysis);
+        this.setAnalysisId(analysis.getId());
 	}
 
 	protected ValueHolderInterface getAnalysisHolder() {
