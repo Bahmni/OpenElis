@@ -296,7 +296,8 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
 		ReferralResult referralResult = new ReferralResult();
 		referralResult.setReferralId(resultSet.newReferral.getId());
 		referralResult.setSysUserId(currentUserId);
-		referralResultDAO.insertData(referralResult);
+        referralResult.setResult(resultSet.result);
+        referralResultDAO.saveOrUpdateData(referralResult);
 	}
 
 	private void removeDeletedResults() {

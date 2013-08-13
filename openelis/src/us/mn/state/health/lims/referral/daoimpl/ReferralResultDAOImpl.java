@@ -36,128 +36,108 @@ import us.mn.state.health.lims.referral.valueholder.ReferralResult;
  */
 public class ReferralResultDAOImpl extends BaseDAOImpl implements ReferralResultDAO {
 
-	protected AuditTrailDAO auditDAO = new AuditTrailDAOImpl();
+    protected AuditTrailDAO auditDAO = new AuditTrailDAOImpl();
 
-	public boolean insertData(ReferralResult referralResult) throws LIMSRuntimeException {
-		try {
-			String id = (String) HibernateUtil.getSession().save(referralResult);
-			referralResult.setId(id);
+    public ReferralResult getReferralResultById(String referralResultId) throws LIMSRuntimeException {
+        if (!GenericValidator.isBlankOrNull(referralResultId)) {
+            try {
+                ReferralResult referralResult = (ReferralResult) HibernateUtil.getSession().get(ReferralResult.class, referralResultId);
+                closeSession();
+                return referralResult;
+            } catch (HibernateException e) {
+                handleException(e, "getReferralResultById");
+            }
+        }
+        return null;
+    }
 
-			auditDAO.saveNewHistory(referralResult, referralResult.getSysUserId(), "referral_result");
-			closeSession();
-		} catch (HibernateException e) {
-			handleException(e, "insertData");
-		}
+    @SuppressWarnings("unchecked")
+    public List<ReferralResult> getReferralResultsForReferral(String referralId) throws LIMSRuntimeException {
+        if (!GenericValidator.isBlankOrNull(referralId)) {
+            String sql = "from ReferralResult rr where rr.referralId = :referralId order by rr.id";
 
-		return true;
-	}
+            try {
+                Query query = HibernateUtil.getSession().createQuery(sql);
+                query.setInteger("referralId", Integer.parseInt(referralId));
+                List<ReferralResult> resultList = query.list();
 
-	public ReferralResult getReferralResultById(String referralResultId) throws LIMSRuntimeException {
-		if (!GenericValidator.isBlankOrNull(referralResultId)) {
-			try {
-				ReferralResult referralResult = (ReferralResult) HibernateUtil.getSession().get(ReferralResult.class, referralResultId);
-				closeSession();
-				return referralResult;
-			} catch (HibernateException e) {
-				handleException(e, "getReferralResultById");
-			}
-		}
-		return null;
-	}
+                closeSession();
 
-	@SuppressWarnings("unchecked")
-	public List<ReferralResult> getReferralResultsForReferral(String referralId) throws LIMSRuntimeException {
-		if (!GenericValidator.isBlankOrNull(referralId)) {
-			String sql = "from ReferralResult rr where rr.referralId = :referralId order by rr.id";
+                return resultList;
 
-			try {
-				Query query = HibernateUtil.getSession().createQuery(sql);
-				query.setInteger("referralId", Integer.parseInt(referralId));
-				List<ReferralResult> resultList = query.list();
+            } catch (HibernateException e) {
+                handleException(e, "getReferralResultsForReferral");
+            }
+        }
 
-				closeSession();
+        return new ArrayList<ReferralResult>();
+    }
 
-				return resultList;
+    private ReferralResult readReferralResult(String referralResultId) {
+        if (!GenericValidator.isBlankOrNull(referralResultId)) {
+            try {
+                ReferralResult referralResult = (ReferralResult) HibernateUtil.getSession().get(ReferralResult.class, referralResultId);
+                closeSession();
+                return referralResult;
+            } catch (HibernateException e) {
+                handleException(e, "readResult");
+            }
+        }
 
-			} catch (HibernateException e) {
-				handleException(e, "getReferralResultsForReferral");
-			}
-		}
+        return null;
+    }
 
-		return new ArrayList<ReferralResult>();
-	}
+    public void saveOrUpdateData(ReferralResult referralResult) throws LIMSRuntimeException {
+        ReferralResult oldData = readReferralResult(referralResult.getId());
 
-	private ReferralResult readReferralResult(String referralResultId) {
-		if (!GenericValidator.isBlankOrNull(referralResultId)) {
-			try {
-				ReferralResult referralResult = (ReferralResult) HibernateUtil.getSession().get(ReferralResult.class, referralResultId);
-				closeSession();
-				return referralResult;
-			} catch (HibernateException e) {
-				handleException(e, "readResult");
-			}
-		}
+        try {
+            HibernateUtil.getSession().saveOrUpdate(referralResult);
+            if (oldData != null) {
+                auditDAO.saveHistory(referralResult, oldData, referralResult.getSysUserId(), IActionConstants.AUDIT_TRAIL_UPDATE, "referral_result");
+            } else {
+                auditDAO.saveNewHistory(referralResult, referralResult.getSysUserId(), "referral_result");
+            }
+        } catch (HibernateException e) {
+            handleException(e, "updateData");
+        }
 
-		return null;
-	}
+    }
 
-	public void updateData(ReferralResult referralResult) throws LIMSRuntimeException {
-		ReferralResult oldData = readReferralResult(referralResult.getId());
+    public void deleteData(ReferralResult referralResult) throws LIMSRuntimeException {
+        ReferralResult oldData = readReferralResult(referralResult.getId());
 
-		try {
-			auditDAO.saveHistory(referralResult, oldData, referralResult.getSysUserId(), IActionConstants.AUDIT_TRAIL_UPDATE,
-					"referral_result");
-		} catch (HibernateException e) {
-			handleException(e, "updateData");
-		}
+        try {
+            AuditTrailDAO auditDAO = new AuditTrailDAOImpl();
+            auditDAO.saveHistory(new ReferralResult(), oldData, referralResult.getSysUserId(), IActionConstants.AUDIT_TRAIL_DELETE,
+                    "referral_result");
+        } catch (HibernateException e) {
+            handleException(e, "AuditTrail deleteData");
+        }
 
-		try {
-			HibernateUtil.getSession().merge(referralResult);
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
-			HibernateUtil.getSession().evict(referralResult);
-			HibernateUtil.getSession().refresh(referralResult);
-		} catch (HibernateException e) {
-			handleException(e, "updateData");
-		}
+        try {
+            HibernateUtil.getSession().delete(oldData);
+            closeSession();
+        } catch (HibernateException e) {
+            handleException(e, "deleteData");
+        }
+    }
 
-	}
+    @SuppressWarnings("unchecked")
+    public List<ReferralResult> getReferralsByResultId(String resultId) throws LIMSRuntimeException {
+        String sql = "From ReferralResult rr where rr.result.id= :resultId";
 
-	public void deleteData(ReferralResult referralResult) throws LIMSRuntimeException {
-		ReferralResult oldData = readReferralResult(referralResult.getId());
+        try {
+            Query query = HibernateUtil.getSession().createQuery(sql);
+            query.setInteger("resultId", Integer.parseInt(resultId));
+            List<ReferralResult> referralResults = query.list();
 
-		try {
-			AuditTrailDAO auditDAO = new AuditTrailDAOImpl();
-			auditDAO.saveHistory(new ReferralResult(), oldData, referralResult.getSysUserId(), IActionConstants.AUDIT_TRAIL_DELETE,
-					"referral_result");
-		} catch (HibernateException e) {
-			handleException(e, "AuditTrail deleteData");
-		}
+            closeSession();
 
-		try {
-			HibernateUtil.getSession().delete(oldData);
-			closeSession();
-		} catch (HibernateException e) {
-			handleException(e, "deleteData");
-		}
-	}
+            return referralResults;
+        } catch (HibernateException e) {
+            handleException(e, "getReferralsByResultId");
+        }
 
-	@SuppressWarnings("unchecked")
-	public List<ReferralResult> getReferralsByResultId(String resultId) throws LIMSRuntimeException {
-		String sql = "From ReferralResult rr where rr.result.id= :resultId";
-
-		try{
-			Query query = HibernateUtil.getSession().createQuery(sql);
-			query.setInteger("resultId", Integer.parseInt(resultId));
-			List<ReferralResult> referralResults = query.list();
-
-			closeSession();
-
-			return referralResults;
-		}catch( HibernateException e){
-			handleException(e, "getReferralsByResultId");
-		}
-
-		return null;
-	}
+        return null;
+    }
 }
