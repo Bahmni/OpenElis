@@ -168,7 +168,6 @@ public class ReferredOutUpdateAction extends BaseAction {
             }
 
             for (ReferralResult referralResult : removableReferralResults) {
-
                 referralResult.setSysUserId(currentUserId);
                 referralResultDAO.deleteData(referralResult);
             }
@@ -368,15 +367,15 @@ public class ReferredOutUpdateAction extends BaseAction {
             for (String id : ids) {
                 ReferralResult referralResult = referralSet.getNextReferralResult();
                 referralItem.setReferredDictionaryResult(id);  // move particular multi result into (single) dictionary result.
-                fillReferralResultResult(referralItem, referralResult);
+                fillReferralResultResult(referralItem, referralResult, referralSet.referral.getAnalysis());
             }
         } else {
             ReferralResult dbReferralResult = referralSet.getNextReferralResult();
-            fillReferralResultResult(referralItem, dbReferralResult);
+            fillReferralResultResult(referralItem, dbReferralResult, referralSet.referral.getAnalysis());
         }
     }
 
-    private void fillReferralResultResult(IReferralResultTest referralItem, ReferralResult dbReferralResult) {
+    private void fillReferralResultResult(IReferralResultTest referralItem, ReferralResult dbReferralResult, Analysis analysis) {
         dbReferralResult.setSysUserId(currentUserId);
 
         setReferredResultReportDate(referralItem, dbReferralResult);
@@ -391,8 +390,8 @@ public class ReferredOutUpdateAction extends BaseAction {
         if (result != null) {
             setResultValuesForReferralResult(referralItem, result);
             dbReferralResult.setResult(result);
+            analysis.setStatusId(StatusOfSampleUtil.getStatusID(AnalysisStatus.TechnicalAcceptance));
         }
-
     }
 
     /**
