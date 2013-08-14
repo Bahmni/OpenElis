@@ -14,23 +14,34 @@ public class PatientXmlCreatorTest {
     public static final String TYPE = "T";
 
     @Test
-    public void shouldCreatePatientXml() {
-
+    public void shouldCreateAddressXml() {
         List addressParts = createAddressPartsList();
 
-        StringBuilder xml = new StringBuilder();
+        String xml = getXml("addresslines", addressParts);
 
+        System.out.println(xml);
+    }
+
+    @Test
+    public void shouldNotFailWhenAddressHasNullValues() {
+        List<PersonAddress> addressParts = new ArrayList<PersonAddress>();
+        addressParts.add(createPersonAddress("100", TYPE, "1", null));
+
+        String xml = getXml("addresslines", addressParts);
+
+        System.out.println(xml);
+    }
+
+    private String getXml(String rootNodeName, List addressParts) {
+        StringBuilder xml = new StringBuilder();
         XStream xstream = new XStream();
         xstream.registerConverter(new PersonAddressConverter());
-        xstream.alias("addresslines", List.class);
+        xstream.alias(rootNodeName, List.class);
 
         String addressesXml = xstream.toXML(addressParts);
 
         XMLUtil.appendKeyValue("address", addressesXml, xml);
-
-        System.out.println(xml);
-
-
+        return xml.toString();
     }
 
     private List<PersonAddress> createAddressPartsList() {

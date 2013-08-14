@@ -25,10 +25,12 @@ public class PersonAddressConverter implements Converter {
         }
     }
 
-    private void createLeafNode(HierarchicalStreamWriter writer, String name, String str) {
-        writer.startNode(name);
-        writer.setValue(str);
-        writer.endNode();
+    private void createLeafNode(HierarchicalStreamWriter writer, String name, String value) {
+        if(value != null) {
+            writer.startNode(name);
+            writer.setValue(value);
+            writer.endNode();
+        }
     }
 
     @Override
