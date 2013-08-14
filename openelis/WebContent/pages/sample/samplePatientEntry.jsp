@@ -119,7 +119,6 @@ $jq(function() {
 
 
         $('<%= fieldsetOrder.get(0) +"Display" %>').show();
-        $('<%= fieldsetOrder.get(0) +"DisplayButton" %>').value = "-";
 });
 
 function isFieldValid(fieldname)
