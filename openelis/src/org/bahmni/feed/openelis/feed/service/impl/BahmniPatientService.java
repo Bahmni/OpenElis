@@ -47,7 +47,7 @@ public class BahmniPatientService {
     private AuditingService auditingService;
     private HealthCenterDAO healthCenterDAO;
 
-    private static final String MOTHER_KEY_NAME = "MOTHER";
+    private static final String PRIMARY_RELATIVE_KEY_NAME = "PRIMARYRELATIVE";
     private static final String OCCUPATION_KEY_NAME = "OCCUPATION";
 
     public BahmniPatientService() {
@@ -108,14 +108,23 @@ public class BahmniPatientService {
         PatientIdentityTypes patientIdentityTypes = new PatientIdentityTypes(patientIdentityTypeDAO.getAllPatientIdenityTypes());
         PatientIdentities patientIdentities = new PatientIdentities(patientIdentityDAO.getPatientIdentitiesForPatient(patient.getId()));
 
-        setIdentityData(openMRSPerson, patientIdentityTypes, patientIdentities, OpenMRSPersonAttributeType.MOTHERS_NAME, MOTHER_KEY_NAME);
-        setIdentityData(openMRSPerson, patientIdentityTypes, patientIdentities, OpenMRSPersonAttributeType.OCCUPATION, OCCUPATION_KEY_NAME);
+        setIdentityData(patientIdentityTypes, patientIdentities, PRIMARY_RELATIVE_KEY_NAME, getAttributeValue(openMRSPerson, OpenMRSPersonAttributeType.PRIMARY_RELATIVE));
+        setIdentityData(patientIdentityTypes, patientIdentities, OCCUPATION_KEY_NAME, getAttributeDisplay(openMRSPerson, OpenMRSPersonAttributeType.OCCUPATION));
     }
 
-    private void setIdentityData(OpenMRSPerson openMRSPerson, PatientIdentityTypes patientIdentityTypes, PatientIdentities patientIdentities, String displayName, String identityName) {
-        OpenMRSPersonAttribute openMRSPersonAttribute = openMRSPerson.findAttributeByAttributeTypeDisplayName(displayName);
+    private void setIdentityData(PatientIdentityTypes patientIdentityTypes, PatientIdentities patientIdentities, String identityName, String attributeValue) {
         PatientIdentity patientIdentity = patientIdentities.findIdentity(identityName, patientIdentityTypes);
-        patientIdentity.setIdentityData(openMRSPersonAttribute.getValue());
+        patientIdentity.setIdentityData(attributeValue);
+    }
+
+    private String getAttributeValue(OpenMRSPerson openMRSPerson, String displayName) {
+        OpenMRSPersonAttribute openMRSPersonAttribute = openMRSPerson.findAttributeByAttributeTypeDisplayName(displayName);
+        return openMRSPersonAttribute != null ? openMRSPersonAttribute.getValue() : null;
+    }
+
+    private String getAttributeDisplay(OpenMRSPerson openMRSPerson, String displayName) {
+        OpenMRSPersonAttribute openMRSPersonAttribute = openMRSPerson.findAttributeByAttributeTypeDisplayName(displayName);
+        return openMRSPersonAttribute != null ? openMRSPersonAttribute.getDisplay() : null;
     }
 
     private void create(OpenMRSPatient openMRSPatient, String sysUserId) {
@@ -143,14 +152,15 @@ public class BahmniPatientService {
 
         PatientIdentityTypes patientIdentityTypes = new PatientIdentityTypes(patientIdentityTypeDAO.getAllPatientIdenityTypes());
         addPatientIdentity(patient, patientIdentityTypes, "ST", openMRSPatient.getIdentifiers().get(0).getIdentifier(), sysUserId);
-        OpenMRSPersonAttribute primaryRelativeAttribute = openMRSPerson.findAttributeByAttributeTypeDisplayName(OpenMRSPersonAttributeType.MOTHERS_NAME);
-        if (primaryRelativeAttribute != null) {
-            addPatientIdentity(patient, patientIdentityTypes, MOTHER_KEY_NAME, primaryRelativeAttribute.getValue(), sysUserId);
-        }
 
-        OpenMRSPersonAttribute occupationAttribute = openMRSPerson.findAttributeByAttributeTypeDisplayName(OpenMRSPersonAttributeType.OCCUPATION);
-        if (occupationAttribute != null)
-            addPatientIdentity(patient, patientIdentityTypes, OCCUPATION_KEY_NAME, occupationAttribute.getValue(), sysUserId);
+        String primaryRelative = getAttributeValue(openMRSPerson, OpenMRSPersonAttributeType.PRIMARY_RELATIVE);
+        if (primaryRelative != null) {
+            addPatientIdentity(patient, patientIdentityTypes, PRIMARY_RELATIVE_KEY_NAME, primaryRelative, sysUserId);
+        }
+        String occupation = getAttributeDisplay(openMRSPerson, OpenMRSPersonAttributeType.OCCUPATION);
+        if (occupation != null) {
+            addPatientIdentity(patient, patientIdentityTypes, OCCUPATION_KEY_NAME, occupation, sysUserId);
+        }
     }
 
     private void populatePatient(String sysUserId, OpenMRSPerson openMRSPerson, Patient patient) {
