@@ -14,12 +14,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Integer.parseInt;
+import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.BiologistRejected;
 import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.Canceled;
 import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.Finalized;
 import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.NotStarted;
 import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.ReferedOut;
 import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.ReferredIn;
 import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance;
+import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.getStatusID;
 
 public class OrderListDAOImpl implements OrderListDAO {
 
@@ -47,7 +50,7 @@ public class OrderListDAOImpl implements OrderListDAO {
             "inner join sample_item on sample_item.samp_id = sample.id " +
             "inner join analysis on analysis.sampitem_id = sample_item.id " +
             "inner join test on test.id = analysis.test_id " +
-            "left join result on result.analysis_id = analysis.id " +
+            "left join result on result.analysis_id = analysis.id and analysis.status_id !=" + getStatusID(BiologistRejected) + " " +
             "where analysis.status_id in (" + inProgressStatus + ") " +
             "group by sample.accession_number, person.first_name, person.last_name, sample_source.name, patient_identity.identity_data";
         try {
@@ -75,8 +78,9 @@ public class OrderListDAOImpl implements OrderListDAO {
 
     private String getInProgressAnalysisStatus() {
         List<Object> inProgressAnalysisStatus = new ArrayList<>();
-        inProgressAnalysisStatus.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(TechnicalAcceptance)));
-        inProgressAnalysisStatus.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(NotStarted)));
+        inProgressAnalysisStatus.add(parseInt(getStatusID(TechnicalAcceptance)));
+        inProgressAnalysisStatus.add(parseInt(getStatusID(NotStarted)));
+        inProgressAnalysisStatus.add(parseInt(getStatusID(BiologistRejected)));
         return StringUtils.join(inProgressAnalysisStatus.iterator(), ',');
     }
 
@@ -136,8 +140,8 @@ public class OrderListDAOImpl implements OrderListDAO {
 
     private String getReferredAnalysisStatus() {
         List<Object> referredStatus = new ArrayList<>();
-        referredStatus.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(ReferedOut)));
-        referredStatus.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(ReferredIn)));
+        referredStatus.add(parseInt(getStatusID(ReferedOut)));
+        referredStatus.add(parseInt(getStatusID(ReferredIn)));
         return StringUtils.join(referredStatus.iterator(), ',');
     }
 }

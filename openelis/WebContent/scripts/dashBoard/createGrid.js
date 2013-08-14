@@ -57,7 +57,7 @@ function filter(item) {
     for (var columnId in columnFilters) {
       if (columnId !== undefined && columnFilters[columnId] !== "") {
         var c = currentGrid.getColumns()[currentGrid.getColumnIndex(columnId)];
-        if (item[c.field].indexOf(columnFilters[columnId]) == -1 ) {
+        if (item[c.field]== null || item[c.field].toLowerCase().indexOf(columnFilters[columnId].toLowerCase()) == -1 ) {
           return false;
         }
       }
@@ -67,23 +67,14 @@ function filter(item) {
 
 function sort(field, isAsc, grid){
      var dataView = grid.getData();
-     var data = getFilteredItems(dataView).mergeSort(function (a, b) {
-      var result =
-          a[field] > b[field] ? 1 :
-          a[field] < b[field] ? -1 :
-          0;
-      return isAsc ? result : -result;
-   });
-   dataView.setRows(data);
-
-   var data = dataView.getItems().mergeSort(function (a, b) {
-         var result =
-             a[field] > b[field] ? 1 :
-             a[field] < b[field] ? -1 :
-             0;
-         return isAsc ? result : -result;
-      });
-    dataView.setItems(data);
+     var comparer = function(a, b) {
+         var x = a[field], y = b[field];
+         if (x == y) {
+             return a["accessionNumber"] > b["accessionNumber"];
+         }
+         return (x > y ? 1 : -1);
+     }
+     dataView.sort(comparer, isAsc);
 }
 
 function getFilteredItems(dataView){

@@ -25,6 +25,7 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
 <link rel="stylesheet" type="text/css" href="<%=basePath%>css/slickgrid/examples.css" />
 <link rel="stylesheet" type="text/css" href="<%=basePath%>css/jquery_ui/jquery-ui-1.8.16.custom.css" />
 <link rel="stylesheet" type="text/css" href="<%=basePath%>css/jquery_ui/jquery.ui.tabs.css" />
+<link rel="stylesheet" type="text/css" href="<%=basePath%>css/slickgrid/dashboard.css" />
 
 <script type="text/javascript" src="<%=basePath%>scripts/ui/jquery.event.drag-2.2.js"></script>
 <script type="text/javascript" src="<%=basePath%>scripts/ui/jquery.event.drop-2.2.js"></script>
@@ -46,10 +47,11 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
         <li><a href="#inProgressListContainer">In Progress</a></li>
         <li><a href="#completedListContainer">Completed</a></li>
      </ul>
-    <div id="inProgressListContainer" style="width:600px"></div>
-    <div id="completedListContainer" style="width:600px"></div>
+    <div id="inProgressListContainer" style="width:670px"></div>
+    <div id="completedListContainer" style="width:520px"></div>
 
 </div>
+
 
 <script type="text/javascript">
 
@@ -65,12 +67,13 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
     var options = {
         enableColumnReorder: false,
         autoHeight:true,
-        autoWidth: true,
         enableCellNavigation: true,
         showHeaderRow: true,
         headerRowHeight: 30,
         explicitInitialization: true
     };
+
+
     jQuery(document).ready(function() {
         inProgressObject = new order("#inProgressListContainer", "<%= inProgressOrderListJson %>", generateLinkForInProgressOrder, getColumnsForInProgressOrder);
         dataViewForInProgressTab = new Slick.Data.DataView({ inlineFilters: true });

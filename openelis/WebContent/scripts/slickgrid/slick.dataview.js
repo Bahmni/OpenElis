@@ -122,18 +122,6 @@
       return items;
     }
 
-     function setRows(data) {
-          var countBefore = rows.length;
-          var diff = getRowDiffs(rows, data);
-          var totalRowsBefore = totalRows;
-          rows = data;
-          totalRows = rows.length;
-
-          onPagingInfoChanged.notify(getPagingInfo(), null, self);
-          onRowCountChanged.notify({previous: countBefore, current: rows.length}, null, self);
-          onRowsChanged.notify({rows: diff}, null, self);
-    }
-
     function setItems(data, objectIdProperty) {
       if (objectIdProperty !== undefined) {
         idProperty = objectIdProperty;
@@ -930,7 +918,6 @@
       "getPagingInfo": getPagingInfo,
       "getItems": getItems,
       "setItems": setItems,
-      "setRows": setRows,
       "setFilter": setFilter,
       "sort": sort,
       "fastSort": fastSort,
