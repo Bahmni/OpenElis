@@ -36,7 +36,14 @@
 
     <taskdef name="propertyMerge" classname="org.jugbb.ant.propertymerge.PropertyMergeTask" classpathref="build.lib"/>
 
-    <target name="compile" depends="init"
+    <target name="compass.compile" description="compile sass files">
+        <exec dir="${web}" executable="compass">
+            <arg line="compile"/>
+        </exec>
+    </target>
+
+
+    <target name="compile" depends="init, compass.compile"
             description="compile the source ">
         <mkdir dir="${target}"/>
         <javac srcdir="${src}" destdir="${target}" encoding="iso-8859-1" classpathref="lib" source="1.7" target="1.7" debug="on"/>
