@@ -31,8 +31,13 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
 <script type="text/javascript" src="<%=basePath%>scripts/ui/jquery.event.drop-2.2.js"></script>
 <script type="text/javascript" src="<%=basePath%>scripts/slickgrid/slick.core.js"></script>
 <script type="text/javascript" src="<%=basePath%>scripts/slickgrid/slick.formatters.js"></script>
+<script type="text/javascript" src="<%=basePath%>scripts/slickgrid/slick.cellrangedecorator.js"></script>
+<script type="text/javascript" src="<%=basePath%>scripts/slickgrid/slick.cellrangeselector.js"></script>
+<script type="text/javascript" src="<%=basePath%>scripts/slickgrid/slick.cellexternalcopymanager.js"></script>
+<script type="text/javascript" src="<%=basePath%>scripts/slickgrid/slick.cellselectionmodel.js"></script>
 <script type="text/javascript" src="<%=basePath%>scripts/slickgrid/slick.dataview.js"></script>
 <script type="text/javascript" src="<%=basePath%>scripts/slickgrid/slick.grid.js"></script>
+<script type="text/javascript" src="<%=basePath%>scripts/slickgrid/slick.editors.js"></script>
 <script type="text/javascript" src="<%=basePath%>scripts/slickgrid/merge-sort.js"></script>
 <script type="text/javascript" src="<%=basePath%>scripts/ui/jquery.ui.core.js"></script>
 <script type="text/javascript" src="<%=basePath%>scripts/ui/jquery.ui.widget.js"></script>
@@ -73,8 +78,8 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
         explicitInitialization: true
     };
 
-
     jQuery(document).ready(function() {
+
         inProgressObject = new order("#inProgressListContainer", "<%= inProgressOrderListJson %>", generateLinkForInProgressOrder, getColumnsForInProgressOrder);
         dataViewForInProgressTab = new Slick.Data.DataView({ inlineFilters: true });
         gridForInProgressOrder = new Slick.Grid(inProgressObject.div, dataViewForInProgressTab, inProgressObject.columns,options);

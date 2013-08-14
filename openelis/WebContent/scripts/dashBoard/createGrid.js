@@ -3,6 +3,9 @@ var currentGrid;
 function createGrid(grid, dataView, orderObject) {
         currentGrid = grid;
 
+        grid.setSelectionModel(new Slick.CellSelectionModel());
+        grid.registerPlugin(new Slick.CellExternalCopyManager());
+
         grid.onSort.subscribe(function(e, args){ // args: sort information.
            var field = args.sortCol.field;
            var asc = args.sortAsc;

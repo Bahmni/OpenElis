@@ -7,7 +7,10 @@ function order(div, orderJson, generateLink, getColumns) {
                 var indexes = [];
 
                 jQuery.each(this.columns, function(id, column){
-                    if (!column.searchable){
+                    
+                    //we shouldn't add the id for the column if column.searchable is null.
+                    // It assumes that we don't need to specify searchable property when the column is searchable
+                    if (column.searchable == false){
                         indexes.push(column.index);
                     }
                 });
@@ -41,23 +44,23 @@ function generateLinkForInProgressOrder(order){
 
 function getColumnsForInProgressOrder() {
      return [
-                {id: "accessionNumber", name: "Accession Number", field: "accessionNumber", sortable: true, selectable: true, focusable: true, index:0, searchable: true, minWidth:120},
-                {id: "stNumber", name: "PatientID", field: "stNumber", sortable: true, selectable: true, focusable: true, index:1, searchable: true},
-                {id: "name", name: "PatientName", field: "name", sortable: true, selectable: true, focusable: true, index:2, searchable: true, minWidth:150},
-                {id: "pendingTestCount", name: "Pending Tests", field: "pendingTestCount", sortable: true, selectable: true, focusable: true, index:3, searchable: false},
-                {id: "totalTestCount", name: "Total Tests", field: "totalTestCount", sortable: true, selectable: true, focusable: true, index:4, searchable: false},
-                {id: "source", name: "Source", field: "source", sortable: true, selectable: true, focusable: true, index:5, searchable: true},
-                {id: "link", name: "Action", field: "link", selectable: true, focusable: true, cssClass: "cell-title", formatter: formatter, index:6, searchable: false}
+                {id: "accessionNumber", name: "Accession Number", field: "accessionNumber", sortable: true, index:0, editor: Slick.Editors.Text,  minWidth:120},
+                {id: "stNumber", name: "PatientID", field: "stNumber", sortable: true, editor: Slick.Editors.Text,  index:1 },
+                {id: "name", name: "PatientName", field: "name", sortable: true,  index:2, editor: Slick.Editors.Text,  minWidth:150},
+                {id: "pendingTestCount", name: "Pending Tests", field: "pendingTestCount", sortable: true, editor: Slick.Editors.Text,  index:3, searchable: false},
+                {id: "totalTestCount", name: "Total Tests", field: "totalTestCount", sortable: true, editor: Slick.Editors.Text,  index:4, searchable: false},
+                {id: "source", name: "Source", field: "source", sortable: true,  index:5, editor: Slick.Editors.Text },
+                {id: "link", name: "Action", field: "link",  cssClass: "cell-title", formatter: formatter, index:6,editor: Slick.Editors.Text, searchable: false}
          ];
 }
 
 function getColumnsForCompletedOrder(){
     return [
-        {id: "accessionNumber", name: "Accession Number", field: "accessionNumber", sortable: true, selectable: true, focusable: true, index:0, searchable: true, minWidth:120},
-        {id: "stNumber", name: "PatientID", field: "stNumber", sortable: true, selectable: true, focusable: true, index:1, searchable: true},
-        {id: "name", name: "PatientName", field: "name", sortable: true, selectable: true, focusable: true, index:2, searchable: true, minWidth:160},
-        {id: "source", name: "Source", field: "source", sortable: true, selectable: true, focusable: true, index:3, searchable: true},
-        {id: "link", name: "PrintReport", field: "link", selectable: true, focusable: true, cssClass: "cell-title", formatter: formatter, index:4, searchable: false}
+        {id: "accessionNumber", name: "Accession Number", field: "accessionNumber", sortable: true, index:0, editor: Slick.Editors.Text,  minWidth:120},
+        {id: "stNumber", name: "PatientID", field: "stNumber", sortable: true,  index:1, editor: Slick.Editors.Text },
+        {id: "name", name: "PatientName", field: "name", sortable: true,  index:2,  editor: Slick.Editors.Text, minWidth:160},
+        {id: "source", name: "Source", field: "source", sortable: true,  index:3, editor: Slick.Editors.Text },
+        {id: "link", name: "PrintReport", field: "link",  cssClass: "cell-title", formatter: formatter, index:4, editor: Slick.Editors.Text, searchable: false}
     ];
 }
 
