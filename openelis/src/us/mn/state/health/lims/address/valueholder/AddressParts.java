@@ -8,9 +8,17 @@ public class AddressParts extends ArrayList<AddressPart> {
         super(c);
     }
 
-    public AddressPart find(String partName) {
+    public AddressPart findByName(String partName) {
         for (AddressPart addressPart : this) {
             if (addressPart.getPartName().equals(partName))
+                return addressPart;
+        }
+        return null;
+    }
+
+    public AddressPart findById(String id) {
+        for (AddressPart addressPart : this) {
+            if (addressPart.getId().equals(id))
                 return addressPart;
         }
         return null;

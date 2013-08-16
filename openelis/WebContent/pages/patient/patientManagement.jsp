@@ -556,14 +556,16 @@ function setPatientAddress(response) {
     var forEach = Array.prototype.forEach;
     var addressLines = response.getElementsByTagName("addressline");
     function getValue(node, key) {
-        return node.getElementsByTagName(key)[0].firstChild;
+        var matchingNodes = node.getElementsByTagName(key);
+        if(matchingNodes.length == 0) return null;
+        var firstChild = matchingNodes[0].firstChild;
+        return firstChild ? firstChild.nodeValue : null;
     }
     forEach.call(addressLines, function(line){
-
         var value = getValue(line, 'value');
         var index = getValue(line, 'index');
-        if (value && index)
-        jQuery('input[name="patientProperties.addressParts.addressPartForms[' + index.nodeValue + '].value"]')[0].value = value.nodeValue;
+        if (value != null && index != null)
+            jQuery('input[name="patientProperties.addressParts.addressPartForms[' + index + '].value"]')[0].value = value;
     });
 }
 

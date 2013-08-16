@@ -9,7 +9,7 @@ public class PersonAddresses extends ArrayList<PersonAddress> {
     }
 
     public PersonAddress findByPartName(String partName, AddressParts addressParts) {
-        AddressPart addressPart = addressParts.find(partName);
+        AddressPart addressPart = addressParts.findByName(partName);
         for (PersonAddress personAddress : this) {
             if (addressPart.getId().equals(personAddress.getAddressPartId())) {
                 return personAddress;

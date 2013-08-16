@@ -7,6 +7,7 @@ import us.mn.state.health.lims.address.dao.PersonAddressDAO;
 import us.mn.state.health.lims.address.daoimpl.AddressPartDAOImpl;
 import us.mn.state.health.lims.address.daoimpl.PersonAddressDAOImpl;
 import us.mn.state.health.lims.address.valueholder.AddressPart;
+import us.mn.state.health.lims.address.valueholder.AddressParts;
 import us.mn.state.health.lims.address.valueholder.PersonAddress;
 import us.mn.state.health.lims.common.provider.query.converter.PersonAddressConverter;
 import us.mn.state.health.lims.common.util.XMLUtil;
@@ -19,6 +20,8 @@ import us.mn.state.health.lims.patienttype.daoimpl.PatientPatientTypeDAOImpl;
 import us.mn.state.health.lims.patienttype.valueholder.PatientType;
 import us.mn.state.health.lims.person.valueholder.Person;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class PatientXmlCreator {
@@ -28,12 +31,18 @@ public class PatientXmlCreator {
     private String ADDRESS_PART_VILLAGE_ID;
     private PatientPatientTypeDAO patientPatientTypeDAO;
     private PersonAddressDAO personAddressDAO;
+    private AddressPartDAO addressPartDAO;
 
     public PatientXmlCreator() {
-        AddressPartDAO addressPartDAO = new AddressPartDAOImpl();
-        List<AddressPart> partList = addressPartDAO.getAll();
+        addressPartDAO = new AddressPartDAOImpl();
+        patientPatientTypeDAO = new PatientPatientTypeDAOImpl();
+        personAddressDAO = new PersonAddressDAOImpl();
+    }
 
-        for( AddressPart addressPart : partList){
+    public void createXml(Patient patient, StringBuilder xml) {
+        List<AddressPart> addressPartList = addressPartDAO.getAll();
+
+        for( AddressPart addressPart : addressPartList){
             if( "department".equals(addressPart.getPartName())){
                 ADDRESS_PART_DEPT_ID = addressPart.getId();
             }else if( "commune".equals(addressPart.getPartName())){
@@ -42,11 +51,7 @@ public class PatientXmlCreator {
                 ADDRESS_PART_VILLAGE_ID = addressPart.getId();
             }
         }
-        patientPatientTypeDAO = new PatientPatientTypeDAOImpl();
-        personAddressDAO = new PersonAddressDAOImpl();
-    }
 
-    public void createXml(Patient patient, StringBuilder xml) {
         Person person = patient.getPerson();
 
         PatientIdentityTypeMap identityMap = PatientIdentityTypeMap.getInstance();
@@ -84,8 +89,8 @@ public class PatientXmlCreator {
         XMLUtil.appendKeyValue("healthRegion", identityMap.getIdentityValue(identityList, "HEALTH REGION"), xml);
         XMLUtil.appendKeyValue("primaryRelative", identityMap.getIdentityValue(identityList, "PRIMARYRELATIVE"), xml);
 
-        List<PersonAddress> addressParts = personAddressDAO.getAddressPartsByPersonId(person.getId());
-        String addressPartsXML = createAddressPartsXML(addressParts);
+        List<PersonAddress> addressLines = personAddressDAO.getAddressPartsByPersonId(person.getId());
+        String addressPartsXML = createAddressPartsXML(addressLines, addressPartList);
         XMLUtil.appendKeyValue("address", addressPartsXML, xml);
 
         if (patient.getLastupdated() != null) {
@@ -101,12 +106,24 @@ public class PatientXmlCreator {
     }
 
 
-    private String createAddressPartsXML(List<PersonAddress> addressParts){
+    private String createAddressPartsXML(List<PersonAddress> addressLines, List<AddressPart> addressPartList){
+        SortAddressByDisplayOrder(addressLines, addressPartList);
         XStream xstream = new XStream();
         xstream.registerConverter(new PersonAddressConverter());
         xstream.alias("addresslines", List.class);
+        return xstream.toXML(addressLines);
+    }
 
-        return xstream.toXML(addressParts);
+    private void SortAddressByDisplayOrder(List<PersonAddress> addressLines, List<AddressPart> addressPartList) {
+        final AddressParts addressParts = new AddressParts(addressPartList);
+        Collections.sort(addressLines, new Comparator<PersonAddress>() {
+            @Override
+            public int compare(PersonAddress address1, PersonAddress address2) {
+                AddressPart address1Part = addressParts.findById(address1.getAddressPartId());
+                AddressPart address2Part = addressParts.findById(address2.getAddressPartId());
+                return address1Part.getDisplayOrder().compareTo(address2Part.getDisplayOrder());
+            }
+        });
     }
 
     /**

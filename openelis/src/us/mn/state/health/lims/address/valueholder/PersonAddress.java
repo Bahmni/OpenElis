@@ -31,7 +31,7 @@ public class PersonAddress extends BaseObject {
 	private String uniqueIdentifyer;
 
     public static PersonAddress create(Person person, AddressParts addressParts, String partName, String value, String sysUserId) {
-        AddressPart addressPart = addressParts.find(partName);
+        AddressPart addressPart = addressParts.findByName(partName);
         PersonAddress personAddress = new PersonAddress();
         personAddress.setAddressPartId(addressPart.getId());
         personAddress.setPersonId(person.getId());
