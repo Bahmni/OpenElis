@@ -317,7 +317,7 @@ function toUppercase(element){
 
 	</table>
 	<div id="noPatientFound"  style="display: none" >
-		<h1><bean:message key="patient.search.not.found"/></h1>
+		<p class="results-message"><bean:message key="patient.search.not.found"/></p>
 	</div>
 	<div id="patientSearchDiv" style="display:none">
 		<table id="searchResultTable" style="width:70%">

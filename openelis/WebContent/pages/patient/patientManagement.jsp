@@ -812,12 +812,13 @@ function healthDistrictSuccess( xhr ){
 	<nested:hidden name='<%=formName%>' property="patientProperties.patientProcessingStatus" styleId="processingStatus" value="add" />
 	<nested:hidden name='<%=formName%>' property="patientProperties.patientPK" styleId="patientPK_ID" />
 	<br/>
-	<hr width="100%" class="hr-style-1"/>
+	<div class="form-item">
 	<html:button property="newPatient"  onclick="addPatient()" >
 		<bean:message key="patient.new" />
 	</html:button>
+	</div>
 
-	<div id="PatientDetail" style="display:none;">
+	<div id="PatientDetail">
 	<h2><bean:message key="patient.information"/></h2>
 	<table width="80%" border="0">
 	<tr>
@@ -849,13 +850,13 @@ function healthDistrictSuccess( xhr ){
                           />
             </div>
         </td>
+        <%} %>
     </tr>
+    <% if( supportSubjectNumber){ %>
     <tr >
         <td width="5%">&nbsp;
 
         </td>
-        <%} %>
-        <% if( supportSubjectNumber){ %>
         <td>&nbsp;
 
         </td>

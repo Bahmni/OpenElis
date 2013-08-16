@@ -9,7 +9,7 @@
 	String saveDisabled = (String) request.getSession().getAttribute(IActionConstants.SAVE_DISABLED);
 %>
 
-	<table border="0" cellpadding="0" cellspacing="4" width="100%">
+	<table border="0" cellpadding="0" cellspacing="4" width="100%" class="block-bottom">
 		<tbody valign="middle">
 			<tr>
 				<td align="right">

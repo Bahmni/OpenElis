@@ -143,6 +143,7 @@ function displayHelp(){
 </div> <!-- Closes id=header -->
 
 <%
+
 	}
 %>
 

@@ -485,9 +485,7 @@ function capitalizeValue( text){
 <html:hidden property="newRequesterName" name='<%=formName %>' styleId="newRequesterName" />
 <div id=sampleEntryPage <%= (orderTypeList == null || orderTypeList.size() == 0)? "" : "style='display:none'"  %>>
     <jsp:include page="<%=fieldsetToJspMap.get(fieldsetOrder.get(0))%>" />
-<hr style="width: 100%;" class="hr-style-1"/>
     <jsp:include page="<%=fieldsetToJspMap.get(fieldsetOrder.get(1))%>" />
-<hr style="width: 100%;" class="hr-style-1"/>
 
     <jsp:include page="<%=fieldsetToJspMap.get(fieldsetOrder.get(2))%>" />
 </div>

@@ -82,7 +82,9 @@
                   styleClass="text"
                   styleId="labNo" />
 
+        <span class="text-gutter">
         <bean:message key="sample.entry.scanner.instructions"/>
+       </span>
         <html:button property="generate"
                      styleClass="textButton"
                      onclick="getNextAccessionNumber(); setSampleFieldValid('labNo');makeDirty();" >
@@ -355,7 +357,6 @@
 </td>
 </tr>
 <% } %>
-<tr><td>&nbsp;</td></tr>
 <% if( trackPayment){ %>
 <tr>
     <td><bean:message key="sample.entry.patientPayment"/>: </td>
@@ -408,11 +409,6 @@
     </td>
 </tr>
 <% } %>
-<tr>
-    <td>
-        &nbsp;
-    </td>
-</tr>
 </table>
 </td>
 </tr>

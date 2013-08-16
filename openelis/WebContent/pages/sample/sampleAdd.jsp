@@ -589,11 +589,6 @@ function samplesHaveBeenAdded(){
 		<tr>
 			<td>
 				<bean:message  key="sample.entry.sample.type"/>
-			</td>
-		</tr>
-
-		<tr>
-			<td>
 				<html:select name="<%=formName%>" property="sampleTypeSelect"  onchange="sampleTypeSelected(this);" styleId="sampleTypeSelect"
 					value="0">
 					<app:optionsCollection name="<%=formName%>" property="sampleTypes" label="value" value="id" />
@@ -605,7 +600,6 @@ function samplesHaveBeenAdded(){
 		</tr>
 	</Table>
 
-	<br />
 	<div id="samplesAdded" class="colorFill" style="display: none; ">
 		<hr width="100%" class="hr-style-1"/>
 
@@ -652,7 +646,6 @@ function samplesHaveBeenAdded(){
 				</td>
 			</tr>
 		</table>
-		<br />
 		<div id="testSelections" class="colorFill" style="display:none;" >
 		<table width="50%" style="margin-left: 1%" id="addTables">
 		<tr>
@@ -694,4 +687,3 @@ function samplesHaveBeenAdded(){
 	</table>
 	</div>
 	</div>
-<br/>

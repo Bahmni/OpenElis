@@ -1,4 +1,50 @@
-@import "compass/reset";
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+  display: block;
+}
+body {
+  line-height: 1;
+}
+ol, ul {
+  list-style: none;
+}
+blockquote, q {
+  quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: '';
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
 @import "compass";
 /*=====================*/
 /* 
@@ -76,11 +122,11 @@ table {
   font-size: 13px;
   font-style: normal;
   background-color: #FFFFFF;
-  color: #336699;
+  color: #555555;
   border: #ccc999 none;
 }
 th {
-  color: #336699;
+  color: #555555;
   background-color:#dddddd;
   text-align: left;
   padding:5px  0px 5px 5px ;
@@ -94,7 +140,7 @@ tr {
 caption {
   text-align: left;
   font-size: 23px;
-  color: #336699;
+  color: #555555;
 }
 hr{
   border:1px dotter #000000;
@@ -108,7 +154,7 @@ hr.hr-style-1 {
     background-image:     -ms-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,0.75), rgba(0,0,0,0)); 
     background-image:      -o-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,0.75), rgba(0,0,0,0)); 
 }
-input[type="button"]{
+input[type="button"],button{
   @include background-image(linear-gradient(white, #eaeaea));
   @include border-radius(6px, 6px);
   padding:5px 8px;
@@ -116,11 +162,14 @@ input[type="button"]{
   cursor:pointer !important;
   color:#555555;
   &:hover{
-    @include background-image(linear-gradient(white, #e5e5e5));  
+    @include background-image(linear-gradient(white, #e5e5e5));
+    @include box-shadow(#e3e3e3 2px 2px 5px);
   }
-  &[disabled=disabled]{
+  &[disabled=disabled],button[disabled=disabled]{
     background:ffffff;
     color:#a1a1a1;
+    cursor:auto !important;
+    @include box-shadow(none); 
   }
  }
 /***** End overrides of default browser styles *****/
@@ -512,7 +561,7 @@ div.TableMatch{
   font-size: 13px;
   font-style: normal;
   background-color: #FFFFFF;
-  color: #336699;
+  color: #555555;
   border: #ccc999 none;
 }
 
@@ -561,7 +610,7 @@ td.textcontent {
 
 pre.code {
   padding-left : 2em;
-  color : #336699;
+  color : #555555
 }
 
 h1.title, .title {
@@ -849,7 +898,7 @@ a.sortableheader:link, .sorthead {
 /*AIS- bugzilla #1863*/
 .withouthighlight {
   background-color:#FFFFFF;
-  border-color:#336699;
+  border-color:#555555;
   border-width:1.8px;
   border-style:solid;
 }
@@ -998,7 +1047,7 @@ td.required {
 
 .sectionTitle {
   font-size: 14px;
-  color: #336699;
+  color: #555555;
   background-color: #F0F3F3;
   width: 100%;
   padding: 4px;
@@ -1029,7 +1078,7 @@ tr.rowTemplate {display: none}
 }
 
 .oe-form div, .oe-form p, .oe-form ul, .oe-form li {
-  color: #336699
+  color: #555555
 }
 .oe-form ul { margin:0; padding:0; list-style:none;}
 .oe-form ul ul { overflow:auto}
@@ -1064,4 +1113,32 @@ input[type=radio] + label {
 
 #ST_ID{
     width:99%;
+}
+h1,h2{
+  color:#333333;
+}
+h2{
+    color: #333333;
+    background: #f1f1f1;
+    border-radius: 5px;
+    padding: 2px 5px;
+    border: 1px solid #cecece;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    width: 98.5%;
+}
+.form-item{
+    padding:5px 0px;
+}
+.results-message {
+    color: #ffa000;
+    font-size:1.3em;
+    padding:5px 0px;      
+}
+.text-gutter{
+  margin-left:10px;
+  margin-right:10px;
+}
+.block-bottom{
+  margin-bottom:20px;
 }
