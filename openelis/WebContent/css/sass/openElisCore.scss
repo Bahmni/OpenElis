@@ -165,8 +165,16 @@ input[type="button"],button{
     @include background-image(linear-gradient(white, #e5e5e5));
     @include box-shadow(#e3e3e3 2px 2px 5px);
   }
+  &.primary-btn{
+      @include background-image(linear-gradient(#a1d030, #88af28));
+      color:#fff; 
+      @include text-shadow(rgba(blue, 0.2) 1px 1px 0, rgba(blue, 0.2) 2px 2px 0, rgba(blue, 0.2) 3px 3px 0); 
+      &[disabled=disabled]{
+        @include text-shadow(none);
+    }
+  }
   &[disabled=disabled],button[disabled=disabled]{
-    background:ffffff;
+    background:#ffffff;
     color:#a1a1a1;
     cursor:auto !important;
     @include box-shadow(none); 
@@ -1141,4 +1149,7 @@ h2{
 }
 .block-bottom{
   margin-bottom:20px;
+}
+#PatientDetail table tr td{
+  padding-right:10px;
 }

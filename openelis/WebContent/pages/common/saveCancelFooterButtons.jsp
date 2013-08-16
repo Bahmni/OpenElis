@@ -16,6 +16,7 @@
 					<html:button onclick="savePage();"
 						property="save"
 						styleId="saveButtonId"
+						styleClass="primary-btn"
 						disabled="<%=Boolean.valueOf(saveDisabled).booleanValue()%>">
 						<bean:message key="label.button.save" />
 					</html:button>

@@ -154,9 +154,7 @@
     </td>
 </tr>
 <% } %>
-<tr>
-    <td>&nbsp;</td>
-</tr>
+
 <% if( FormFields.getInstance().useField(Field.SampleEntryRequestingSiteSampleId)) {%>
 <tr class="requestingFacilityID">
     <td >
@@ -210,9 +208,6 @@
     </td>
 </tr>
 <% } %>
-<tr>
-    <td>&nbsp;</td>
-</tr>
 <%  if (useProviderInfo) { %>
 <% if(supportfirstNameFirst) { %>
 <tr>
