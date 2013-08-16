@@ -13,6 +13,8 @@ import us.mn.state.health.lims.address.valueholder.AddressParts;
 import us.mn.state.health.lims.address.valueholder.PersonAddress;
 import us.mn.state.health.lims.address.valueholder.PersonAddresses;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
+import us.mn.state.health.lims.common.util.DateUtil;
+import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 import us.mn.state.health.lims.healthcenter.dao.HealthCenterDAO;
 import us.mn.state.health.lims.healthcenter.daoimpl.HealthCenterDAOImpl;
 import us.mn.state.health.lims.healthcenter.valueholder.HealthCenter;
@@ -167,7 +169,12 @@ public class BahmniPatientService {
 
     private void populatePatient(String sysUserId, OpenMRSPerson openMRSPerson, Patient patient) {
         patient.setGender(openMRSPerson.getGender());
-        patient.setBirthDate(new Timestamp(openMRSPerson.getBirthdate().getTime()));
+        if(openMRSPerson.isBirthdateEstimated()) {
+            patient.setBirthDateForDisplay(DateUtil.convertDateToAmbiguousStringDate(openMRSPerson.getBirthdate()));
+        }
+        else {
+            patient.setBirthDate(new Timestamp(openMRSPerson.getBirthdate().getTime()));
+        }
         patient.setSysUserId(sysUserId);
         patient.setUuid(openMRSPerson.getUuid());
         OpenMRSPersonAttribute healthCenterAttribute = openMRSPerson.findAttributeByAttributeTypeDisplayName(OpenMRSPersonAttributeType.HEALTH_CENTER);

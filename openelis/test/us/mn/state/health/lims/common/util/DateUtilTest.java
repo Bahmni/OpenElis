@@ -20,7 +20,9 @@ package us.mn.state.health.lims.common.util;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 import static java.util.Calendar.*;
@@ -152,5 +154,17 @@ public class DateUtilTest {
         start.set(  2011, JANUARY, 17);
         end.set(    2021, JANUARY, 18);
         assertEquals(10, DateUtil.getAgeInYears(start.getTime(), end.getTime()));                
+    }
+
+    @Test
+    public void testConvertDateToAmbiguousStringDate() {
+        assertEquals("xx/xx/2012", DateUtil.convertDateToAmbiguousStringDate(createDate(2012, 11, 03)));
+        assertEquals("xx/xx/1999", DateUtil.convertDateToAmbiguousStringDate(createDate(1999, 1, 1)));
+    }
+
+    private Date createDate(int year, int month, int day) {
+        GregorianCalendar gregorianCalendar = new GregorianCalendar();
+        gregorianCalendar.set(year, month, day);
+        return gregorianCalendar.getTime();
     }
 }

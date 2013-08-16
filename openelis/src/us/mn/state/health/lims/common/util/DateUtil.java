@@ -430,6 +430,14 @@ public class DateUtil {
 		return convertStringDateToTruncatedTimestamp(dateForDisplay);
 	}
 
+	public static String convertDateToAmbiguousStringDate(Date date) {
+        Locale locale = SystemConfiguration.getInstance().getDefaultLocale();
+        String datePattern = ResourceLocator.getInstance().getMessageResources().getMessage(locale, "date.format.formatKey");
+        String replacement = "'" + AMBIGUOUS_DATE_CHAR + AMBIGUOUS_DATE_CHAR + "'";
+        String ambiguousDatePattern = datePattern.replace("dd", replacement).replace("MM", replacement);
+        return new SimpleDateFormat(ambiguousDatePattern).format(date).toLowerCase(locale);
+    }
+
 	public static boolean yearSpecified(String dateString) {
 		String[] dateParts = dateString.split("/");
 

@@ -12,15 +12,17 @@ public class OpenMRSPerson {
     private String uuid;
     private String gender;
     private Date birthdate;
+    private boolean birthdateEstimated;
     private OpenMRSPersonAddress preferredAddress;
     private OpenMRSPersonAttributes attributes;
 
-    public OpenMRSPerson(OpenMRSName preferredName, String uuid, String gender, Date birthdate, OpenMRSPersonAddress preferredAddress) {
+    public OpenMRSPerson(OpenMRSName preferredName, String uuid, String gender, Date birthdate, boolean birthdateEstimated, OpenMRSPersonAddress preferredAddress) {
         this.preferredName = preferredName;
         this.uuid = uuid;
         this.gender = gender;
         this.birthdate = birthdate;
         this.preferredAddress = preferredAddress;
+        this.birthdateEstimated = birthdateEstimated;
     }
 
     public OpenMRSPerson addAttribute(OpenMRSPersonAttribute attribute) {
@@ -87,5 +89,13 @@ public class OpenMRSPerson {
             }
         }
         return null;
+    }
+
+    public boolean isBirthdateEstimated() {
+        return birthdateEstimated;
+    }
+
+    public void setBirthdateEstimated(boolean birthdateEstimated) {
+        this.birthdateEstimated = birthdateEstimated;
     }
 }
