@@ -14,7 +14,6 @@ import us.mn.state.health.lims.address.valueholder.PersonAddress;
 import us.mn.state.health.lims.address.valueholder.PersonAddresses;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.util.DateUtil;
-import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 import us.mn.state.health.lims.healthcenter.dao.HealthCenterDAO;
 import us.mn.state.health.lims.healthcenter.daoimpl.HealthCenterDAOImpl;
 import us.mn.state.health.lims.healthcenter.valueholder.HealthCenter;
@@ -110,15 +109,19 @@ public class BahmniPatientService {
         PatientIdentityTypes patientIdentityTypes = new PatientIdentityTypes(patientIdentityTypeDAO.getAllPatientIdenityTypes());
         PatientIdentities patientIdentities = new PatientIdentities(patientIdentityDAO.getPatientIdentitiesForPatient(patient.getId()));
 
-        setIdentityData(patientIdentityTypes, patientIdentities, PRIMARY_RELATIVE_KEY_NAME, getAttributeValue(openMRSPerson, OpenMRSPersonAttributeType.PRIMARY_RELATIVE), sysUserId);
-        setIdentityData(patientIdentityTypes, patientIdentities, OCCUPATION_KEY_NAME, getAttributeDisplay(openMRSPerson, OpenMRSPersonAttributeType.OCCUPATION), sysUserId);
+        addOrUpdate(patient, patientIdentityTypes, patientIdentities, PRIMARY_RELATIVE_KEY_NAME, getAttributeValue(openMRSPerson, OpenMRSPersonAttributeType.PRIMARY_RELATIVE), sysUserId);
+        addOrUpdate(patient, patientIdentityTypes, patientIdentities, OCCUPATION_KEY_NAME, getAttributeDisplay(openMRSPerson, OpenMRSPersonAttributeType.OCCUPATION), sysUserId);
     }
 
-    private void setIdentityData(PatientIdentityTypes patientIdentityTypes, PatientIdentities patientIdentities, String identityName, String attributeValue, String sysUserId) {
+    private void addOrUpdate(Patient patient, PatientIdentityTypes patientIdentityTypes, PatientIdentities patientIdentities, String identityName, String attributeValue, String sysUserId) {
         PatientIdentity patientIdentity = patientIdentities.findIdentity(identityName, patientIdentityTypes);
-        patientIdentity.setIdentityData(attributeValue);
-        patientIdentity.setSysUserId(sysUserId);
-        patientIdentityDAO.updateData(patientIdentity);
+        if(patientIdentity == null) {
+            addPatientIdentity(patient, patientIdentityTypes, identityName, attributeValue, sysUserId);
+        } else {
+            patientIdentity.setIdentityData(attributeValue);
+            patientIdentity.setSysUserId(sysUserId);
+            patientIdentityDAO.updateData(patientIdentity);
+        }
     }
 
     private String getAttributeValue(OpenMRSPerson openMRSPerson, String displayName) {
