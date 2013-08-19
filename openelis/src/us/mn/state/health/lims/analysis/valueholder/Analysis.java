@@ -508,7 +508,7 @@ public class Analysis extends BaseObject {
     }
 
     public void cancelReferOut() {
-        this.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.NotStarted));
+        this.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.NotTested));
     }
 
     public void reject() {

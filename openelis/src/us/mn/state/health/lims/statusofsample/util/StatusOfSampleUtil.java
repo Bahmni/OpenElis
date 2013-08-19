@@ -85,7 +85,7 @@ public class StatusOfSampleUtil {
     }
 
     public enum AnalysisStatus {
-        NotStarted,
+        NotTested,
         ReferedOut,
         Canceled,
         TechnicalAcceptance,
@@ -482,7 +482,7 @@ public class StatusOfSampleUtil {
     private static void addToAnalysisMap(StatusOfSample status) {
         switch (status.getStatusOfSampleName()) {
             case "Not Tested":
-                analysisStatusToObjectMap.put(AnalysisStatus.NotStarted, status);
+                analysisStatusToObjectMap.put(AnalysisStatus.NotTested, status);
                 break;
             case "Test Canceled":
                 analysisStatusToObjectMap.put(AnalysisStatus.Canceled, status);
