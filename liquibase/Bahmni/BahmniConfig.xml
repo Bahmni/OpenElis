@@ -518,6 +518,7 @@
             <column name="value" value="true" />
             <where>name = 'showValidationFailureIcon'</where>
         </update>
+    </changeSet>
     <!--<changeSet author="tw" id="30" context="bahmni">-->
     <!--<comment>Add referral reasons to DB</comment>-->
     <!--<loadData file="Bahmni/Bahmni_Referral_Reasons.csv" schemaName="clinlims" tableName="referral_reason">-->
