@@ -254,12 +254,15 @@ function validateForm(){
 function /*void*/ handleReferralCheckChange(checkbox,  index ){
 	var referralReason = $( "referralReasonId_" + index );
 	referralReason.value = 0;
-    referralReason.disabled = !checkbox.checked;
+    var isTestReferredOut = checkbox.checked;
+    referralReason.disabled = !isTestReferredOut;
 
     var result = $( "results_" + index );
-    result.value = "";
     result.style.background = "#ffffff";
-    result.disabled = checkbox.checked;
+    result.disabled = isTestReferredOut;
+    if(isTestReferredOut) {
+        result.value = "";
+    }
 }
 
 function /*void*/ handleReferralReasonChange(select,  index ){

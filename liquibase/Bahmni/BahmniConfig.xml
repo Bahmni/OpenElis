@@ -510,4 +510,11 @@
             <where>name='atom-feed-openmrs-patient'</where>
         </update>
     </changeSet>
+    <changeSet author="tw" id="34" context="bahmni" >
+        <comment>Sets the default for showing the invalid results icon to true</comment>
+        <update schemaName="clinlims" tableName="site_information" >
+            <column name="value" value="true" />
+            <where>name = 'showValidationFailureIcon'</where>
+        </update>
+    </changeSet>
 </databaseChangeLog>
