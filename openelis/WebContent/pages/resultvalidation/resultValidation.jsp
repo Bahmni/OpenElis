@@ -397,7 +397,7 @@ function /*boolean*/ handleEnterEvent(){
 	    			<td></td>
 	    		<% } %>
 				<td>
-					<bean:write name="resultList" property="testName"/>
+					<bean:write name="resultList" property="testDisplayName"/>
 					<% if( resultList.isNonconforming()){ %>
 						<img src="./images/nonconforming.gif" />
 					<% } %>

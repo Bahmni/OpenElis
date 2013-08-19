@@ -781,6 +781,7 @@ public class ResultsValidationUtility {
 		analysisResultItem.setReflexGroup(testResultItem.isReflexGroup());
 		analysisResultItem.setChildReflex(testResultItem.isChildReflex());
 		analysisResultItem.setNonconforming(testResultItem.isNonconforming());
+        analysisResultItem.setStatusId(testResultItem.getAnalysisStatusId());
 
 		return analysisResultItem;
 

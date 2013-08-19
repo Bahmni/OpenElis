@@ -81,7 +81,7 @@ public class ResultValidationItem implements ResultItem, Serializable{
 	private boolean isChildReflex = false;
 	private boolean nonconforming = false;
 
-	public String getAccessionNumber() {
+    public String getAccessionNumber() {
 		return accessionNumber;
 	}
 	public void setAccessionNumber(String accessionNumber) {
@@ -130,7 +130,7 @@ public class ResultValidationItem implements ResultItem, Serializable{
 	}
 
 	public boolean isRemoved(){
-		return remove==NO;
+		return NO.equals(remove);
 	}
 
 

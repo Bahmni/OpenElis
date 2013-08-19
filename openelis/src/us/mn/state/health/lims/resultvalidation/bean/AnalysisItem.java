@@ -1,593 +1,602 @@
 /**
-* The contents of this file are subject to the Mozilla Public License
-* Version 1.1 (the "License"); you may not use this file except in
-* compliance with the License. You may obtain a copy of the License at
-* http://www.mozilla.org/MPL/
-*
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations under
-* the License.
-*
-* The Original Code is OpenELIS code.
-*
-* Copyright (C) The Minnesota Department of Health.  All Rights Reserved.
-*/
+ * The contents of this file are subject to the Mozilla Public License
+ * Version 1.1 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations under
+ * the License.
+ *
+ * The Original Code is OpenELIS code.
+ *
+ * Copyright (C) The Minnesota Department of Health.  All Rights Reserved.
+ */
 package us.mn.state.health.lims.resultvalidation.bean;
 
 import java.sql.Timestamp;
 import java.util.List;
 
 import us.mn.state.health.lims.common.util.IdValuePair;
+import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 
-public class AnalysisItem  {
+import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptanceRO;
 
-	private String id;
+public class AnalysisItem {
 
-	private String units;
+    private String id;
 
-	private String testName;
+    private String units;
 
-	private String accessionNumber;
+    private String testName;
 
-	private String result;
+    private String accessionNumber;
 
-	private String receivedDate;
+    private String result;
 
-	private boolean isAccepted = false;
+    private String receivedDate;
 
-	private boolean isRejected = false;
+    private boolean isAccepted = false;
 
-	private boolean isManual = false;
+    private boolean isRejected = false;
 
-	private String errorMessage;
+    private boolean isManual = false;
 
-	private String note;
+    private String errorMessage;
 
-	private String noteId;
+    private String note;
 
-	private String statusId;
+    private String noteId;
 
-	private String sampleId;
+    private String statusId;
 
-	private String analysisId;
+    private String sampleId;
 
-	private String testId;
+    private String analysisId;
 
-	private String resultId;
+    private String testId;
 
-	private String resultType;
+    private String resultId;
 
-	private String completeDate;
+    private String resultType;
 
-	private boolean isPositive = false;
+    private String completeDate;
 
-	private boolean isHighlighted = false;
+    private boolean isPositive = false;
 
-	private Timestamp lastUpdated;
+    private boolean isHighlighted = false;
 
-	private int sampleGroupingNumber = 0;
+    private Timestamp lastUpdated;
 
-	private String testSortNumber;
+    private int sampleGroupingNumber = 0;
 
-	private String integralResult;
+    private String testSortNumber;
 
-	private String integralAnalysisId;
+    private String integralResult;
 
-	private String murexResult;
+    private String integralAnalysisId;
 
-	private String murexAnalysisId;
+    private String murexResult;
 
-	private String vironostikaResult;
+    private String murexAnalysisId;
 
-	private String vironostikaAnalysisId;
+    private String vironostikaResult;
 
-	private String genieIIResult;
+    private String vironostikaAnalysisId;
 
-	private String genieIIAnalysisId;
+    private String genieIIResult;
 
-	private String genieII100Result;
+    private String genieIIAnalysisId;
 
-	private String genieII100AnalysisId;
+    private String genieII100Result;
 
-	private String genieII10Result;
+    private String genieII100AnalysisId;
 
-	private String genieII10AnalysisId;
+    private String genieII10Result;
 
-	private String westernBlot1Result;
+    private String genieII10AnalysisId;
 
-	private String westernBlot1AnalysisId;
+    private String westernBlot1Result;
 
-	private String westernBlot2Result;
+    private String westernBlot1AnalysisId;
 
-	private String westernBlot2AnalysisId;
+    private String westernBlot2Result;
 
-	private String p24AgResult;
+    private String westernBlot2AnalysisId;
 
-	private String p24AgAnalysisId;
+    private String p24AgResult;
 
-	private String biolineResult;
-	
-	private String biolineAnalysisId;
-	
-	private String innoliaResult;
-	
-	private String innoliaAnalysisId;
-	
-	private String finalResult;
+    private String p24AgAnalysisId;
 
-	private String nextTest;
+    private String biolineResult;
 
-	/* this is very specific to showing calculated results, generalize if there are more than just log calculations */
-	private boolean displayResultAsLog = false;
+    private String biolineAnalysisId;
 
-	private boolean showAcceptReject = true;
+    private String innoliaResult;
 
-	private List<IdValuePair> dictionaryResults;
+    private String innoliaAnalysisId;
 
-	private boolean isMultipleResultForSample = false;
-	
-	private boolean readOnly = false;
-	
-	private boolean isReflexGroup = false;
-	
-	private boolean isChildReflex = false;
-	
-	private boolean nonconforming = false;
+    private String finalResult;
 
-	public AnalysisItem() {
+    private String nextTest;
 
-	}
+    /* this is very specific to showing calculated results, generalize if there are more than just log calculations */
+    private boolean displayResultAsLog = false;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    private boolean showAcceptReject = true;
 
-	public String getId() {
-		return id;
-	}
+    private List<IdValuePair> dictionaryResults;
 
-	public String getTestName() {
-		return this.testName;
-	}
+    private boolean isMultipleResultForSample = false;
 
-	public void setTestName(String testName) {
-		this.testName = testName;
-	}
+    private boolean readOnly = false;
 
-	public void setUnits(String units) {
-		this.units = units;
-	}
+    private boolean isReflexGroup = false;
 
-	public String getUnits() {
-		return units;
-	}
+    private boolean isChildReflex = false;
 
-	public void setAccessionNumber(String accessionNumber) {
-		this.accessionNumber = accessionNumber;
-	}
+    private boolean nonconforming = false;
 
-	public String getAccessionNumber() {
-		return accessionNumber;
-	}
+    public AnalysisItem() {
 
-	public void setResult(String result) {
-		this.result = result;
-	}
+    }
 
-	public String getResult() {
-		return result;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public void setReceivedDate(String receivedDate) {
-		this.receivedDate = receivedDate;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public String getReceivedDate() {
-		return receivedDate;
-	}
+    public String getTestName() {
+        return this.testName;
+    }
 
-	public void setIsAccepted(boolean isAccepted) {
-		this.isAccepted = isAccepted;
-	}
+    public String getTestDisplayName() {
+        if (StatusOfSampleUtil.getStatusID(TechnicalAcceptanceRO).equals(statusId)) {
+            return this.testName + "(RO)";
+        }
+        return this.testName;
+    }
 
-	public boolean getIsAccepted() {
-		return isAccepted;
-	}
+    public void setTestName(String testName) {
+        this.testName = testName;
+    }
 
-	public void setIsRejected(boolean isRejected) {
-		this.isRejected = isRejected;
-	}
+    public void setUnits(String units) {
+        this.units = units;
+    }
 
-	public boolean getIsRejected() {
-		return isRejected;
-	}
+    public String getUnits() {
+        return units;
+    }
 
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
-	}
+    public void setAccessionNumber(String accessionNumber) {
+        this.accessionNumber = accessionNumber;
+    }
 
-	public String getErrorMessage() {
-		return errorMessage;
-	}
+    public String getAccessionNumber() {
+        return accessionNumber;
+    }
 
-	public void setNote(String note) {
-		this.note = note;
-	}
+    public void setResult(String result) {
+        this.result = result;
+    }
 
-	public String getNote() {
-		return note;
-	}
+    public String getResult() {
+        return result;
+    }
 
-	public void setStatusId(String statusId) {
-		this.statusId = statusId;
-	}
+    public void setReceivedDate(String receivedDate) {
+        this.receivedDate = receivedDate;
+    }
 
-	public String getStatusId() {
-		return statusId;
-	}
+    public String getReceivedDate() {
+        return receivedDate;
+    }
 
-	public void setSampleId(String sampleId) {
-		this.sampleId = sampleId;
-	}
+    public void setIsAccepted(boolean isAccepted) {
+        this.isAccepted = isAccepted;
+    }
 
-	public String getSampleId() {
-		return sampleId;
-	}
+    public boolean getIsAccepted() {
+        return isAccepted;
+    }
 
-	public void setTestId(String testId) {
-		this.testId = testId;
-	}
+    public void setIsRejected(boolean isRejected) {
+        this.isRejected = isRejected;
+    }
 
-	public String getTestId() {
-		return this.testId;
-	}
+    public boolean getIsRejected() {
+        return isRejected;
+    }
 
-	public void setCompleteDate(String completeDate) {
-		this.completeDate = completeDate;
-	}
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
 
-	public String getCompleteDate() {
-		return this.completeDate;
-	}
+    public String getErrorMessage() {
+        return errorMessage;
+    }
 
-	public void setPositive(boolean isPositive) {
-		this.isPositive = isPositive;
-	}
+    public void setNote(String note) {
+        this.note = note;
+    }
 
-	public boolean getPositive() {
-		return isPositive;
-	}
+    public String getNote() {
+        return note;
+    }
 
-	public void setIsHighlighted(boolean isHighlighted) {
-		this.isHighlighted = isHighlighted;
-	}
+    public void setStatusId(String statusId) {
+        this.statusId = statusId;
+    }
 
-	public boolean getIsHighlighted() {
-		return isHighlighted;
-	}
+    public String getStatusId() {
+        return statusId;
+    }
 
-	public void setLastUpdated(Timestamp lastupdated) {
-		this.lastUpdated = lastupdated;
+    public void setSampleId(String sampleId) {
+        this.sampleId = sampleId;
+    }
 
-	}
+    public String getSampleId() {
+        return sampleId;
+    }
 
-	public Timestamp getLastUpdated() {
-		return this.lastUpdated;
-	}
+    public void setTestId(String testId) {
+        this.testId = testId;
+    }
 
-	public void setSampleGroupingNumber(int sampleGroupingNumber) {
-		this.sampleGroupingNumber = sampleGroupingNumber;
-	}
+    public String getTestId() {
+        return this.testId;
+    }
 
-	public int getSampleGroupingNumber() {
-		return sampleGroupingNumber;
-	}
+    public void setCompleteDate(String completeDate) {
+        this.completeDate = completeDate;
+    }
 
-	public void setTestSortNumber(String testSortNumber) {
-		this.testSortNumber = testSortNumber;
-	}
+    public String getCompleteDate() {
+        return this.completeDate;
+    }
 
-	public String getTestSortNumber() {
-		return testSortNumber;
-	}
+    public void setPositive(boolean isPositive) {
+        this.isPositive = isPositive;
+    }
 
-	public void setManual(boolean isManual) {
-		this.isManual = isManual;
-	}
+    public boolean getPositive() {
+        return isPositive;
+    }
 
-	public boolean getManual() {
-		return isManual;
-	}
+    public void setIsHighlighted(boolean isHighlighted) {
+        this.isHighlighted = isHighlighted;
+    }
 
-	public String getIntegralResult() {
-		return integralResult;
-	}
+    public boolean getIsHighlighted() {
+        return isHighlighted;
+    }
 
-	public void setIntegralResult(String integralResult) {
-		this.integralResult = integralResult;
-	}
+    public void setLastUpdated(Timestamp lastupdated) {
+        this.lastUpdated = lastupdated;
 
-	public void setIntegralAnalysisId(String integralAnalysisId) {
-		this.integralAnalysisId = integralAnalysisId;
-	}
+    }
 
-	public String getIntegralAnalysisId() {
-		return integralAnalysisId;
-	}
+    public Timestamp getLastUpdated() {
+        return this.lastUpdated;
+    }
 
-	public String getMurexResult() {
-		return murexResult;
-	}
+    public void setSampleGroupingNumber(int sampleGroupingNumber) {
+        this.sampleGroupingNumber = sampleGroupingNumber;
+    }
 
-	public void setMurexResult(String murexResult) {
-		this.murexResult = murexResult;
-	}
+    public int getSampleGroupingNumber() {
+        return sampleGroupingNumber;
+    }
 
-	public void setMurexAnalysisId(String murexAnalysisId) {
-		this.murexAnalysisId = murexAnalysisId;
-	}
+    public void setTestSortNumber(String testSortNumber) {
+        this.testSortNumber = testSortNumber;
+    }
 
-	public String getMurexAnalysisId() {
-		return murexAnalysisId;
-	}
+    public String getTestSortNumber() {
+        return testSortNumber;
+    }
 
-	public String getVironostikaResult() {
-		return vironostikaResult;
-	}
+    public void setManual(boolean isManual) {
+        this.isManual = isManual;
+    }
 
-	public void setVironostikaResult(String vironostikaResult) {
-		this.vironostikaResult = vironostikaResult;
-	}
+    public boolean getManual() {
+        return isManual;
+    }
 
-	public void setVironostikaAnalysisId(String vironostikaAnalysisId) {
-		this.vironostikaAnalysisId = vironostikaAnalysisId;
-	}
+    public String getIntegralResult() {
+        return integralResult;
+    }
 
-	public String getVironostikaAnalysisId() {
-		return vironostikaAnalysisId;
-	}
+    public void setIntegralResult(String integralResult) {
+        this.integralResult = integralResult;
+    }
 
-	public String getGenieIIResult() {
-		return genieIIResult;
-	}
+    public void setIntegralAnalysisId(String integralAnalysisId) {
+        this.integralAnalysisId = integralAnalysisId;
+    }
 
-	public void setGenieIIResult(String genieIIResult) {
-		this.genieIIResult = genieIIResult;
-	}
+    public String getIntegralAnalysisId() {
+        return integralAnalysisId;
+    }
 
-	public void setGenieIIAnalysisId(String genieIIAnalysisId) {
-		this.genieIIAnalysisId = genieIIAnalysisId;
-	}
+    public String getMurexResult() {
+        return murexResult;
+    }
 
-	public String getGenieIIAnalysisId() {
-		return genieIIAnalysisId;
-	}
+    public void setMurexResult(String murexResult) {
+        this.murexResult = murexResult;
+    }
 
-	public String getGenieII100Result() {
-		return this.genieII100Result;
-	}
+    public void setMurexAnalysisId(String murexAnalysisId) {
+        this.murexAnalysisId = murexAnalysisId;
+    }
 
-	public void setGenieII100Result(String genieII100Result) {
-		this.genieII100Result = genieII100Result;
-	}
+    public String getMurexAnalysisId() {
+        return murexAnalysisId;
+    }
 
-	public void setGenieII100AnalysisId(String genieII100AnalysisId) {
-		this.genieII100AnalysisId = genieII100AnalysisId;
-	}
+    public String getVironostikaResult() {
+        return vironostikaResult;
+    }
 
-	public String getGenieII100AnalysisId() {
-		return genieII100AnalysisId;
-	}
+    public void setVironostikaResult(String vironostikaResult) {
+        this.vironostikaResult = vironostikaResult;
+    }
 
-	public String getGenieII10Result() {
-		return genieII10Result;
-	}
+    public void setVironostikaAnalysisId(String vironostikaAnalysisId) {
+        this.vironostikaAnalysisId = vironostikaAnalysisId;
+    }
 
-	public void setGenieII10Result(String genieII10Result) {
-		this.genieII10Result = genieII10Result;
-	}
+    public String getVironostikaAnalysisId() {
+        return vironostikaAnalysisId;
+    }
 
-	public void setGenieII10AnalysisId(String genieII10AnalysisId) {
-		this.genieII10AnalysisId = genieII10AnalysisId;
-	}
+    public String getGenieIIResult() {
+        return genieIIResult;
+    }
 
-	public String getGenieII10AnalysisId() {
-		return genieII10AnalysisId;
-	}
+    public void setGenieIIResult(String genieIIResult) {
+        this.genieIIResult = genieIIResult;
+    }
 
-	public String getWesternBlot1Result() {
-		return westernBlot1Result;
-	}
+    public void setGenieIIAnalysisId(String genieIIAnalysisId) {
+        this.genieIIAnalysisId = genieIIAnalysisId;
+    }
 
-	public void setWesternBlot1Result(String westernBlot1Result) {
-		this.westernBlot1Result = westernBlot1Result;
-	}
+    public String getGenieIIAnalysisId() {
+        return genieIIAnalysisId;
+    }
 
-	public void setWesternBlot1AnalysisId(String westernBlot1AnalysisId) {
-		this.westernBlot1AnalysisId = westernBlot1AnalysisId;
-	}
+    public String getGenieII100Result() {
+        return this.genieII100Result;
+    }
 
-	public String getWesternBlot1AnalysisId() {
-		return westernBlot1AnalysisId;
-	}
+    public void setGenieII100Result(String genieII100Result) {
+        this.genieII100Result = genieII100Result;
+    }
 
-	public String getWesternBlot2Result() {
-		return westernBlot2Result;
-	}
+    public void setGenieII100AnalysisId(String genieII100AnalysisId) {
+        this.genieII100AnalysisId = genieII100AnalysisId;
+    }
 
-	public void setWesternBlot2Result(String westernBlot2Result) {
-		this.westernBlot2Result = westernBlot2Result;
-	}
+    public String getGenieII100AnalysisId() {
+        return genieII100AnalysisId;
+    }
 
-	public void setWesternBlot2AnalysisId(String westernBlot2AnalysisId) {
-		this.westernBlot2AnalysisId = westernBlot2AnalysisId;
-	}
+    public String getGenieII10Result() {
+        return genieII10Result;
+    }
 
-	public String getWesternBlot2AnalysisId() {
-		return westernBlot2AnalysisId;
-	}
+    public void setGenieII10Result(String genieII10Result) {
+        this.genieII10Result = genieII10Result;
+    }
 
-	public String getP24AgResult() {
-		return p24AgResult;
-	}
+    public void setGenieII10AnalysisId(String genieII10AnalysisId) {
+        this.genieII10AnalysisId = genieII10AnalysisId;
+    }
 
-	public void setP24AgResult(String p24AgResult) {
-		this.p24AgResult = p24AgResult;
-	}
+    public String getGenieII10AnalysisId() {
+        return genieII10AnalysisId;
+    }
 
-	public void setP24AgAnalysisId(String p24AgAnalysisId) {
-		this.p24AgAnalysisId = p24AgAnalysisId;
-	}
+    public String getWesternBlot1Result() {
+        return westernBlot1Result;
+    }
 
-	public String getP24AgAnalysisId() {
-		return p24AgAnalysisId;
-	}
+    public void setWesternBlot1Result(String westernBlot1Result) {
+        this.westernBlot1Result = westernBlot1Result;
+    }
 
-	public void setFinalResult(String finalResult) {
-		this.finalResult = finalResult;
-	}
+    public void setWesternBlot1AnalysisId(String westernBlot1AnalysisId) {
+        this.westernBlot1AnalysisId = westernBlot1AnalysisId;
+    }
 
-	public String getFinalResult() {
-		return finalResult;
-	}
+    public String getWesternBlot1AnalysisId() {
+        return westernBlot1AnalysisId;
+    }
 
-	public void setNextTest(String nextTest) {
-		this.nextTest = nextTest;
-	}
+    public String getWesternBlot2Result() {
+        return westernBlot2Result;
+    }
 
-	public String getNextTest() {
-		return nextTest;
-	}
+    public void setWesternBlot2Result(String westernBlot2Result) {
+        this.westernBlot2Result = westernBlot2Result;
+    }
 
-	public void setDictionaryResults(List<IdValuePair> dictionaryResults) {
-		this.dictionaryResults = dictionaryResults;
-	}
+    public void setWesternBlot2AnalysisId(String westernBlot2AnalysisId) {
+        this.westernBlot2AnalysisId = westernBlot2AnalysisId;
+    }
 
-	public List<IdValuePair> getDictionaryResults() {
-		return dictionaryResults;
-	}
+    public String getWesternBlot2AnalysisId() {
+        return westernBlot2AnalysisId;
+    }
 
-	public void setAnalysisId(String analysisId) {
-		this.analysisId = analysisId;
-	}
+    public String getP24AgResult() {
+        return p24AgResult;
+    }
 
-	public String getAnalysisId() {
-		return analysisId;
-	}
+    public void setP24AgResult(String p24AgResult) {
+        this.p24AgResult = p24AgResult;
+    }
 
-	public void setNoteId(String noteId) {
-		this.noteId = noteId;
-	}
+    public void setP24AgAnalysisId(String p24AgAnalysisId) {
+        this.p24AgAnalysisId = p24AgAnalysisId;
+    }
 
-	public String getNoteId() {
-		return noteId;
-	}
+    public String getP24AgAnalysisId() {
+        return p24AgAnalysisId;
+    }
 
-	public void setResultId(String resultId) {
-		this.resultId = resultId;
-	}
+    public void setFinalResult(String finalResult) {
+        this.finalResult = finalResult;
+    }
 
-	public String getResultId() {
-		return resultId;
-	}
+    public String getFinalResult() {
+        return finalResult;
+    }
 
-	public void setResultType(String resultType) {
-		this.resultType = resultType;
-	}
+    public void setNextTest(String nextTest) {
+        this.nextTest = nextTest;
+    }
 
-	public String getResultType() {
-		return resultType;
-	}
+    public String getNextTest() {
+        return nextTest;
+    }
 
-	public void setDisplayResultAsLog(boolean displayResultAsLog) {
-		this.displayResultAsLog = displayResultAsLog;
-	}
+    public void setDictionaryResults(List<IdValuePair> dictionaryResults) {
+        this.dictionaryResults = dictionaryResults;
+    }
 
-	public boolean isDisplayResultAsLog() {
-		return displayResultAsLog;
-	}
+    public List<IdValuePair> getDictionaryResults() {
+        return dictionaryResults;
+    }
 
-	public void setShowAcceptReject(boolean showAcceptReject) {
-		this.showAcceptReject = showAcceptReject;
-	}
+    public void setAnalysisId(String analysisId) {
+        this.analysisId = analysisId;
+    }
 
-	public boolean isShowAcceptReject() {
-		return showAcceptReject;
-	}
+    public String getAnalysisId() {
+        return analysisId;
+    }
 
-	public void setMultipleResultForSample(boolean isMultipleResultForSample) {
-		this.isMultipleResultForSample = isMultipleResultForSample;
-	}
+    public void setNoteId(String noteId) {
+        this.noteId = noteId;
+    }
 
-	public boolean isMultipleResultForSample() {
-		return isMultipleResultForSample;
-	}
+    public String getNoteId() {
+        return noteId;
+    }
 
-	public void setReadOnly(boolean readOnly) {
-		this.readOnly = readOnly;
-	}
+    public void setResultId(String resultId) {
+        this.resultId = resultId;
+    }
 
-	public boolean isReadOnly() {
-		return readOnly;
-	}
+    public String getResultId() {
+        return resultId;
+    }
 
-	public boolean isReflexGroup() {
-		return isReflexGroup;
-	}
+    public void setResultType(String resultType) {
+        this.resultType = resultType;
+    }
 
-	public void setReflexGroup(boolean isReflexGroup) {
-		this.isReflexGroup = isReflexGroup;
-	}
+    public String getResultType() {
+        return resultType;
+    }
 
-	public boolean isChildReflex() {
-		return isChildReflex;
-	}
+    public void setDisplayResultAsLog(boolean displayResultAsLog) {
+        this.displayResultAsLog = displayResultAsLog;
+    }
 
-	public void setChildReflex(boolean isChildReflex) {
-		this.isChildReflex = isChildReflex;
-	}
+    public boolean isDisplayResultAsLog() {
+        return displayResultAsLog;
+    }
 
-	public String getBiolineResult() {
-		return biolineResult;
-	}
+    public void setShowAcceptReject(boolean showAcceptReject) {
+        this.showAcceptReject = showAcceptReject;
+    }
 
-	public void setBiolineResult(String biolineResult) {
-		this.biolineResult = biolineResult;
-	}
+    public boolean isShowAcceptReject() {
+        return showAcceptReject;
+    }
 
-	public String getBiolineAnalysisId() {
-		return biolineAnalysisId;
-	}
+    public void setMultipleResultForSample(boolean isMultipleResultForSample) {
+        this.isMultipleResultForSample = isMultipleResultForSample;
+    }
 
-	public void setBiolineAnalysisId(String biolineAnalysisID) {
-		this.biolineAnalysisId = biolineAnalysisID;
-	}
+    public boolean isMultipleResultForSample() {
+        return isMultipleResultForSample;
+    }
 
-	public boolean isNonconforming() {
-		return nonconforming;
-	}
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+    }
 
-	public void setNonconforming(boolean nonconforming) {
-		this.nonconforming = nonconforming;
-	}
+    public boolean isReadOnly() {
+        return readOnly;
+    }
 
-	public String getInnoliaResult() {
-		return innoliaResult;
-	}
+    public boolean isReflexGroup() {
+        return isReflexGroup;
+    }
 
-	public void setInnoliaResult(String innoliaResult) {
-		this.innoliaResult = innoliaResult;
-	}
+    public void setReflexGroup(boolean isReflexGroup) {
+        this.isReflexGroup = isReflexGroup;
+    }
 
-	public String getInnoliaAnalysisId() {
-		return innoliaAnalysisId;
-	}
+    public boolean isChildReflex() {
+        return isChildReflex;
+    }
 
-	public void setInnoliaAnalysisId(String innoliaAnalysisId) {
-		this.innoliaAnalysisId = innoliaAnalysisId;
-	}
+    public void setChildReflex(boolean isChildReflex) {
+        this.isChildReflex = isChildReflex;
+    }
 
+    public String getBiolineResult() {
+        return biolineResult;
+    }
+
+    public void setBiolineResult(String biolineResult) {
+        this.biolineResult = biolineResult;
+    }
+
+    public String getBiolineAnalysisId() {
+        return biolineAnalysisId;
+    }
+
+    public void setBiolineAnalysisId(String biolineAnalysisID) {
+        this.biolineAnalysisId = biolineAnalysisID;
+    }
+
+    public boolean isNonconforming() {
+        return nonconforming;
+    }
+
+    public void setNonconforming(boolean nonconforming) {
+        this.nonconforming = nonconforming;
+    }
+
+    public String getInnoliaResult() {
+        return innoliaResult;
+    }
+
+    public void setInnoliaResult(String innoliaResult) {
+        this.innoliaResult = innoliaResult;
+    }
+
+    public String getInnoliaAnalysisId() {
+        return innoliaAnalysisId;
+    }
+
+    public void setInnoliaAnalysisId(String innoliaAnalysisId) {
+        this.innoliaAnalysisId = innoliaAnalysisId;
+    }
 
 
 }
