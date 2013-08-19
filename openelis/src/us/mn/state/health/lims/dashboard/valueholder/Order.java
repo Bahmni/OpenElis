@@ -9,19 +9,29 @@ public class Order {
     private String lastName;
     private String source;
     private Integer pendingTestCount;
+    private Integer validatedTestCount;
     private Integer totalTestCount;
 
     public Order() {
     }
 
-    public Order(String accessionNumber, String stNumber, String firstName, String lastName, String source, Integer pendingTestCount, Integer totalTestCount) {
+    public Order(String accessionNumber, String stNumber, String firstName, String lastName, String source, Integer pendingTestCount, Integer validatedTestCount, Integer totalTestCount) {
         this.accessionNumber = accessionNumber;
         this.stNumber = stNumber;
         this.firstName = firstName;
         this.lastName = lastName;
         this.source = source;
         this.pendingTestCount = pendingTestCount;
+        this.validatedTestCount = validatedTestCount;
         this.totalTestCount = totalTestCount;
+    }
+
+    public Order(String accessionNumber, String stNumber, String firstName, String lastName, String source) {
+        this.accessionNumber = accessionNumber;
+        this.stNumber = stNumber;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.source = source;
     }
 
     public String getAccessionNumber() {
@@ -111,5 +121,9 @@ public class Order {
         result = 31 * result + (pendingTestCount != null ? pendingTestCount.hashCode() : 0);
         result = 31 * result + (totalTestCount != null ? totalTestCount.hashCode() : 0);
         return result;
+    }
+
+    public Integer getValidatedTestCount() {
+        return validatedTestCount;
     }
 }

@@ -69,13 +69,13 @@ public class AnalysisDAOImplIT extends IT {
         Analysis firstMatchingAnalysis = createAndSaveAnalysis(matchingSampleItemWithATestSection, StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance, "Hematology");
 
         SampleItem matchingSampleItemWithADifferentTestSection = createAndSaveSampleItem(createAndSaveSample("123456"));
-        Analysis secondMatchingAnalysis = createAndSaveAnalysis(matchingSampleItemWithADifferentTestSection, StatusOfSampleUtil.AnalysisStatus.NotStarted, "Biochemistry");
+        Analysis secondMatchingAnalysis = createAndSaveAnalysis(matchingSampleItemWithADifferentTestSection, StatusOfSampleUtil.AnalysisStatus.NotTested, "Biochemistry");
 
         SampleItem nonMatchingSampleItemWithDifferentStatus = createAndSaveSampleItem(createAndSaveSample("1234567"));
         Analysis nonMatchingAnalysis = createAndSaveAnalysis(nonMatchingSampleItemWithDifferentStatus, StatusOfSampleUtil.AnalysisStatus.BiologistRejected, "Biochemistry");
 
         List<Analysis> actualAnalyses = new AnalysisDAOImpl().getAllAnalysisByStatus(
-                Arrays.asList(StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance, StatusOfSampleUtil.AnalysisStatus.NotStarted));
+                Arrays.asList(StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance, StatusOfSampleUtil.AnalysisStatus.NotTested));
 
         Assert.assertTrue("should return analysis with matching analysis status", actualAnalyses.contains(firstMatchingAnalysis));
         Assert.assertTrue("should return analysis with matching analysis status", actualAnalyses.contains(secondMatchingAnalysis));

@@ -48,9 +48,10 @@ function getColumnsForInProgressOrder() {
                 {id: "stNumber", name: "PatientID", field: "stNumber", sortable: true, editor: Slick.Editors.Text,  index:1 },
                 {id: "name", name: "PatientName", field: "name", sortable: true,  index:2, editor: Slick.Editors.Text,  minWidth:150},
                 {id: "pendingTestCount", name: "Pending Tests", field: "pendingTestCount", sortable: true, editor: Slick.Editors.Text,  index:3, searchable: false},
-                {id: "totalTestCount", name: "Total Tests", field: "totalTestCount", sortable: true, editor: Slick.Editors.Text,  index:4, searchable: false},
-                {id: "source", name: "Source", field: "source", sortable: true,  index:5, editor: Slick.Editors.Text },
-                {id: "link", name: "Action", field: "link",  cssClass: "cell-title", formatter: formatter, index:6,editor: Slick.Editors.Text, searchable: false}
+                {id: "validatedTestCount", name: "Validated Tests", field: "validatedTestCount", sortable: true, editor: Slick.Editors.Text,  index:4, searchable: false},
+                {id: "totalTestCount", name: "Total Tests", field: "totalTestCount", sortable: true, editor: Slick.Editors.Text,  index:5, searchable: false},
+                {id: "source", name: "Source", field: "source", sortable: true,  index:6, editor: Slick.Editors.Text },
+                {id: "link", name: "Action", field: "link",  cssClass: "cell-title", formatter: formatter, index:7,editor: Slick.Editors.Text, searchable: false}
          ];
 }
 

@@ -38,7 +38,7 @@ public class AnalysisBuilder {
         analysis.setSysUserId(sampleTestCollection.item.getSysUserId());
         analysis.setRevision(analysisRevision);
         analysis.setStartedDate(collectionDateTime);
-        analysis.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.NotStarted));
+        analysis.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.NotTested));
         analysis.setTestSection(test.getTestSection());
         return analysis;
     }

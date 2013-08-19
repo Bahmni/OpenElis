@@ -167,7 +167,6 @@ public class StatusOfSampleUtil {
     public static String getStatusName(SampleStatus statusType) {
         insureMapsAreBuilt();
         StatusOfSample status = sampleStatusToObjectMap.get(statusType);
-
         return status == null ? "unknown" : status.getLocalizedName();
     }
 

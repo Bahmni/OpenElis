@@ -33,7 +33,7 @@ public class StatusRules{
 	public void setAllowableStatusForLoadingResults(ResultsLoadUtility resultsLoadUtility) {
 		resultsLoadUtility.addIncludedAnalysisStatus(AnalysisStatus.BiologistRejected);
 		resultsLoadUtility.addIncludedAnalysisStatus(AnalysisStatus.TechnicalRejected);
-		resultsLoadUtility.addIncludedAnalysisStatus(AnalysisStatus.NotStarted);
+		resultsLoadUtility.addIncludedAnalysisStatus(AnalysisStatus.NotTested);
 		resultsLoadUtility.addIncludedAnalysisStatus(AnalysisStatus.NonConforming_depricated);
 		resultsLoadUtility.addIncludedSampleStatus(OrderStatus.Entered);
 		resultsLoadUtility.addIncludedSampleStatus(OrderStatus.Started);
@@ -41,7 +41,7 @@ public class StatusRules{
 	}
 
 	public String getStartingAnalysisStatus() {
-		return StatusOfSampleUtil.getStatusID(AnalysisStatus.NotStarted);
+		return StatusOfSampleUtil.getStatusID(AnalysisStatus.NotTested);
 	}
 
 	public static boolean useRecordStatusForValidation(){

@@ -41,6 +41,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.*;
 
 public class OrderListDAOImplIT extends IT {
@@ -61,7 +63,6 @@ public class OrderListDAOImplIT extends IT {
     }
 
     @org.junit.Test
-    @Ignore
     public void getAllInProgress_shouldReturnAllOrdersWhichAreInProgress() {
         Sample sample = createSample(accessionNumber);
         Patient patient = createPatient(firstName, lastName, patientIdentityData);
@@ -74,16 +75,23 @@ public class OrderListDAOImplIT extends IT {
         List<Test> allTests = testDAO.getAllTests(true);
 
         Analysis analysis_1 = createAnalysis(sampleItem, TechnicalAcceptance, "Hematology", allTests.get(0));
-        Analysis analysis_2 = createAnalysis(sampleItem, NotStarted, "Hematology", allTests.get(1));
+        Analysis analysis_2 = createAnalysis(sampleItem, NotTested, "Hematology", allTests.get(1));
 
-        Analysis analysis_3 = createAnalysis(sampleItem, NotStarted, "Hematology", allTests.get(2));
+        Analysis analysis_3 = createAnalysis(sampleItem, NotTested, "Hematology", allTests.get(2));
         createResult(analysis_3);
 
         Analysis analysis_4 = createAnalysis(sampleItem, ReferedOut, "Hematology", allTests.get(3));
 
         List<Order> inProgress = orderListDAO.getAllInProgress();
 
-        Assert.assertTrue(inProgress.contains(new Order(accessionNumber, patientIdentityData, firstName, lastName, sample.getSampleSource().getName(), 2, 3)));
+        Order order = inProgress.get(0);
+
+        assertEquals(accessionNumber, order.getAccessionNumber());
+        assertEquals(firstName, order.getFirstName());
+        assertEquals(lastName, order.getLastName());
+        assertEquals((Integer)2, order.getPendingTestCount());
+        assertEquals((Integer)0, order.getValidatedTestCount());
+        assertEquals((Integer)3, order.getTotalTestCount());
     }
 
     @org.junit.Test
@@ -102,7 +110,7 @@ public class OrderListDAOImplIT extends IT {
 
         List<Order> completedOrders = orderListDAO.getAllCompletedBefore24Hours();
 
-        Assert.assertTrue(completedOrders.contains(new Order(accessionNumber, patientIdentityData, firstName, lastName, sample.getSampleSource().getName(), -1, -1)));
+        assertTrue(completedOrders.contains(new Order(accessionNumber, patientIdentityData, firstName, lastName, sample.getSampleSource().getName())));
     }
 
 

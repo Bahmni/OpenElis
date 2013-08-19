@@ -1020,7 +1020,7 @@ public abstract class Accessioner {
 		analysis.setSampleItem(sampleTestCollection.item);
 		analysis.setRevision(analysisRevision);
 		analysis.setStartedDate(collectionDateTime);
-		analysis.setStatusId(StatusOfSampleUtil.getStatusID(AnalysisStatus.NotStarted));
+		analysis.setStatusId(StatusOfSampleUtil.getStatusID(AnalysisStatus.NotTested));
 		analysis.setTestSection(test.getTestSection());
 		analysis.setSysUserId(sysUserId);
 		return analysis;

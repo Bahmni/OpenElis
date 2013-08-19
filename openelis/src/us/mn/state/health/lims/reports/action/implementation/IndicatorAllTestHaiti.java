@@ -69,7 +69,7 @@ public abstract class IndicatorAllTestHaiti extends HaitiIndicatorReport impleme
 	private static String USER_TEST_SECTION_ID;
 
 	static {
-		NOT_STARTED_STATUS_ID = StatusOfSampleUtil.getStatusID(AnalysisStatus.NotStarted);
+		NOT_STARTED_STATUS_ID = StatusOfSampleUtil.getStatusID(AnalysisStatus.NotTested);
 		REFERRED_STATUS_ID = StatusOfSampleUtil.getStatusID(AnalysisStatus.ReferedOut);
 		FINALIZED_STATUS_ID = StatusOfSampleUtil.getStatusID(AnalysisStatus.Finalized);
 		TECH_ACCEPT_ID = StatusOfSampleUtil.getStatusID(AnalysisStatus.TechnicalAcceptance);

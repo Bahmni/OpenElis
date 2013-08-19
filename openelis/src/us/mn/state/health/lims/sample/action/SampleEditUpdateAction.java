@@ -506,7 +506,7 @@ public class SampleEditUpdateAction extends BaseAction {
 					analysis.setStartedDate(DateUtil.getNowAsSqlDate());
 				}
 
-				analysis.setStatusId(StatusOfSampleUtil.getStatusID(AnalysisStatus.NotStarted));
+				analysis.setStatusId(StatusOfSampleUtil.getStatusID(AnalysisStatus.NotTested));
 				analysis.setSysUserId(currentUserId);
 
 				addAnalysisList.add(analysis);

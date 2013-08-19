@@ -143,7 +143,7 @@ public class IndicatorSectionPerformanceReport extends RetroCIReport implements 
 
 	private void addTestItems() {
 		List<Integer> includedStatusList = new ArrayList<Integer>();
-		includedStatusList.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.NotStarted)));
+		includedStatusList.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.NotTested)));
 
 		List<Analysis> bioAnalysisList = analysisDAO.getAllAnalysisByTestSectionAndStatus(BIOCHEMISTRY_SECTION_ID, includedStatusList, true);
 		List<Analysis> serologyAnalysisList = analysisDAO.getAllAnalysisByTestSectionAndStatus(SEROLOGY_SECTION_ID, includedStatusList, true);

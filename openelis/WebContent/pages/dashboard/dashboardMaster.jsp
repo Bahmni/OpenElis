@@ -52,7 +52,7 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
         <li><a href="#inProgressListContainer">In Progress</a></li>
         <li><a href="#completedListContainer">Completed</a></li>
      </ul>
-    <div id="inProgressListContainer" style="width:670px"></div>
+    <div id="inProgressListContainer" style="width:750px"></div>
     <div id="completedListContainer" style="width:520px"></div>
 
 </div>

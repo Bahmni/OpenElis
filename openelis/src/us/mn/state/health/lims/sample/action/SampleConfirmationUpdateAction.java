@@ -389,7 +389,7 @@ public class SampleConfirmationUpdateAction extends BaseSampleEntryAction {
 					analysis.setTest(test);
 					analysis.setAnalysisType("MANUAL");
 					analysis.setSysUserId(currentUserId);
-					analysis.setStatusId(StatusOfSampleUtil.getStatusID(AnalysisStatus.NotStarted));
+					analysis.setStatusId(StatusOfSampleUtil.getStatusID(AnalysisStatus.NotTested));
 					analysis.setIsReportable(test.getIsReportable());
 					analysis.setSampleItem(sampleItem);
 					analysis.setRevision("0");

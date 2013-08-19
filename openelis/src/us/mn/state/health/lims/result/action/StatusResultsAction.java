@@ -361,10 +361,10 @@ public class StatusResultsAction extends BaseAction implements Serializable {
 
 		if( ConfigurationProperties.getInstance().getPropertyValueUpperCase(Property.StatusRules).equals(IActionConstants.STATUS_RULES_HAITI)||
 				ConfigurationProperties.getInstance().getPropertyValueUpperCase(Property.StatusRules).equals(IActionConstants.STATUS_RULES_HAITI_LNSP)){
-			list.add(new DropPair(StatusOfSampleUtil.getStatusID(AnalysisStatus.NotStarted),StatusOfSampleUtil.getStatusName(AnalysisStatus.NotStarted) ));
+			list.add(new DropPair(StatusOfSampleUtil.getStatusID(AnalysisStatus.NotTested),StatusOfSampleUtil.getStatusName(AnalysisStatus.NotTested) ));
 			list.add(new DropPair(StatusOfSampleUtil.getStatusID(AnalysisStatus.BiologistRejected),StatusOfSampleUtil.getStatusName(AnalysisStatus.BiologistRejected) ));
 		}else if( ConfigurationProperties.getInstance().getPropertyValueUpperCase(Property.StatusRules).equals(IActionConstants.STATUS_RULES_RETROCI)){
-			list.add(new DropPair(StatusOfSampleUtil.getStatusID(AnalysisStatus.NotStarted),StatusOfSampleUtil.getStatusName(AnalysisStatus.NotStarted) ));
+			list.add(new DropPair(StatusOfSampleUtil.getStatusID(AnalysisStatus.NotTested),StatusOfSampleUtil.getStatusName(AnalysisStatus.NotTested) ));
 			list.add(new DropPair(StatusOfSampleUtil.getStatusID(AnalysisStatus.Canceled),StatusOfSampleUtil.getStatusName(AnalysisStatus.Canceled) ));
 			list.add(new DropPair(StatusOfSampleUtil.getStatusID(AnalysisStatus.TechnicalAcceptance),StatusOfSampleUtil.getStatusName(AnalysisStatus.TechnicalAcceptance) ));
 			list.add(new DropPair(StatusOfSampleUtil.getStatusID(AnalysisStatus.TechnicalRejected),StatusOfSampleUtil.getStatusName(AnalysisStatus.TechnicalRejected) ));

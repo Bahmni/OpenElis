@@ -236,7 +236,7 @@ public class SampleEditAction extends BaseAction {
 			sampleEditItem.setSampleItemId(sampleItem.getId());
 
 			boolean canCancel = !analysis.getStatusId().equals(StatusOfSampleUtil.getStatusID(AnalysisStatus.Canceled))
-					&& analysis.getStatusId().equals(StatusOfSampleUtil.getStatusID(AnalysisStatus.NotStarted));
+					&& analysis.getStatusId().equals(StatusOfSampleUtil.getStatusID(AnalysisStatus.NotTested));
 
 			if( !canCancel){
 				canRemove = false;

@@ -187,7 +187,7 @@ public class SampleEntry extends Accessioner {
         for (Analysis analysis : analysisList) {
             AnalysisStatus analysisStatus = StatusOfSampleUtil.getAnalysisStatusForID(analysis.getStatusId());
             switch (analysisStatus) {
-            case NotStarted:
+            case NotTested:
                 // deletable => leave sampleItem in the Delete list
                 analysis.setSysUserId(sysUserId);
                 analysisToDelete.add(analysis);

@@ -102,7 +102,7 @@ public class BaseWorkplanAction extends BaseAction {
 		
 		
 		statusList = new ArrayList<Integer>();
-		statusList.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.NotStarted)));
+		statusList.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.NotTested)));
 		statusList.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.BiologistRejected)));
 		statusList.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.TechnicalRejected)));
 		statusList.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.NonConforming_depricated)));
