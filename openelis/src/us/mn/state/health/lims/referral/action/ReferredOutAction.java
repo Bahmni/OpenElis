@@ -146,14 +146,13 @@ public class ReferredOutAction extends BaseAction {
     }
 
     private List<ReferralItem> getReferralItems() {
-        List<ReferralItem> referralItems = new ArrayList<ReferralItem>();
+        List<ReferralItem> referralItems = new ArrayList<>();
         ReferralDAO referralDAO = new ReferralDAOImpl();
 
         List<Referral> referralList = referralDAO.getAllUncanceledOpenReferrals();
 
         for (Referral referral : referralList) {
-            ReferralItem referralItem = null;
-            referralItem = getReferralItem(referral);
+            ReferralItem referralItem = getReferralItem(referral);
             if (referralItem != null) {
                 referralItems.add(referralItem);
             }
@@ -179,23 +178,10 @@ public class ReferredOutAction extends BaseAction {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private ReferralItem getReferralItem(Referral referral) {
-        boolean allReferralResultsHaveResults = true;
         List<ReferralResult> referralResults = referralResultDAO.getReferralResultsForReferral(referral.getId());
-        for (ReferralResult referralResult : referralResults) {
-            if (referralResult.getResult() == null || GenericValidator.isBlankOrNull(referralResult.getResult().getValue())) {
-                allReferralResultsHaveResults = false;
-                break;
-            }
-        }
-
-        if (allReferralResultsHaveResults) {
-            return null;
-        }
 
         ReferralItem referralItem = new ReferralItem();
-
         Analysis analysis = referral.getAnalysis();
         SampleItem sampleItem = analysis.getSampleItem();
 
@@ -376,7 +362,7 @@ public class ReferredOutAction extends BaseAction {
     private List<IdValuePair> getTestsForTypeOfSample(TypeOfSample typeOfSample) {
         List<Test> testList = TypeOfSampleUtil.getTestListBySampleTypeId(typeOfSample.getId(), null, false);
 
-        List<IdValuePair> valueList = new ArrayList<IdValuePair>();
+        List<IdValuePair> valueList = new ArrayList<>();
 
         for (Test test : testList) {
             valueList.add(new IdValuePair(test.getId(), test.getLocalizedName()));

@@ -18,59 +18,115 @@ package us.mn.state.health.lims.referral.valueholder;
 
 import java.sql.Timestamp;
 
+import org.apache.commons.validator.GenericValidator;
+import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
+import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.valueholder.BaseObject;
 import us.mn.state.health.lims.common.valueholder.ValueHolder;
 import us.mn.state.health.lims.common.valueholder.ValueHolderInterface;
+import us.mn.state.health.lims.referral.action.beanitems.IReferralResultTest;
 import us.mn.state.health.lims.result.valueholder.Result;
+import us.mn.state.health.lims.result.valueholder.ResultType;
+import us.mn.state.health.lims.resultlimits.valueholder.ResultLimit;
 
 public class ReferralResult extends BaseObject {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private String id;
-	private String referralId;
-	private String testId;
-	private Timestamp referralReportDate;
-	private ValueHolderInterface result = new ValueHolder();
+    private String id;
+    private String referralId;
+    private String testId;
+    private Timestamp referralReportDate;
+    private ValueHolderInterface result = new ValueHolder();
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public String getReferralId() {
-		return referralId;
-	}
+    public String getReferralId() {
+        return referralId;
+    }
 
-	public void setReferralId(String referralId) {
-		this.referralId = referralId;
-	}
+    public void setReferralId(String referralId) {
+        this.referralId = referralId;
+    }
 
-	public String getTestId() {
-		return testId;
-	}
+    public String getTestId() {
+        return testId;
+    }
 
-	public void setTestId(String testId) {
-		this.testId = testId;
-	}
+    public void setTestId(String testId) {
+        this.testId = testId;
+    }
 
-	public Timestamp getReferralReportDate() {
-		return referralReportDate;
-	}
+    public Timestamp getReferralReportDate() {
+        return referralReportDate;
+    }
 
-	public void setReferralReportDate(Timestamp referralReportDate) {
-		this.referralReportDate = referralReportDate;
-	}
+    public void setReferralReportDate(Timestamp referralReportDate) {
+        this.referralReportDate = referralReportDate;
+    }
 
-	public void setResult(Result result) {
-		this.result.setValue(result);
-	}
+    public void setResult(Result result) {
+        this.result.setValue(result);
+    }
 
-	public Result getResult() {
-		return (Result)result.getValue();
-	}
+    public Result getResult() {
+        return (Result) result.getValue();
+    }
+
+    public void fillResult(IReferralResultTest referralItem, String currentUserId, ResultLimit limit, String referredResultType) {
+        this.setSysUserId(currentUserId);
+
+        setReferredResultReportDate(referralItem.getReferredReportDate());
+        setTestId(referralItem);
+        this.setReferralId(referralItem.getReferralId());
+
+        if (getResult() == null) {
+            setResult(new Result());
+        }
+
+        setResultValues(referralItem, currentUserId, limit, referredResultType);
+
+        getResult().getAnalysis().readyForTechnicalAcceptance();
+    }
+
+    private void setReferredResultReportDate(String referredReportDate) throws LIMSRuntimeException {
+        if (!GenericValidator.isBlankOrNull(referredReportDate)) {
+            this.setReferralReportDate(DateUtil.convertStringDateToTruncatedTimestamp(referredReportDate));
+        }
+    }
+
+    private void setTestId(IReferralResultTest referralTest) {
+        if (!"0".equals(referralTest.getReferredTestId())) {
+            this.setTestId(referralTest.getReferredTestId());
+        }
+    }
+
+    /**
+     * If the referredTest.referredResultType is "M" the particular value to
+     * translate into the result should already be loaded in
+     * referredTest.referredDictionaryResult
+     */
+    private void setResultValues(IReferralResultTest referredTest, String currentUserId, ResultLimit limit, String referredResultType) {
+        getResult().setSysUserId(currentUserId);
+        getResult().setSortOrder("0");
+        getResult().setMinNormal(limit.getLowNormal());
+        getResult().setMaxNormal(limit.getHighNormal());
+
+        getResult().setResultType(referredResultType);
+        if (ResultType.Dictionary.code().equals(referredResultType) || ResultType.MultiSelect.code().equals(referredResultType)) {
+            String dicResult = referredTest.getReferredDictionaryResult();
+            if (!(GenericValidator.isBlankOrNull(dicResult) || "0".equals(dicResult))) {
+                getResult().setValue(dicResult);
+            }
+        } else {
+            getResult().setValue(referredTest.getReferredResult());
+        }
+    }
 
 }

@@ -117,7 +117,7 @@ public class AccessionResultsAction extends BaseAction {
 					Patient patient = getPatient();
 					resultsUtility.addIdentifingPatientInfo(patient, dynaForm);
 
-					List<TestResultItem> results = resultsUtility.getGroupedTestsForSample(sample, patient);
+					List<TestResultItem> results = resultsUtility.getGroupedTestsForSample(sample);
 
 					if (resultsUtility.inventoryNeeded()) {
 						addInventory(dynaForm);

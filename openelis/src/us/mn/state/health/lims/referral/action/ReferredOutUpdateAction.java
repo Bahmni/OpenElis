@@ -16,15 +16,6 @@
  */
 package us.mn.state.health.lims.referral.action;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.validator.GenericValidator;
 import org.apache.struts.Globals;
@@ -35,7 +26,6 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.hibernate.StaleObjectStateException;
 import org.hibernate.Transaction;
-
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
@@ -62,9 +52,6 @@ import us.mn.state.health.lims.referral.daoimpl.ReferralResultDAOImpl;
 import us.mn.state.health.lims.referral.valueholder.Referral;
 import us.mn.state.health.lims.referral.valueholder.ReferralResult;
 import us.mn.state.health.lims.result.action.util.ResultsLoadUtility;
-import us.mn.state.health.lims.result.dao.ResultDAO;
-import us.mn.state.health.lims.result.daoimpl.ResultDAOImpl;
-import us.mn.state.health.lims.result.valueholder.Result;
 import us.mn.state.health.lims.result.valueholder.ResultType;
 import us.mn.state.health.lims.resultlimits.valueholder.ResultLimit;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
@@ -82,6 +69,10 @@ import us.mn.state.health.lims.testresult.dao.TestResultDAO;
 import us.mn.state.health.lims.testresult.daoimpl.TestResultDAOImpl;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
+
 public class ReferredOutUpdateAction extends BaseAction {
     private List<ReferralItem> modifiedItems;
     private List<ReferralItem> canceledItems;
@@ -92,7 +83,7 @@ public class ReferredOutUpdateAction extends BaseAction {
     private final ReferralDAO referralDAO = new ReferralDAOImpl();
     private final ReferralResultDAO referralResultDAO = new ReferralResultDAOImpl();
     private final OrganizationDAO organizationDAO = new OrganizationDAOImpl();
-    private final ResultDAO resultDAO = new ResultDAOImpl();
+
     private final SampleDAO sampleDAO = new SampleDAOImpl();
     private final AnalysisDAO analysisDAO = new AnalysisDAOImpl();
     private final NoteDAO noteDAO = new NoteDAOImpl();
@@ -125,7 +116,7 @@ public class ReferredOutUpdateAction extends BaseAction {
         request.getSession().setAttribute(SAVE_DISABLED, TRUE);
         List<ReferralItem> referralItems = (List<ReferralItem>) PropertyUtils.getProperty(form, "referralItems");
         selectModifiedAndCanceledItems(referralItems);
-        validateModifedItems();
+        validateModifiedItems();
 
         if (errors.size() > 0) {
             saveErrors(request, errors);
@@ -217,7 +208,7 @@ public class ReferredOutUpdateAction extends BaseAction {
         }
     }
 
-    private void validateModifedItems() {
+    private void validateModifiedItems() {
         for (ReferralItem referralItem : modifiedItems) {
             validateModifedItem(referralItem);
         }
@@ -269,39 +260,15 @@ public class ReferredOutUpdateAction extends BaseAction {
     }
 
     private ReferralSet createCanceledReferralSet(ReferralItem item) {
-        ReferralSet referralSet = new ReferralSet();
-
         Referral referral = referralDAO.getReferralById(item.getReferralId());
+        referral.cancelReferOut(currentUserId);
 
-        referralSet.referral = referral;
-        referral.setSysUserId(currentUserId);
-        referral.setCanceled(true);
-
-        setStatusForCanceledReferrals(referral);
-
-        return referralSet;
-    }
-
-    @SuppressWarnings("unchecked")
-    private void setStatusForCanceledReferrals(Referral referral) {
-        // when a referral is canceled then the analysis goes to either the
-        // finish state if the
-        // results have been entered or to the not started state if they have
-        // not been entered.
-        Analysis analysis = referral.getAnalysis();
-        List<Result> resultList = resultDAO.getResultsByAnalysis(analysis);
-
-        if (!resultList.isEmpty()) {
-            if (GenericValidator.isBlankOrNull(resultList.get(0).getValue())) {
-                analysis.setStatusId(StatusOfSampleUtil.getStatusID(AnalysisStatus.NotStarted));
-            } else {
-                analysis.setStatusId(StatusOfSampleUtil.getStatusID(AnalysisStatus.Finalized));
-            }
-        }
-
-        Sample sample = analysis.getSampleItem().getSample();
+        Sample sample = referral.getAnalysis().getSampleItem().getSample();
         parentSamples.add(sample);
 
+        ReferralSet referralSet = new ReferralSet();
+        referralSet.referral = referral;
+        return referralSet;
     }
 
     private ReferralSet createModifiedSet(ReferralItem referralItem, ArrayList<ReferralResult> removableReferralResults) throws LIMSRuntimeException {
@@ -328,11 +295,10 @@ public class ReferredOutUpdateAction extends BaseAction {
 
         if (referralItem.getAdditionalTests() != null) {
             for (ReferredTest existingAdditionalTest : referralItem.getAdditionalTests()) {
-                if (existingAdditionalTest.isRemove()) {
-                    // nothing to do, because on insert we reused what we could
-                    // then deleted all old referralResults (see below).
-                    // removableReferralResults.add(getRemovableReferralableResults(existingAdditionalTest));
-                } else {
+                // nothing to do, because on insert we reused what we could
+                // then deleted all old referralResults (see below).
+                // removableReferralResults.add(getRemovableReferralableResults(existingAdditionalTest));
+                if (!existingAdditionalTest.isRemove()) {
                     createReferralResults(existingAdditionalTest, referralSet);
                 }
             }
@@ -357,7 +323,13 @@ public class ReferredOutUpdateAction extends BaseAction {
      * *
      */
     private void createReferralResults(IReferralResultTest referralItem, ReferralSet referralSet) {
-        String referredResultType = getReferredResultType(referralItem, null);
+        Test test = testDAO.getTestById(referralItem.getReferredTestId());
+        Sample sample = referralDAO.getReferralById(referralItem.getReferralId()).getAnalysis().getSampleItem().getSample();
+        Patient patient = sampleHumanDAO.getPatientForSample(sample);
+
+        String referredResultType = getReferredResultType(referralItem, test);
+        ResultLimit limit = resultsLoadUtility.getResultLimitForTestAndPatient(test, patient);
+
         if (ResultType.MultiSelect.code().equals(referredResultType)) {
             String multiResult = referralItem.getReferredMultiDictionaryResult();
             multiResult = (multiResult != null) ? multiResult : "";
@@ -367,64 +339,22 @@ public class ReferredOutUpdateAction extends BaseAction {
             for (String id : ids) {
                 ReferralResult referralResult = referralSet.getNextReferralResult();
                 referralItem.setReferredDictionaryResult(id);  // move particular multi result into (single) dictionary result.
-                fillReferralResultResult(referralItem, referralResult, referralSet.referral.getAnalysis());
+                try {
+                    referralResult.fillResult(referralItem, currentUserId, limit, referredResultType);
+                } catch (LIMSRuntimeException e) {
+                    ActionError error = new ActionError(e.getMessage());
+                    errors.add(ActionErrors.GLOBAL_MESSAGE, error);
+                }
             }
         } else {
-            ReferralResult dbReferralResult = referralSet.getNextReferralResult();
-            fillReferralResultResult(referralItem, dbReferralResult, referralSet.referral.getAnalysis());
-        }
-    }
-
-    private void fillReferralResultResult(IReferralResultTest referralItem, ReferralResult dbReferralResult, Analysis analysis) {
-        dbReferralResult.setSysUserId(currentUserId);
-
-        setReferredResultReportDate(referralItem, dbReferralResult);
-        setReferredResultTestId(referralItem, dbReferralResult);
-        dbReferralResult.setReferralId(referralItem.getReferralId());
-        Result result = dbReferralResult.getResult();
-
-        if (result == null && !GenericValidator.isBlankOrNull(referralItem.getReferredResultType())) {
-            result = new Result();
-        }
-
-        if (result != null) {
-            setResultValuesForReferralResult(referralItem, result);
-            dbReferralResult.setResult(result);
-            analysis.setStatusId(StatusOfSampleUtil.getStatusID(AnalysisStatus.TechnicalAcceptance));
-        }
-    }
-
-    /**
-     * If the referredTest.referredResultType is "M" the particular value to
-     * translate into the result should already be loaded in
-     * referredTest.referredDictionaryResult
-     */
-    private void setResultValuesForReferralResult(IReferralResultTest referredTest, Result result) {
-        result.setSysUserId(currentUserId);
-        result.setSortOrder("0");
-
-        Test test = testDAO.getTestById(referredTest.getReferredTestId());
-        Sample sample = referralDAO.getReferralById(referredTest.getReferralId()).getAnalysis().getSampleItem().getSample();
-        Patient patient = sampleHumanDAO.getPatientForSample(sample);
-        ResultLimit limit = resultsLoadUtility.getResultLimitForTestAndPatient(test, patient);
-        result.setMinNormal(limit.getLowNormal());
-        result.setMaxNormal(limit.getHighNormal());
-
-        String referredResultType = getReferredResultType(referredTest, test);
-        result.setResultType(referredResultType);
-        if (ResultType.Dictionary.code().equals(referredResultType) || ResultType.MultiSelect.code().equals(referredResultType)) {
-            String dicResult = referredTest.getReferredDictionaryResult();
-            if (!(GenericValidator.isBlankOrNull(dicResult) || "0".equals(dicResult))) {
-                result.setValue(dicResult);
-            }
-        } else {
-            result.setValue(referredTest.getReferredResult());
+            ReferralResult referralResult = referralSet.getNextReferralResult();
+            referralResult.fillResult(referralItem, currentUserId, limit, referredResultType);
         }
     }
 
     private String getReferredResultType(IReferralResultTest referredTest, Test test) {
         /* referredTest.getReferredResultType() is not always accurate
-		 * alpha-numeric and numeric are not differentiated
+         * alpha-numeric and numeric are not differentiated
 		 */
 
         String referredResultType = referredTest.getReferredResultType();
@@ -440,25 +370,6 @@ public class ReferredOutUpdateAction extends BaseAction {
         }
 
         return referredResultType;
-    }
-
-    private void setReferredResultTestId(IReferralResultTest referralTest, ReferralResult referralResult) {
-        if (!"0".equals(referralTest.getReferredTestId())) {
-            referralResult.setTestId(referralTest.getReferredTestId());
-        }
-    }
-
-    private void setReferredResultReportDate(IReferralResultTest referralTest, ReferralResult referralResult) throws LIMSRuntimeException {
-
-        if (!GenericValidator.isBlankOrNull(referralTest.getReferredReportDate())) {
-            try {
-                referralResult.setReferralReportDate(DateUtil.convertStringDateToTruncatedTimestamp(referralTest.getReferredReportDate()));
-            } catch (LIMSRuntimeException e) {
-                ActionError error = new ActionError("errors.date", referralTest.getReferredReportDate(), null);
-                errors.add(ActionErrors.GLOBAL_MESSAGE, error);
-                throw e;
-            }
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -524,6 +435,7 @@ public class ReferredOutUpdateAction extends BaseAction {
                     } else {
                         for (ReferralResult referralResult : referralResultList) {
                             if (referralResult.getResult() == null || GenericValidator.isBlankOrNull(referralResult.getResult().getValue())) {
+                                assert referral != null;
                                 if (!(referral.isCanceled() && finalizedId.equals(childAnalysis.getStatusId()))) {
                                     allAnalysisFinished = false;
                                     break;

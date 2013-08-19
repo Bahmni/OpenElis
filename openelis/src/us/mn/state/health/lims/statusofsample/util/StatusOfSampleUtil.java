@@ -1,20 +1,20 @@
 /**
-* The contents of this file are subject to the Mozilla Public License
-* Version 1.1 (the "License"); you may not use this file except in
-* compliance with the License. You may obtain a copy of the License at
-* http://www.mozilla.org/MPL/
-*
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations under
-* the License.
-*
-* The Original Code is OpenELIS code.
-*
-* Copyright (C) The Minnesota Department of Health.  All Rights Reserved.
-*
-* Contributor(s): CIRG, University of Washington, Seattle WA.
-*/
+ * The contents of this file are subject to the Mozilla Public License
+ * Version 1.1 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations under
+ * the License.
+ *
+ * The Original Code is OpenELIS code.
+ *
+ * Copyright (C) The Minnesota Department of Health.  All Rights Reserved.
+ *
+ * Contributor(s): CIRG, University of Washington, Seattle WA.
+ */
 package us.mn.state.health.lims.statusofsample.util;
 
 import java.util.ArrayList;
@@ -77,119 +77,133 @@ import us.mn.state.health.lims.statusofsample.valueholder.StatusOfSample;
  */
 public class StatusOfSampleUtil {
 
-	public enum OrderStatus {Entered,
-							  Started,
-							  Finished,
-							  NonConforming_depricated }
+    public enum OrderStatus {
+        Entered,
+        Started,
+        Finished,
+        NonConforming_depricated
+    }
 
-	public enum AnalysisStatus { NotStarted,
-								 ReferedOut,
-	       						 Canceled,
-	       						 TechnicalAcceptance,
-	       						 TechnicalRejected,
-	       						 BiologistRejected,
-	       						 NonConforming_depricated,
-	       						 ReferredIn,
-	       						 Finalized}
+    public enum AnalysisStatus {
+        NotStarted,
+        ReferedOut,
+        Canceled,
+        TechnicalAcceptance,
+        TechnicalAcceptanceRO,
+        TechnicalRejected,
+        BiologistRejected,
+        NonConforming_depricated,
+        ReferredIn,
+        Finalized,
+        FinalizedRO
+    }
 
-	public enum RecordStatus { NotRegistered,
-							   InitialRegistration,
-							   ValidationRegistration} 
+    public enum RecordStatus {
+        NotRegistered,
+        InitialRegistration,
+        ValidationRegistration
+    }
 
-	public enum SampleStatus { Entered,
-							   Canceled}
+    public enum SampleStatus {
+        Entered,
+        Canceled
+    }
 
 
-	public static enum StatusType { Analysis,
-									Sample,
-									Order,
-									SampleEntry,
-									PatientEntry }
+    public static enum StatusType {
+        Analysis,
+        Sample,
+        Order,
+        SampleEntry,
+        PatientEntry
+    }
 
-	private static Map<String, OrderStatus > idToOrderStatusMap = null;
-	private static Map<String, SampleStatus > idToSampleStatusMap = null;
-	private static Map<String, AnalysisStatus > idToAnalysisStatusMap = null;
-	private static Map<String, RecordStatus > idToRecordStatusMap = null;
-	private static Map<OrderStatus, StatusOfSample > orderStatusToObjectMap = null;
-	private static Map<SampleStatus, StatusOfSample > sampleStatusToObjectMap = null;
-	private static Map<AnalysisStatus, StatusOfSample > analysisStatusToObjectMap = null;
-	private static Map<RecordStatus, Dictionary > recordStatusToObjectMap = null;
+    private static Map<String, OrderStatus> idToOrderStatusMap = null;
+    private static Map<String, SampleStatus> idToSampleStatusMap = null;
+    private static Map<String, AnalysisStatus> idToAnalysisStatusMap = null;
+    private static Map<String, RecordStatus> idToRecordStatusMap = null;
+    private static Map<OrderStatus, StatusOfSample> orderStatusToObjectMap = null;
+    private static Map<SampleStatus, StatusOfSample> sampleStatusToObjectMap = null;
+    private static Map<AnalysisStatus, StatusOfSample> analysisStatusToObjectMap = null;
+    private static Map<RecordStatus, Dictionary> recordStatusToObjectMap = null;
 
-	private static String orderRecordStatusID;
-	private static String patientRecordStatusID;
-	private static ObservationHistoryDAO observationHistoryDAO = new ObservationHistoryDAOImpl();
+    private static String orderRecordStatusID;
+    private static String patientRecordStatusID;
+    private static ObservationHistoryDAO observationHistoryDAO = new ObservationHistoryDAOImpl();
 
-	private static boolean mapsSet = false;
+    private static boolean mapsSet = false;
 
-	public static String getStatusID( OrderStatus statusType){
-		insureMapsAreBuilt();
-		StatusOfSample status = orderStatusToObjectMap.get(statusType);
-		return status == null ? "-1" : status.getId();
-	}
+    public static String getStatusID(OrderStatus statusType) {
+        insureMapsAreBuilt();
+        StatusOfSample status = orderStatusToObjectMap.get(statusType);
+        return status == null ? "-1" : status.getId();
+    }
 
-	public static String getStatusID( SampleStatus statusType){
-		insureMapsAreBuilt();
-		StatusOfSample status = sampleStatusToObjectMap.get(statusType);
-		return status == null ? "-1" : status.getId();
-	}
-	
-	public static String getStatusID( AnalysisStatus statusType){
-		insureMapsAreBuilt();
-		StatusOfSample status = analysisStatusToObjectMap.get(statusType);
-		return status == null ? "-1" : status.getId();
-	}
+    public static String getStatusID(SampleStatus statusType) {
+        insureMapsAreBuilt();
+        StatusOfSample status = sampleStatusToObjectMap.get(statusType);
+        return status == null ? "-1" : status.getId();
+    }
 
-	public static String getStatusName( RecordStatus statusType){
-		insureMapsAreBuilt();
-		Dictionary dictionary = recordStatusToObjectMap.get(statusType);
-		return dictionary == null ? "unknown" : dictionary.getLocalizedName();
-	}
+    public static String getStatusID(AnalysisStatus statusType) {
+        insureMapsAreBuilt();
+        StatusOfSample status = analysisStatusToObjectMap.get(statusType);
+        return status == null ? "-1" : status.getId();
+    }
 
-	public static String getStatusName( OrderStatus statusType){
-		insureMapsAreBuilt();
-		StatusOfSample status = orderStatusToObjectMap.get(statusType);
+    public static String getStatusName(RecordStatus statusType) {
+        insureMapsAreBuilt();
+        Dictionary dictionary = recordStatusToObjectMap.get(statusType);
+        return dictionary == null ? "unknown" : dictionary.getLocalizedName();
+    }
 
-		return status == null ? "unknown" : status.getLocalizedName();
-	}
+    public static String getStatusName(OrderStatus statusType) {
+        insureMapsAreBuilt();
+        StatusOfSample status = orderStatusToObjectMap.get(statusType);
 
-	public static String getStatusName( SampleStatus statusType){
-		insureMapsAreBuilt();
-		StatusOfSample status = sampleStatusToObjectMap.get(statusType);
+        return status == null ? "unknown" : status.getLocalizedName();
+    }
 
-		return status == null ? "unknown" : status.getLocalizedName();
-	}
-	public static String getStatusName( AnalysisStatus statusType){
-		insureMapsAreBuilt();
-		StatusOfSample status = analysisStatusToObjectMap.get(statusType);
-		return status == null ? "unknown" : status.getLocalizedName();
-	}
+    public static String getStatusName(SampleStatus statusType) {
+        insureMapsAreBuilt();
+        StatusOfSample status = sampleStatusToObjectMap.get(statusType);
 
-	public static String getDictionaryID( RecordStatus statusType){
-		insureMapsAreBuilt();
-		Dictionary dictionary = recordStatusToObjectMap.get(statusType);
-		return dictionary == null ? "-1" : dictionary.getId();
-	}
+        return status == null ? "unknown" : status.getLocalizedName();
+    }
 
-	public static OrderStatus getOrderStatusForID( String id){
-		insureMapsAreBuilt();
-		return idToOrderStatusMap.get(id);
-	}
+    public static String getStatusName(AnalysisStatus statusType) {
+        insureMapsAreBuilt();
+        StatusOfSample status = analysisStatusToObjectMap.get(statusType);
+        return status == null ? "unknown" : status.getLocalizedName();
+    }
 
-	public static SampleStatus getSampleStatusForID( String id){
-		insureMapsAreBuilt();
-		return idToSampleStatusMap.get(id);
-	}
-	public static AnalysisStatus getAnalysisStatusForID( String id){
-		insureMapsAreBuilt();
-		return idToAnalysisStatusMap.get(id);
-	}
+    public static String getDictionaryID(RecordStatus statusType) {
+        insureMapsAreBuilt();
+        Dictionary dictionary = recordStatusToObjectMap.get(statusType);
+        return dictionary == null ? "-1" : dictionary.getId();
+    }
 
-	public static RecordStatus getRecordStatusForID( String id){
-		insureMapsAreBuilt();
-		return idToRecordStatusMap.get(id);
-	}
+    public static OrderStatus getOrderStatusForID(String id) {
+        insureMapsAreBuilt();
+        return idToOrderStatusMap.get(id);
+    }
 
-	/**
+    public static SampleStatus getSampleStatusForID(String id) {
+        insureMapsAreBuilt();
+        return idToSampleStatusMap.get(id);
+    }
+
+    public static AnalysisStatus getAnalysisStatusForID(String id) {
+        insureMapsAreBuilt();
+        return idToAnalysisStatusMap.get(id);
+    }
+
+    public static RecordStatus getRecordStatusForID(String id) {
+        insureMapsAreBuilt();
+        return idToRecordStatusMap.get(id);
+    }
+
+    /**
      * @param sampleId
      * @return
      */
@@ -197,319 +211,339 @@ public class StatusOfSampleUtil {
         Sample sample = new Sample();
         sample.setId(sampleId);
 
-        SampleDAO sampleDAO =  new SampleDAOImpl();
+        SampleDAO sampleDAO = new SampleDAOImpl();
         sampleDAO.getData(sample);
 
         return buildStatusSet(sample);
     }
 
-	public static StatusSet getStatusSetForAccessionNumber( String accessionNumber ){
+    public static StatusSet getStatusSetForAccessionNumber(String accessionNumber) {
 
-		if( GenericValidator.isBlankOrNull(accessionNumber)){
-			return new StatusSet();
-		}
+        if (GenericValidator.isBlankOrNull(accessionNumber)) {
+            return new StatusSet();
+        }
 
-		SampleDAO sampleDAO = new SampleDAOImpl();
+        SampleDAO sampleDAO = new SampleDAOImpl();
 
-		Sample sample = sampleDAO.getSampleByAccessionNumber(accessionNumber);
+        Sample sample = sampleDAO.getSampleByAccessionNumber(accessionNumber);
 
-		return buildStatusSet(sample);
-	}
+        return buildStatusSet(sample);
+    }
 
 
     private static StatusSet buildStatusSet(Sample sample) {
         StatusSet statusSet = new StatusSet();
-        if( sample == null || sample.getId() == null ){
-			statusSet.setPatientRecordStatus(null);
-			statusSet.setSampleRecordStatus(null);
-		}else{
+        if (sample == null || sample.getId() == null) {
+            statusSet.setPatientRecordStatus(null);
+            statusSet.setSampleRecordStatus(null);
+        } else {
 
-			statusSet.setSampleStatus(getOrderStatusForID(sample.getStatusId()));
+            statusSet.setSampleStatus(getOrderStatusForID(sample.getStatusId()));
 
-			setAnalysisStatus(statusSet, sample);
+            setAnalysisStatus(statusSet, sample);
 
-			setRecordStatus(statusSet, sample);
-		}
+            setRecordStatus(statusSet, sample);
+        }
 
-		return statusSet;
+        return statusSet;
     }
 
-	/*
-	 * Preconditions: It is called within a transaction
-	 *                Both the patient and sample ids are valid
-	 *
-	 * For now it will fail silently
-	 * Either sampleStatus or patient status may be null
-	 */
-	public static void persistRecordStatusForSample( Sample sample, RecordStatus recordStatus, Patient patient, RecordStatus patientStatus, String sysUserId ){
-		insureMapsAreBuilt();
+    /*
+     * Preconditions: It is called within a transaction
+     *                Both the patient and sample ids are valid
+     *
+     * For now it will fail silently
+     * Either sampleStatus or patient status may be null
+     */
+    public static void persistRecordStatusForSample(Sample sample, RecordStatus recordStatus, Patient patient, RecordStatus patientStatus, String sysUserId) {
+        insureMapsAreBuilt();
 
-		if( sample == null || patient == null ){
-			return;
-		}
+        if (sample == null || patient == null) {
+            return;
+        }
 
-		List<ObservationHistory> observationList = observationHistoryDAO.getAll(patient, sample);
+        List<ObservationHistory> observationList = observationHistoryDAO.getAll(patient, sample);
 
-		ObservationHistory sampleRecord = null;
-		ObservationHistory patientRecord = null;
+        ObservationHistory sampleRecord = null;
+        ObservationHistory patientRecord = null;
 
-		for( ObservationHistory currentHistory : observationList){
-			if( currentHistory.getObservationHistoryTypeId().equals(orderRecordStatusID)){
-				sampleRecord = currentHistory;
-			}else if( currentHistory.getObservationHistoryTypeId().equals(patientRecordStatusID)){
-				patientRecord = currentHistory;
-			}
-		}
+        for (ObservationHistory currentHistory : observationList) {
+            if (currentHistory.getObservationHistoryTypeId().equals(orderRecordStatusID)) {
+                sampleRecord = currentHistory;
+            } else if (currentHistory.getObservationHistoryTypeId().equals(patientRecordStatusID)) {
+                patientRecord = currentHistory;
+            }
+        }
 
-		if( recordStatus != null){
-			insertOrUpdateStatus(sample, patient, recordStatus, sysUserId, sampleRecord, orderRecordStatusID);
-		}
+        if (recordStatus != null) {
+            insertOrUpdateStatus(sample, patient, recordStatus, sysUserId, sampleRecord, orderRecordStatusID);
+        }
 
-		if( patientStatus != null){
-			insertOrUpdateStatus(sample, patient, patientStatus, sysUserId, patientRecord, patientRecordStatusID);
-		}
-	}
+        if (patientStatus != null) {
+            insertOrUpdateStatus(sample, patient, patientStatus, sysUserId, patientRecord, patientRecordStatusID);
+        }
+    }
 
-	public static void deleteRecordStatus( Sample sample, Patient patient, String sysUserId){
-		insureMapsAreBuilt();
+    public static void deleteRecordStatus(Sample sample, Patient patient, String sysUserId) {
+        insureMapsAreBuilt();
 
-		if( sample == null || patient == null ){
-			return;
-		}
+        if (sample == null || patient == null) {
+            return;
+        }
 
-		List<ObservationHistory> observations = observationHistoryDAO.getAll(patient, sample);
+        List<ObservationHistory> observations = observationHistoryDAO.getAll(patient, sample);
 
-		List<ObservationHistory> records = new ArrayList<ObservationHistory>();
+        List<ObservationHistory> records = new ArrayList<>();
 
-		for( ObservationHistory observation : observations){
-			if( observation.getObservationHistoryTypeId().equals( orderRecordStatusID) ||
-			    observation.getObservationHistoryTypeId().equals( patientRecordStatusID)){
-			    observation.setSysUserId(sysUserId);
-				records.add(observation);
-			}
-		}
+        for (ObservationHistory observation : observations) {
+            if (observation.getObservationHistoryTypeId().equals(orderRecordStatusID) ||
+                    observation.getObservationHistoryTypeId().equals(patientRecordStatusID)) {
+                observation.setSysUserId(sysUserId);
+                records.add(observation);
+            }
+        }
 
-		observationHistoryDAO.delete(records);
-	}
+        observationHistoryDAO.delete(records);
+    }
 
-	private static void insertOrUpdateStatus(Sample sample, Patient patient, RecordStatus status, String sysUserId, ObservationHistory record, String historyTypeId) {
+    private static void insertOrUpdateStatus(Sample sample, Patient patient, RecordStatus status, String sysUserId, ObservationHistory record, String historyTypeId) {
 
-		if( record == null){
-			record = new ObservationHistory();
-			record.setObservationHistoryTypeId(historyTypeId);
-			record.setPatientId(patient.getId());
-			record.setSampleId(sample.getId());
-			record.setSysUserId(sysUserId);
-			record.setValue(getDictionaryID(status));
-			record.setValueType(ValueType.DICTIONARY);
-			observationHistoryDAO.insertData(record);
-		}else{
-			record.setSysUserId(sysUserId);
-			record.setValue(getDictionaryID(status));
-			observationHistoryDAO.updateData(record);
-		}
-	}
+        if (record == null) {
+            record = new ObservationHistory();
+            record.setObservationHistoryTypeId(historyTypeId);
+            record.setPatientId(patient.getId());
+            record.setSampleId(sample.getId());
+            record.setSysUserId(sysUserId);
+            record.setValue(getDictionaryID(status));
+            record.setValueType(ValueType.DICTIONARY);
+            observationHistoryDAO.insertData(record);
+        } else {
+            record.setSysUserId(sysUserId);
+            record.setValue(getDictionaryID(status));
+            observationHistoryDAO.updateData(record);
+        }
+    }
 
-	private static void setAnalysisStatus(StatusSet statusSet, Sample sample) {
-		AnalysisDAO analysisDAO = new AnalysisDAOImpl();
-		List<Analysis> analysisList = analysisDAO.getAnalysesBySampleId(sample.getId());
+    private static void setAnalysisStatus(StatusSet statusSet, Sample sample) {
+        AnalysisDAO analysisDAO = new AnalysisDAOImpl();
+        List<Analysis> analysisList = analysisDAO.getAnalysesBySampleId(sample.getId());
 
-		Map<Analysis, AnalysisStatus> analysisStatusMap = new HashMap<Analysis, AnalysisStatus>();
+        Map<Analysis, AnalysisStatus> analysisStatusMap = new HashMap<Analysis, AnalysisStatus>();
 
-		for( Analysis analysis : analysisList ){
-			analysisStatusMap.put(analysis, getAnalysisStatusForID(analysis.getStatusId()));
-		}
+        for (Analysis analysis : analysisList) {
+            analysisStatusMap.put(analysis, getAnalysisStatusForID(analysis.getStatusId()));
+        }
 
-		statusSet.setAnalysisStatus(analysisStatusMap);
-	}
+        statusSet.setAnalysisStatus(analysisStatusMap);
+    }
 
-	/**
-	 * Fills in the StatusSet with
-	 * @param statusSet
-	 * @param sample
-	 */
-	private static void setRecordStatus(StatusSet statusSet, Sample sample) {
-		if( "H".equals(sample.getDomain())){
-			SampleHuman sampleHuman = new SampleHuman();
-			sampleHuman.setSampleId(sample.getId());
-			SampleHumanDAO sampleHumanDAO = new SampleHumanDAOImpl();
-			sampleHumanDAO.getDataBySample(sampleHuman);
+    /**
+     * Fills in the StatusSet with
+     *
+     * @param statusSet
+     * @param sample
+     */
+    private static void setRecordStatus(StatusSet statusSet, Sample sample) {
+        if ("H".equals(sample.getDomain())) {
+            SampleHuman sampleHuman = new SampleHuman();
+            sampleHuman.setSampleId(sample.getId());
+            SampleHumanDAO sampleHumanDAO = new SampleHumanDAOImpl();
+            sampleHumanDAO.getDataBySample(sampleHuman);
 
-			String patientId = sampleHuman.getPatientId();
+            String patientId = sampleHuman.getPatientId();
 
-			statusSet.setSampleId(sample.getId());
-			statusSet.setPatientId(patientId);
+            statusSet.setSampleId(sample.getId());
+            statusSet.setPatientId(patientId);
 
-			if( patientId != null ){
-				Patient patient = new Patient();
-				patient.setId(patientId);
+            if (patientId != null) {
+                Patient patient = new Patient();
+                patient.setId(patientId);
 
-				List<ObservationHistory> observations = observationHistoryDAO.getAll(patient, sample);
+                List<ObservationHistory> observations = observationHistoryDAO.getAll(patient, sample);
 
-				for( ObservationHistory observation : observations){
-					if( observation.getObservationHistoryTypeId().equals( orderRecordStatusID)){
-						statusSet.setSampleRecordStatus(getRecordStatusForID(observation.getValue()));
-					}else if( observation.getObservationHistoryTypeId().equals( patientRecordStatusID)){
-						statusSet.setPatientRecordStatus(getRecordStatusForID(observation.getValue()));
-					}
-				}
-			}
-		}
-	}
+                for (ObservationHistory observation : observations) {
+                    if (observation.getObservationHistoryTypeId().equals(orderRecordStatusID)) {
+                        statusSet.setSampleRecordStatus(getRecordStatusForID(observation.getValue()));
+                    } else if (observation.getObservationHistoryTypeId().equals(patientRecordStatusID)) {
+                        statusSet.setPatientRecordStatus(getRecordStatusForID(observation.getValue()));
+                    }
+                }
+            }
+        }
+    }
 
-	private static void insureMapsAreBuilt() {
-		synchronized( StatusOfSampleUtil.class){
-			if( !mapsSet ){
-				buildMap();
-				mapsSet = true;
-			}
-		}
-	}
+    private static void insureMapsAreBuilt() {
+        synchronized (StatusOfSampleUtil.class) {
+            if (!mapsSet) {
+                buildMap();
+                mapsSet = true;
+            }
+        }
+    }
 
-	private static void buildMap() {
-		orderStatusToObjectMap = new HashMap<OrderStatus, StatusOfSample>();
-		sampleStatusToObjectMap = new HashMap<SampleStatus, StatusOfSample>();
-		analysisStatusToObjectMap = new HashMap<AnalysisStatus, StatusOfSample>();
-		recordStatusToObjectMap = new HashMap<RecordStatus, Dictionary>();
-		idToOrderStatusMap = new HashMap<String, OrderStatus>();
-		idToSampleStatusMap = new HashMap<String, SampleStatus>();
-		idToAnalysisStatusMap = new HashMap<String, AnalysisStatus>();
-		idToRecordStatusMap = new HashMap<String, RecordStatus>();
+    private static void buildMap() {
+        orderStatusToObjectMap = new HashMap<OrderStatus, StatusOfSample>();
+        sampleStatusToObjectMap = new HashMap<SampleStatus, StatusOfSample>();
+        analysisStatusToObjectMap = new HashMap<AnalysisStatus, StatusOfSample>();
+        recordStatusToObjectMap = new HashMap<RecordStatus, Dictionary>();
+        idToOrderStatusMap = new HashMap<String, OrderStatus>();
+        idToSampleStatusMap = new HashMap<String, SampleStatus>();
+        idToAnalysisStatusMap = new HashMap<String, AnalysisStatus>();
+        idToRecordStatusMap = new HashMap<String, RecordStatus>();
 
-		buildStatusToIdMaps();
+        buildStatusToIdMaps();
 
-		//now put everything in the reverse map
-		buildIdToStatusMapsFromStatusToIdMaps();
+        //now put everything in the reverse map
+        buildIdToStatusMapsFromStatusToIdMaps();
 
-		getObservationHistoryTypeIDs();
-	}
+        getObservationHistoryTypeIDs();
+    }
 
-	@SuppressWarnings("unchecked")
-	private static void buildStatusToIdMaps() {
-		StatusOfSampleDAO statusOfSampleDAO = new StatusOfSampleDAOImpl();
+    @SuppressWarnings("unchecked")
+    private static void buildStatusToIdMaps() {
+        StatusOfSampleDAO statusOfSampleDAO = new StatusOfSampleDAOImpl();
 
-		List<StatusOfSample> statusList = statusOfSampleDAO.getAllStatusOfSamples();
+        List<StatusOfSample> statusList = statusOfSampleDAO.getAllStatusOfSamples();
 
-		//sorry about this but it is only done once and until Java 7 we have to use if..else
-		for( StatusOfSample status : statusList){
-			if( status.getStatusType().equals("ORDER")){
-				addToOrderMap( status);
-			}else if( status.getStatusType().equals("ANALYSIS")){
-				addToAnalysisMap( status);
-			}else if( status.getStatusType().equals("SAMPLE")){
-				addToSampleMap( status);
-			}
-		}
+        //sorry about this but it is only done once and until Java 7 we have to use if..else
+        for (StatusOfSample status : statusList) {
+            if (status.getStatusType().equals("ORDER")) {
+                addToOrderMap(status);
+            } else if (status.getStatusType().equals("ANALYSIS")) {
+                addToAnalysisMap(status);
+            } else if (status.getStatusType().equals("SAMPLE")) {
+                addToSampleMap(status);
+            }
+        }
 
-		DictionaryDAO dictionaryDAO = new DictionaryDAOImpl();
-		List<Dictionary> dictionaryList = dictionaryDAO.getDictionaryEntrysByCategoryName("REC_STATUS");
+        DictionaryDAO dictionaryDAO = new DictionaryDAOImpl();
+        List<Dictionary> dictionaryList = dictionaryDAO.getDictionaryEntrysByCategoryName("REC_STATUS");
 
-		for(Dictionary dictionary : dictionaryList){
-			addToRecordMap(dictionary);
-		}
-	}
+        for (Dictionary dictionary : dictionaryList) {
+            addToRecordMap(dictionary);
+        }
+    }
 
-	private static void buildIdToStatusMapsFromStatusToIdMaps() {
-		for( Entry<OrderStatus, StatusOfSample> status : orderStatusToObjectMap.entrySet()){
-			idToOrderStatusMap.put(status.getValue().getId(), status.getKey());
-		}
-		for( Entry<SampleStatus, StatusOfSample> status : sampleStatusToObjectMap.entrySet()){
-			idToSampleStatusMap.put(status.getValue().getId(), status.getKey());
-		}
-		
-		for( Entry<AnalysisStatus, StatusOfSample> status : analysisStatusToObjectMap.entrySet()){
-			idToAnalysisStatusMap.put(status.getValue().getId(), status.getKey());
-		}
-		for( Entry<RecordStatus, Dictionary> status : recordStatusToObjectMap.entrySet()){
-			idToRecordStatusMap.put(status.getValue().getId(), status.getKey());
-		}
-	}
+    private static void buildIdToStatusMapsFromStatusToIdMaps() {
+        for (Entry<OrderStatus, StatusOfSample> status : orderStatusToObjectMap.entrySet()) {
+            idToOrderStatusMap.put(status.getValue().getId(), status.getKey());
+        }
+        for (Entry<SampleStatus, StatusOfSample> status : sampleStatusToObjectMap.entrySet()) {
+            idToSampleStatusMap.put(status.getValue().getId(), status.getKey());
+        }
 
-	private static void getObservationHistoryTypeIDs() {
-		ObservationHistoryTypeDAO observationTypeDAO = new ObservationHistoryTypeDAOImpl();
-		List<ObservationHistoryType> obsrvationTypeList = observationTypeDAO.getAll();
+        for (Entry<AnalysisStatus, StatusOfSample> status : analysisStatusToObjectMap.entrySet()) {
+            idToAnalysisStatusMap.put(status.getValue().getId(), status.getKey());
+        }
+        for (Entry<RecordStatus, Dictionary> status : recordStatusToObjectMap.entrySet()) {
+            idToRecordStatusMap.put(status.getValue().getId(), status.getKey());
+        }
+    }
 
-		for( ObservationHistoryType observationType : obsrvationTypeList){
-			if( "SampleRecordStatus".equals(observationType.getTypeName())){
-				orderRecordStatusID = observationType.getId();
-			}else if( "PatientRecordStatus".equals(observationType.getTypeName())){
-				patientRecordStatusID = observationType.getId();
-			}
-		}
-	}
+    private static void getObservationHistoryTypeIDs() {
+        ObservationHistoryTypeDAO observationTypeDAO = new ObservationHistoryTypeDAOImpl();
+        List<ObservationHistoryType> obsrvationTypeList = observationTypeDAO.getAll();
 
-	private static void addToOrderMap(StatusOfSample status) {
-		String name = status.getStatusOfSampleName();
+        for (ObservationHistoryType observationType : obsrvationTypeList) {
+            if ("SampleRecordStatus".equals(observationType.getTypeName())) {
+                orderRecordStatusID = observationType.getId();
+            } else if ("PatientRecordStatus".equals(observationType.getTypeName())) {
+                patientRecordStatusID = observationType.getId();
+            }
+        }
+    }
 
-		if( name.equals("Test Entered")){
-			orderStatusToObjectMap.put(OrderStatus.Entered, status);
-		}else if( name.equals("Testing Started")){
-			orderStatusToObjectMap.put(OrderStatus.Started, status);
-		}else if( name.equals("Testing finished")){
-			orderStatusToObjectMap.put(OrderStatus.Finished, status);
-		}else if( name.equals("NonConforming")){
-			orderStatusToObjectMap.put(OrderStatus.NonConforming_depricated, status);
-		}
-	}
-	
-	private static void addToSampleMap(StatusOfSample status) {
-		String name = status.getStatusOfSampleName();
+    private static void addToOrderMap(StatusOfSample status) {
+        switch (status.getStatusOfSampleName()) {
+            case "Test Entered":
+                orderStatusToObjectMap.put(OrderStatus.Entered, status);
+                break;
+            case "Testing Started":
+                orderStatusToObjectMap.put(OrderStatus.Started, status);
+                break;
+            case "Testing finished":
+                orderStatusToObjectMap.put(OrderStatus.Finished, status);
+                break;
+            case "NonConforming":
+                orderStatusToObjectMap.put(OrderStatus.NonConforming_depricated, status);
+                break;
+        }
+    }
 
-		if( name.equals("SampleEntered")){
-			sampleStatusToObjectMap.put(SampleStatus.Entered, status);
-		}else if( name.equals("SampleCanceled")){
-			sampleStatusToObjectMap.put(SampleStatus.Canceled, status);
-		}
-	}
+    private static void addToSampleMap(StatusOfSample status) {
+        String name = status.getStatusOfSampleName();
 
-	private static void addToAnalysisMap(StatusOfSample status) {
-		String name = status.getStatusOfSampleName();
+        if (name.equals("SampleEntered")) {
+            sampleStatusToObjectMap.put(SampleStatus.Entered, status);
+        } else if (name.equals("SampleCanceled")) {
+            sampleStatusToObjectMap.put(SampleStatus.Canceled, status);
+        }
+    }
 
-		if( name.equals("Not Tested")){
-			analysisStatusToObjectMap.put(AnalysisStatus.NotStarted, status);
-		}else if( name.equals("Test Canceled")){
-			analysisStatusToObjectMap.put(AnalysisStatus.Canceled, status);
-		}else if( name.equals("Technical Acceptance")){
-			analysisStatusToObjectMap.put(AnalysisStatus.TechnicalAcceptance, status);
-		}else if( name.equals("Technical Rejected")){
-			analysisStatusToObjectMap.put(AnalysisStatus.TechnicalRejected, status);
-		}else if( name.equals("Biologist Rejection")){
-			analysisStatusToObjectMap.put(AnalysisStatus.BiologistRejected, status);
-		}else if( name.equals("referred out")){
-			analysisStatusToObjectMap.put(AnalysisStatus.ReferedOut, status);
-		}else if( name.equals("Finalized")){
-			analysisStatusToObjectMap.put(AnalysisStatus.Finalized, status);
-		}else if( name.equals("NonConforming")){
-			analysisStatusToObjectMap.put(AnalysisStatus.NonConforming_depricated, status);
-		}else if( name.equals("referred in")){
-			analysisStatusToObjectMap.put(AnalysisStatus.ReferredIn, status);
-		}
-	}
+    private static void addToAnalysisMap(StatusOfSample status) {
+        switch (status.getStatusOfSampleName()) {
+            case "Not Tested":
+                analysisStatusToObjectMap.put(AnalysisStatus.NotStarted, status);
+                break;
+            case "Test Canceled":
+                analysisStatusToObjectMap.put(AnalysisStatus.Canceled, status);
+                break;
+            case "Technical Acceptance":
+                analysisStatusToObjectMap.put(AnalysisStatus.TechnicalAcceptance, status);
+                break;
+            case "Technical Acceptance RO":
+                analysisStatusToObjectMap.put(AnalysisStatus.TechnicalAcceptanceRO, status);
+                break;
+            case "Technical Rejected":
+                analysisStatusToObjectMap.put(AnalysisStatus.TechnicalRejected, status);
+                break;
+            case "Biologist Rejection":
+                analysisStatusToObjectMap.put(AnalysisStatus.BiologistRejected, status);
+                break;
+            case "referred out":
+                analysisStatusToObjectMap.put(AnalysisStatus.ReferedOut, status);
+                break;
+            case "Finalized":
+                analysisStatusToObjectMap.put(AnalysisStatus.Finalized, status);
+                break;
+            case "Finalized RO":
+                analysisStatusToObjectMap.put(AnalysisStatus.FinalizedRO, status);
+                break;
+            case "NonConforming":
+                analysisStatusToObjectMap.put(AnalysisStatus.NonConforming_depricated, status);
+                break;
+            case "referred in":
+                analysisStatusToObjectMap.put(AnalysisStatus.ReferredIn, status);
+                break;
+        }
+    }
 
-	private static void addToRecordMap(Dictionary dictionary) {
-		String name = dictionary.getLocalAbbreviation();
+    private static void addToRecordMap(Dictionary dictionary) {
+        switch (dictionary.getLocalAbbreviation()) {
+            case "Not Start":
+                recordStatusToObjectMap.put(RecordStatus.NotRegistered, dictionary);
+                break;
+            case "Init Ent":
+                recordStatusToObjectMap.put(RecordStatus.InitialRegistration, dictionary);
+                break;
+            case "Valid Ent":
+                recordStatusToObjectMap.put(RecordStatus.ValidationRegistration, dictionary);
+                break;
+        }
+    }
 
-		if( name.equals("Not Start")){
-			recordStatusToObjectMap.put(RecordStatus.NotRegistered, dictionary);
-		}else if( name.equals("Init Ent")){
-			recordStatusToObjectMap.put(RecordStatus.InitialRegistration, dictionary);
-		}else if( name.equals("Valid Ent")){
-			recordStatusToObjectMap.put(RecordStatus.ValidationRegistration, dictionary);
-		}
-	}
+    public static String getStatusNameFromId(String id) {
+        insureMapsAreBuilt();
+        if (idToAnalysisStatusMap.get(id) != null) {
+            return getStatusName(idToAnalysisStatusMap.get(id));
+        } else if (idToOrderStatusMap.get(id) != null) {
+            return getStatusName(idToOrderStatusMap.get(id));
+        } else if (idToSampleStatusMap.get(id) != null) {
+            return getStatusName(idToSampleStatusMap.get(id));
+        } else if (idToRecordStatusMap.get(id) != null) {
+            return getStatusName(idToRecordStatusMap.get(id));
+        }
 
-	public static String getStatusNameFromId(String id) {
-		insureMapsAreBuilt();
-		if( idToAnalysisStatusMap.get(id) != null){
-			return getStatusName(idToAnalysisStatusMap.get(id));
-		}else if( idToOrderStatusMap.get(id) != null ){
-			return getStatusName(idToOrderStatusMap.get(id));
-		}else if( idToSampleStatusMap.get(id) != null ){
-				return getStatusName(idToSampleStatusMap.get(id));
-		}else if( idToRecordStatusMap.get(id) != null ){
-			return getStatusName(idToRecordStatusMap.get(id));
-		}
-
-		return null;
-	}
+        return null;
+    }
 }

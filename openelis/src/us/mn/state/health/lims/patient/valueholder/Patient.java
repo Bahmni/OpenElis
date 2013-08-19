@@ -25,6 +25,7 @@ import us.mn.state.health.lims.person.valueholder.Person;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.Calendar;
 
 public class Patient extends BaseObject {
 
@@ -291,4 +292,15 @@ public class Patient extends BaseObject {
     public void setUuid(String uuid) {
         this.uuid = uuid;
     }
+
+    public double getAge() {
+        double currPatientAge = 0;
+        if (getBirthDate() != null) {
+            Calendar dob = Calendar.getInstance();
+            dob.setTime(getBirthDate());
+            currPatientAge = DateUtil.getAgeInYears(getBirthDate(), new java.util.Date());
+        }
+        return currPatientAge;
+    }
+
 }

@@ -23,6 +23,8 @@ import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 
 import java.util.*;
 
+import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.*;
+
 
 public abstract class BaseResultValidationAction extends BaseAction {
 
@@ -93,7 +95,7 @@ public abstract class BaseResultValidationAction extends BaseAction {
 	}
 
     protected List<StatusOfSampleUtil.AnalysisStatus> getToBeValidatedStatuses() {
-        return Arrays.asList(StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance);
+        return Arrays.asList(TechnicalAcceptance, TechnicalAcceptanceRO);
     }
 
     protected boolean shouldGetAllSections(String testSectionName) {

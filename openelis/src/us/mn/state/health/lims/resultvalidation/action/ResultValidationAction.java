@@ -34,8 +34,7 @@ import java.util.List;
 
 public class ResultValidationAction extends BaseResultValidationAction {
 
-	private ResultsValidationUtility resultsValidationUtility;
-	private List<Integer> validationStatus = new ArrayList<Integer>();
+    private List<Integer> validationStatus = new ArrayList<>();
 
 	@Override
 	protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
@@ -54,7 +53,7 @@ public class ResultValidationAction extends BaseResultValidationAction {
 			// Initialize the form.
 			dynaForm.initialize(mapping);
 
-			resultsValidationUtility = new ResultsValidationUtility();
+            ResultsValidationUtility resultsValidationUtility = new ResultsValidationUtility();
 			setRequestType(testSectionName);
 			setStatus(testSectionName);
 
@@ -86,7 +85,7 @@ public class ResultValidationAction extends BaseResultValidationAction {
     }
 
     public void setStatus(String testSection) {
-		validationStatus = new ArrayList<Integer>();
+		validationStatus = new ArrayList<>();
 
 		if ("serology".equals(testSection)) {
 			validationStatus.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.TechnicalAcceptance)));
@@ -97,6 +96,7 @@ public class ResultValidationAction extends BaseResultValidationAction {
 			// validationStatus.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.NonConforming)));
 		} else {
 			validationStatus.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.TechnicalAcceptance)));
+			validationStatus.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.TechnicalAcceptanceRO)));
 		}
 	}
 }

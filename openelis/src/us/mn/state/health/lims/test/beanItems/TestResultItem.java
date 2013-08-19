@@ -164,7 +164,6 @@ public class TestResultItem implements ResultItem, Serializable{
 		this.referredOut = referredOut;
 	}
 
-
 	public String getTechnicianSignatureId() {
 		return technicianSignatureId;
 	}

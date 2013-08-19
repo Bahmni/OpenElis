@@ -81,7 +81,6 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 	private ArrayList<Result> resultUpdateList;
 
 	private SystemUser systemUser;
-	private ArrayList<Integer> sampleFinishedStatus = new ArrayList<Integer>();
 
 	private static final String RESULT_TYPE = "I";
 	private static final String RESULT_SUBJECT = "Result Note";
@@ -105,11 +104,10 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 		String testName = (String) dynaForm.get("testName");
 
 		createSystemUser();
-		setSampleFinishedStatuses();
 
-		noteUpdateList = new ArrayList<Note>();
-		resultUpdateList = new ArrayList<Result>();
-		analysisUpdateList = new ArrayList<Analysis>();
+		noteUpdateList = new ArrayList<>();
+		resultUpdateList = new ArrayList<>();
+		analysisUpdateList = new ArrayList<>();
 
 		if (testSectionName.equals("serology")) {
 			createUpdateElisaList(resultItemList);
@@ -120,7 +118,6 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 		Transaction tx = HibernateUtil.getSession().beginTransaction();
 
 		try {
-
 			// update analysis
 			for (Analysis analysis : analysisUpdateList) {
 				analysisDAO.updateData(analysis);
@@ -160,7 +157,7 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 		if (GenericValidator.isBlankOrNull(testSectionName)) {
 			return mapping.findForward(forward);
 		} else {
-			Map<String, String> params = new HashMap<String, String>();
+			Map<String, String> params = new HashMap<>();
 			params.put("type", testSectionName);
 			params.put("test", testName);
 
@@ -179,7 +176,7 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 
 	private void createUpdateList(List<AnalysisItem> analysisItems) {
 
-		List<String> analysisIdList = new ArrayList<String>();
+		List<String> analysisIdList = new ArrayList<>();
 
 		for (AnalysisItem analysisItem : analysisItems) {
 			if (!analysisItem.isReadOnly() && (analysisItem.getIsAccepted() || analysisItem.getIsRejected())) {
@@ -194,14 +191,14 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 				if (!analysisIdList.contains(analysisId)) {
 
 					if (analysisItem.getIsAccepted()) {
-						analysis.setStatusId(StatusOfSampleUtil.getStatusID(AnalysisStatus.Finalized));
+						analysis.finalizeResult();
 						analysis.setReleasedDate(new java.sql.Date(Calendar.getInstance().getTimeInMillis()));
 						analysisIdList.add(analysisId);
 						analysisUpdateList.add(analysis);
 					}
 
 					if (analysisItem.getIsRejected()) {
-						analysis.setStatusId(StatusOfSampleUtil.getStatusID(AnalysisStatus.BiologistRejected));
+                        analysis.reject();
 						analysisIdList.add(analysisId);
 						analysisUpdateList.add(analysis);
 					}
@@ -225,7 +222,7 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 				List<Analysis> acceptedAnalysisList = createAnalysisFromElisaAnalysisItem(resultItem);
 
 				for (Analysis analysis : acceptedAnalysisList) {
-					analysis.setStatusId(StatusOfSampleUtil.getStatusID(AnalysisStatus.Finalized));
+					analysis.finalizeResult();
 					analysisUpdateList.add(analysis);
 				}
 			}
@@ -234,7 +231,7 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 				List<Analysis> rejectedAnalysisList = createAnalysisFromElisaAnalysisItem(resultItem);
 
 				for (Analysis analysis : rejectedAnalysisList) {
-					analysis.setStatusId(StatusOfSampleUtil.getStatusID(AnalysisStatus.BiologistRejected));
+                    analysis.reject();
 					analysisUpdateList.add(analysis);
 				}
 
@@ -244,7 +241,7 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 
 	private List<Analysis> createAnalysisFromElisaAnalysisItem(AnalysisItem analysisItem) {
 
-		List<Analysis> analysisList = new ArrayList<Analysis>();
+		List<Analysis> analysisList = new ArrayList<>();
 
 		Analysis analysis = new Analysis();
 
@@ -298,11 +295,11 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 	}
 
 	private void checkIfSamplesFinished(List<AnalysisItem> resultItemList) {
-		sampleUpdateList = new ArrayList<Sample>();
+		sampleUpdateList = new ArrayList<>();
 
 		String currentSampleId = "";
 		boolean sampleFinished = true;
-		List<Analysis> analysisList = new ArrayList<Analysis>();
+		List<Analysis> analysisList;
         editedSamples = new HashSet<>();
 
 		for (AnalysisItem analysisItem : resultItemList) {
@@ -315,7 +312,7 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 				analysisList = analysisDAO.getAnalysesBySampleId(currentSampleId);
 
 				for (Analysis analysis : analysisList) {
-					if (!sampleFinishedStatus.contains(Integer.parseInt(analysis.getStatusId()))) {
+					if (!analysis.isFinished()) {
 						sampleFinished = false;
 						break;
 					}
@@ -472,13 +469,6 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 		systemUser.setId(currentUserId);
 		SystemUserDAO systemUserDAO = new SystemUserDAOImpl();
 		systemUserDAO.getData(systemUser);
-	}
-
-	private void setSampleFinishedStatuses() {
-		sampleFinishedStatus = new ArrayList<Integer>();
-		sampleFinishedStatus.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.Finalized)));
-		sampleFinishedStatus.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.Canceled)));
-		sampleFinishedStatus.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.NonConforming_depricated)));
 	}
 
 }

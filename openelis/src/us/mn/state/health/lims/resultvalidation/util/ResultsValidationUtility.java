@@ -136,12 +136,12 @@ public class ResultsValidationUtility {
 	StopWatch sw;
 
 	public List<AnalysisItem> getResultValidationList(String testSectionName, String testName, List<Integer> statusList) {
-		accessionToValidMap = new HashMap<String, Boolean>();
+		accessionToValidMap = new HashMap<>();
 		sw = new StopWatch();
 		sw.disable(true);
 
-		List<ResultValidationItem> testList = new ArrayList<ResultValidationItem>();
-		List<AnalysisItem> resultList = new ArrayList<AnalysisItem>();
+		List<ResultValidationItem> testList = new ArrayList<>();
+		List<AnalysisItem> resultList = new ArrayList<>();
 
 		if (!(GenericValidator.isBlankOrNull(testSectionName) || testSectionName.equals("0"))) {
 			sw.start("Result Validation " + testSectionName);
@@ -220,7 +220,7 @@ public class ResultsValidationUtility {
 
 
     private void addPrecentageResultsTotal(List<ResultValidationItem> hematologyResults) {
-		Map<String, ResultValidationItem> accessionToTotalMap = new HashMap<String, ResultValidationItem>();
+		Map<String, ResultValidationItem> accessionToTotalMap = new HashMap<>();
 
 		for (ResultValidationItem resultItem : hematologyResults) {
 			if (isItemToBeTotaled(resultItem)) {
@@ -333,7 +333,7 @@ public class ResultsValidationUtility {
 	@SuppressWarnings("unchecked")
 	public List<ResultValidationItem> getUnValidatedElisaResultItemsInTestSection(String id) {
 
-		List<Analysis> analysisList = new ArrayList<Analysis>();
+		List<Analysis> analysisList = new ArrayList<>();
 
 		List<Test> tests = resultsLoadUtility.getTestsInSection(id);
 
@@ -369,7 +369,7 @@ public class ResultsValidationUtility {
 	public List<ResultValidationItem> getGroupedTestsForAnalysisList(Collection<Analysis> filteredAnalysisList, boolean ignoreRecordStatus)
 			throws LIMSRuntimeException {
 
-		List<ResultValidationItem> selectedTestList = new ArrayList<ResultValidationItem>();
+		List<ResultValidationItem> selectedTestList = new ArrayList<>();
 		Dictionary dictionary;
 
 		for (Analysis analysis : filteredAnalysisList) {
@@ -419,7 +419,7 @@ public class ResultsValidationUtility {
 
 	@SuppressWarnings("unchecked")
 	public List<ResultValidationItem> getResultItemFromAnalysis(Analysis analysis) throws LIMSRuntimeException {
-		List<ResultValidationItem> testResultList = new ArrayList<ResultValidationItem>();
+		List<ResultValidationItem> testResultList = new ArrayList<>();
 
 		List<Result> resultList = resultDAO.getResultsByAnalysis(analysis);
 
@@ -557,8 +557,8 @@ public class ResultsValidationUtility {
 		return testResultType;
 	}
 
-	public List<AnalysisItem> testResultListToELISAAnalysisList(List<ResultValidationItem> testResultList, List<Integer> statusList) {
-		List<AnalysisItem> analysisItemList = new ArrayList<AnalysisItem>();
+	private List<AnalysisItem> testResultListToELISAAnalysisList(List<ResultValidationItem> testResultList, List<Integer> statusList) {
+		List<AnalysisItem> analysisItemList = new ArrayList<>();
 		AnalysisItem analysisResultItem = new AnalysisItem();
 		String currentAccessionNumber = "";
 		String currentInvalidAccessionNumber = "";

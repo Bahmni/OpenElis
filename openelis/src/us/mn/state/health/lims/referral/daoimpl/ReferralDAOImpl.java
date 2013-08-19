@@ -32,6 +32,8 @@ import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.referral.dao.ReferralDAO;
 import us.mn.state.health.lims.referral.valueholder.Referral;
+import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
+import us.mn.state.health.lims.statusofsample.valueholder.StatusOfSample;
 
 /*
  */
@@ -86,8 +88,7 @@ public class ReferralDAOImpl extends BaseDAOImpl implements ReferralDAO {
 
 	@SuppressWarnings("unchecked")
 	public List<Referral> getAllUncanceledOpenReferrals() throws LIMSRuntimeException {
-		String sql = "From Referral r where r.resultRecievedDate is NULL and r.canceled = 'false' order by r.id";
-
+		String sql = "From Referral r where r.analysis.statusId = " + StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.ReferedOut) + "  and r.canceled = 'false' order by r.id";
 		try {
 			Query query = HibernateUtil.getSession().createQuery(sql);
 			List<Referral> referrals = query.list();

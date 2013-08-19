@@ -58,7 +58,7 @@ public class AnalysisDAOImplIT extends IT {
         createAndSaveAnalysis(nonMatchingSampleItem, nonMatchingStatus, "Hematology");
 
         List<Analysis> actualAnalyses = new AnalysisDAOImpl().getAllAnalysisByAccessionNumberAndStatus(accessionNumber,
-                Arrays.asList(StatusOfSampleUtil.AnalysisStatus.TechnicalRejected));
+                Arrays.asList(StatusOfSampleUtil.AnalysisStatus.BiologistRejected));
 
         Assert.assertTrue("should not return analysis with non matching analysis status", actualAnalyses.isEmpty());
     }
@@ -72,7 +72,7 @@ public class AnalysisDAOImplIT extends IT {
         Analysis secondMatchingAnalysis = createAndSaveAnalysis(matchingSampleItemWithADifferentTestSection, StatusOfSampleUtil.AnalysisStatus.NotStarted, "Biochemistry");
 
         SampleItem nonMatchingSampleItemWithDifferentStatus = createAndSaveSampleItem(createAndSaveSample("1234567"));
-        Analysis nonMatchingAnalysis = createAndSaveAnalysis(nonMatchingSampleItemWithDifferentStatus, StatusOfSampleUtil.AnalysisStatus.TechnicalRejected, "Biochemistry");
+        Analysis nonMatchingAnalysis = createAndSaveAnalysis(nonMatchingSampleItemWithDifferentStatus, StatusOfSampleUtil.AnalysisStatus.BiologistRejected, "Biochemistry");
 
         List<Analysis> actualAnalyses = new AnalysisDAOImpl().getAllAnalysisByStatus(
                 Arrays.asList(StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance, StatusOfSampleUtil.AnalysisStatus.NotStarted));

@@ -23,7 +23,7 @@ public abstract class IT {
     public void after() {
         try {
             session.flush();
-            ((ElisHibernateSession)session).clearSession();
+            ((ElisHibernateSession) session).clearSession();
         } finally {
             transaction.rollback();
         }

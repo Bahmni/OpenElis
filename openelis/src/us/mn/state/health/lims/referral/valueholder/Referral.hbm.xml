@@ -27,7 +27,7 @@
 		<property name="organizationName" column="organization_name" length="30" not-null="false" />
 		<property name="requesterName" column="requester_name" length="60" not-null="false" />
 		<property name="canceled" column="canceled" type="boolean" />
-		<many-to-one name="analysis" class="us.mn.state.health.lims.analysis.valueholder.Analysis" fetch="select" >
+		<many-to-one name="analysis" class="us.mn.state.health.lims.analysis.valueholder.Analysis" fetch="join" >
 			<column name="analysis_id"	 precision="10" scale="0" />
 		</many-to-one>
 		<many-to-one name="organization" class="us.mn.state.health.lims.organization.valueholder.Organization" fetch="select" >

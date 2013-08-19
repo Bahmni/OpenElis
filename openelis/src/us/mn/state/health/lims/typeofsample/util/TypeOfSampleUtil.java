@@ -26,11 +26,10 @@ public class TypeOfSampleUtil {
     private static final Object LOCK_OBJECT = new Object();
 
     public static List<Test> getTestListBySampleTypeId(String sampleTypeId, String labOrderTypeId, boolean orderableOnly) {
-        HashMap<String, List<Test>> sampleIdToTestMap = new HashMap<>(sampleIdTestMap);
-        if (isEmpty(sampleIdToTestMap) || hasNoEntryFor(sampleTypeId, sampleIdToTestMap)) {
+        if (isEmpty(sampleIdTestMap) || hasNoEntryFor(sampleTypeId, sampleIdTestMap)) {
             createSampleIdTestMap(sampleTypeId);
         }
-        List<Test> testList = sampleIdToTestMap.get(sampleTypeId);
+        List<Test> testList = sampleIdTestMap.get(sampleTypeId);
         if (hasNoLabOrderType(labOrderTypeId)) {
             return orderableOnly ? getOrderableTests(testList) : testList;
         }
@@ -77,7 +76,7 @@ public class TypeOfSampleUtil {
         return map.get(key) == null;
     }
 
-    private static boolean isEmpty(HashMap map) {
+    private static boolean isEmpty(Map map) {
         return map == null || map.isEmpty();
     }
 

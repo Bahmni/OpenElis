@@ -12,7 +12,7 @@ import java.util.List;
 public class AnalysisDAOImplTest {
     @Test
     public void getAllByAccessionNumberAndStatus_returns_empty_list_for_null_accession_number() {
-        List<Analysis> actualAnalysises = new AnalysisDAOImpl().getAllAnalysisByAccessionNumberAndStatus(null, Arrays.asList(StatusOfSampleUtil.AnalysisStatus.TechnicalRejected));
+        List<Analysis> actualAnalysises = new AnalysisDAOImpl().getAllAnalysisByAccessionNumberAndStatus(null, Arrays.asList(StatusOfSampleUtil.AnalysisStatus.BiologistRejected));
         Assert.assertTrue("should not return analysis for null accession number", actualAnalysises.isEmpty());
     }
 

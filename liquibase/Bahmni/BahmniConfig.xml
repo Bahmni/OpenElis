@@ -13,7 +13,8 @@
         <insert schemaName="clinlims" tableName="site_information">
             <column name="id" valueNumeric=" nextVal( 'site_information_seq' ) "/>
             <column name="name" value="SampleEntryFieldsetOrder"/>
-            <column name="description" value="Configures the order in which each section appears in the Add Sample Entry form. Eg: value: patient|samples|order"/>
+            <column name="description"
+                    value="Configures the order in which each section appears in the Add Sample Entry form. Eg: value: patient|samples|order"/>
             <column name="value" value="patient|samples|order"/>
             <column name="lastupdated" valueDate=" now() "/>
         </insert>
@@ -285,12 +286,12 @@
     </changeSet>
     <changeSet id="19" author="tw" context="bahmni">
         <addForeignKeyConstraint baseColumnNames="health_center_id"
-                baseTableName="patient"
-                constraintName="fk_patient_health_center"
-                onDelete="CASCADE"
-                onUpdate="RESTRICT"
-                referencedColumnNames="id"
-                referencedTableName="HEALTH_CENTER"/>
+                                 baseTableName="patient"
+                                 constraintName="fk_patient_health_center"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="HEALTH_CENTER"/>
     </changeSet>
     <changeSet id="20" author="tw" context="bahmni">
         <dropNotNullConstraint columnDataType="varchar(250)"
@@ -302,7 +303,8 @@
                                schemaName="clinlims"
                                tableName="markers"/>
         <insert tableName="markers" schemaName="clinlims">
-            <column name="feed_uri_for_last_read_entry" valueNumeric="'http://localhost:8080/openmrs/ws/atomfeed/patient/1'"/>
+            <column name="feed_uri_for_last_read_entry"
+                    valueNumeric="'http://localhost:8080/openmrs/ws/atomfeed/patient/1'"/>
             <column name="feed_uri" valueNumeric="'http://localhost:8080/openmrs/ws/atomfeed/patient/recent'"/>
         </insert>
     </changeSet>
@@ -322,48 +324,48 @@
             <column name="sample_source_id" type="integer"></column>
         </addColumn>
         <addForeignKeyConstraint baseColumnNames="sample_source_id"
-                baseTableName="sample"
-                constraintName="fk_sample_sample_source"
-                onUpdate="RESTRICT"
-                referencedColumnNames="id"
-                referencedTableName="sample_source"/>
+                                 baseTableName="sample"
+                                 constraintName="fk_sample_sample_source"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="sample_source"/>
     </changeSet>
     <changeSet id="22" author="tw" context="bahmni">
         <comment>Data required for sample_source</comment>
         <insert tableName="sample_source" schemaName="clinlims">
-            <column name="id" valueNumeric=" nextval( 'sample_source_id_seq' ) " />
-            <column name="name" value="IPD" />
+            <column name="id" valueNumeric=" nextval( 'sample_source_id_seq' ) "/>
+            <column name="name" value="IPD"/>
             <column name="description" value="InPatient Department"></column>
             <column name="active" type="boolean" valueBoolean="true"/>
         </insert>
         <insert tableName="sample_source" schemaName="clinlims">
-            <column name="id" valueNumeric=" nextval( 'sample_source_id_seq' ) " />
-            <column name="name" value="OPD" />
+            <column name="id" valueNumeric=" nextval( 'sample_source_id_seq' ) "/>
+            <column name="name" value="OPD"/>
             <column name="description" value="OutPatient Department"></column>
             <column name="active" type="boolean" valueBoolean="true"/>
         </insert>
         <insert tableName="sample_source" schemaName="clinlims">
-            <column name="id" valueNumeric=" nextval( 'sample_source_id_seq' ) " />
-            <column name="name" value="Emergency" />
+            <column name="id" valueNumeric=" nextval( 'sample_source_id_seq' ) "/>
+            <column name="name" value="Emergency"/>
             <column name="description" value="Emergency"></column>
             <column name="active" type="boolean" valueBoolean="true"/>
         </insert>
         <insert tableName="sample_source" schemaName="clinlims">
-            <column name="id" valueNumeric=" nextval( 'sample_source_id_seq' ) " />
-            <column name="name" value="Sub Center" />
+            <column name="id" valueNumeric=" nextval( 'sample_source_id_seq' ) "/>
+            <column name="name" value="Sub Center"/>
             <column name="description" value="Sub Center"></column>
             <column name="active" type="boolean" valueBoolean="true"/>
         </insert>
         <insert tableName="sample_source" schemaName="clinlims">
-            <column name="id" valueNumeric=" nextval( 'sample_source_id_seq' ) " />
-            <column name="name" value="Community Program" />
+            <column name="id" valueNumeric=" nextval( 'sample_source_id_seq' ) "/>
+            <column name="name" value="Community Program"/>
             <column name="description" value="Community Program"></column>
             <column name="active" type="boolean" valueBoolean="true"/>
         </insert>
     </changeSet>
     <changeSet id="23" author="tw">
         <comment>Add new column to sample_source for ordering the dropdown display</comment>
-         <addColumn tableName="sample_source" schemaName="clinlims">
+        <addColumn tableName="sample_source" schemaName="clinlims">
             <column name="display_order" type="integer"></column>
         </addColumn>
     </changeSet>
@@ -372,7 +374,7 @@
         <update schemaName="clinlims" tableName="sample_source">
             <column name="display_order" value="1"/>
             <where>name='OPD'</where>
-        </update>        
+        </update>
         <update schemaName="clinlims" tableName="sample_source">
             <column name="display_order" value="2"/>
             <where>name='IPD'</where>
@@ -393,17 +395,17 @@
     <changeSet author="tw" id="25" context="bahmni">
         <comment>Adds the menu items for Validate 'All Test Sections'</comment>
         <insert schemaName="clinlims" tableName="menu">
-            <column name="id" valueNumeric=" nextval( 'menu_seq' ) " />
+            <column name="id" valueNumeric=" nextval( 'menu_seq' ) "/>
             <column name="parent_id"
-                valueNumeric=" ( select id from clinlims.menu where element_id = 'menu_resultvalidation' ) " />
-            <column name="presentation_order" valueNumeric="200" />
-            <column name="element_id" value="menu_resultvalidation_All" />
+                    valueNumeric=" ( select id from clinlims.menu where element_id = 'menu_resultvalidation' ) "/>
+            <column name="presentation_order" valueNumeric="200"/>
+            <column name="element_id" value="menu_resultvalidation_All"/>
             <column name="action_url"
-                value="/ResultValidation.do?type=All+Sections&amp;test=" />
+                    value="/ResultValidation.do?type=All+Sections&amp;test="/>
             <column name="display_key"
-                value="banner.menu.resultvalidation.AllSections" />
+                    value="banner.menu.resultvalidation.AllSections"/>
             <column name="tool_tip_key"
-                value="banner.menu.resultvalidation.AllSections" />
+                    value="banner.menu.resultvalidation.AllSections"/>
         </insert>
     </changeSet>
     <changeSet id="26" author="tw" context="bahmni">
@@ -453,8 +455,8 @@
         <comment>Add primary relative</comment>
         <insert schemaName="clinlims" tableName="patient_identity_type">
             <column name="id" valueNumeric=" nextval( 'patient_identity_type_seq' ) "/>
-            <column name="identity_type" value="PRIMARYRELATIVE" />
-            <column name="description" value="Father's/Husband's name" />
+            <column name="identity_type" value="PRIMARYRELATIVE"/>
+            <column name="description" value="Father's/Husband's name"/>
             <column name="lastupdated" valueDate=" now() "/>
         </insert>
     </changeSet>
@@ -516,5 +518,34 @@
             <column name="value" value="true" />
             <where>name = 'showValidationFailureIcon'</where>
         </update>
+    <!--<changeSet author="tw" id="30" context="bahmni">-->
+    <!--<comment>Add referral reasons to DB</comment>-->
+    <!--<loadData file="Bahmni/Bahmni_Referral_Reasons.csv" schemaName="clinlims" tableName="referral_reason">-->
+    <!--<column name="id" header="id" type="NUMERIC"/>-->
+    <!--<column name="name" header="name" type="STRING"/>-->
+    <!--<column name="description" header="description" type="STRING"/>-->
+    <!--<column name="display_key" header="display_key" type="STRING"/>-->
+    <!--<column name="lastupdated" header="lastUpdated" type="DATE"/>-->
+    <!--</loadData>-->
+    <!--</changeSet>-->
+    <changeSet author="tw" id="35" context="bahmni">
+        <insert schemaName="clinlims" tableName="status_of_sample">
+            <column name="id" valueNumeric=" nextval( 'status_of_sample_seq' ) "/>
+            <column name="code" value="1"/>
+            <column name="lastupdated" valueDate='now()'/>
+            <column name="status_type" value="ANALYSIS"/>
+            <column name="name" value="Technical Acceptance RO"/>
+            <column name="description" value="The results of the test were accepted by technician as being valid for referred out test"/>
+            <column name="display_key" value="status.test.referred.out.tech.accepted"/>
+        </insert>
+        <insert schemaName="clinlims" tableName="status_of_sample">
+            <column name="id" valueNumeric=" nextval( 'status_of_sample_seq' ) "/>
+            <column name="code" value="1"/>
+            <column name="lastupdated" valueDate='now()'/>
+            <column name="status_type" value="ANALYSIS"/>
+            <column name="name" value="Finalized RO"/>
+            <column name="description" value="The results of the analysis are final for referred out test"/>
+            <column name="display_key" value="status.test.referred.out.valid"/>
+        </insert>
     </changeSet>
 </databaseChangeLog>
