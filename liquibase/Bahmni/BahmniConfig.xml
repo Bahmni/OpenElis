@@ -503,4 +503,11 @@
             <column name="uuid" type="varchar(100)"></column>
         </addColumn>
     </changeSet>
+    <changeSet author="tw" id="33" context="bahmni">
+        <comment>Change frequency of patient runs</comment>
+        <update schemaName="clinlims" tableName="quartz_cron_scheduler">
+            <column name="cron_statement" value="0/15 * * * * ?"/>
+            <where>name='atom-feed-openmrs-patient'</where>
+        </update>
+    </changeSet>
 </databaseChangeLog>
