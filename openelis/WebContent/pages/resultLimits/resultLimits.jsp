@@ -71,12 +71,13 @@
                 return false;
             }
 
+
             if (lowNormal > highNormal || lowValid > highValid){
                 alert('<%=errorInvalidHighLowForRange %>');
                 return false;
             }
 
-            if(lowNormal < lowValid || highNormal > highValid){
+            if(lowValid != '' && highValid != '' && (lowNormal < lowValid || highNormal > highValid)){
                 alert('<%=errorInvalidNormalValidRange %>');
                 return false;
             }
