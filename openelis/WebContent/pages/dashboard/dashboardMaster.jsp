@@ -49,14 +49,13 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
 
 <input id="refreshButton" type="button" value="Refresh">
 
-<div>
-    <div id="tabs">
-         <ul>
-            <li><a href="#inProgressListContainer">In Progress</a></li>
-            <li><a href="#completedListContainer">Completed</a></li>
-         </ul>
-        <div id="inProgressListContainer" style="width:750px"></div>
-        <div id="completedListContainer" style="width:520px"></div>
+<div id="tabs">
+     <ul>
+        <li><a href="#inProgressListContainer">In Progress</a></li>
+        <li><a href="#completedListContainer">Completed</a></li>
+     </ul>
+    <div id="inProgressListContainer" style="width:1200px"></div>
+    <div id="completedListContainer" style="width:520px"></div>
 
     </div>
 

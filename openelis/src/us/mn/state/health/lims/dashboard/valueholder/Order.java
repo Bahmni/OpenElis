@@ -9,20 +9,20 @@ public class Order {
     private String lastName;
     private String source;
     private Integer pendingTestCount;
-    private Integer validatedTestCount;
+    private Integer pendingValidationCount;
     private Integer totalTestCount;
 
     public Order() {
     }
 
-    public Order(String accessionNumber, String stNumber, String firstName, String lastName, String source, Integer pendingTestCount, Integer validatedTestCount, Integer totalTestCount) {
+    public Order(String accessionNumber, String stNumber, String firstName, String lastName, String source, Integer pendingTestCount, Integer pendingValidationCount, Integer totalTestCount) {
         this.accessionNumber = accessionNumber;
         this.stNumber = stNumber;
         this.firstName = firstName;
         this.lastName = lastName;
         this.source = source;
         this.pendingTestCount = pendingTestCount;
-        this.validatedTestCount = validatedTestCount;
+        this.pendingValidationCount = pendingValidationCount;
         this.totalTestCount = totalTestCount;
     }
 
@@ -123,7 +123,7 @@ public class Order {
         return result;
     }
 
-    public Integer getValidatedTestCount() {
-        return validatedTestCount;
+    public Integer getPendingValidationCount() {
+        return pendingValidationCount;
     }
 }

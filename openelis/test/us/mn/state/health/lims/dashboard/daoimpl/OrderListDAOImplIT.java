@@ -1,9 +1,7 @@
 package us.mn.state.health.lims.dashboard.daoimpl;
 
-import junit.framework.Assert;
 import org.bahmni.feed.openelis.IT;
 import org.junit.Before;
-import org.junit.Ignore;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.analyte.daoimpl.AnalyteDAOImpl;
@@ -37,11 +35,13 @@ import us.mn.state.health.lims.test.valueholder.TestSection;
 import us.mn.state.health.lims.testanalyte.daoimpl.TestAnalyteDAOImpl;
 import us.mn.state.health.lims.testanalyte.valueholder.TestAnalyte;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.*;
 
@@ -51,68 +51,76 @@ public class OrderListDAOImplIT extends IT {
     private String patientIdentityData;
     private String firstName;
     private String lastName;
+    private String anotherAccessionNumber;
     private OrderListDAOImpl orderListDAO;
+    private Patient patient;
+    private List<Test> allTests;
 
     @Before
     public void setUp() throws Exception {
         accessionNumber = "05082013-001";
+        anotherAccessionNumber = "05082013-002";
         patientIdentityData = "TEST1234567";
         firstName = "Some";
         lastName = "One";
         orderListDAO = new OrderListDAOImpl();
+        patient = createPatient(firstName, lastName, patientIdentityData);
+        TestDAOImpl testDAO = createTests("SampleTest1", "SampleTest2", "SampleTest3", "SampleTest4");
+        allTests = testDAO.getAllTests(true);
     }
 
     @org.junit.Test
-    public void getAllInProgress_shouldReturnAllOrdersWhichAreInProgress() {
-        Sample sample = createSample(accessionNumber);
-        Patient patient = createPatient(firstName, lastName, patientIdentityData);
+    public void getAllInProgress_shouldReturnAllOrdersWhichAreInProgress() throws ParseException {
+        Sample sample = createSample(accessionNumber, false);
         createSampleHuman(sample, patient);
         SampleItem sampleItem = createSampleItem(sample);
-
-
-        TestDAOImpl testDAO = createTests("SampleTest1", "SampleTest2", "SampleTest3", "SampleTest4");
-
-        List<Test> allTests = testDAO.getAllTests(true);
-
-        Analysis analysis_1 = createAnalysis(sampleItem, TechnicalAcceptance, "Hematology", allTests.get(0));
-        Analysis analysis_2 = createAnalysis(sampleItem, NotTested, "Hematology", allTests.get(1));
-
-        Analysis analysis_3 = createAnalysis(sampleItem, NotTested, "Hematology", allTests.get(2));
-        createResult(analysis_3);
-
-        Analysis analysis_4 = createAnalysis(sampleItem, ReferedOut, "Hematology", allTests.get(3));
+        createAnalysis(sampleItem, TechnicalAcceptance, "Hematology", allTests.get(0));
+        createAnalysis(sampleItem, NotTested, "Hematology", allTests.get(1));
+        createAnalysis(sampleItem, ReferedOut, "Hematology", allTests.get(2));
+        createAnalysis(sampleItem, BiologistRejected, "Hematology", allTests.get(3));
 
         List<Order> inProgress = orderListDAO.getAllInProgress();
 
-        Order order = inProgress.get(0);
-
-        assertEquals(accessionNumber, order.getAccessionNumber());
-        assertEquals(firstName, order.getFirstName());
-        assertEquals(lastName, order.getLastName());
-        assertEquals((Integer)2, order.getPendingTestCount());
-        assertEquals((Integer)0, order.getValidatedTestCount());
-        assertEquals((Integer)3, order.getTotalTestCount());
+        assertTrue(inProgress.contains(new Order(accessionNumber, patientIdentityData, firstName, lastName, sample.getSampleSource().getName(), 2, 1, 3)));
     }
 
     @org.junit.Test
-    public void getAllCompleted_shouldReturnAllOrdersWhichAreCompletedBefore24Hours() {
-        Sample sample = createSample(accessionNumber);
-        Patient patient = createPatient(firstName, lastName, patientIdentityData);
-        createSampleHuman(sample, patient);
-        SampleItem sampleItem = createSampleItem(sample);
+    public void getAllCompleted_shouldReturnAllOrdersWhichAreCompletedBefore24Hours() throws ParseException {
+        Sample sample1 = createSample(anotherAccessionNumber, false);
+        createSampleHuman(sample1, patient);
+        SampleItem sampleItem1 = createSampleItem(sample1);
+        createAnalysis(sampleItem1, StatusOfSampleUtil.AnalysisStatus.Finalized, "Hematology", allTests.get(1));
 
-        TestDAOImpl testDAO = createTests("SampleTest1", "SampleTest2", "SampleTest3", "SampleTest4");
-
-        List<Test> allTests = testDAO.getAllTests(true);
-
-        createAnalysis(sampleItem, StatusOfSampleUtil.AnalysisStatus.Finalized, "Hematology", allTests.get(0));
-        createAnalysis(sampleItem, StatusOfSampleUtil.AnalysisStatus.Canceled, "Hematology", allTests.get(1));
+        Sample sample2 = createSample(accessionNumber, true);
+        createSampleHuman(sample2, patient);
+        SampleItem sampleItem2 = createSampleItem(sample2);
+        createAnalysis(sampleItem2, StatusOfSampleUtil.AnalysisStatus.Finalized, "Hematology", allTests.get(0));
+        createAnalysis(sampleItem2, StatusOfSampleUtil.AnalysisStatus.Canceled, "Hematology", allTests.get(1));
 
         List<Order> completedOrders = orderListDAO.getAllCompletedBefore24Hours();
 
-        assertTrue(completedOrders.contains(new Order(accessionNumber, patientIdentityData, firstName, lastName, sample.getSampleSource().getName())));
+        assertTrue(completedOrders.contains(new Order(accessionNumber, patientIdentityData, firstName, lastName, sample2.getSampleSource().getName())));
+        assertFalse(completedOrders.contains(new Order(anotherAccessionNumber, patientIdentityData, firstName, lastName, sample1.getSampleSource().getName())));
     }
 
+    @org.junit.Test
+    public void shouldNotAddCompletedOrdersToInProgressList() throws ParseException {
+        Sample sample1 = createSample(accessionNumber, false);
+        createSampleHuman(sample1, patient);
+        SampleItem sampleItem1 = createSampleItem(sample1);
+
+        Sample sample2 = createSample(anotherAccessionNumber, false);
+        createSampleHuman(sample2, patient);
+        SampleItem sampleItem2 = createSampleItem(sample2);
+
+        createAnalysis(sampleItem1, StatusOfSampleUtil.AnalysisStatus.Finalized, "Hematology", allTests.get(0));
+        createAnalysis(sampleItem1, StatusOfSampleUtil.AnalysisStatus.Canceled, "Hematology", allTests.get(1));
+        createAnalysis(sampleItem2, StatusOfSampleUtil.AnalysisStatus.NotTested, "Hematology", allTests.get(1));
+
+        List<Order> inProgressOrder = orderListDAO.getAllInProgress();
+
+        assertFalse(inProgressOrder.contains(new Order(accessionNumber, patientIdentityData, firstName, lastName, sample1.getSampleSource().getName())));
+    }
 
     private TestDAOImpl createTests(String... samples) {
         TestDAOImpl testDAO = new TestDAOImpl();
@@ -194,12 +202,9 @@ public class OrderListDAOImplIT extends IT {
         return sampleHuman;
     }
 
-
-    private Analysis createAnalysis(SampleItem sampleItem, StatusOfSampleUtil.AnalysisStatus analysisStatus, String testSectionName, Test test) {
+    private Analysis createAnalysis(SampleItem sampleItem, StatusOfSampleUtil.AnalysisStatus analysisStatus, String testSectionName, Test test) throws ParseException {
         TestSectionDAO testSectionDAO = new TestSectionDAOImpl();
         TestSection testSection = testSectionDAO.getTestSectionByName(testSectionName);
-
-
         Analysis analysis = new Analysis();
         analysis.setSampleItem(sampleItem);
         analysis.setAnalysisType(IActionConstants.ANALYSIS_TYPE_MANUAL);
@@ -208,7 +213,6 @@ public class OrderListDAOImplIT extends IT {
         analysis.setSysUserId("1");
         analysis.setTestSection(testSection);
         new AnalysisDAOImpl().insertData(analysis, false);
-
         return analysis;
     }
 
@@ -222,7 +226,7 @@ public class OrderListDAOImplIT extends IT {
         return enteredSampleItem;
     }
 
-    private Sample createSample(String accessionNumber) {
+    private Sample createSample(String accessionNumber, boolean forToday) {
         List<SampleSource> sampleSources = new SampleSourceDAOImpl().getAll();
         Sample sample = new Sample();
         sample.setAccessionNumber(accessionNumber);
@@ -231,8 +235,10 @@ public class OrderListDAOImplIT extends IT {
         sample.setReceivedTimestamp(DateUtil.convertStringDateToTimestamp("01/01/2001 00:00"));
         sample.setSampleSource(sampleSources.get(0));
         sample.setSysUserId("1");
+        if(!forToday){
+            sample.setLastupdated(DateUtil.convertStringDateToTimestamp("08/08/2013 00:00:00"));
+        }
         new SampleDAOImpl().insertDataWithAccessionNumber(sample);
         return sample;
     }
-
 }
