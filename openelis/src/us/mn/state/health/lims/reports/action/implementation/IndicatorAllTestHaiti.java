@@ -16,13 +16,6 @@
  */
 package us.mn.state.health.lims.reports.action.implementation;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
@@ -37,6 +30,8 @@ import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 import us.mn.state.health.lims.test.daoimpl.TestSectionDAOImpl;
 import us.mn.state.health.lims.test.valueholder.Test;
+
+import java.util.*;
 
 /**
  * The contents of this file are subject to the Mozilla Public License Version
@@ -141,7 +136,8 @@ public abstract class IndicatorAllTestHaiti extends HaitiIndicatorReport impleme
 					if (testBucket == null) {
 						testBucket = new TestBucket();
 						testBucket.testName = test.getReportingDescription();
-						testBucket.testSort = Integer.parseInt(test.getSortOrder());
+                        String sortOrder = test.getSortOrder();
+                        testBucket.testSort = Integer.parseInt(sortOrder == null? "0" : sortOrder);
 						testBucket.testSection = analysis.getTestSection().getLocalizedName();
 						testBucket.sectionSort = analysis.getTestSection().getSortOrderInt();
 						concatSection_TestToBucketMap.put(concatedName, testBucket);
