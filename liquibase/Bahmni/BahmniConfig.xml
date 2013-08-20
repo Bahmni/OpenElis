@@ -580,4 +580,17 @@
             </delete>
     </changeSet>
 
+    <changeSet author="tw" id="39" context="bahmni">
+        <comment>Removing menus not needed for Bahmni</comment>
+            <delete schemaName="clinlims" tableName="menu">
+                <where>element_id = 'menu_inventory'</where>
+            </delete>
+            <delete schemaName="clinlims" tableName="menu">
+                <where>element_id like '%menu_workplan%'</where>
+            </delete>
+            <delete schemaName="clinlims" tableName="menu">
+                <where>element_id like '%menu_reports_aggregate%'</where>
+            </delete>
+    </changeSet>
+
 </databaseChangeLog>
