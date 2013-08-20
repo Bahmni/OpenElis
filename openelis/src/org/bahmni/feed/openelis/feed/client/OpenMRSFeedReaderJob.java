@@ -14,14 +14,11 @@ public abstract class OpenMRSFeedReaderJob implements Job {
     private static final String OPENMRS_WEBCLIENT_CONNECT_TIMEOUT = "openmrs.connectionTimeoutInMilliseconds";
     private static final String OPENMRS_WEBCLIENT_READ_TIMEOUT = "openmrs.replyTimeoutInMilliseconds";
 
-    protected AtomFeedClient atomFeedClient;
-
     protected OpenMRSFeedReaderJob(Logger logger) {
-        this(AtomFeedProperties.getInstance(), new AtomFeedClientFactory(), logger);
+        logger.info("Started");
     }
 
-    protected OpenMRSFeedReaderJob(AtomFeedProperties atomFeedProperties, AtomFeedClientFactory atomFeedClientFactory, Logger logger) {
-        logger.info("Started");
+    protected AtomFeedClient createAtomFeedClient(AtomFeedProperties atomFeedProperties, AtomFeedClientFactory atomFeedClientFactory) {
         WebClient authenticatedWebClient = atomFeedClientFactory.getAuthenticatedOpenMRSWebClient(
                 atomFeedProperties.getProperty(AUTH_URI),
                 atomFeedProperties.getProperty(OPENMRS_USER),
@@ -29,7 +26,7 @@ public abstract class OpenMRSFeedReaderJob implements Job {
                 atomFeedProperties.getProperty(OPENMRS_WEBCLIENT_CONNECT_TIMEOUT),
                 atomFeedProperties.getProperty(OPENMRS_WEBCLIENT_READ_TIMEOUT)
         );
-        this.atomFeedClient = atomFeedClientFactory.getMRSPatientFeedClient(atomFeedProperties,
+        return atomFeedClientFactory.getMRSPatientFeedClient(atomFeedProperties,
                 FEED_NAME, AUTH_URI, authenticatedWebClient);
     }
 }
