@@ -105,15 +105,16 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
             tabOptions.selected = activeTab;
         }
 
-         jQuery("#tabs").tabs(tabOptions);
+        jQuery("#tabs").tabs(tabOptions);
+        jQuery("#patientDetails").hide();
 
-         jQuery("#refreshButton").on("click",function(){
+        jQuery("#refreshButton").on("click",function(){
             var index = jQuery( "#tabs" ).tabs( "option", "selected" );
             //making sure to delete all the parameters on location href
             var link =location.href.split("?")[0];
             location.href = link + "?activeTab=" + index;
             return false;
-         })
+        });
 
     });
 
@@ -172,7 +173,7 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
     var showPatientDetails = function(stNumber, firstName, lastName, primaryRelative, village, gender, age) {
         var patientDetails = jQuery("#patientDetails");
         patientDetails.empty();
-        patientDetails.show()
+        patientDetails.show();
         patientDetails.append("<div><span>PatientID : </span><span>" + stNumber + "</span></div>")
         patientDetails.append("<div><span>Name : </span><span>" + firstName + " " + lastName + "</span></div>")
         patientDetails.append("<div><span>Father/Husband's Name : </span><span>" + primaryRelative + "</span></div>")
