@@ -535,21 +535,10 @@ function /*void*/ selectedPatientChangedForSample(firstName, lastName, gender, D
 
 //called from patientManagment.jsp
 function /*void*/ patientInfoChangedForSample( firstName, lastName, gender, DOB, stNumber, subjectNum, nationalID, mother, pk ){
-	setPatientSummary( "firstName", firstName );
-	setPatientSummary( "lastName", lastName );
-	setPatientSummary( "gender", gender );
-	setPatientSummary( "dob", DOB );
-	if( useSTNumber){setPatientSummary( "st", stNumber );}
-	setPatientSummary( "national", nationalID );
-	if( useMothersName){setPatientSummary( "mother", mother );}
 	$("patientPK").value = pk;
 
 	makeDirty();
 	setSave();
-}
-
-function /*voiid*/ setPatientSummary( name, value ){
-	$(name).firstChild.firstChild.nodeValue = value;
 }
 
 //overwrites function from patient search
