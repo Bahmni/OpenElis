@@ -483,7 +483,7 @@
             <column name="lastupdated" valueDate=" now() "/>
         </insert>
     </changeSet>
-     <changeSet author="tw" id="31" context="bahmni">
+    <changeSet author="tw" id="31" context="bahmni">
         <comment>Adding labDashboard menu</comment>
         <update schemaName="clinlims" tableName="menu">
             <column name="presentation_order" valueNumeric="presentation_order+1"/>
@@ -512,10 +512,10 @@
             <where>name='atom-feed-openmrs-patient'</where>
         </update>
     </changeSet>
-    <changeSet author="tw" id="34" context="bahmni" >
+    <changeSet author="tw" id="34" context="bahmni">
         <comment>Sets the default for showing the invalid results icon to true</comment>
-        <update schemaName="clinlims" tableName="site_information" >
-            <column name="value" value="true" />
+        <update schemaName="clinlims" tableName="site_information">
+            <column name="value" value="true"/>
             <where>name = 'showValidationFailureIcon'</where>
         </update>
     </changeSet>
@@ -536,7 +536,8 @@
             <column name="lastupdated" valueDate='now()'/>
             <column name="status_type" value="ANALYSIS"/>
             <column name="name" value="Technical Acceptance RO"/>
-            <column name="description" value="The results of the test were accepted by technician as being valid for referred out test"/>
+            <column name="description"
+                    value="The results of the test were accepted by technician as being valid for referred out test"/>
             <column name="display_key" value="status.test.referred.out.tech.accepted"/>
         </insert>
         <insert schemaName="clinlims" tableName="status_of_sample">
@@ -549,4 +550,17 @@
             <column name="display_key" value="status.test.referred.out.valid"/>
         </insert>
     </changeSet>
+
+    <changeSet author="marks" id="36" context="bahmni">
+        <comment>Adds the upload menu item for Bahmni</comment>
+        <insert schemaName="clinlims" tableName="menu">
+            <column name="id" valueNumeric=" nextval( 'menu_seq' ) "/>
+            <column name="presentation_order" valueNumeric="10"/>
+            <column name="action_url" value="/Upload.do"/>
+            <column name="display_key" value="banner.menu.upload"/>
+            <column name="element_id" value="blah" />
+            <column name="tool_tip_key" value="banner.menu.upload"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
