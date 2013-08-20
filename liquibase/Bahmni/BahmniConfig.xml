@@ -563,4 +563,11 @@
         </insert>
     </changeSet>
 
+    <changeSet author="tw" id="37" context="bahmni">
+        <comment>Validation fails if active inventory items dont have receipt. Inactivating the inventory items</comment>
+            <update schemaName="clinlims" tableName="inventory_item">
+            <column name="is_active" value="N"/>
+        </update>
+    </changeSet>
+
 </databaseChangeLog>

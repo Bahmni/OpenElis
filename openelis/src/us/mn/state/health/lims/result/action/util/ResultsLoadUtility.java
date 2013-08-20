@@ -137,7 +137,7 @@ public class ResultsLoadUtility {
     private static boolean useInitialSampleCondition = FormFields.getInstance().useField(Field.InitialSampleCondition);
     private boolean useCurrentUserAsTechDefault = ConfigurationProperties.getInstance().isPropertyValueEqual(Property.autoFillTechNameUser, "true");
     private String currentUserName = "";
-    private static List<InventoryKitItem> activeKits = new InventoryUtility().getExistingActiveInventory();
+    private List<InventoryKitItem> activeKits;
 
     private int reflexGroup = 1;
     private boolean lockCurrentResults = false;
@@ -1100,7 +1100,7 @@ public class ResultsLoadUtility {
     }
 
     private boolean kitNotInActiveKitList(String testKitId) {
-        for (InventoryKitItem kit : activeKits) {
+        for (InventoryKitItem kit : getActiveKits()) {
             // The locationID is the reference held in the DB
             if (testKitId.equals(kit.getInventoryLocationId())) {
                 return false;
@@ -1108,6 +1108,15 @@ public class ResultsLoadUtility {
         }
 
         return true;
+    }
+
+    private List<InventoryKitItem> getActiveKits() {
+        if (activeKits == null) {
+            InventoryUtility inventoryUtil = new InventoryUtility();
+            activeKits = inventoryUtil.getExistingActiveInventory();
+        }
+
+        return activeKits;
     }
 
     private ResultDisplayType getDisplayTypeForTestMethod(String methodName) {
