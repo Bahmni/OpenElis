@@ -570,4 +570,14 @@
         </update>
     </changeSet>
 
+    <changeSet author="tw" id="38" context="bahmni">
+        <comment>Remove haiti test section menus for Test Results and Validation</comment>
+            <delete schemaName="clinlims" tableName="menu">
+                <where>element_id like '%menu_resultvalidation%' and element_id != 'menu_resultvalidation_All' and element_id !='menu_resultvalidation'</where>
+            </delete>
+            <delete schemaName="clinlims" tableName="menu">
+                <where>element_id like '%menu_results_%' and element_id !='menu_results_patient' and element_id != 'menu_results_accession' and element_id != 'menu_results_status' and element_id != 'menu_results_search'</where>
+            </delete>
+    </changeSet>
+
 </databaseChangeLog>
