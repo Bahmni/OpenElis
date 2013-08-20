@@ -37,12 +37,15 @@ import us.mn.state.health.lims.patient.dao.PatientDAO;
 import us.mn.state.health.lims.patient.daoimpl.PatientDAOImpl;
 import us.mn.state.health.lims.patient.util.PatientUtil;
 import us.mn.state.health.lims.patient.valueholder.Patient;
+import us.mn.state.health.lims.patientidentity.daoimpl.PatientIdentityDAOImpl;
 import us.mn.state.health.lims.patientidentity.valueholder.PatientIdentity;
 import us.mn.state.health.lims.patientidentitytype.util.PatientIdentityTypeMap;
 import us.mn.state.health.lims.patienttype.dao.PatientPatientTypeDAO;
 import us.mn.state.health.lims.patienttype.daoimpl.PatientPatientTypeDAOImpl;
 import us.mn.state.health.lims.patienttype.valueholder.PatientType;
 import us.mn.state.health.lims.person.valueholder.Person;
+import us.mn.state.health.lims.sample.dao.SearchResultsDAO;
+import us.mn.state.health.lims.sample.daoimpl.SearchResultsDAOImp;
 
 public class PatientSearchPopulateProvider extends BaseQueryProvider {
 	private static PatientDAO patientDAO = new PatientDAOImpl();
@@ -74,13 +77,20 @@ public class PatientSearchPopulateProvider extends BaseQueryProvider {
 		String nationalId = (String) request.getParameter("nationalID");
         String externalId = (String) request.getParameter("externalID");
 		String patientKey = (String) request.getParameter("personKey");
+		String stNumber = (String) request.getParameter("stNumber");
 		StringBuilder xml = new StringBuilder();
 		String result = null;
 		if (nationalId != null) {
 		    result = createSearchResultXML(patientDAO.getPatientByNationalId(nationalId), xml);
 		} else if (externalId != null ) {
             result = createSearchResultXML(patientDAO.getPatientByExternalId(externalId), xml);
-		} else {
+		} else if(stNumber != null) {
+            List<Patient> patients = patientDAO.getPatientsByPatientIdentityValue(PatientIdentityTypeMap.getInstance().getIDForType("ST"), stNumber);
+            if(patients.size() > 0) {
+                result = createSearchResultXML(patients.get(0), xml);
+            }
+
+        } else {
             result = createSearchResultXML(getPatientForID(patientKey), xml);
 		}
 		if (!result.equals(VALID)) {

@@ -363,5 +363,22 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		return new ArrayList<String>();
 	}
 
+    public List<Patient> getPatientsByPatientIdentityValue(String patientIdentityTypeId, String patientIdentityData) throws LIMSRuntimeException {
+        List<Patient> patients;
+
+        try {
+            String sql = "Select p From Patient p, PatientIdentity pi where pi.patientId = p.id and pi.identityTypeId = :identityTypeId and pi.identityData = :identityData";
+
+            Query query = HibernateUtil.getSession().createQuery(sql);
+            query.setInteger("identityTypeId", Integer.parseInt(patientIdentityTypeId));
+            query.setParameter("identityData", patientIdentityData);
+
+            patients = query.list();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new LIMSRuntimeException("Error in Patient getPatientByPerson()", e);
+        }
+        return patients;
+    }
 
 }

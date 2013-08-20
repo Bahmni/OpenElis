@@ -4,6 +4,7 @@ function createGrid(grid, dataView, orderObject) {
         currentGrid = grid;
 
         grid.setSelectionModel(new Slick.CellSelectionModel());
+        grid.setSelectionModel(new Slick.RowSelectionModel());
         grid.registerPlugin(new Slick.CellExternalCopyManager());
 
         grid.onSort.subscribe(function(e, args){ // args: sort information.
@@ -42,7 +43,12 @@ function createGrid(grid, dataView, orderObject) {
 
         grid.onCellChange.subscribe(function (e, args) {
             dataView.updateItem(args.item.id, args.item);
-          });
+        });
+
+        grid.onSelectedRowsChanged.subscribe(function(e, args) {
+            var row = args.grid.getDataItem(args.rows[0]);
+            onRowSelection(row)
+        });
 
         grid.init();
 
