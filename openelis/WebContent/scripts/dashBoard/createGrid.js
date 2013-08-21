@@ -1,6 +1,5 @@
-
 var currentGrid;
-function createGrid(grid, dataView, orderObject) {
+function createGrid(grid, dataView, orderObject, onRowSelection) {
         currentGrid = grid;
 
         grid.setSelectionModel(new Slick.CellSelectionModel());
@@ -47,7 +46,9 @@ function createGrid(grid, dataView, orderObject) {
 
         grid.onSelectedRowsChanged.subscribe(function(e, args) {
             var row = args.grid.getDataItem(args.rows[0]);
-            onRowSelection(row)
+            if(onRowSelection != null) {
+                onRowSelection(row);
+            }
         });
 
         grid.init();

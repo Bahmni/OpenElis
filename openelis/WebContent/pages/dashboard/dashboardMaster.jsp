@@ -46,24 +46,32 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
 <script type="text/javascript" src="<%=basePath%>scripts/ui/jquery.ui.tabs.js"></script>
 <script type="text/javascript" src="<%=basePath%>scripts/dashBoard/orders.js"></script>
 <script type="text/javascript" src="<%=basePath%>scripts/dashBoard/createGrid.js"></script>
+<script type="text/javascript" src="<%=basePath%>scripts/utils.js"></script>
 
 <input id="refreshButton" type="button" value="Refresh">
 
-<div id="tabs">
-     <ul>
-        <li><a href="#inProgressListContainer">In Progress</a></li>
-        <li><a href="#completedListContainer">Completed</a></li>
-     </ul>
-    <div id="inProgressListContainer" style="width:1200px"></div>
-    <div id="completedListContainer" style="width:520px"></div>
 
+<div>
+    <div id="tabs">
+         <ul>
+            <li><a href="#inProgressListContainer">In Progress</a></li>
+            <li><a href="#completedListContainer">Completed</a></li>
+         </ul>
+        <div id="inProgressListContainer" style="width:750px"></div>
+        <div id="completedListContainer" style="width:520px"></div>
     </div>
 
-    <div id="patientDetails"></div>
+    <div id="patientDetails">
+        <div><span>Patient ID: </span><span id="patientId"></span></div>
+        <div><span>Name : </span><span id="name"></span></div>
+        <div><span>Father/Husband's Name : </span><span id="primaryRelative"></span></div>
+        <div><span>Village : </span><span id="village"></span></div>
+        <div><span>Gender : </span><span id="gender"></span></div>
+        <div><span>Age : </span><span id="age"></span></div>
+    </div>
 </div>
 
 <script type="text/javascript">
-
 
     var gridForInProgressOrder;
     var gridForCompletedOrder;
@@ -87,19 +95,18 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
         inProgressObject = new order("#inProgressListContainer", "<%= inProgressOrderListJson %>", generateLinkForInProgressOrder, getColumnsForInProgressOrder);
         dataViewForInProgressTab = new Slick.Data.DataView({ inlineFilters: true });
         gridForInProgressOrder = new Slick.Grid(inProgressObject.div, dataViewForInProgressTab, inProgressObject.columns,options);
-        createGrid(gridForInProgressOrder, dataViewForInProgressTab, inProgressObject);
-
+        createGrid(gridForInProgressOrder, dataViewForInProgressTab, inProgressObject, onRowSelection);
 
         completedOrderObject = new order("#completedListContainer", "<%= completedOrderListJson %>", generateLinkForCompletedOrder, getColumnsForCompletedOrder);
         dataViewForCompletedTab = new Slick.Data.DataView();
         gridForCompletedOrder = new Slick.Grid(completedOrderObject.div, dataViewForCompletedTab, completedOrderObject.columns, options);
-        createGrid(gridForCompletedOrder, dataViewForCompletedTab, completedOrderObject);
+        createGrid(gridForCompletedOrder, dataViewForCompletedTab, completedOrderObject, onRowSelection);
 
         var activeTab = <%= request.getParameter("activeTab") %>;
 
         var tabOptions = {
-                        collapsible: true
-                    };
+            collapsible: true
+        };
 
         if (activeTab){
             tabOptions.selected = activeTab;
@@ -118,68 +125,14 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
 
     });
 
-
-    function  /*void*/ updatePatientAge( DOB )
-    {
-        var date = new String( DOB );
-
-        var datePattern = '<%=SystemConfiguration.getInstance().getPatternForDateLocale() %>';
-        var splitPattern = datePattern.split("/");
-        var dayIndex = 0;
-        var monthIndex = 1;
-        var yearIndex = 2;
-
-        for( var i = 0; i < 3; i++ ){
-            if(splitPattern[i] == "DD"){
-                dayIndex = i;
-            }else if(splitPattern[i] == "MM" ){
-                monthIndex = i;
-            }else if(splitPattern[i] == "YYYY" ){
-                yearIndex = i;
-            }
-        }
-
-
-        var splitDOB = date.split("/");
-        var monthDOB = splitDOB[monthIndex];
-        var dayDOB = splitDOB[dayIndex];
-        var yearDOB = splitDOB[yearIndex];
-
-        var today = new Date();
-
-        var adjustment = 0;
-
-        if( !monthDOB.match( /^\d+$/ ) ){
-            monthDOB = "01";
-        }
-
-        if( !dayDOB.match( /^\d+$/ ) ){
-            dayDOB = "01";
-        }
-
-        //months start at 0, January is month 0
-        var monthToday = today.getMonth() + 1;
-
-        if( monthToday < monthDOB ||
-                (monthToday == monthDOB && today.getDate() < dayDOB  ))
-        {
-            adjustment = -1;
-        }
-
-        return today.getFullYear() - yearDOB + adjustment;
-
-    }
-
     var showPatientDetails = function(stNumber, firstName, lastName, primaryRelative, village, gender, age) {
-        var patientDetails = jQuery("#patientDetails");
-        patientDetails.empty();
-        patientDetails.show();
-        patientDetails.append("<div><span>PatientID : </span><span>" + stNumber + "</span></div>")
-        patientDetails.append("<div><span>Name : </span><span>" + firstName + " " + lastName + "</span></div>")
-        patientDetails.append("<div><span>Father/Husband's Name : </span><span>" + primaryRelative + "</span></div>")
-        patientDetails.append("<div><span>Village : </span><span>" + village + "</span></div>")
-        patientDetails.append("<div><span>Gender : </span><span>" + gender + "</span></div>")
-        patientDetails.append("<div><span>Age : </span><span>" + age + "</span></div>")
+        jQuery("#patientDetails").show();
+        jQuery("#patientId").text(stNumber);
+        jQuery("#name").text(firstName + " " + lastName);
+        jQuery("#primaryRelative").text(primaryRelative);
+        jQuery("#village").text(village);
+        jQuery("#gender").text(gender);
+        jQuery("#age").text(age);
     }
 
     function onRowSelection(row) {
@@ -192,20 +145,16 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
 
     function onRowSelectionSuccess(xhr) {
         var villageIndex = 1;
+        var datePattern = '<%=SystemConfiguration.getInstance().getPatternForDateLocale() %>';
         showPatientDetails(
-                getXMLValue(xhr.responseXML, 'ST_ID'),
-                getXMLValue(xhr.responseXML, 'firstName'),
-                getXMLValue(xhr.responseXML, 'lastName'),
-                getXMLValue(xhr.responseXML, 'primaryRelative'),
-                getAddressValue(xhr.responseXML, villageIndex),
-                getXMLValue(xhr.responseXML, 'gender'),
-                updatePatientAge(getXMLValue(xhr.responseXML, 'dob'))
+            OpenElis.Utils.getXMLValue(xhr.responseXML, 'ST_ID'),
+            OpenElis.Utils.getXMLValue(xhr.responseXML, 'firstName'),
+            OpenElis.Utils.getXMLValue(xhr.responseXML, 'lastName'),
+            OpenElis.Utils.getXMLValue(xhr.responseXML, 'primaryRelative'),
+            getAddressValue(xhr.responseXML, villageIndex),
+            OpenElis.Utils.getXMLValue(xhr.responseXML, 'gender'),
+            OpenElis.Utils.calculateAge(OpenElis.Utils.getXMLValue(xhr.responseXML, 'dob'), datePattern)
         );
-    }
-
-    function getXMLValue(response, key){
-        var field = response.getElementsByTagName(key).item(0);
-        return field != null ? field.firstChild.nodeValue : "";
     }
 
     function getAddressValue(response, index) {
