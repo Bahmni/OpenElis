@@ -606,4 +606,27 @@
         </insert>
     </changeSet>
 
+     <changeSet author="tw" id="41" context="bahmni">
+        <insert schemaName="clinlims" tableName="menu">
+            <column name="id" valueNumeric=" nextval( 'menu_seq' ) " />
+            <column name="parent_id"
+                valueNumeric=" ( select id from clinlims.menu where element_id = 'menu_reports' ) " />
+            <column name="presentation_order" valueNumeric="2" />
+            <column name="element_id" value="menu_reports_aggregate" />
+            <column name="display_key" value="openreports.aggregate.title" />
+            <column name="tool_tip_key" value="tooltip.openreports.aggregate.title" />
+        </insert>
+        <insert schemaName="clinlims" tableName="menu">
+            <column name="id" valueNumeric=" nextval( 'menu_seq' ) " />
+            <column name="parent_id"
+                valueNumeric=" ( select id from clinlims.menu where element_id = 'menu_reports_aggregate' ) " />
+            <column name="presentation_order" valueNumeric="2" />
+            <column name="element_id" value="menu_reports_aggregate_all" />
+            <column name="action_url"
+                value="/Report.do?type=indicator&amp;report=indicatorHaitiClinicalAllTests" />
+            <column name="display_key" value="openreports.all.tests.aggregate" />
+            <column name="tool_tip_key" value="tooltip.openreports.all.tests.aggregate" />
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
