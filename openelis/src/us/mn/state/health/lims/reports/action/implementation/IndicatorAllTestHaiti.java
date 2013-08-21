@@ -110,7 +110,7 @@ public abstract class IndicatorAllTestHaiti extends HaitiIndicatorReport impleme
 			TestBucket bucket = new TestBucket();
 
 			bucket.testName = test.getTestName();
-			bucket.testSort = Integer.parseInt(test.getSortOrder());
+			bucket.testSort = Integer.parseInt(getSortOrder(test.getSortOrder()));
 			bucket.testSection = test.getTestSection().getLocalizedName();
 			bucket.sectionSort = test.getTestSection().getSortOrderInt();
 			
@@ -136,8 +136,7 @@ public abstract class IndicatorAllTestHaiti extends HaitiIndicatorReport impleme
 					if (testBucket == null) {
 						testBucket = new TestBucket();
 						testBucket.testName = test.getReportingDescription();
-                        String sortOrder = test.getSortOrder();
-                        testBucket.testSort = Integer.parseInt(sortOrder == null? "0" : sortOrder);
+                        testBucket.testSort = Integer.parseInt(getSortOrder(test.getSortOrder()));
 						testBucket.testSection = analysis.getTestSection().getLocalizedName();
 						testBucket.sectionSort = analysis.getTestSection().getSortOrderInt();
 						concatSection_TestToBucketMap.put(concatedName, testBucket);
@@ -159,7 +158,11 @@ public abstract class IndicatorAllTestHaiti extends HaitiIndicatorReport impleme
 		}
 	}
 
-	private boolean inProgress(Analysis analysis) {
+    private String getSortOrder(String sortOrder) {
+        return sortOrder == null? "0" : sortOrder;
+    }
+
+    private boolean inProgress(Analysis analysis) {
 		return REFERRED_STATUS_ID.equals(analysis.getStatusId()) ||
 			   TECH_ACCEPT_ID.equals(analysis.getStatusId()) ||
 			   TECH_REJECT_ID.equals(analysis.getStatusId()) ||
