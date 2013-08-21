@@ -130,24 +130,26 @@ var pagingSearch = new Object();
 
 
 $jq(document).ready( function() {
-			var searchTerm = '<%=searchTerm%>';
-			$jq("select[multiple]").asmSelect({
-					removeLabel: "X"
-				});
+    var searchTerm = '<%=searchTerm%>';
+    $jq("select[multiple]").asmSelect({
+            removeLabel: "X"
+        });
 
-			$jq("select[multiple]").change(function(e, data) {
-				handleMultiSelectChange( e, data );
-				});
+    $jq("select[multiple]").change(function(e, data) {
+        handleMultiSelectChange( e, data );
+        });
 
-			pageSearch = new OEPageSearch( $("searchNotFound"), compactHozSpace == "true" ? "tr" : "td", pager );
+    pageSearch = new OEPageSearch( $("searchNotFound"), compactHozSpace == "true" ? "tr" : "td", pager );
 
-			if( searchTerm != "null" ){
-				 pageSearch.highlightSearch( searchTerm, false );
-			}
+    if( searchTerm != "null" ){
+         pageSearch.highlightSearch( searchTerm, false );
+    }
 
-            $jq(".referralCheckBox").trigger('change');
+    document.getElementsByClassName('referralCheckBox').forEach(function(checkbox){
+        handleReferralCheckChange(checkbox);
+    });
 
-			});
+});
 
 function handleMultiSelectChange( e, data ){
 	var id = "#multi" + e.target.id;
@@ -251,13 +253,14 @@ function validateForm(){
 	return true;
 }
 
-function /*void*/ handleReferralCheckChange(checkbox,  index ){
-	var referralReason = $( "referralReasonId_" + index );
+function /*void*/ handleReferralCheckChange(checkbox){
+    var testResult = $(checkbox).up('.testResult');
+    var referralReason = $(testResult).down('.referralReason');
 	referralReason.value = 0;
     var isTestReferredOut = checkbox.checked;
     referralReason.disabled = !isTestReferredOut;
 
-    var result = $( "results_" + index );
+    var result = $(testResult).down('.testResultValue');
     result.style.background = "#ffffff";
     result.disabled = isTestReferredOut;
     if(isTestReferredOut) {
@@ -565,7 +568,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 		</tr>
 	</logic:equal>
     <% } %>
-	<tr class='<%= rowColor %>'  >
+	<tr class='<%= rowColor %> testResult'  >
 			<html:hidden name="testResult" property="isModified"  indexed="true" styleId='<%="modified_" + index%>' />
 			<html:hidden name="testResult" property="analysisId"  indexed="true" styleId='<%="analysisId_" + index%>' />
 			<html:hidden name="testResult" property="resultId"  indexed="true" styleId='<%="hiddenResultId_" + index%>'/>
@@ -697,6 +700,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 			           size="6" 
 			           value='<%= testResult.getResultValue() %>' 
 			           id='<%= "results_" + index %>'
+                       class="testResultValue"
 			           style='<%="background: " + (testResult.isValid() ? testResult.isNormal() ? "#ffffff" : "#ffffa0" : "#ffa0a0") %>'
 			           title='<%= (testResult.isValid() ? testResult.isNormal() ? "" : StringUtil.getMessageForKey("result.value.abnormal") : StringUtil.getMessageForKey("result.value.invalid")) %>' 
 					   <%= testResult.isReadOnly() ? "disabled='disabled'" : ""%>
@@ -717,6 +721,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
                           style='<%="background: " + (testResult.isValid() ? testResult.isNormal() ? "#ffffff" : "#ffffa0" : "#ffa0a0") %>'
 						  title='<%= (testResult.isValid() ? testResult.isNormal() ? "" : StringUtil.getMessageForKey("result.value.abnormal") : StringUtil.getMessageForKey("result.value.invalid")) %>' 
 						  styleId='<%="results_" + index %>'
+                          styleClass="testResultValue"
 						  onchange='<%="markUpdated(" + index + ");"  +
 						               ((noteRequired && !"".equals(testResult.getResultValue()) ) ? "showNote( " + index + ");" : "")%>'/>
 				<bean:write name="testResult" property="unitsOfMeasure"/>
@@ -730,6 +735,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 						  style='<%="background: " + (testResult.isValid() ? testResult.isNormal() ? "#ffffff" : "#ffffa0" : "#ffa0a0") %>'
 						  title='<%= (testResult.isValid() ? testResult.isNormal() ? "" : StringUtil.getMessageForKey("result.value.abnormal") : StringUtil.getMessageForKey("result.value.invalid")) %>'
 						  styleId='<%="results_" + index %>'
+                          styleClass="testResultValue"
 						  onkeyup='<%="value = value.substr(0, 200); markUpdated(" + index + ");"  +
 						               ((noteRequired && !"".equals(testResult.getResultValue()) ) ? "showNote( " + index + ");" : "")%>'
 						  />
@@ -741,6 +747,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 						               ((noteRequired && !"".equals(testResult.getResultValue()) )? "showNote( " + index + ");" : "") +
 						               (testResult.getQualifiedDictonaryId() != null ? "showQuanitiy( this, "+ index + ", " + testResult.getQualifiedDictonaryId() + ");" :"") %>"
 			        id='<%="results_" + index%>'
+                    class="testResultValue"
 			        <%=testResult.isReadOnly()? "disabled=\'true\'" : "" %> >
 					<option value="0"></option>
 					<logic:iterate id="optionValue" name="testResult" property="dictionaryResults" type="IdValuePair" >
@@ -759,6 +766,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 			<!-- multiple results -->
 			<select name="<%="testResult[" + index + "].multiSelectResultValues" %>"
 					id='<%="results_" + index%>'
+                    class="testResultValue"
 					multiple="multiple"
 					<%=testResult.isReadOnly()? "disabled=\'disabled\'" : "" %> 
 						 title='<%= StringUtil.getMessageForKey("result.multiple_select")%>'
@@ -796,15 +804,17 @@ function /*void*/ processTestReflexCD4Success(xhr)
 						   indexed="true"
 						   styleId='<%="referralId_" + index %>'
                            styleClass="referralCheckBox"
-						   onchange='<%="markUpdated(" + index + "); handleReferralCheckChange( this, " + index + ")" %>'/>
+						   onchange='<%="markUpdated(" + index + "); handleReferralCheckChange(this)" %>'/>
 		<% } else {%>
 			<html:checkbox name="testResult"
 						   property="referredOut"
+                           styleClass="referralCheckBox"
 						   indexed="true"
 						   disabled="true" />
 		<% } %>
 			<select name="<%="testResult[" + index + "].referralReasonId" %>"
 			        id='<%="referralReasonId_" + index%>'
+                    class="referralReason"
 					onchange='<%="markUpdated(" + index + "); handleReferralReasonChange( this, " + index + ")" %>'
 			        <% out.print(testResult.isReferredOut() && "0".equals(testResult.getReferralReasonId()) ? "" : "disabled='true'"); %> >
 					<option value='0' >
