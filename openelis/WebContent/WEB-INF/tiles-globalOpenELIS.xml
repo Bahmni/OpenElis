@@ -312,8 +312,8 @@
         <put name="footer" value="/pages/common/saveCancelFooterButtons.jsp"/>
     </definition>
 
-    <definition name="successfulUpload" extends="baseMenuDefinition">
-        <put name="body" value="/pages/upload/successfulUpload.html" />
+    <definition name="uploadForm" extends="baseMenuDefinition">
+        <put name="body" value="/pages/upload/upload.html" />
     </definition>
 
 </tiles-definitions>

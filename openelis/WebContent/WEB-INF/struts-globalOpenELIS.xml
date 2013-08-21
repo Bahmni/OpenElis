@@ -1579,8 +1579,12 @@
         <action path="/feed/**" type="us.mn.state.health.lims.feed.AtomFeedAction">
         </action>
 
-        <action path="/Upload" type="us.mn.state.health.lims.upload.UploadAction">
-            <forward name="success" path="successfulUpload"/>
+        <action path="/Upload" type="us.mn.state.health.lims.upload.UploadForm">
+            <forward name="success" path="uploadForm"/>
+        </action>
+
+        <action path="/DoUpload" type="us.mn.state.health.lims.upload.UploadAction">
+            <forward name="success" path="/Upload.do" redirect="true"/>
         </action>
 
     </action-mappings>
