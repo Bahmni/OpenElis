@@ -16,6 +16,8 @@
 package us.mn.state.health.lims.panelitem.action;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.apache.struts.Globals;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
@@ -61,6 +63,7 @@ public class PanelItemUpdateAction extends BaseAction {
     private final PanelItemDAO panelItemDAO;
     private final MethodDAOImpl methodDAO;
     private boolean isNew = false;
+    private final Logger logger = LogManager.getLogger(this.getClass());
 
     public PanelItemUpdateAction() {
         super();
@@ -266,8 +269,16 @@ public class PanelItemUpdateAction extends BaseAction {
 			}
 		}
 
-	    // Bugzilla 2207 check for duplicate sort order item
 	    String sortOrder = (String) dynaForm.get("sortOrder");
+        try {
+            Integer.parseInt(sortOrder);
+        } catch (NumberFormatException nfe) {
+            logger.warn("Sort order " + sortOrder + " is invalid. Setting to zero");
+            sortOrder = "0";
+            dynaForm.set("sortOrder", "0");
+        }
+
+        // Bugzilla 2207 check for duplicate sort order item
         String id = (String) dynaForm.get("id");
 
 	    if (!StringUtil.isNullorNill(panelName) && !StringUtil.isNullorNill (sortOrder)) {
