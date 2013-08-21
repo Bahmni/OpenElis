@@ -161,6 +161,6 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
         var field = response.getElementsByTagName('addressline').item(index);
         var value = field && field.getElementsByTagName('value').item(0);
 
-        return value != null ? value.firstChild.nodeValue : "";
+        return value != null && value.firstChild != null ? value.firstChild.nodeValue : "";
     }
 </script>
