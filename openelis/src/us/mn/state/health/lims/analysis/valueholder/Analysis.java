@@ -500,7 +500,8 @@ public class Analysis extends BaseObject {
     }
 
     public void readyForTechnicalAcceptance() {
-        if (StatusOfSampleUtil.getStatusID(ReferedOut).equals(statusId)) {
+        if (StatusOfSampleUtil.getStatusID(ReferedOut).equals(statusId)
+                || StatusOfSampleUtil.getStatusID(BiologistRejectedRO).equals(statusId)) {
             this.setStatusId(StatusOfSampleUtil.getStatusID(TechnicalAcceptanceRO));
         } else {
             this.setStatusId(StatusOfSampleUtil.getStatusID(TechnicalAcceptance));
@@ -513,7 +514,7 @@ public class Analysis extends BaseObject {
 
     public void reject() {
         if (StatusOfSampleUtil.getStatusID(TechnicalAcceptanceRO).equals(statusId)) {
-            this.setStatusId(StatusOfSampleUtil.getStatusID(ReferedOut));
+            this.setStatusId(StatusOfSampleUtil.getStatusID(BiologistRejectedRO));
         } else {
             this.setStatusId(StatusOfSampleUtil.getStatusID(BiologistRejected));
         }

@@ -836,7 +836,7 @@ public class ResultsLoadUtility {
         testItem.setInitialSampleCondition(initialSampleConditions);
         testItem.setSampleType(sampleType);
         testItem.setTestSortOrder(test.getSortOrder());
-        testItem.setFailedValidation(statusRules.hasFailedValidation(analysis.getStatusId()));
+        testItem.setFailedValidation(new StatusRules().hasFailedValidation(analysis.getStatusId()));
         if (useCurrentUserAsTechDefault && GenericValidator.isBlankOrNull(testItem.getTechnician())) {
             testItem.setTechnician(currentUserName);
         }

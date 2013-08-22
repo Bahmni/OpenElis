@@ -92,6 +92,7 @@ public class StatusOfSampleUtil {
         TechnicalAcceptanceRO,
         TechnicalRejected,
         BiologistRejected,
+        BiologistRejectedRO,
         NonConforming_depricated,
         ReferredIn,
         Finalized,
@@ -498,6 +499,9 @@ public class StatusOfSampleUtil {
                 break;
             case "Biologist Rejection":
                 analysisStatusToObjectMap.put(AnalysisStatus.BiologistRejected, status);
+                break;
+            case "Biologist Rejection RO":
+                analysisStatusToObjectMap.put(AnalysisStatus.BiologistRejectedRO, status);
                 break;
             case "referred out":
                 analysisStatusToObjectMap.put(AnalysisStatus.ReferedOut, status);

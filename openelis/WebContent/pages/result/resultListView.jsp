@@ -486,7 +486,8 @@ function /*void*/ processTestReflexCD4Success(xhr)
 		</th>
 		<logic:equal  name="<%=formName%>" property="displayTestMethod" value="true">
 			<th width="5%" style="text-align: left">
-				<bean:message key="result.method.auto"/>
+				<bean:message key="
+				result.method.auto"/>
 			</th>
 		</logic:equal>
 		<th style="text-align: left">

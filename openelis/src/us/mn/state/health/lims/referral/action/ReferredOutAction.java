@@ -61,6 +61,7 @@ import us.mn.state.health.lims.result.daoimpl.ResultDAOImpl;
 import us.mn.state.health.lims.result.valueholder.Result;
 import us.mn.state.health.lims.result.valueholder.ResultType;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
+import us.mn.state.health.lims.statusofsample.util.StatusRules;
 import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.testresult.dao.TestResultDAO;
 import us.mn.state.health.lims.testresult.daoimpl.TestResultDAOImpl;
@@ -132,7 +133,7 @@ public class ReferredOutAction extends BaseAction {
     }
 
     private List<IdValuePair> getReferralOrganizations() {
-        List<IdValuePair> pairs = new ArrayList<IdValuePair>();
+        List<IdValuePair> pairs = new ArrayList<>();
 
         OrganizationDAO orgDAO = new OrganizationDAOImpl();
         List<Organization> orgs = orgDAO.getOrganizationsByTypeName("organizationName", REFERRAL_LAB);
@@ -242,6 +243,7 @@ public class ReferredOutAction extends BaseAction {
         if (referral.getOrganization() != null) {
             referralItem.setReferredInstituteId(referral.getOrganization().getId());
         }
+        referralItem.setFailedValidation(new StatusRules().hasFailedValidation(analysis.getStatusId()));
 
         return referralItem;
     }
@@ -255,7 +257,7 @@ public class ReferredOutAction extends BaseAction {
     }
 
     private List<ReferredTest> getAdditionalReferralTests(List<ReferralResult> referralResults /*, Referral referral */) {
-        List<ReferredTest> testList = new ArrayList<ReferredTest>();
+        List<ReferredTest> testList = new ArrayList<>();
 
         while (referralResults.size() > 0) {
             ReferralResult referralResult = referralResults.get(0); // use the top one to load various bits of information.
@@ -316,7 +318,7 @@ public class ReferredOutAction extends BaseAction {
                 }
             }
         }
-        return new ArrayList<IdValuePair>();
+        return new ArrayList<>();
     }
 
     private String getAppropriateResultValue(List<Result> results) {
@@ -373,7 +375,7 @@ public class ReferredOutAction extends BaseAction {
 
     private List<NonNumericTests> getNonNumericTests(List<ReferralItem> referralItems) {
         DictionaryDAO dictionaryDAO = new DictionaryDAOImpl();
-        Set<String> testIdSet = new HashSet<String>();
+        Set<String> testIdSet = new HashSet<>();
 
         for (ReferralItem item : referralItems) {
             for (IdValuePair pair : item.getTestSelectionList()) {
@@ -381,7 +383,7 @@ public class ReferredOutAction extends BaseAction {
             }
         }
 
-        List<NonNumericTests> nonNumericTestList = new ArrayList<NonNumericTests>();
+        List<NonNumericTests> nonNumericTestList = new ArrayList<>();
         TestResultDAO testResultDAO = new TestResultDAOImpl();
         for (String testId : testIdSet) {
             List<TestResult> testResultList = testResultDAO.getTestResultsByTest(testId);
@@ -394,7 +396,7 @@ public class ReferredOutAction extends BaseAction {
                 boolean isSelectList = isSelectList(testResultType);
                 nonNumericTests.testType = testResultType;
                 if (isSelectList) {
-                    List<IdValuePair> dictionaryValues = new ArrayList<IdValuePair>();
+                    List<IdValuePair> dictionaryValues = new ArrayList<>();
                     for (TestResult testResult : testResultList) {
                         if (isSelectList(testResult.getTestResultType())) {
                             String resultName = dictionaryDAO.getDictionaryById(testResult.getValue()).getLocalizedName();

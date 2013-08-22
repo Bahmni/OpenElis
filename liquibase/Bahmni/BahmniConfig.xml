@@ -629,4 +629,16 @@
         </insert>
     </changeSet>
 
+    <changeSet author="tw" id="41" context="bahmni">
+        <insert schemaName="clinlims" tableName="status_of_sample">
+            <column name="id" valueNumeric=" nextval( 'status_of_sample_seq' ) "/>
+            <column name="code" value="1"/>
+            <column name="lastupdated" valueDate='now()'/>
+            <column name="status_type" value="ANALYSIS"/>
+            <column name="name" value="Biologist Rejection RO"/>
+            <column name="description"
+                    value="The Biologist did not accept this result as valid for referred out test"/>
+            <column name="display_key" value="status.test.referred.out.biologist.reject"/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>

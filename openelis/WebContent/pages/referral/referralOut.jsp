@@ -398,6 +398,10 @@ function /*void*/ savePage(){
 
 <logic:notEmpty name="<%=formName%>"  property="referralItems" >
 
+<div style="float: right" >
+    <img src="./images/validation-rejected.gif" /> = <bean:message key="result.validation.failed"/>&nbsp;&nbsp;&nbsp;&nbsp;
+</div>
+
 <table width="100%" border="0" cellspacing="0" cellpadding="1" id="mainTable" >
   <tr >
     <th><bean:message key="referral.reason"/></th>
@@ -405,6 +409,7 @@ function /*void*/ savePage(){
     <th><bean:message key="referral.institute"/></th>
     <th><bean:message key="referral.sent.date"/></th>
     <th><bean:message key="test.testName"/></th>
+    <th width="16px">&nbsp;</th>
     <th><bean:message key="result.result"/></th>
     <th><bean:message key="referral.report.date"/></th>
     <th><bean:message key="label.button.cancel.referral"/></th>
@@ -425,7 +430,7 @@ function /*void*/ savePage(){
 		<td colspan="2" class="HeadSeperator" >
 		 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= StringUtil.getContextualMessageForKey("resultsentry.accessionNumber") %>: <b><bean:write name="referralItems" property="accessionNumber"/></b>
     	</td>
-    	<td colspan="6" class="HeadSeperator" >
+    	<td colspan="7" class="HeadSeperator" >
     		<bean:message key="referral.request.date"/>: <b><bean:write name="referralItems" property="referralDate"/></b>
     	</td>
 	</tr>
@@ -491,6 +496,11 @@ function /*void*/ savePage(){
 			</logic:iterate>
 			</select>
 		</td>
+        <td class="ruled" style='vertical-align: middle'>
+            <logic:equal name="referralItems" property="failedValidation" value="true">
+                <img src="./images/validation-rejected.gif" />
+            </logic:equal>
+        </td>
 		<td id='<%="resultCell_" + index %>'><% String referredResultType = referralItems.getReferredResultType(); %>
 			<input type="text"
 			       name='<%= "referralItems[" + index + "].referredResult" %>'
@@ -638,7 +648,7 @@ function /*void*/ savePage(){
 				   class="textButton"
 				   onclick='<%="insertNewTestRequest(this," + index + ");"  %>' >
 		</td>
-		<td colspan='3'>
+		<td colspan='4'>
 						 	<img src="./images/note-add.gif"
 						 	     onclick='<%= "showHideNotes(this, " + index + ");" %>'
 						 	     id='<%="showHideButton_" + index %>'
