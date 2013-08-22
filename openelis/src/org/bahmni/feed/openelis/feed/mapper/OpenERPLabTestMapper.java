@@ -15,7 +15,8 @@ public class OpenERPLabTestMapper {
             lab.setName((String) paramMap.get("name"));
             String desc = (String) paramMap.get("name");
             lab.setDescription(desc);
-            lab.setExternalId((String)paramMap.get("uuid"));
+            if(paramMap.get("uuid") instanceof String)
+                lab.setExternalId((String)paramMap.get("uuid"));
             lab.setSysUserId(sysUserId);
             lab.setCategory((String) paramMap.get("category"));
             lab.setStatus((String) paramMap.get("status"));
