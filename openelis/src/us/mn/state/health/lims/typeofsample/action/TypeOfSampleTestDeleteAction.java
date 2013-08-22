@@ -32,6 +32,7 @@ import us.mn.state.health.lims.common.util.validator.ActionError;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleTestDAO;
 import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleTestDAOImpl;
+import us.mn.state.health.lims.typeofsample.util.TypeOfSampleUtil;
 
 /**
  * @author diane benz
@@ -59,7 +60,7 @@ public class TypeOfSampleTestDeleteAction extends BaseAction {
 		try {
 			TypeOfSampleTestDAO typeOfSampleTestDAO = new TypeOfSampleTestDAOImpl();
 			typeOfSampleTestDAO.deleteData(selectedIDs, currentUserId);
-
+            TypeOfSampleUtil.clearTestCache();
 			tx.commit();
 		} catch (LIMSRuntimeException lre) {
 			LogEvent.logError("TypeOfSampleTestDeleteAction","performAction()",lre.toString());

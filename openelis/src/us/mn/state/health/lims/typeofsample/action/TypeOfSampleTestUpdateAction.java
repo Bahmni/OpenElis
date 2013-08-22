@@ -24,6 +24,7 @@ import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleTestDAO;
 import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleTestDAOImpl;
+import us.mn.state.health.lims.typeofsample.util.TypeOfSampleUtil;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSampleTest;
 
 import javax.servlet.http.HttpServletRequest;
@@ -65,6 +66,7 @@ public class TypeOfSampleTestUpdateAction extends BaseAction {
         org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
         try {
             sampleTestDAO.insertData(sampleTest);
+            TypeOfSampleUtil.clearTestCache();
             tx.commit();
         } catch (LIMSRuntimeException e) {
             tx.rollback();
