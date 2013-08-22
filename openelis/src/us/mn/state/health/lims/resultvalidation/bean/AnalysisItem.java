@@ -156,7 +156,7 @@ public class AnalysisItem {
 
     public String getTestDisplayName() {
         if (StatusOfSampleUtil.getStatusID(TechnicalAcceptanceRO).equals(statusId)) {
-            return this.testName + "(RO)";
+            return this.testName + "(R)";
         }
         return this.testName;
     }
