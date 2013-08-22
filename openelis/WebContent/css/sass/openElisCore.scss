@@ -166,6 +166,9 @@ input[type="button"],button{
     @include background-image(linear-gradient(white, #e5e5e5));
     @include box-shadow(#e3e3e3 2px 2px 5px);
   }
+  &:focus{
+    box-shadow: 0px 0px 1pt 1pt #77B1DD;
+  }
   &.primary-btn{
       @include background-image(linear-gradient(#a1d030, #88af28));
       color:#fff; 

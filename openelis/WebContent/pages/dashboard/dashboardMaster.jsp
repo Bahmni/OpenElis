@@ -48,7 +48,7 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
 <script type="text/javascript" src="<%=basePath%>scripts/dashBoard/createGrid.js"></script>
 <script type="text/javascript" src="<%=basePath%>scripts/utils.js"></script>
 
-<input id="refreshButton" type="button" value="Refresh">
+ <input id="refreshButton" type="button" value="Refresh"> 
 
 
 <div>
@@ -57,19 +57,22 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
             <li><a href="#inProgressListContainer">In Progress</a></li>
             <li><a href="#completedListContainer">Completed</a></li>
          </ul>
-        <div id="inProgressListContainer" style="width:750px"></div>
-        <div id="completedListContainer" style="width:520px"></div>
+        <div id="inProgressListContainer"></div>
+        <div id="completedListContainer"></div>
     </div>
 
     <div id="patientDetails">
-        <div><span>Patient ID: </span><span id="patientId"></span></div>
-        <div><span>Name : </span><span id="name"></span></div>
-        <div><span>Father/Husband's Name : </span><span id="primaryRelative"></span></div>
-        <div><span>Village : </span><span id="village"></span></div>
-        <div><span>Gender : </span><span id="gender"></span></div>
-        <div><span>Age : </span><span id="age"></span></div>
+        <div class='pd-more-info'><span class='pd-key'>Patient ID: </span><span class='pd-value' id="patientId"></span></div>
+        <div class='pd-more-info'><span class='pd-key'>Name : </span><span class='pd-value' id="name"></span></div>
+        <div class='pd-more-info'><span class='pd-key'>Father/Husband's Name : </span><span class='pd-value' id="primaryRelative"></span></div>
+        <div class='pd-more-info'><span class='pd-key'>Village : </span><span class='pd-value' id="village"></span></div>
+        <div class='pd-more-info'><span class='pd-key'>Gender : </span><span  class='pd-value' id="gender"></span></div>
+        <div class='pd-more-info'><span class='pd-key'>Age : </span><span class='pd-value' id="age"></span></div>
     </div>
+
 </div>
+
+<div id="patientDetails" class="hide"></div>
 
 <script type="text/javascript">
 
@@ -146,6 +149,7 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
     function onRowSelectionSuccess(xhr) {
         var villageIndex = 1;
         var datePattern = '<%=SystemConfiguration.getInstance().getPatternForDateLocale() %>';
+        
         showPatientDetails(
             OpenElis.Utils.getXMLValue(xhr.responseXML, 'ST_ID'),
             OpenElis.Utils.getXMLValue(xhr.responseXML, 'firstName'),
