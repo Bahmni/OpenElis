@@ -16,18 +16,9 @@
  */
 package us.mn.state.health.lims.reports.action.implementation;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-
 import org.apache.commons.validator.GenericValidator;
-
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
@@ -41,6 +32,8 @@ import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus;
 import us.mn.state.health.lims.test.valueholder.Test;
 
+import java.util.*;
+
 public class PatientHaitiClinical extends HaitiPatientReport implements IReportCreator, IReportParameterSetter {
 
 	private AnalysisDAO analysisDAO = new AnalysisDAOImpl();
@@ -49,7 +42,7 @@ public class PatientHaitiClinical extends HaitiPatientReport implements IReportC
 	protected List<HaitiClinicalPatientData> clinicalReportItems;
 
 	static {
-		analysisStatusIds = new HashSet<Integer>();
+		analysisStatusIds = new HashSet<>();
 		analysisStatusIds.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.BiologistRejected)));
 		analysisStatusIds.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.Finalized)));
 		analysisStatusIds.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.NonConforming_depricated)));

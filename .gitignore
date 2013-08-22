@@ -3,6 +3,7 @@
 *.iml
 *.ipr
 *.iws
+*.jasper
 out/
 classes
 target

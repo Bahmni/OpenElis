@@ -16,20 +16,8 @@
  */
 package us.mn.state.health.lims.reports.action.implementation;
 
-import java.lang.reflect.InvocationTargetException;
-import java.sql.Date;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.IllegalFormatException;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.validator.GenericValidator;
-
 import us.mn.state.health.lims.address.dao.PersonAddressDAO;
 import us.mn.state.health.lims.address.daoimpl.AddressPartDAOImpl;
 import us.mn.state.health.lims.address.daoimpl.PersonAddressDAOImpl;
@@ -104,6 +92,11 @@ import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisSt
 import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 import us.mn.state.health.lims.test.valueholder.Test;
+
+import java.lang.reflect.InvocationTargetException;
+import java.sql.Date;
+import java.text.DecimalFormat;
+import java.util.*;
 
 public abstract class HaitiPatientReport extends Report {
 
@@ -700,7 +693,7 @@ public abstract class HaitiPatientReport extends Report {
 	 * @see us.mn.state.health.lims.reports.action.implementation.HaitiPatientReport#initializeReportItems()
 	 */
 	protected void initializeReportItems() {
-		reportItems = new ArrayList<HaitiClinicalPatientData>();
+		reportItems = new ArrayList<>();
 	}
 
 	
@@ -777,7 +770,7 @@ public abstract class HaitiPatientReport extends Report {
 	}
 
 	private String getTestName() {
-		String testName = null;
+		String testName;
 		
 		if( useReportingDescription()){
 			testName = reportAnalysis.getTest().getReportingDescription();

@@ -22,6 +22,13 @@
         </fileset>
     </path>
 
+    <path id="jasper.lib">
+        <pathelement path="${target}"/>
+        <fileset dir="${web}/WEB-INF/lib">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
     <path id="test.lib">
         <fileset dir="${test.src}/lib">
             <include name="*.jar"/>
@@ -43,7 +50,11 @@
     </target>
 
 
-    <target name="compile" depends="init, compass.compile"
+    <target name="compile" depends="init, java.compile, jasper.compile, compass.compile" 
+        description="compile the source ">
+    </target>
+
+    <target name="java.compile"
             description="compile the source ">
         <mkdir dir="${target}"/>
         <javac srcdir="${src}" destdir="${target}" encoding="iso-8859-1" classpathref="lib" source="1.7" target="1.7" debug="on"/>
@@ -51,6 +62,22 @@
             <fileset dir="${src}" includes="**/*.xml"/>
             <fileset dir="${src}" includes="**/*.properties"/>
         </copy>
+    </target>
+
+    <taskdef name="jrc" classname="net.sf.jasperreports.ant.JRAntCompileTask"> 
+        <classpath refid="lib"/>
+    </taskdef>
+
+    <target name="jasper.compile" depends="java.compile">
+        <jrc 
+                srcdir="${web}/WEB-INF/reports"
+                destdir="${web}/WEB-INF/reports"
+                tempdir="${web}/WEB-INF/reports"
+                keepjava="false"
+                xmlvalidation="true">
+            <include name="**/*.jrxml"/>
+            <classpath refid="jasper.lib"/>
+        </jrc>
     </target>
 
     <target name="dist" depends="clean, compile"
@@ -93,6 +120,11 @@
         <delete dir="${dist}"/>
         <delete dir="${junit.output.dir}"/>
         <delete dir="${test.target}"/>
+        <delete>
+            <fileset dir="${web}/WEB-INF/reports">
+                <include name="*.jasper"/>
+            </fileset>
+        </delete>
     </target>
 
     <target name="setupDB" depends="initDB, updateDB"/>
