@@ -11,6 +11,7 @@
 <bean:define id="formName" value='<%= (String)request.getAttribute(IActionConstants.FORM_NAME) %>' />
 <bean:define id="inProgressOrderListJson" name="<%=formName%>" property="inProgressOrderList" />
 <bean:define id="completedOrderListJson" name="<%=formName%>" property="completedOrderList" />
+<bean:define id="todayStats" name="<%=formName%>" property="todayStats" />
 
 <%!
 String path = "";
@@ -50,10 +51,35 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
 
  <input id="refreshButton" type="button" value="Refresh"> 
 
-
 <div>
+    <div id="todayStat">
+        <table style="padding: 20px; ">
+            <tr>
+                <td style="border: 2px solid; background-color: #8FD098;">
+                    <span>Today's Stats</span>
+                </td>
+                <td style="border: 2px solid;">
+                    <span>Awaiting Testing : </span>
+                    <span id="awaitingTestCount"></span>
+                </td>
+                <td style="border: 2px solid;">
+                    <span>Awaiting Validation : </span>
+                    <span id="awaitingValidationCount"></span>
+                </td>
+                <td style="border: 2px solid;">
+                    <span>Completed : </span>
+                    <span id="completedTestCount"></span>
+                </td>
+                <td style="border: 2px solid;">
+                    <span>Total Samples Collected: </span>
+                    <span id="totalSamplesCount"></span>
+                </td>
+            </tr>
+        </table>
+    </div>
+
     <div id="tabs">
-         <ul>
+        <ul>
             <li><a href="#inProgressListContainer">In Progress</a></li>
             <li><a href="#completedListContainer">Completed</a></li>
          </ul>
@@ -93,8 +119,17 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
         explicitInitialization: true
     };
 
-    jQuery(document).ready(function() {
+    var showStats = function(){
+        var stats = JSON.parse('<%=todayStats%>');
+        jQuery("#todayStat").show();
+        jQuery("#awaitingTestCount").text(stats.awaitingTestCount);
+        jQuery("#awaitingValidationCount").text(stats.awaitingValidationCount);
+        jQuery("#completedTestCount").text(stats.completedTestCount);
+        jQuery("#totalSamplesCount").text(stats.totalSamplesCount);
+    }
 
+    jQuery(document).ready(function() {
+        showStats()
         inProgressObject = new order("#inProgressListContainer", "<%= inProgressOrderListJson %>", generateLinkForInProgressOrder, getColumnsForInProgressOrder);
         dataViewForInProgressTab = new Slick.Data.DataView({ inlineFilters: true });
         gridForInProgressOrder = new Slick.Grid(inProgressObject.div, dataViewForInProgressTab, inProgressObject.columns,options);

@@ -5,6 +5,7 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.DynaActionForm;
 import org.bahmni.feed.openelis.ObjectMapperRepository;
+import org.codehaus.jackson.JsonGenerationException;
 import org.json.simple.JSONObject;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.dashboard.daoimpl.OrderListDAOImpl;
@@ -17,10 +18,9 @@ import java.io.IOException;
 import java.util.List;
 
 public class DashboardAction extends BaseAction {
-    private OrderListDAOImpl orderListDAO;
+    private OrderListDAOImpl orderListDAO = new OrderListDAOImpl();
 
-    public DashboardAction(OrderListDAOImpl orderListDAO) {
-        this.orderListDAO = orderListDAO;
+    public DashboardAction() {
     }
 
     @Override
@@ -37,8 +37,10 @@ public class DashboardAction extends BaseAction {
         return mapping.findForward("success");
     }
 
-    private TodayStat getTodaysStats() {
-        return orderListDAO.getTodayStats();
+    private String getTodaysStats() throws IOException {
+        TodayStat todayStats = orderListDAO.getTodayStats();
+        String statsAsJson = ObjectMapperRepository.objectMapper.writeValueAsString(todayStats);
+        return JSONObject.escape(statsAsJson);
     }
 
     private String getAllOrdersJson(List<Order> orders) throws IOException {
