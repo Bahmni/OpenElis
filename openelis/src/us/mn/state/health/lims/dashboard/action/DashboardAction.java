@@ -9,6 +9,7 @@ import org.json.simple.JSONObject;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.dashboard.daoimpl.OrderListDAOImpl;
 import us.mn.state.health.lims.dashboard.valueholder.Order;
+import us.mn.state.health.lims.dashboard.valueholder.TodayStat;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,22 +17,28 @@ import java.io.IOException;
 import java.util.List;
 
 public class DashboardAction extends BaseAction {
+    private OrderListDAOImpl orderListDAO;
 
+    public DashboardAction(OrderListDAOImpl orderListDAO) {
+        this.orderListDAO = orderListDAO;
+    }
 
     @Override
     protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         DynaActionForm dynaForm = (DynaActionForm) form;
 
-        OrderListDAOImpl orderListDAO = new OrderListDAOImpl();
-
         String escapedPendingOrderListJson = getAllOrdersJson(orderListDAO.getAllInProgress());
-
         String escapedCompletedOrderListJson = getAllOrdersJson(orderListDAO.getAllCompletedBefore24Hours());
 
         dynaForm.set("inProgressOrderList", escapedPendingOrderListJson);
         dynaForm.set("completedOrderList", escapedCompletedOrderListJson);
+        dynaForm.set("todayStats", getTodaysStats());
 
         return mapping.findForward("success");
+    }
+
+    private TodayStat getTodaysStats() {
+        return orderListDAO.getTodayStats();
     }
 
     private String getAllOrdersJson(List<Order> orders) throws IOException {

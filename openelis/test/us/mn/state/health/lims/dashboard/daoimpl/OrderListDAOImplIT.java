@@ -9,6 +9,7 @@ import us.mn.state.health.lims.analyte.valueholder.Analyte;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.dashboard.valueholder.Order;
+import us.mn.state.health.lims.dashboard.valueholder.TodayStat;
 import us.mn.state.health.lims.patient.daoimpl.PatientDAOImpl;
 import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.patientidentity.daoimpl.PatientIdentityDAOImpl;
@@ -48,10 +49,11 @@ import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.Ana
 public class OrderListDAOImplIT extends IT {
 
     private String accessionNumber;
+    private String accessionNumber2;
+    private String accessionNumber3;
     private String patientIdentityData;
     private String firstName;
     private String lastName;
-    private String anotherAccessionNumber;
     private OrderListDAOImpl orderListDAO;
     private Patient patient;
     private List<Test> allTests;
@@ -59,7 +61,8 @@ public class OrderListDAOImplIT extends IT {
     @Before
     public void setUp() throws Exception {
         accessionNumber = "05082013-001";
-        anotherAccessionNumber = "05082013-002";
+        accessionNumber2 = "05082013-002";
+        accessionNumber3 = "05082013-003";
         patientIdentityData = "TEST1234567";
         firstName = "Some";
         lastName = "One";
@@ -86,7 +89,7 @@ public class OrderListDAOImplIT extends IT {
 
     @org.junit.Test
     public void getAllCompleted_shouldReturnAllOrdersWhichAreCompletedBefore24Hours() throws ParseException {
-        Sample sample1 = createSample(anotherAccessionNumber, false);
+        Sample sample1 = createSample(accessionNumber2, false);
         createSampleHuman(sample1, patient);
         SampleItem sampleItem1 = createSampleItem(sample1);
         createAnalysis(sampleItem1, StatusOfSampleUtil.AnalysisStatus.Finalized, "Hematology", allTests.get(1));
@@ -100,16 +103,16 @@ public class OrderListDAOImplIT extends IT {
         List<Order> completedOrders = orderListDAO.getAllCompletedBefore24Hours();
 
         assertTrue(completedOrders.contains(new Order(accessionNumber, patientIdentityData, firstName, lastName, sample2.getSampleSource().getName())));
-        assertFalse(completedOrders.contains(new Order(anotherAccessionNumber, patientIdentityData, firstName, lastName, sample1.getSampleSource().getName())));
+        assertFalse(completedOrders.contains(new Order(accessionNumber2, patientIdentityData, firstName, lastName, sample1.getSampleSource().getName())));
     }
 
     @org.junit.Test
-    public void shouldNotAddCompletedOrdersToInProgressList() throws ParseException {
+    public void shouldNotAddCompletedOrdersToInProgressList()  {
         Sample sample1 = createSample(accessionNumber, false);
         createSampleHuman(sample1, patient);
         SampleItem sampleItem1 = createSampleItem(sample1);
 
-        Sample sample2 = createSample(anotherAccessionNumber, false);
+        Sample sample2 = createSample(accessionNumber2, false);
         createSampleHuman(sample2, patient);
         SampleItem sampleItem2 = createSampleItem(sample2);
 
@@ -120,6 +123,33 @@ public class OrderListDAOImplIT extends IT {
         List<Order> inProgressOrder = orderListDAO.getAllInProgress();
 
         assertFalse(inProgressOrder.contains(new Order(accessionNumber, patientIdentityData, firstName, lastName, sample1.getSampleSource().getName())));
+    }
+
+    @org.junit.Test
+    public void shouldShowTodaysStat() {
+        Sample sample1 = createSample(accessionNumber, true);
+        createSampleHuman(sample1, patient);
+        SampleItem sampleItem1 = createSampleItem(sample1);
+
+        Sample sample2 = createSample(accessionNumber2, true);
+        createSampleHuman(sample2, patient);
+        SampleItem sampleItem2 = createSampleItem(sample2);
+
+        Sample sample3 = createSample(accessionNumber3, false);
+        createSampleHuman(sample3, patient);
+        SampleItem sampleItem3 = createSampleItem(sample3);
+
+        createAnalysis(sampleItem1,StatusOfSampleUtil.AnalysisStatus.NotTested,"Hematology",allTests.get(0));
+        createAnalysis(sampleItem2,StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance,"Hematology",allTests.get(1));
+        createAnalysis(sampleItem2,StatusOfSampleUtil.AnalysisStatus.Finalized,"Hematology",allTests.get(2));
+        createAnalysis(sampleItem3,StatusOfSampleUtil.AnalysisStatus.Finalized,"Hematology",allTests.get(3));
+
+        TodayStat todayStats = orderListDAO.getTodayStats();
+
+        assertEquals(1,todayStats.getAwaitingTestCount());
+        assertEquals(1,todayStats.getAwaitingValidationCount());
+        assertEquals(0,todayStats.getCompletedTestCount());
+        assertEquals(2,todayStats.getTotalSamplesCount());
     }
 
     private TestDAOImpl createTests(String... samples) {
@@ -202,7 +232,7 @@ public class OrderListDAOImplIT extends IT {
         return sampleHuman;
     }
 
-    private Analysis createAnalysis(SampleItem sampleItem, StatusOfSampleUtil.AnalysisStatus analysisStatus, String testSectionName, Test test) throws ParseException {
+    private Analysis createAnalysis(SampleItem sampleItem, StatusOfSampleUtil.AnalysisStatus analysisStatus, String testSectionName, Test test) {
         TestSectionDAO testSectionDAO = new TestSectionDAOImpl();
         TestSection testSection = testSectionDAO.getTestSectionByName(testSectionName);
         Analysis analysis = new Analysis();
