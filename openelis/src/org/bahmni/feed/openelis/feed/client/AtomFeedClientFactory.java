@@ -47,7 +47,7 @@ public class AtomFeedClientFactory {
                     forFeedAt(new URI(uri)).
                     processedBy(patientFeedWorker).
                     usingConnectionProvider(new OpenElisConnectionProvider()).
-                    with(feedProperties).
+                    with(feedProperties, authenticatedWebClient.getCookies()).
                     build();
         } catch (URISyntaxException e) {
             throw new RuntimeException(String.format("Is not a valid URI - %s", uri));
