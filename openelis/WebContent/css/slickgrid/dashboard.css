@@ -1,3 +1,6 @@
+table td{
+    padding:5px;
+}
 .slick-headerrow-column input {
     width: 95%;
 }
@@ -14,13 +17,18 @@
     padding: 10px 10px;
     position:fixed;
     bottom:0px;
-    background:#F2F0FD;
+    background:rgba(0, 0, 0, 0.78);
     z-index:9999;
     overflow:hidden;
     display:block;
-    width:97.5%;
-    opacity:0.9;
+    width:97%;
     margin-right:-20px;
+    -webkit-border-top-left-radius: 10px;
+    -webkit-border-top-right-radius: 10px;
+    -moz-border-radius-topleft: 10px;
+    -moz-border-radius-topright: 10px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
 }
 #patientDetails .pd-more-info{
 	float:left;
@@ -30,12 +38,13 @@
     font-family: Arial,sans-serif;
 }
 #patientDetails .pd-key{
-    color:#014712;
+    color:#FFD870;
     font-size:16px;
 }
 #patientDetails .pd-value{
     text-transform:capitalize;
     font-size:18px;
+    color:#ffffff;
 }
 #inProgressListContainer,#completedListContainer{
     width:1200px;
