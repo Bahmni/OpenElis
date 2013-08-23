@@ -131,7 +131,6 @@ public class AccessionResultsAction extends BaseAction {
 					setEmptyResults(dynaForm);
 				}
 			} else {
-				PropertyUtils.setProperty(dynaForm, "testResult", new ArrayList<TestResultItem>());
 				PropertyUtils.setProperty(dynaForm, "searchFinished", Boolean.FALSE);
 			}
 		} else {
