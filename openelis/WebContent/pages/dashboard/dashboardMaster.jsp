@@ -90,18 +90,16 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
         <div id="completedListContainer"></div>
     </div>
 
-    <div id="patientDetails">
-        <div class='pd-more-info'><span class='pd-key'>Patient ID: </span><span class='pd-value' id="patientId">&nbsp;</span></div>
-        <div class='pd-more-info'><span class='pd-key'>Name : </span><span class='pd-value' id="name">&nbsp;</span></div>
-        <div class='pd-more-info'><span class='pd-key'>Father/Husband's Name : </span><span class='pd-value' id="primaryRelative">&nbsp;</span></div>
-        <div class='pd-more-info'><span class='pd-key'>Village : </span><span class='pd-value' id="village">&nbsp;</span></div>
-        <div class='pd-more-info'><span class='pd-key'>Gender : </span><span  class='pd-value' id="gender">&nbsp;</span></div>
-        <div class='pd-more-info'><span class='pd-key'>Age : </span><span class='pd-value' id="age">&nbsp;</span></div>
+    <div id="patientDetails" class="hide">
+        <div class='pd-more-info'><span class='pd-key'>Patient ID: </span><span class='pd-value' id="patientId"></span></div>
+        <div class='pd-more-info'><span class='pd-key'>Name : </span><span class='pd-value' id="name"></span></div>
+        <div class='pd-more-info'><span class='pd-key'>Father/Husband's Name : </span><span class='pd-value' id="primaryRelative"></span></div>
+        <div class='pd-more-info'><span class='pd-key'>Village : </span><span class='pd-value' id="village"></span></div>
+        <div class='pd-more-info'><span class='pd-key'>Gender : </span><span  class='pd-value' id="gender"></span></div>
+        <div class='pd-more-info'><span class='pd-key'>Age : </span><span class='pd-value' id="age"></span></div>
     </div>
 
 </div>
-
-<div id="patientDetails" class="hide"></div>
 
 <script type="text/javascript">
 
@@ -173,8 +171,8 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
         jQuery("#patientDetails").show();
         jQuery("#patientId").text(stNumber);
         jQuery("#name").text(firstName + " " + lastName);
-        jQuery("#primaryRelative").text(primaryRelative);
-        jQuery("#village").text(village);
+        jQuery("#primaryRelative").text(primaryRelative?primaryRelative:"N/A");
+        jQuery("#village").text(village?village:"N/A");
         jQuery("#gender").text(gender);
         jQuery("#age").text(age);
     }
