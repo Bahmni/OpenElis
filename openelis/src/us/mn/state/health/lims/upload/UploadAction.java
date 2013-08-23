@@ -6,53 +6,47 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.bahmni.fileimport.FileImporter;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.IActionConstants;
+import us.mn.state.health.lims.upload.patient.CSVPatient;
+import us.mn.state.health.lims.upload.patient.PatientPersister;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 public class UploadAction extends BaseAction {
 
+    // TODO : Mujir, Shruthi - finalize these constants
+    public static final String TEMPORARY_FILE_LOCATION = "/tmp";
+    public static final String filePath = "/home/jss/open-elis-upload/";
+
     public static int maxFileSize = 50 * 1024;
     public static int maxMemSize = 4 * 1024;
-    public static String filePath = "/home/jss/open-elis-upload/";
+
+    private static ExecutorService fileImportExecutorService;
 
     @Override
     protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        boolean isMultipart = ServletFileUpload.isMultipartContent(request);
-
-        if (!isMultipart) {
+        if (!ServletFileUpload.isMultipartContent(request)) {
             return mapping.findForward(IActionConstants.FWD_VALIDATION_ERROR);
         }
         DiskFileItemFactory factory = new DiskFileItemFactory();
-        // maximum size that will be stored in memory
         factory.setSizeThreshold(maxMemSize);
-        // Location to save data that is larger than maxMemSize.
-        factory.setRepository(new File("/tmp"));
+        factory.setRepository(new File(TEMPORARY_FILE_LOCATION));
 
-        // Create a new file upload handler
         ServletFileUpload upload = new ServletFileUpload(factory);
-        // maximum file size to be uploaded.
         upload.setSizeMax(maxFileSize);
 
         try {
-            // Parse the request to get file items.
             List fileItems = upload.parseRequest(request);
-
-            // Process the uploaded file items
             for (Object fileItem : fileItems) {
                 FileItem fi = (FileItem) fileItem;
                 if (!fi.isFormField()) {
-                    // Get the uploaded file parameters
-//                    String String = fi.getFieldName();
                     String fileName = fi.getName();
-//                    String contentType = fi.getContentType();
-//                    boolean isInMemory = fi.isInMemory();
-//                    long sizeInBytes = fi.getSize();
-//                    Write the file
                     File file;
                     if (fileName.lastIndexOf("\\") >= 0) {
                         file = new File(filePath +
@@ -62,6 +56,12 @@ public class UploadAction extends BaseAction {
                                 fileName.substring(fileName.lastIndexOf("\\") + 1));
                     }
                     fi.write(file);
+
+                    PatientPersister patientPersister = new PatientPersister();
+                    FileImporter<CSVPatient> csvPatientFileImporter = new FileImporter<>();
+                    boolean hasStartedUpload = csvPatientFileImporter.importCSV(file, patientPersister, CSVPatient.class);
+                    if (!hasStartedUpload)
+                        return mapping.findForward(IActionConstants.FWD_VALIDATION_ERROR);
                 }
             }
         } catch (Exception ex) {

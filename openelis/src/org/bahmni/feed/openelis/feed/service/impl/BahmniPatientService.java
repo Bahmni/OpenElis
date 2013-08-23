@@ -48,8 +48,9 @@ public class BahmniPatientService {
     private AuditingService auditingService;
     private HealthCenterDAO healthCenterDAO;
 
-    private static final String PRIMARY_RELATIVE_KEY_NAME = "PRIMARYRELATIVE";
-    private static final String OCCUPATION_KEY_NAME = "OCCUPATION";
+    public static final String PRIMARY_RELATIVE_KEY_NAME = "PRIMARYRELATIVE";
+    public static final String OCCUPATION_KEY_NAME = "OCCUPATION";
+    public static final String REGISTRATION_KEY_NAME = "ST";
 
     public BahmniPatientService() {
         this(new PatientDAOImpl(), new PersonDAOImpl(), new PatientIdentityDAOImpl(),
@@ -158,7 +159,7 @@ public class BahmniPatientService {
         patientDAO.insertData(patient);
 
         PatientIdentityTypes patientIdentityTypes = new PatientIdentityTypes(patientIdentityTypeDAO.getAllPatientIdenityTypes());
-        addPatientIdentity(patient, patientIdentityTypes, "ST", openMRSPatient.getIdentifiers().get(0).getIdentifier(), sysUserId);
+        addPatientIdentity(patient, patientIdentityTypes, REGISTRATION_KEY_NAME, openMRSPatient.getIdentifiers().get(0).getIdentifier(), sysUserId);
 
         String primaryRelative = getAttributeValue(openMRSPerson, OpenMRSPersonAttributeType.PRIMARY_RELATIVE);
         if (primaryRelative != null) {
