@@ -65,7 +65,7 @@
     </target>
 
     <taskdef name="jrc" classname="net.sf.jasperreports.ant.JRAntCompileTask"> 
-        <classpath refid="lib"/>
+        <classpath refid="build.lib"/>
     </taskdef>
 
     <target name="jasper.compile" depends="java.compile">
