@@ -49,28 +49,31 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
 <script type="text/javascript" src="<%=basePath%>scripts/dashBoard/createGrid.js"></script>
 <script type="text/javascript" src="<%=basePath%>scripts/utils.js"></script>
 
- <input id="refreshButton" type="button" value="Refresh"> 
+  
 
 <div>
     <div id="todayStat">
-        <table style="padding: 20px; ">
+        <table ">
             <tr>
-                <td style="border: 2px solid; background-color: #8FD098;">
-                    <span>Today's Stats</span>
+                <td>
+                    <input id="refreshButton" type="button" value="Refresh">
                 </td>
-                <td style="border: 2px solid;">
+                <td>
+                    <div class="arrow-text"> Today's Stats</div><div class="arrow-right"></div>
+                </td>
+                <td>
                     <span>Awaiting Testing : </span>
                     <span id="awaitingTestCount"></span>
                 </td>
-                <td style="border: 2px solid;">
+                <td>
                     <span>Awaiting Validation : </span>
                     <span id="awaitingValidationCount"></span>
                 </td>
-                <td style="border: 2px solid;">
+                <td>
                     <span>Completed : </span>
                     <span id="completedTestCount"></span>
                 </td>
-                <td style="border: 2px solid;">
+                <td>
                     <span>Total Samples Collected: </span>
                     <span id="totalSamplesCount"></span>
                 </td>
@@ -88,12 +91,12 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
     </div>
 
     <div id="patientDetails">
-        <div class='pd-more-info'><span class='pd-key'>Patient ID: </span><span class='pd-value' id="patientId"></span></div>
-        <div class='pd-more-info'><span class='pd-key'>Name : </span><span class='pd-value' id="name"></span></div>
-        <div class='pd-more-info'><span class='pd-key'>Father/Husband's Name : </span><span class='pd-value' id="primaryRelative"></span></div>
-        <div class='pd-more-info'><span class='pd-key'>Village : </span><span class='pd-value' id="village"></span></div>
-        <div class='pd-more-info'><span class='pd-key'>Gender : </span><span  class='pd-value' id="gender"></span></div>
-        <div class='pd-more-info'><span class='pd-key'>Age : </span><span class='pd-value' id="age"></span></div>
+        <div class='pd-more-info'><span class='pd-key'>Patient ID: </span><span class='pd-value' id="patientId">&nbsp;</span></div>
+        <div class='pd-more-info'><span class='pd-key'>Name : </span><span class='pd-value' id="name">&nbsp;</span></div>
+        <div class='pd-more-info'><span class='pd-key'>Father/Husband's Name : </span><span class='pd-value' id="primaryRelative">&nbsp;</span></div>
+        <div class='pd-more-info'><span class='pd-key'>Village : </span><span class='pd-value' id="village">&nbsp;</span></div>
+        <div class='pd-more-info'><span class='pd-key'>Gender : </span><span  class='pd-value' id="gender">&nbsp;</span></div>
+        <div class='pd-more-info'><span class='pd-key'>Age : </span><span class='pd-value' id="age">&nbsp;</span></div>
     </div>
 
 </div>

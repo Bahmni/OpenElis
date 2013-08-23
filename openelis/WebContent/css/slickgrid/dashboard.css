@@ -8,22 +8,23 @@
 }
 
 #patientDetails {
-    border: 1px solid #cecece;
+    border-top: 2px solid #F0A506;
+    border-left: 1px solid #cecece;
+    border-right: 1px solid #cecece;
     padding: 10px 10px;
     position:fixed;
     bottom:0px;
-    background:#cecece;
+    background:#F2F0FD;
     z-index:9999;
     overflow:hidden;
     display:block;
-    width:100%;
+    width:97.5%;
     opacity:0.9;
     margin-right:-20px;
 }
 #patientDetails .pd-more-info{
 	float:left;
 	padding:5px 20px;
-	font-size: 18px;
 	font-weight: bold;
 	color:#000000;
     font-family: Arial,sans-serif;
@@ -34,17 +35,41 @@
 }
 #patientDetails .pd-value{
     text-transform:capitalize;
+    font-size:18px;
 }
 #inProgressListContainer,#completedListContainer{
-    width:1280px;
+    width:1200px;
 	padding-bottom: 50px;
 }
 #patientDetails.hide{
     display:none;
 }
-#refreshButton{
-    position: absolute;
-    left:20px;
-    top:102px;
-    z-index:999;
+#inProgressListContainer a{
+    color:#14a4c8;
+}
+#inProgressListContainer a:hover{
+    text-decoration: underline;
+}
+#todayStat{
+    margin-bottom:20px;
+}
+#todayStat table{
+    font-size: 15px;
+}
+#todayStat td{
+   padding:0px 20px; 
+}
+.arrow-text{
+    float:left;
+    padding-top:2px;
+    font-weight: bold;
+}
+.arrow-right {
+    float:right;
+    width: 0; 
+    height: 0; 
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;  
+    border-left: 10px solid green;
+    margin-left:10px;
 }
