@@ -124,7 +124,7 @@ public class ResultsLoadUtility {
     private final ObservationHistoryDAO observationHistoryDAO = new ObservationHistoryDAOImpl();
     private final AnalysisDAO analysisDAO = new AnalysisDAOImpl();
     private final ReferralDAO referralDAO = new ReferralDAOImpl();
-
+    SampleHumanDAO sampleHumanDAO = new SampleHumanDAOImpl();
     private final StatusRules statusRules = new StatusRules();
 
     private boolean inventoryNeeded = false;
@@ -194,7 +194,7 @@ public class ResultsLoadUtility {
         reflexGroup = 1;
         activeKits = null;
         inventoryNeeded = false;
-        SampleHumanDAO sampleHumanDAO = new SampleHumanDAOImpl();
+
         samples = sampleHumanDAO.getSamplesForPatient(patient.getId());
 
         return getGroupedTestsForSamples();
@@ -419,7 +419,9 @@ public class ResultsLoadUtility {
                 multiSelectionResult = "M".equals(result.getResultType());
             }
 
-            ResultLimit resultLimit = getResultLimitForTestAndPatient(test, null);
+            Patient patient = sampleHumanDAO.getPatientForSample(currSample);
+
+            ResultLimit resultLimit = getResultLimitForTestAndPatient(test, patient);
 
             String initialConditions = getInitialSampleConditionString(sampleItem);
 
@@ -705,7 +707,7 @@ public class ResultsLoadUtility {
         }
 
         // third only gender matters
-        return resultLimit == null ? genderBasedResultLimit(resultLimits, null) : resultLimit;
+        return resultLimit == null ? genderBasedResultLimit(resultLimits, patient) : resultLimit;
     }
 
     @SuppressWarnings("unchecked")
