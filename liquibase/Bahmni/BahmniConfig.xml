@@ -628,7 +628,6 @@
             <column name="tool_tip_key" value="tooltip.openreports.all.tests.aggregate" />
         </insert>
     </changeSet>
-
     <changeSet author="tw" id="42" context="bahmni">
         <insert schemaName="clinlims" tableName="status_of_sample">
             <column name="id" valueNumeric=" nextval( 'status_of_sample_seq' ) "/>
@@ -640,5 +639,12 @@
                     value="The Biologist did not accept this result as valid for referred out test"/>
             <column name="display_key" value="status.test.referred.out.biologist.reject"/>
         </insert>
+    </changeSet>
+    <changeSet id="43" author="tw" context="bahmni">
+        <comment>Remove logo in reports</comment>
+        <update schemaName="clinlims" tableName="site_information">
+            <column name="value" value="false"/>
+            <where>name='useLogoInReport'</where>
+        </update>
     </changeSet>
 </databaseChangeLog>
