@@ -19,7 +19,8 @@
     String errorAgeInputType = "";
     String errorInvalidHighLowForAge = "";
     String errorInvalidHighLowForRange = "";
-    String errorInvalidNormalValidRange = "";
+    String errorInvalidLowNormalValidRange = "";
+    String errorInvalidHighNormalValidRange = "";
 %>
 
 <%
@@ -36,7 +37,8 @@
     errorAgeInputType = messageResources.getMessage(locale, "resultLimits.invalid.input.number", "age");
     errorInvalidHighLowForAge = messageResources.getMessage(locale, "resultlimits.invalid.high-low-value", "age");
     errorInvalidHighLowForRange = messageResources.getMessage(locale, "resultlimits.invalid.high-low-value", "range");
-    errorInvalidNormalValidRange = messageResources.getMessage(locale, "resultlimits.invalid.normal-valid-range");
+    errorInvalidLowNormalValidRange = messageResources.getMessage(locale, "resultlimits.invalid.low-normal-valid-range");
+    errorInvalidHighNormalValidRange = messageResources.getMessage(locale, "resultlimits.invalid.high-normal-valid-range");
 %>
 
 <script language="JavaScript1.2">
@@ -77,8 +79,13 @@
                 return false;
             }
 
-            if(lowValid != '' && highValid != '' && (lowNormal < lowValid || highNormal > highValid)){
-                alert('<%=errorInvalidNormalValidRange %>');
+            if(lowValid != '' && (lowNormal < lowValid)){
+                alert('<%=errorInvalidLowNormalValidRange %>');
+                return false;
+            }
+
+            if(highValid != '' && (highNormal > highValid)){
+                alert('<%=errorInvalidHighNormalValidRange %>');
                 return false;
             }
         }

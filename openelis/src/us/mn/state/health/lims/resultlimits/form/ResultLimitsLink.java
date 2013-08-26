@@ -160,7 +160,7 @@ public class ResultLimitsLink{
 }
 
     private int getAgeInDays(double age) {
-        return (int) ((age - Math.floor(age)) * DAYS_IN_YEAR);
+        return (int) (Math.round(age * DAYS_IN_YEAR) - Math.floor(age));
     }
 
     public void setMaxAgeDisplay(String maxAgeDisplay) {
