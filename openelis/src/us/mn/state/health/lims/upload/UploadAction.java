@@ -3,18 +3,25 @@ package us.mn.state.health.lims.upload;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.bahmni.fileimport.FileImporter;
+import org.bahmni.fileimport.dao.JDBCConnectionProvider;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.IActionConstants;
+import us.mn.state.health.lims.hibernate.HibernateUtil;
+import us.mn.state.health.lims.login.valueholder.UserSessionData;
 import us.mn.state.health.lims.upload.patient.CSVPatient;
 import us.mn.state.health.lims.upload.patient.PatientPersister;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.sql.Connection;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
@@ -24,10 +31,11 @@ public class UploadAction extends BaseAction {
     public static final String TEMPORARY_FILE_LOCATION = "/tmp";
     public static final String filePath = "/home/jss/open-elis-upload/";
 
-    public static int maxFileSize = 50 * 1024;
-    public static int maxMemSize = 4 * 1024;
+    public static int maxFileSize = 50 * 1024 * 1024;
+    public static int maxMemSize = 4 * 1024 * 1024;
 
     private static ExecutorService fileImportExecutorService;
+    private static Logger logger = Logger.getLogger(UploadAction.class);
 
     @Override
     protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -47,27 +55,38 @@ public class UploadAction extends BaseAction {
                 FileItem fi = (FileItem) fileItem;
                 if (!fi.isFormField()) {
                     String fileName = fi.getName();
-                    File file;
-                    if (fileName.lastIndexOf("\\") >= 0) {
-                        file = new File(filePath +
-                                fileName.substring(fileName.lastIndexOf("\\")));
-                    } else {
-                        file = new File(filePath +
-                                fileName.substring(fileName.lastIndexOf("\\") + 1));
-                    }
-                    fi.write(file);
+                    fi.write(getFile(fileName));
+
+                    UserSessionData userSessionData = (UserSessionData)request.getSession().getAttribute(USER_SESSION_DATA);
 
                     PatientPersister patientPersister = new PatientPersister();
                     FileImporter<CSVPatient> csvPatientFileImporter = new FileImporter<>();
-                    boolean hasStartedUpload = csvPatientFileImporter.importCSV(file, patientPersister, CSVPatient.class);
+                    boolean hasStartedUpload = csvPatientFileImporter.importCSV(fileName, getFile(fileName),
+                            patientPersister, CSVPatient.class, new ELISJDBCConnectionProvider(), userSessionData.getLoginName());
                     if (!hasStartedUpload)
                         return mapping.findForward(IActionConstants.FWD_VALIDATION_ERROR);
                 }
             }
         } catch (Exception ex) {
+            logger.error(ex);
             return mapping.findForward(IActionConstants.FWD_VALIDATION_ERROR);
         }
         return mapping.findForward(IActionConstants.FWD_SUCCESS);
+    }
+
+    private File getFile(String fileName) {
+        int indexForSlash = fileName.lastIndexOf("\\");
+        String substring = null;
+        if (indexForSlash >= 0) {
+            substring = fileName.substring(indexForSlash);
+        } else {
+            substring = fileName.substring(indexForSlash + 1);
+        }
+        String fileNameWithoutExtension = substring.substring(0, substring.lastIndexOf("."));
+        String fileExtension = substring.substring(substring.lastIndexOf("."));
+
+        String timestampForFile = new SimpleDateFormat("_yyyy-MM-dd_hh:mm:ss").format(new Date());
+        return new File(filePath + fileNameWithoutExtension + timestampForFile + fileExtension);
     }
 
     @Override
@@ -80,4 +99,11 @@ public class UploadAction extends BaseAction {
         return "action.upload";
     }
 
+}
+
+class ELISJDBCConnectionProvider implements JDBCConnectionProvider {
+    @Override
+    public Connection getConnection() {
+        return HibernateUtil.getSession().connection();
+    }
 }

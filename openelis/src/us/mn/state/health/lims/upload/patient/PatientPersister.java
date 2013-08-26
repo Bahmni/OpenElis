@@ -6,10 +6,14 @@ import org.bahmni.csv.RowResult;
 import org.bahmni.feed.openelis.feed.service.impl.BahmniPatientService;
 import org.bahmni.feed.openelis.utils.AuditingService;
 import org.hibernate.Transaction;
+import org.joda.time.LocalDate;
+import org.joda.time.Period;
+import org.joda.time.PeriodType;
 import us.mn.state.health.lims.address.daoimpl.AddressPartDAOImpl;
 import us.mn.state.health.lims.address.daoimpl.PersonAddressDAOImpl;
 import us.mn.state.health.lims.address.valueholder.AddressParts;
 import us.mn.state.health.lims.address.valueholder.PersonAddress;
+import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.healthcenter.daoimpl.HealthCenterDAOImpl;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
@@ -27,6 +31,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -102,10 +107,12 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
     private void populatePatient(String sysUserId, CSVPatient csvPatient, us.mn.state.health.lims.patient.valueholder.Patient patient)
             throws ParseException {
         patient.setGender(csvPatient.gender);
-        if(csvPatient.dob != null) {
+        if (csvPatient.dob != null && csvPatient.dob.trim().length() > 0) {
             patient.setBirthDate(new Timestamp(new SimpleDateFormat("dd-MM-yyyy").parse(csvPatient.dob).getTime()));
         } else {
-            patient.setBirthDateForDisplay(csvPatient.age);
+            Period ageAsPeriod = new Period(Integer.parseInt(csvPatient.age), 0, 0, 0, 0, 0, 0, 0, PeriodType.yearMonthDay());
+            LocalDate dateOfBirth = new LocalDate(new Date()).minus(ageAsPeriod);
+            patient.setBirthDateForDisplay(DateUtil.convertDateToAmbiguousStringDate(dateOfBirth.toDate()));
         }
         patient.setSysUserId(sysUserId);
         patient.setUuid(UUID.randomUUID().toString());
