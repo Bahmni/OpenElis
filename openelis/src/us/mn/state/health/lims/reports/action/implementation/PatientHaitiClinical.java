@@ -18,19 +18,15 @@ package us.mn.state.health.lims.reports.action.implementation;
 
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import org.apache.commons.validator.GenericValidator;
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.common.util.StringUtil;
-import us.mn.state.health.lims.referral.valueholder.Referral;
-import us.mn.state.health.lims.referral.valueholder.ReferralResult;
 import us.mn.state.health.lims.reports.action.implementation.reportBeans.HaitiClinicalPatientData;
 import us.mn.state.health.lims.result.valueholder.Result;
 import us.mn.state.health.lims.sample.util.AccessionNumberUtil;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus;
-import us.mn.state.health.lims.test.valueholder.Test;
 
 import java.util.*;
 
@@ -51,6 +47,9 @@ public class PatientHaitiClinical extends HaitiPatientReport implements IReportC
 		analysisStatusIds.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.ReferredIn)));
 		analysisStatusIds.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.TechnicalAcceptance)));
 		analysisStatusIds.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.Canceled)));
+		analysisStatusIds.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.TechnicalAcceptanceRO)));
+		analysisStatusIds.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.FinalizedRO)));
+		analysisStatusIds.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.BiologistRejectedRO)));
 
 	}
 
@@ -79,83 +78,11 @@ public class PatientHaitiClinical extends HaitiPatientReport implements IReportC
 				reportAnalysis = analysis;
 				HaitiClinicalPatientData resultsData = reportAnalysisResults();
 				reportItems.add(resultsData);
-
-				Referral referral = referralDao.getReferralByAnalysisId(reportAnalysis.getId());
-				if (referral != null) {
-					addReferredTests(referral, resultsData, REFERRAL_STATUS_ID.equals(analysis.getStatusId()));
-				}
 			}
 		}
 	}
 
-	private void addReferredTests(Referral referral, HaitiClinicalPatientData parentData, boolean parentStillReferred) {
-		List<ReferralResult> referralResults = referralResultDAO.getReferralResultsForReferral(referral.getId());
-
-		for (int i = 0; i < referralResults.size(); i++) {
-			if (referralResults.get(i).getResult() != null &&
-					//if referral has been canceled then don't show referred tests with no results
-					(parentStillReferred || !GenericValidator.isBlankOrNull(referralResults.get(i).getResult().getValue()))) {
-				// pick up note from 1st of possible multiple results
-				String referralNote = getResultNote(referralResults.get(i).getResult());
-				i = reportReferralResultValue(referralResults, i);
-				ReferralResult referralResult = referralResults.get(i);
-
-				HaitiClinicalPatientData data = new HaitiClinicalPatientData();
-				copyParentData(data, parentData);
-
-				data.setResult(reportReferralResultValue);
-				data.setNote(referralNote);
-				String testId = referralResult.getTestId();
-				if (!GenericValidator.isBlankOrNull(testId)) {
-					Test test = new Test();
-					test.setId(testId);
-					testDAO.getData(test);
-					data.setTestName(test.getReportingDescription());
-
-					String uom = getUnitOfMeasure(referralResult.getResult(), test);
-					if (reportReferralResultValue != null) {
-						data.setReferralResult(addIfNotEmpty(reportReferralResultValue, uom));
-					}
-					data.setTestRefRange(addIfNotEmpty(getRange(referralResult.getResult()), uom));
-					data.setTestSortOrder(GenericValidator.isBlankOrNull(test.getSortOrder()) ? Integer.MAX_VALUE : Integer.parseInt(test
-							.getSortOrder()));
-					data.setSectionSortOrder(reportAnalysis.getTestSection().getSortOrderInt());
-					data.setTestSection(reportAnalysis.getTestSection().getLocalizedName());
-				}
-
-				if (GenericValidator.isBlankOrNull(reportReferralResultValue)) {
-					sampleCompleteMap.put(reportSample.getAccessionNumber(), Boolean.FALSE);
-					data.setResult(StringUtil.getMessageForKey("report.test.status.inProgress") + (augmentResultWithFlag() ? getResultFlag(referralResult.getResult(), "A") : ""));
-				} else {
-					data.setResult(reportReferralResultValue + (augmentResultWithFlag() ? getResultFlag(referralResult.getResult(), "A"):""));
-				}
-
-				data.setAlerts(getResultFlag(referralResult.getResult(), "A"));
-				data.setHasRangeAndUOM(referralResult.getResult() != null && "N".equals(referralResult.getResult().getResultType()));
-
-				reportItems.add(data);
-			}
-		}
-	}
-
-	private void copyParentData(HaitiClinicalPatientData data, HaitiClinicalPatientData parentData) {
-		data.setContactInfo(parentData.getContactInfo());
-		data.setSiteInfo(parentData.getSiteInfo());
-		data.setReceivedDate(parentData.getReceivedDate());
-		data.setDob(parentData.getDob());
-		data.setAge(parentData.getAge());
-		data.setGender(parentData.getGender());
-		data.setNationalId(parentData.getNationalId());
-		data.setPatientName(parentData.getPatientName());
-		data.setFirstName(parentData.getFirstName());
-		data.setLastName(parentData.getLastName());
-		data.setDept(parentData.getDept());
-		data.setCommune(parentData.getCommune());
-		data.setStNumber(parentData.getStNumber());
-		data.setAccessionNumber(parentData.getAccessionNumber());
-	}
-
-	@Override
+    @Override
 	protected void postSampleBuild() {
 		if (reportItems.isEmpty()) {
 			HaitiClinicalPatientData reportItem = reportAnalysisResults();

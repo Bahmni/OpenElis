@@ -66,6 +66,7 @@ public class HaitiClinicalPatientData {
     private Panel panel;
     private String orderDate;
     private String patientSiteNumber;
+    private String primaryRelative;
     
     public String getReferralRefRange() {
         return referralRefRange;
@@ -434,4 +435,11 @@ public class HaitiClinicalPatientData {
 		this.patientSiteNumber = patientSiteNumber;
 	}
 
+    public String getPrimaryRelative() {
+        return primaryRelative;
+    }
+
+    public void setPrimaryRelative(String primaryRelative) {
+        this.primaryRelative = primaryRelative;
+    }
 }
