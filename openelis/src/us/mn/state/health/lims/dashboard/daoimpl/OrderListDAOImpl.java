@@ -16,18 +16,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.lang.Integer.SIZE;
 import static java.lang.Integer.parseInt;
 import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.*;
 import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.getStatusID;
 
 public class OrderListDAOImpl implements OrderListDAO {
 
+
+
     @Override
     public List<Order> getAllInProgress() {
         String pendingStatus = getPendingAnalysisStatus();
         String pendingValidationStatus = getPendingValidationAnalysisStatus();
-        String nonReferredStatus = getNonReferredAnalysisStatus();
+        String nonReferredStatus = getAllNonReferredAnalysisStatus();
         List<Order> orderList = new ArrayList<>();
 
         String sqlForPendingTests = "select " +
@@ -84,6 +85,8 @@ public class OrderListDAOImpl implements OrderListDAO {
                 String accession_number = resultSetForTotalTest.getString("accession_number");
                 Integer pendingTestCount = pendingTestsCountMap.get(accession_number) == null ? 0 : pendingTestsCountMap.get(accession_number);
                 Integer pendingValidationCount = pendingValidationTestsCountMap.get(accession_number) == null ? 0 : pendingValidationTestsCountMap.get(accession_number);
+                if(pendingTestCount == 0 && pendingValidationCount == 0)
+                    continue;
                 orderList.add(new Order(accession_number,
                         resultSetForTotalTest.getString("st_number"),
                         resultSetForTotalTest.getString("first_name"),
@@ -104,7 +107,7 @@ public class OrderListDAOImpl implements OrderListDAO {
     @Override
     public List<Order> getAllCompletedBefore24Hours() {
         List<Order> orderList = new ArrayList<>();
-        String inProgressAnalysisStatus = getInProgressAndReferredAnalysisStatus();
+        String allPendingAnalysisStatus = getAllPendingAnalysisStatus();
 
         String sql =
                 "select " +
@@ -122,10 +125,9 @@ public class OrderListDAOImpl implements OrderListDAO {
                         "inner join clinlims.patient_identity on patient_identity.patient_id = patient.id " +
                         "inner join clinlims.patient_identity_type on patient_identity.identity_type_id = patient_identity_type.id and patient_identity_type.identity_type='ST' " +
                         "inner join clinlims.sample_item on sample_item.samp_id = sample.id " +
-                        "left join clinlims.analysis as pending_analysis on pending_analysis.sampitem_id = sample_item.id and pending_analysis.status_id in (" + inProgressAnalysisStatus + ")" +
+                        "left join clinlims.analysis as pending_analysis on pending_analysis.sampitem_id = sample_item.id and pending_analysis.status_id in (" + allPendingAnalysisStatus + ")" +
                         "where age(sample.lastupdated) <= '1 day' " +
-                        "group by sample.accession_number, person.first_name, person.last_name, patient_identity.identity_data, sample_source.name " +
-                        "having count(pending_analysis.id) = 0 ";
+                        "group by sample.accession_number, person.first_name, person.last_name, patient_identity.identity_data, sample_source.name ";
 
         try {
             Connection connection = HibernateUtil.getSession().connection();
@@ -195,6 +197,10 @@ public class OrderListDAOImpl implements OrderListDAO {
         }
     }
 
+    private String getAllPendingAnalysisStatus() {
+        return getNonReferredInProgressAnalysisStatus().concat(",").concat(getReferredOutInProgessAnalysisStatus());
+    }
+
     private String getCompletedStatus() {
         return getStatusID(Finalized);
     }
@@ -207,12 +213,13 @@ public class OrderListDAOImpl implements OrderListDAO {
         return map;
     }
 
-    private String getNonReferredAnalysisStatus() {
+    private String getAllNonReferredAnalysisStatus() {
         List<Object> inProgressAnalysisStatus = new ArrayList<>();
         inProgressAnalysisStatus.add(parseInt(getStatusID(BiologistRejected)));
         inProgressAnalysisStatus.add(parseInt(getStatusID(NotTested)));
         inProgressAnalysisStatus.add(parseInt(getStatusID(TechnicalAcceptance)));
         inProgressAnalysisStatus.add(parseInt(getStatusID(TechnicalRejected)));
+        inProgressAnalysisStatus.add(parseInt(getStatusID(Finalized)));
         return StringUtils.join(inProgressAnalysisStatus.iterator(), ',');
     }
 
@@ -229,16 +236,21 @@ public class OrderListDAOImpl implements OrderListDAO {
         return StringUtils.join(inProgressAnalysisStatus.iterator(), ',');
     }
 
-    private String getInProgressAndReferredAnalysisStatus() {
-        String inProgressAnalysisStatus = getNonReferredAnalysisStatus();
-        String referredStatus = getReferredAnalysisStatus();
-        return inProgressAnalysisStatus.concat(",").concat(referredStatus);
-    }
-
-    private String getReferredAnalysisStatus() {
+    private String getReferredOutInProgessAnalysisStatus() {
         List<Object> referredStatus = new ArrayList<>();
         referredStatus.add(parseInt(getStatusID(ReferedOut)));
         referredStatus.add(parseInt(getStatusID(ReferredIn)));
+        referredStatus.add(parseInt(getStatusID(TechnicalAcceptanceRO)));
         return StringUtils.join(referredStatus.iterator(), ',');
     }
+
+    private String getNonReferredInProgressAnalysisStatus() {
+        List<Object> inProgressAnalysisStatus = new ArrayList<>();
+        inProgressAnalysisStatus.add(parseInt(getStatusID(BiologistRejected)));
+        inProgressAnalysisStatus.add(parseInt(getStatusID(NotTested)));
+        inProgressAnalysisStatus.add(parseInt(getStatusID(TechnicalAcceptance)));
+        inProgressAnalysisStatus.add(parseInt(getStatusID(TechnicalRejected)));
+        return StringUtils.join(inProgressAnalysisStatus.iterator(), ',');
+    }
+
 }

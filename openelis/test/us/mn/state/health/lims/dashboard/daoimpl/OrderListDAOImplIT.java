@@ -188,15 +188,6 @@ public class OrderListDAOImplIT extends IT {
         return test;
     }
 
-    private Result createResult(Analysis analysis) {
-        Result result = new Result();
-        result.setSysUserId("1");
-        result.setAnalysis(analysis);
-        result.setValue("10");
-        new ResultDAOImpl().insertData(result);
-        return result;
-    }
-
     private Patient createPatient(String firstName, String lastName, String patientIdentityData) {
         Person person = new Person();
         person.setFirstName(firstName);
