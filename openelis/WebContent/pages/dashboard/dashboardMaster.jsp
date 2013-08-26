@@ -23,11 +23,13 @@ path = request.getContextPath();
 basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
 %>
 
-<link rel="stylesheet" type="text/css" href="<%=basePath%>css/slickgrid/slick.grid.css" />
 <link rel="stylesheet" type="text/css" href="<%=basePath%>css/slickgrid/examples.css" />
 <link rel="stylesheet" type="text/css" href="<%=basePath%>css/jquery_ui/jquery-ui-1.8.16.custom.css" />
 <link rel="stylesheet" type="text/css" href="<%=basePath%>css/jquery_ui/jquery.ui.tabs.css" />
+<link rel="stylesheet" type="text/css" href="<%=basePath%>css/slickgrid/slick.grid.css" />
 <link rel="stylesheet" type="text/css" href="<%=basePath%>css/slickgrid/dashboard.css" />
+
+
 
 <script type="text/javascript" src="<%=basePath%>scripts/ui/jquery.event.drag-2.2.js"></script>
 <script type="text/javascript" src="<%=basePath%>scripts/ui/jquery.event.drop-2.2.js"></script>
@@ -53,7 +55,7 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
 
 <div>
     <div id="todayStat">
-        <table ">
+        <table>
             <tr>
                 <td>
                     <input id="refreshButton" type="button" value="Refresh">
@@ -86,7 +88,7 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
             <li><a href="#inProgressListContainer">In Progress</a></li>
             <li><a href="#completedListContainer">Completed</a></li>
          </ul>
-        <div id="inProgressListContainer"></div>
+        <div id="inProgressListContainer"><div id="inProgressListContainer-slick-grid"></div></div>
         <div id="completedListContainer"></div>
     </div>
 
@@ -116,7 +118,7 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
         autoHeight:true,
         enableCellNavigation: true,
         showHeaderRow: true,
-        headerRowHeight: 30,
+        headerRowHeight: 35,
         explicitInitialization: true
     };
 
@@ -131,7 +133,7 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
 
     jQuery(document).ready(function() {
         showStats()
-        inProgressObject = new order("#inProgressListContainer", "<%= inProgressOrderListJson %>", generateLinkForInProgressOrder, getColumnsForInProgressOrder);
+        inProgressObject = new order("#inProgressListContainer-slick-grid", "<%= inProgressOrderListJson %>", generateLinkForInProgressOrder, getColumnsForInProgressOrder);
         dataViewForInProgressTab = new Slick.Data.DataView({ inlineFilters: true });
         gridForInProgressOrder = new Slick.Grid(inProgressObject.div, dataViewForInProgressTab, inProgressObject.columns,options);
         createGrid(gridForInProgressOrder, dataViewForInProgressTab, inProgressObject, onRowSelection);
