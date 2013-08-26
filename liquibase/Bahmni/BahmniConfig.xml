@@ -558,80 +558,74 @@
             <column name="presentation_order" valueNumeric="10"/>
             <column name="action_url" value="/Upload.do"/>
             <column name="display_key" value="banner.menu.upload"/>
-            <column name="element_id" value="blah"/>
+            <column name="element_id" value="blah" />
             <column name="tool_tip_key" value="banner.menu.upload"/>
         </insert>
     </changeSet>
 
     <changeSet author="tw" id="37" context="bahmni">
-        <comment>Validation fails if active inventory items dont have receipt. Inactivating the inventory items
-        </comment>
-        <update schemaName="clinlims" tableName="inventory_item">
+        <comment>Validation fails if active inventory items dont have receipt. Inactivating the inventory items</comment>
+            <update schemaName="clinlims" tableName="inventory_item">
             <column name="is_active" value="N"/>
         </update>
     </changeSet>
 
     <changeSet author="tw" id="38" context="bahmni">
         <comment>Remove haiti test section menus for Test Results and Validation</comment>
-        <delete schemaName="clinlims" tableName="menu">
-            <where>element_id like '%menu_resultvalidation%' and element_id != 'menu_resultvalidation_All' and
-                element_id !='menu_resultvalidation'
-            </where>
-        </delete>
-        <delete schemaName="clinlims" tableName="menu">
-            <where>element_id like '%menu_results_%' and element_id !='menu_results_patient' and element_id !=
-                'menu_results_accession' and element_id != 'menu_results_status' and element_id != 'menu_results_search'
-            </where>
-        </delete>
+            <delete schemaName="clinlims" tableName="menu">
+                <where>element_id like '%menu_resultvalidation%' and element_id != 'menu_resultvalidation_All' and element_id !='menu_resultvalidation'</where>
+            </delete>
+            <delete schemaName="clinlims" tableName="menu">
+                <where>element_id like '%menu_results_%' and element_id !='menu_results_patient' and element_id != 'menu_results_accession' and element_id != 'menu_results_status' and element_id != 'menu_results_search'</where>
+            </delete>
     </changeSet>
 
     <changeSet author="tw" id="39" context="bahmni">
         <comment>Removing menus not needed for Bahmni</comment>
-        <delete schemaName="clinlims" tableName="menu">
-            <where>element_id = 'menu_inventory'</where>
-        </delete>
-        <delete schemaName="clinlims" tableName="menu">
-            <where>element_id like '%menu_workplan%'</where>
-        </delete>
-        <delete schemaName="clinlims" tableName="menu">
-            <where>element_id like '%menu_reports_aggregate%'</where>
-        </delete>
+            <delete schemaName="clinlims" tableName="menu">
+                <where>element_id = 'menu_inventory'</where>
+            </delete>
+            <delete schemaName="clinlims" tableName="menu">
+                <where>element_id like '%menu_workplan%'</where>
+            </delete>
+            <delete schemaName="clinlims" tableName="menu">
+                <where>element_id like '%menu_reports_aggregate%'</where>
+            </delete>
     </changeSet>
 
     <changeSet author="tw" id="40" context="bahmni">
         <comment>Adds the referredOut menu item for Bahmni</comment>
         <insert schemaName="clinlims" tableName="menu">
-            <column name="id" valueNumeric=" nextval( 'menu_seq' ) "/>
-            <column name="parent_id"
-                    valueNumeric=" ( select id from clinlims.menu where element_id = 'menu_results' ) "/>
-            <column name="presentation_order" valueNumeric="2"/>
-            <column name="element_id" value="menu_results_referredOut"/>
+            <column name="id" valueNumeric=" nextval( 'menu_seq' ) " />
+            <column name="parent_id" valueNumeric=" ( select id from clinlims.menu where element_id = 'menu_results' ) " />
+            <column name="presentation_order" valueNumeric="2" />
+            <column name="element_id" value="menu_results_referredOut" />
             <column name="action_url" value="/ReferredOutTests.do"/>
-            <column name="display_key" value="banner.menu.referredOut"/>
-            <column name="tool_tip_key" value="tooltip.banner.menu.referredOut"/>
+            <column name="display_key" value="banner.menu.referredOut" />
+            <column name="tool_tip_key" value="tooltip.banner.menu.referredOut" />
         </insert>
     </changeSet>
 
-    <changeSet author="tw" id="41" context="bahmni">
+     <changeSet author="tw" id="41" context="bahmni">
         <insert schemaName="clinlims" tableName="menu">
-            <column name="id" valueNumeric=" nextval( 'menu_seq' ) "/>
+            <column name="id" valueNumeric=" nextval( 'menu_seq' ) " />
             <column name="parent_id"
-                    valueNumeric=" ( select id from clinlims.menu where element_id = 'menu_reports' ) "/>
-            <column name="presentation_order" valueNumeric="2"/>
-            <column name="element_id" value="menu_reports_aggregate"/>
-            <column name="display_key" value="openreports.aggregate.title"/>
-            <column name="tool_tip_key" value="tooltip.openreports.aggregate.title"/>
+                valueNumeric=" ( select id from clinlims.menu where element_id = 'menu_reports' ) " />
+            <column name="presentation_order" valueNumeric="2" />
+            <column name="element_id" value="menu_reports_aggregate" />
+            <column name="display_key" value="openreports.aggregate.title" />
+            <column name="tool_tip_key" value="tooltip.openreports.aggregate.title" />
         </insert>
         <insert schemaName="clinlims" tableName="menu">
-            <column name="id" valueNumeric=" nextval( 'menu_seq' ) "/>
+            <column name="id" valueNumeric=" nextval( 'menu_seq' ) " />
             <column name="parent_id"
-                    valueNumeric=" ( select id from clinlims.menu where element_id = 'menu_reports_aggregate' ) "/>
-            <column name="presentation_order" valueNumeric="2"/>
-            <column name="element_id" value="menu_reports_aggregate_all"/>
+                valueNumeric=" ( select id from clinlims.menu where element_id = 'menu_reports_aggregate' ) " />
+            <column name="presentation_order" valueNumeric="2" />
+            <column name="element_id" value="menu_reports_aggregate_all" />
             <column name="action_url"
-                    value="/Report.do?type=indicator&amp;report=indicatorHaitiClinicalAllTests"/>
-            <column name="display_key" value="openreports.all.tests.aggregate"/>
-            <column name="tool_tip_key" value="tooltip.openreports.all.tests.aggregate"/>
+                value="/Report.do?type=indicator&amp;report=indicatorHaitiClinicalAllTests" />
+            <column name="display_key" value="openreports.all.tests.aggregate" />
+            <column name="tool_tip_key" value="tooltip.openreports.all.tests.aggregate" />
         </insert>
     </changeSet>
     <changeSet author="tw" id="42" context="bahmni">
