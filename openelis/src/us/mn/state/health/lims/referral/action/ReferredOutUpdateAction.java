@@ -52,6 +52,7 @@ import us.mn.state.health.lims.referral.daoimpl.ReferralResultDAOImpl;
 import us.mn.state.health.lims.referral.valueholder.Referral;
 import us.mn.state.health.lims.referral.valueholder.ReferralResult;
 import us.mn.state.health.lims.result.action.util.ResultsLoadUtility;
+import us.mn.state.health.lims.result.valueholder.Result;
 import us.mn.state.health.lims.result.valueholder.ResultType;
 import us.mn.state.health.lims.resultlimits.valueholder.ResultLimit;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
@@ -290,16 +291,17 @@ public class ReferredOutUpdateAction extends BaseAction {
                 ResultsLoadUtility.getResultReferenceTableId(),
                 RESULT_SUBJECT,
                 currentUserId);
+        if (!referralItem.getReferredResult().isEmpty()) {
+            createReferralResults(referralItem, referralSet);
 
-        createReferralResults(referralItem, referralSet);
-
-        if (referralItem.getAdditionalTests() != null) {
-            for (ReferredTest existingAdditionalTest : referralItem.getAdditionalTests()) {
-                // nothing to do, because on insert we reused what we could
-                // then deleted all old referralResults (see below).
-                // removableReferralResults.add(getRemovableReferralableResults(existingAdditionalTest));
-                if (!existingAdditionalTest.isRemove()) {
-                    createReferralResults(existingAdditionalTest, referralSet);
+            if (referralItem.getAdditionalTests() != null) {
+                for (ReferredTest existingAdditionalTest : referralItem.getAdditionalTests()) {
+                    // nothing to do, because on insert we reused what we could
+                    // then deleted all old referralResults (see below).
+                    // removableReferralResults.add(getRemovableReferralableResults(existingAdditionalTest));
+                    if (!existingAdditionalTest.isRemove()) {
+                        createReferralResults(existingAdditionalTest, referralSet);
+                    }
                 }
             }
         }
@@ -312,9 +314,19 @@ public class ReferredOutUpdateAction extends BaseAction {
         }
 
         // any leftovers get deleted
-        removableReferralResults.addAll(referralSet.getDbReferralResults());
+        removeReferralResults(removableReferralResults, referralSet);
 
         return referralSet;
+    }
+
+    private void removeReferralResults(ArrayList<ReferralResult> removableReferralResults, ReferralSet referralSet) {
+        List<ReferralResult> dbReferralResults = referralSet.getDbReferralResults();
+        for (ReferralResult dbReferralResult : dbReferralResults) {
+            Result result = dbReferralResult.getResult();
+            if (result.getValue()!= null && !result.getValue().isEmpty()){
+                removableReferralResults.add(dbReferralResult);
+            }
+        }
     }
 
     /**
