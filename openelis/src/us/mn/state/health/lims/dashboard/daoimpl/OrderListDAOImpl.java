@@ -22,14 +22,15 @@ import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.get
 
 public class OrderListDAOImpl implements OrderListDAO {
 
-
+    public OrderListDAOImpl() {
+    }
 
     @Override
     public List<Order> getAllInProgress() {
+        List<Order> orderList = new ArrayList<>();
         String pendingStatus = getPendingAnalysisStatus();
         String pendingValidationStatus = getPendingValidationAnalysisStatus();
         String nonReferredStatus = getAllNonReferredAnalysisStatus();
-        List<Order> orderList = new ArrayList<>();
 
         String sqlForPendingTests = "select " +
                 "sample.accession_number as accession_number, " +
@@ -68,6 +69,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "inner join test on test.id = analysis.test_id " +
                 "where analysis.status_id in (" + nonReferredStatus + ") " +
                 "group by sample.accession_number, person.first_name, person.last_name, sample_source.name, patient_identity.identity_data";
+
         try {
             Connection connection = HibernateUtil.getSession().connection();
             PreparedStatement queryForPendingTest = connection.prepareStatement(sqlForPendingTests);
@@ -78,14 +80,14 @@ public class OrderListDAOImpl implements OrderListDAO {
             ResultSet resultSetForPendingValidation = queryForPendingValidationTest.executeQuery();
             ResultSet resultSetForTotalTest = queryForTotalTest.executeQuery();
 
-            Map<String, Integer> pendingTestsCountMap = createMap(resultSetForPendingTest);
-            Map<String, Integer> pendingValidationTestsCountMap = createMap(resultSetForPendingValidation);
+            Map pendingTestsCountMap = createMap(resultSetForPendingTest);
+            Map pendingValidationTestsCountMap = createMap(resultSetForPendingValidation);
 
             while (resultSetForTotalTest.next()) {
                 String accession_number = resultSetForTotalTest.getString("accession_number");
-                Integer pendingTestCount = pendingTestsCountMap.get(accession_number) == null ? 0 : pendingTestsCountMap.get(accession_number);
-                Integer pendingValidationCount = pendingValidationTestsCountMap.get(accession_number) == null ? 0 : pendingValidationTestsCountMap.get(accession_number);
-                if(pendingTestCount == 0 && pendingValidationCount == 0)
+                Integer pendingTestCount = pendingTestsCountMap.get(accession_number) == null ? 0 : (Integer) pendingTestsCountMap.get(accession_number);
+                Integer pendingValidationCount = pendingValidationTestsCountMap.get(accession_number) == null ? 0 : (Integer) pendingValidationTestsCountMap.get(accession_number);
+                if (pendingTestCount == 0 && pendingValidationCount == 0)
                     continue;
                 orderList.add(new Order(accession_number,
                         resultSetForTotalTest.getString("st_number"),
@@ -96,58 +98,77 @@ public class OrderListDAOImpl implements OrderListDAO {
                         pendingValidationCount,
                         resultSetForTotalTest.getInt("total_test_count")));
             }
-
+            return orderList;
         } catch (SQLException e) {
             throw new LIMSRuntimeException(e);
         }
-
-        return orderList;
     }
 
-    @Override
     public List<Order> getAllCompletedBefore24Hours() {
         List<Order> orderList = new ArrayList<>();
-        String allPendingAnalysisStatus = getAllPendingAnalysisStatus();
+        String nonReferredStatus = getAllNonReferredAnalysisStatus();
+        String completedStatus = getCompletedStatus();
 
-        String sql =
-                "select " +
-                        "sample.accession_number as accession_number, " +
-                        "person.first_name as first_name, " +
-                        "person.last_name as last_name, " +
-                        "patient_identity.identity_data as st_number, " +
-                        "sample_source.name as sample_source, " +
-                        "count(pending_analysis.id) " +
-                        "from clinlims.sample as sample " +
-                        "left outer join clinlims.sample_Human as sampleHuman on sampleHuman.samp_Id = sample.id " +
-                        "left  join clinlims.sample_source on sample_source.id = sample.sample_source_id " +
-                        "inner join clinlims.patient as patient on sampleHuman.patient_id = patient.id " +
-                        "inner join clinlims.person as person on patient.person_id = person.id " +
-                        "inner join clinlims.patient_identity on patient_identity.patient_id = patient.id " +
-                        "inner join clinlims.patient_identity_type on patient_identity.identity_type_id = patient_identity_type.id and patient_identity_type.identity_type='ST' " +
-                        "inner join clinlims.sample_item on sample_item.samp_id = sample.id " +
-                        "left join clinlims.analysis as pending_analysis on pending_analysis.sampitem_id = sample_item.id and pending_analysis.status_id in (" + allPendingAnalysisStatus + ")" +
-                        "where age(sample.lastupdated) <= '1 day' " +
-                        "group by sample.accession_number, person.first_name, person.last_name, patient_identity.identity_data, sample_source.name ";
+        String sqlForCompletedTests = "select " +
+                "sample.accession_number as accession_number, " +
+                "count(analysis.test_id) as count " +
+                "from Sample as sample " +
+                "inner join sample_item on sample_item.samp_id = sample.id " +
+                "inner join analysis on analysis.sampitem_id = sample_item.id " +
+                "where analysis.status_id in (" + completedStatus + ") " +
+                "and age(sample.lastupdated) <= '1 day' "+
+                "group by sample.accession_number";
+
+        String sqlForTotalTests = "select " +
+                "sample.accession_number as accession_number, " +
+                "person.first_name as first_name, " +
+                "person.last_name as last_name, " +
+                "patient_identity.identity_data as st_number, " +
+                "sample_source.name as sample_source, " +
+                "count(test.id) as total_test_count " +
+                "from Sample as sample " +
+                "left outer join Sample_Human as sampleHuman on sampleHuman.samp_Id = sample.id " +
+                "left  join sample_source on sample_source.id = sample.sample_source_id " +
+                "inner join Patient as patient on sampleHuman.patient_id = patient.id " +
+                "inner join Person as person on patient.person_id = person.id " +
+                "inner join patient_identity on patient_identity.patient_id = patient.id " +
+                "inner join patient_identity_type on patient_identity.identity_type_id = patient_identity_type.id and patient_identity_type.identity_type='ST' " +
+                "inner join sample_item on sample_item.samp_id = sample.id " +
+                "inner join analysis on analysis.sampitem_id = sample_item.id " +
+                "inner join test on test.id = analysis.test_id " +
+                "where analysis.status_id in (" + nonReferredStatus + ") " +
+                "group by sample.accession_number, person.first_name, person.last_name, sample_source.name, patient_identity.identity_data";
 
         try {
             Connection connection = HibernateUtil.getSession().connection();
-            PreparedStatement query = connection.prepareStatement(sql);
+            PreparedStatement queryForCompletedTests = connection.prepareStatement(sqlForCompletedTests);
+            PreparedStatement queryForTotalTest = connection.prepareStatement(sqlForTotalTests);
 
-            ResultSet resultSet = query.executeQuery();
-            while (resultSet.next()) {
-                orderList.add(new Order(resultSet.getString("accession_number"),
-                        resultSet.getString("st_number"),
-                        resultSet.getString("first_name"),
-                        resultSet.getString("last_name"),
-                        resultSet.getString("sample_source")));
+            ResultSet resultSetForCompletedTests = queryForCompletedTests.executeQuery();
+            ResultSet resultSetForTotalTest = queryForTotalTest.executeQuery();
+
+            Map completedTestsCountMap = createMap(resultSetForCompletedTests);
+
+            while (resultSetForTotalTest.next()) {
+                String accession_number = resultSetForTotalTest.getString("accession_number");
+                int totalTestsCount = Integer.parseInt(resultSetForTotalTest.getString("total_test_count"));
+                Integer completedTestsCount = completedTestsCountMap.get(accession_number) == null ? 0 : (Integer) completedTestsCountMap.get(accession_number);
+
+                if (completedTestsCount == totalTestsCount) {
+                    orderList.add(new Order(accession_number,
+                            resultSetForTotalTest.getString("st_number"),
+                            resultSetForTotalTest.getString("first_name"),
+                            resultSetForTotalTest.getString("last_name"),
+                            resultSetForTotalTest.getString("sample_source")));
+                }
             }
+            return orderList;
         } catch (SQLException e) {
             throw new LIMSRuntimeException(e);
         }
-
-        return orderList;
     }
 
+    @Override
     public TodayStat getTodayStats() {
         String sql = "select accession_number,  \n" +
                 "                    sum(case when status='pendingTest' then 1 else 0 end) as pending_tests,  \n" +
@@ -158,8 +179,8 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "                        select accession_number,  \n" +
                 "                        CASE  \n" +
                 "                            when analysis.status_id  in (" + getPendingAnalysisStatus() + ") then 'pendingTest'  \n" +
-                "                            when analysis.status_id  in ("+ getPendingValidationAnalysisStatus()+" ) then 'pendingValidation'  \n" +
-                "                            when analysis.status_id  in (" + getCompletedStatus() +" ) then 'completed'  \n" +
+                "                            when analysis.status_id  in (" + getPendingValidationAnalysisStatus() + " ) then 'pendingValidation'  \n" +
+                "                            when analysis.status_id  in (" + getCompletedStatus() + " ) then 'completed'  \n" +
                 "                            else 'other' \n" +
                 "                        END as status from sample\n" +
                 "                        join sample_item on sample_item.samp_id = sample.id\n" +
@@ -173,20 +194,20 @@ public class OrderListDAOImpl implements OrderListDAO {
             PreparedStatement query = connection.prepareStatement(sql);
             ResultSet resultSet = query.executeQuery();
             TodayStat todayStat = new TodayStat();
-            while(resultSet.next()){
+            while (resultSet.next()) {
                 int pendingTestsCount = Integer.parseInt(resultSet.getString("pending_tests"));
                 int pendingValidationCount = Integer.parseInt(resultSet.getString("pending_validation"));
                 int completedTestsCount = Integer.parseInt(resultSet.getString("completed"));
                 todayStat.incrementSamplesCount();
-                if(pendingTestsCount != 0){
+                if (pendingTestsCount != 0) {
                     todayStat.incrementPendingTestsCount();
                     continue;
                 }
-                if(pendingValidationCount != 0){
+                if (pendingValidationCount != 0) {
                     todayStat.incrementPendingValidationCount();
                     continue;
                 }
-                if(completedTestsCount != 0){
+                if (completedTestsCount != 0) {
                     todayStat.incrementCompletedTestsCount();
                     continue;
                 }
@@ -195,10 +216,6 @@ public class OrderListDAOImpl implements OrderListDAO {
         } catch (SQLException e) {
             throw new LIMSRuntimeException(e);
         }
-    }
-
-    private String getAllPendingAnalysisStatus() {
-        return getNonReferredInProgressAnalysisStatus().concat(",").concat(getReferredOutInProgessAnalysisStatus());
     }
 
     private String getCompletedStatus() {
@@ -235,22 +252,4 @@ public class OrderListDAOImpl implements OrderListDAO {
         inProgressAnalysisStatus.add(parseInt(getStatusID(BiologistRejected)));
         return StringUtils.join(inProgressAnalysisStatus.iterator(), ',');
     }
-
-    private String getReferredOutInProgessAnalysisStatus() {
-        List<Object> referredStatus = new ArrayList<>();
-        referredStatus.add(parseInt(getStatusID(ReferedOut)));
-        referredStatus.add(parseInt(getStatusID(ReferredIn)));
-        referredStatus.add(parseInt(getStatusID(TechnicalAcceptanceRO)));
-        return StringUtils.join(referredStatus.iterator(), ',');
-    }
-
-    private String getNonReferredInProgressAnalysisStatus() {
-        List<Object> inProgressAnalysisStatus = new ArrayList<>();
-        inProgressAnalysisStatus.add(parseInt(getStatusID(BiologistRejected)));
-        inProgressAnalysisStatus.add(parseInt(getStatusID(NotTested)));
-        inProgressAnalysisStatus.add(parseInt(getStatusID(TechnicalAcceptance)));
-        inProgressAnalysisStatus.add(parseInt(getStatusID(TechnicalRejected)));
-        return StringUtils.join(inProgressAnalysisStatus.iterator(), ',');
-    }
-
 }

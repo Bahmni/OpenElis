@@ -54,7 +54,6 @@ public class OrderListDAOImplIT extends IT {
     private String patientIdentityData;
     private String firstName;
     private String lastName;
-    private OrderListDAOImpl orderListDAO;
     private Patient patient;
     private List<Test> allTests;
 
@@ -66,7 +65,6 @@ public class OrderListDAOImplIT extends IT {
         patientIdentityData = "TEST1234567";
         firstName = "Some";
         lastName = "One";
-        orderListDAO = new OrderListDAOImpl();
         patient = createPatient(firstName, lastName, patientIdentityData);
         TestDAOImpl testDAO = createTests("SampleTest1", "SampleTest2", "SampleTest3", "SampleTest4");
         allTests = testDAO.getAllTests(true);
@@ -82,28 +80,38 @@ public class OrderListDAOImplIT extends IT {
         createAnalysis(sampleItem, ReferedOut, "Hematology", allTests.get(2));
         createAnalysis(sampleItem, BiologistRejected, "Hematology", allTests.get(3));
 
-        List<Order> inProgress = orderListDAO.getAllInProgress();
+        List<Order> inProgress = new OrderListDAOImpl().getAllInProgress();
 
         assertTrue(inProgress.contains(new Order(accessionNumber, patientIdentityData, firstName, lastName, sample.getSampleSource().getName(), 2, 1, 3)));
     }
 
     @org.junit.Test
     public void getAllCompleted_shouldReturnAllOrdersWhichAreCompletedBefore24Hours() throws ParseException {
-        Sample sample1 = createSample(accessionNumber2, false);
+        Sample sample1 = createSample(accessionNumber, true);
         createSampleHuman(sample1, patient);
         SampleItem sampleItem1 = createSampleItem(sample1);
-        createAnalysis(sampleItem1, StatusOfSampleUtil.AnalysisStatus.Finalized, "Hematology", allTests.get(1));
 
-        Sample sample2 = createSample(accessionNumber, true);
+        Sample sample2 = createSample(accessionNumber2, true);
         createSampleHuman(sample2, patient);
         SampleItem sampleItem2 = createSampleItem(sample2);
-        createAnalysis(sampleItem2, StatusOfSampleUtil.AnalysisStatus.Finalized, "Hematology", allTests.get(0));
-        createAnalysis(sampleItem2, StatusOfSampleUtil.AnalysisStatus.Canceled, "Hematology", allTests.get(1));
 
-        List<Order> completedOrders = orderListDAO.getAllCompletedBefore24Hours();
+        Sample sample3 = createSample(accessionNumber3, false);
+        createSampleHuman(sample3, patient);
+        SampleItem sampleItem3 = createSampleItem(sample3);
 
-        assertTrue(completedOrders.contains(new Order(accessionNumber, patientIdentityData, firstName, lastName, sample2.getSampleSource().getName())));
-        assertFalse(completedOrders.contains(new Order(accessionNumber2, patientIdentityData, firstName, lastName, sample1.getSampleSource().getName())));
+        createAnalysis(sampleItem1, StatusOfSampleUtil.AnalysisStatus.Finalized, "Hematology", allTests.get(0));
+        createAnalysis(sampleItem1, StatusOfSampleUtil.AnalysisStatus.Finalized, "Hematology", allTests.get(1));
+
+        createAnalysis(sampleItem2, StatusOfSampleUtil.AnalysisStatus.NotTested, "Hematology", allTests.get(1));
+        createAnalysis(sampleItem2, StatusOfSampleUtil.AnalysisStatus.Finalized, "Hematology", allTests.get(2));
+
+        createAnalysis(sampleItem3, StatusOfSampleUtil.AnalysisStatus.Finalized, "Hematology", allTests.get(0));
+
+        List<Order> completedOrders = new OrderListDAOImpl().getAllCompletedBefore24Hours();
+
+        assertTrue(completedOrders.contains(new Order(accessionNumber, patientIdentityData, firstName, lastName, sample1.getSampleSource().getName())));
+        assertFalse(completedOrders.contains(new Order(accessionNumber2, patientIdentityData, firstName, lastName, sample2.getSampleSource().getName())));
+        assertFalse(completedOrders.contains(new Order(accessionNumber3, patientIdentityData, firstName, lastName, sample3.getSampleSource().getName())));
     }
 
     @org.junit.Test
@@ -120,7 +128,7 @@ public class OrderListDAOImplIT extends IT {
         createAnalysis(sampleItem1, StatusOfSampleUtil.AnalysisStatus.Canceled, "Hematology", allTests.get(1));
         createAnalysis(sampleItem2, StatusOfSampleUtil.AnalysisStatus.NotTested, "Hematology", allTests.get(1));
 
-        List<Order> inProgressOrder = orderListDAO.getAllInProgress();
+        List<Order> inProgressOrder = new OrderListDAOImpl().getAllInProgress();
 
         assertFalse(inProgressOrder.contains(new Order(accessionNumber, patientIdentityData, firstName, lastName, sample1.getSampleSource().getName())));
     }
@@ -144,7 +152,7 @@ public class OrderListDAOImplIT extends IT {
         createAnalysis(sampleItem2,StatusOfSampleUtil.AnalysisStatus.Finalized,"Hematology",allTests.get(2));
         createAnalysis(sampleItem3,StatusOfSampleUtil.AnalysisStatus.Finalized,"Hematology",allTests.get(3));
 
-        TodayStat todayStats = orderListDAO.getTodayStats();
+        TodayStat todayStats = new OrderListDAOImpl().getTodayStats();
 
         assertEquals(1,todayStats.getAwaitingTestCount());
         assertEquals(1,todayStats.getAwaitingValidationCount());

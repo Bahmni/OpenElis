@@ -8,6 +8,7 @@ import org.bahmni.feed.openelis.ObjectMapperRepository;
 import org.codehaus.jackson.JsonGenerationException;
 import org.json.simple.JSONObject;
 import us.mn.state.health.lims.common.action.BaseAction;
+import us.mn.state.health.lims.dashboard.dao.OrderListDAO;
 import us.mn.state.health.lims.dashboard.daoimpl.OrderListDAOImpl;
 import us.mn.state.health.lims.dashboard.valueholder.Order;
 import us.mn.state.health.lims.dashboard.valueholder.TodayStat;
@@ -18,7 +19,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class DashboardAction extends BaseAction {
-    private OrderListDAOImpl orderListDAO = new OrderListDAOImpl();
+    private OrderListDAO orderListDAO = new OrderListDAOImpl();
 
     public DashboardAction() {
     }
