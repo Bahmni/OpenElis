@@ -128,7 +128,7 @@ table {
 }
 th {
   color: #555555;
-  background-color:#dddddd;
+  background-color:#f1f1f1;
   text-align: left;
   padding:5px  0px 5px 5px ;
 }
@@ -144,7 +144,7 @@ caption {
   color: #555555;
 }
 hr{
-  border:1px dotter #000000;
+  border:1px dotted #cecece;
   margin:10px 0px;
 }
 hr.hr-style-1 {
@@ -158,7 +158,7 @@ hr.hr-style-1 {
 input[type="button"],button{
   @include background-image(linear-gradient(white, #eaeaea));
   @include border-radius(6px, 6px);
-  padding:5px 8px;
+  padding:5px 10px;
   border:1px solid #cccccc;
   cursor:pointer !important;
   color:#555555;
@@ -172,9 +172,19 @@ input[type="button"],button{
   &.primary-btn{
       @include background-image(linear-gradient(#a1d030, #88af28));
       color:#fff; 
-      @include text-shadow(rgba(blue, 0.2) 1px 1px 0, rgba(blue, 0.2) 2px 2px 0, rgba(blue, 0.2) 3px 3px 0); 
+      @include text-shadow(rgba(blue, 0.2) 1px 1px 0, rgba(blue, 0.2) 2px 2px 0, rgba(blue, 0.2) 3px 3px 0);
+      border: 1px solid #88af28; 
+      &:hover{
+        background: #8eb82a;
+        border-color: #779b23;
+      }
       &[disabled=disabled]{
         @include text-shadow(none);
+        border-color:#cecece;
+        &:hover{
+          background: none;
+          border-color: #cecece;
+        }
     }
   }
   &[disabled=disabled],button[disabled=disabled]{
@@ -582,17 +592,17 @@ table.data {
   padding : 6px;
 }
 tr.evenRow {
-  background-color: #C8DADA;
+  background-color: #FFFCF5;
 }
 tr.evenRowHead {
-  background-color: #B8CACA;
+  background-color: #FAECD2;
   padding: 20px;
 }
 tr.oddRow {
-  background-color: #F0F3F3;
+  background-color: #e2f1ff;
 }
 tr.oddRowHead {
-  background-color: #E0E3E3;
+  background-color: #CDE5FC;
 }
 td.InterstitialHead{
   padding: 10px;
@@ -1128,6 +1138,7 @@ input[type=radio] + label {
 }
 h1,h2{
   color:#333333;
+  margin-bottom: 12px;
 }
 h2{
     color: #333333;
@@ -1135,9 +1146,11 @@ h2{
     border-radius: 5px;
     padding: 2px 5px;
     border: 1px solid #cecece;
-    margin-bottom: 10px;
     margin-top: 10px;
     width: 98.5%;
+}
+p{
+  margin-bottom:14px;
 }
 .form-item{
     padding:5px 0px;
@@ -1156,4 +1169,14 @@ h2{
 }
 #PatientDetail table tr td{
   padding-right:10px;
+}
+#PatientPage{
+  .edit-sample{
+    tr th{
+        border:1px solid #cecece;
+    }
+    }
+}
+@media screen and (max-width:1200px){
+  body{width:1200px;}
 }

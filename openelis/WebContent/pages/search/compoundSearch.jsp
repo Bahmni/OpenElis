@@ -222,7 +222,7 @@ function toUppercase(element){
 <div id="PatientPage" class="colorFill" style="display:inline" >
 
 	<h2><bean:message key="sample.entry.search"/></h2>
-	<table style="width:80%">
+	<table style="width:80%" class="edit-sample">
 	<tr>
 		<th rowspan="2" id="accession"><%=StringUtil.getContextualMessageForKey("quick.entry.accession.number")%></th>
 		<th colspan="3" id="patient" >Patient</th>
@@ -241,7 +241,7 @@ function toUppercase(element){
 	<tr >
 		<td headers="accession" >
 			<input name="searchAccession"
-			       style="display:table-cell; width:100%"
+			       style="display:table-cell; width:96%"
 			       id="searchAccessionID"
 			       maxlength="<%= Integer.toString(accessionNumberValidator.getMaxAccessionLength()) %>"
 			       onkeyup="validateEntrySize( this.value );"
@@ -253,7 +253,7 @@ function toUppercase(element){
 
 		<td headers="patient" >
 			<input name="searchPatientFirstName"
-				   style="display:table-cell; width:100%"
+				   style="display:table-cell; width:96%"
 			       id="firstName"
 			       class="text"
 			       type="text"
@@ -263,7 +263,7 @@ function toUppercase(element){
 		</td>
 		<td headers="patient" >
         			<input name="searchPatientLastName"
-        			       style="display:table-cell; width:100%"
+        			       style="display:table-cell; width:96%"
         			       id="lastName"
         			       class="text"
         			       type="text"
@@ -274,7 +274,7 @@ function toUppercase(element){
 		   <%} else {%>
 		        <td headers="patient" >
                      <input name="searchPatientLastName"
-                            style="display:table-cell; width:100%"
+                            style="display:table-cell; width:96%"
                            id="lastName"
                            class="text"
                            type="text"
@@ -284,7 +284,7 @@ function toUppercase(element){
                 </td>
                <td headers="patient" >
                         <input name="searchPatientFirstName"
-                               style="display:table-cell; width:100%"
+                               style="display:table-cell; width:96%"
                                id="firstName"
                                class="text"
                                type="text"
@@ -295,7 +295,7 @@ function toUppercase(element){
               <% } %>
 		<td headers="patient">
 			<input name="searchPatientID"
-			       style="display:table-cell; width:100%"
+			       style="display:table-cell; width:96%"
 			       id="patientID"
 			       class="text"
 			       type="text"

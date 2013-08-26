@@ -168,12 +168,12 @@ function onPrint(newWindow){
 <html:hidden name='<%=formName%>' property="reportRequest"/>
 
 <logic:equal  name='<%= formName %>' property='noRequestSpecifications' value="false">
-
+<p>
   <logic:equal name='<%=formName%>' property="useAccessionDirect" value="true">
-	  <div><strong><%= StringUtil.getContextualMessageForKey("report.enter.labNumber.headline") %></strong></div>
+	  <span><strong><%= StringUtil.getContextualMessageForKey("report.enter.labNumber.headline") %></strong>:</span>
   </logic:equal>
   
-  <div>
+  <span>
 	  <logic:equal name='<%=formName%>' property="useAccessionList" value="true">
 		<span style="padding-left: 10px"><%= StringUtil.getContextualMessageForKey("report.select.labNumber") %></span>
 		<html:select name="<%=formName%>" property="selectedAccession">
@@ -211,14 +211,16 @@ function onPrint(newWindow){
 			           styleClass="input-medium"
 			           maxlength='<%= Integer.toString(accessionValidator.getMaxAccessionLength())%>'/>
 	  </logic:equal>
-  </div>
+  </span>
   <logic:equal name='<%=formName%>' property="useHighAccessionDirect" value="true">
-    <div><span style="padding-left: 10px"><%= StringUtil.getContextualMessageForKey("report.enter.labNumber.detail") %></span></div>
+    <span style="padding-left: 10px"><%= StringUtil.getContextualMessageForKey("report.enter.labNumber.detail") %></span>
   </logic:equal>
+</p>
+<p>
   <logic:equal name='<%=formName%>' property="usePatientNumberDirect" value="true">
-	<div><strong><%= StringUtil.getContextualMessageForKey("report.enter.subjectNumber") %></strong></div>
+	<span><strong><%= StringUtil.getContextualMessageForKey("report.enter.subjectNumber") %>:</strong></span>
   </logic:equal>
-  <div>
+  <span>
 	  <logic:equal name='<%=formName%>' property="usePatientNumberList" value="true">
 	    <%= StringUtil.getContextualMessageForKey("report.select.subjectNumber") %>
 		<html:select name="<%=formName%>" property="selectedPatientNumber">
@@ -229,7 +231,7 @@ function onPrint(newWindow){
 		</html:select>
 	  </logic:equal>
 	  <logic:equal name='<%=formName%>' property="usePatientNumberDirect" value="true">
-		<div style="padding: 5px 0 0 10px"><html:text styleClass="input-medium" name='<%=formName%>' property="patientNumberDirect" /></div>
+		<span style="padding: 5px 0 0 10px"><html:text styleClass="input-medium" name='<%=formName%>' property="patientNumberDirect" /></span>
 	  </logic:equal>
 	  <logic:equal name='<%=formName%>' property="useUpperPatientNumberList" value="true">
 	    <%= StringUtil.getContextualMessageForKey("report.select.subjectNumber") %>
@@ -244,9 +246,9 @@ function onPrint(newWindow){
 	   <span style="padding-left: 10px"><%= StringUtil.getContextualMessageForKey("report.to") %></span>
 		<html:text styleClass="input-medium" name='<%=formName%>' property="patientUpperNumberDirect" />
 	  </logic:equal>
-  </div>
-  
-  <div>
+  </span>
+  </p>
+  <p>
 	  <logic:equal name='<%=formName%>' property="useLowerDateRange" value="true">
 	  	<span style="padding-left: 10px"><bean:message key="report.date.start"/>&nbsp;<bean:message key="sample.date.format"/></span>
 		<html:text styleClass="input-medium" name='<%=formName%>' property="lowerDateRange" onkeyup="addDateSlashes(this, event);" maxlength="10"/>
@@ -255,7 +257,7 @@ function onPrint(newWindow){
 	  	<span style="padding-left: 10px"><bean:message key="report.date.end"/></span>
 	  	<html:text styleClass="input-medium" name='<%=formName%>' property="upperDateRange" maxlength="10" onkeyup="addDateSlashes(this, event);"/>
 	  </logic:equal>
-  </div>
+  </p>
  
   <logic:equal name='<%=formName%>' property="useLocationCode" value="true">
   	<div>

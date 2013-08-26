@@ -506,7 +506,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 			<% } %>
 		</th>
 		<% }%>
-		<th width="2%" style="text-align: left">
+		<th width="5%" style="text-align: left">
 			<bean:message key="result.notes"/>
 		</th>
 	</tr>
