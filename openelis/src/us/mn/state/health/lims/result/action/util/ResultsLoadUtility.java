@@ -651,22 +651,18 @@ public class ResultsLoadUtility {
         // First we look for a limit with no age
         for (ResultLimit limit : resultLimits) {
             if (limit.ageLimitsAreDefault() && patient.getGender().equals(limit.getGender())) {
-
-                resultLimit = limit;
-                break;
+                return limit;
             }
         }
 
         // drop the age limit
-        if (resultLimit == null) {
             for (ResultLimit limit : resultLimits) {
                 if (patient.getGender().equals(limit.getGender())) {
-                    resultLimit = limit;
-                    break;
+                    return limit;
                 }
             }
-        }
-        return resultLimit == null ? defaultResultLimit(resultLimits) : resultLimit;
+
+        return defaultResultLimit(resultLimits);
     }
 
     /*
@@ -674,21 +670,16 @@ public class ResultsLoadUtility {
      */
     private ResultLimit ageAndGenderBasedResultLimit(List<ResultLimit> resultLimits, Patient patient) {
 
-        ResultLimit resultLimit = null;
-
         List<ResultLimit> fullySpecifiedLimits = new ArrayList<>();
         // first age and gender matter
         for (ResultLimit limit : resultLimits) {
             if (patient.getGender().equals(limit.getGender()) && !limit.ageLimitsAreDefault()) {
-
                 // if fully qualified don't retest for only part of the
                 // qualification
                 fullySpecifiedLimits.add(limit);
 
                 if (patient.getAge() >= limit.getMinAge() && patient.getAge() <= limit.getMaxAge()) {
-
-                    resultLimit = limit;
-                    break;
+                    return limit;
                 }
             }
         }
@@ -696,18 +687,15 @@ public class ResultsLoadUtility {
         resultLimits.removeAll(fullySpecifiedLimits);
 
         // second only age matters
-        if (resultLimit == null) {
             for (ResultLimit limit : resultLimits) {
-                if (!limit.ageLimitsAreDefault() && patient.getAge() >= limit.getMinAge() && patient.getAge() <= limit.getMaxAge()) {
-
-                    resultLimit = limit;
-                    break;
+                if (!limit.ageLimitsAreDefault() && limit.getGender().equals(" ") && patient.getAge() >= limit.getMinAge()
+                        && patient.getAge() <= limit.getMaxAge()) {
+                    return limit;
                 }
             }
-        }
 
         // third only gender matters
-        return resultLimit == null ? genderBasedResultLimit(resultLimits, patient) : resultLimit;
+        return genderBasedResultLimit(resultLimits, patient);
     }
 
     @SuppressWarnings("unchecked")
