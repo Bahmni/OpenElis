@@ -39,7 +39,7 @@ function generateLinkForCompletedOrder(order){
 }
 
 function generateLinkForInProgressOrder(order){
-    return "<a target='_blank' href='ResultValidationForAccessionNumber.do?accessionNumber=" + order.accessionNumber + "&type=Validation+By+Accession+Number&test='>Validate</a>";
+    return "<a target='validation' href='ResultValidationForAccessionNumber.do?accessionNumber=" + order.accessionNumber + "&type=Validation+By+Accession+Number&test='>Validate</a>";
 }
 
 function getColumnsForInProgressOrder() {
