@@ -678,4 +678,11 @@
             <column name="end_time" type="timestamp"/>
         </createTable>
     </changeSet>
+
+    <changeSet id="45" author="tw" context="bahmni">
+        <dropColumn columnName="stack_trace" schemaName="clinlims" tableName="import_status"/>
+        <addColumn schemaName="clinlims" tableName="import_status">
+            <column name="stack_trace" type="text" />
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

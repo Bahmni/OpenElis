@@ -1,7 +1,5 @@
 package us.mn.state.health.lims.healthcenter.valueholder;
 
-import us.mn.state.health.lims.common.valueholder.BaseObject;
-
 public class HealthCenter{
     private static final long serialVersionUID = 1L;
 
@@ -73,5 +71,11 @@ public class HealthCenter{
         result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + (active ? 1 : 0);
         return result;
+    }
+
+    public boolean matches(String healthCenter) {
+        if (healthCenter == null || healthCenter.trim().length() == 0)
+            return false;
+        return name.equals(healthCenter.trim());
     }
 }

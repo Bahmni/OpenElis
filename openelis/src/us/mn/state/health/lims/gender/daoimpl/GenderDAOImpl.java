@@ -166,23 +166,18 @@ public class GenderDAOImpl extends BaseDAOImpl implements GenderDAO {
 		}
 	}
 
-	public List getAllGenders() throws LIMSRuntimeException {		
-		List list = new Vector();
+	public List<Gender> getAllGenders() throws LIMSRuntimeException {
 		try {
 			String sql = "from Gender";
 			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
 			//query.setMaxResults(10);
 			//query.setFirstResult(3);
-			list = query.list();
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
+			return query.list();
 		} catch(Exception e) {
 			//bugzilla 2154
 			LogEvent.logError("GenderDAOImpl","getAllGenders()",e.toString());
 			throw new LIMSRuntimeException("Error in Gender getAllGenders()", e);
 		} 
-		
-		return list;
 	}
 
 	public List getPageOfGenders(int startingRecNo) throws LIMSRuntimeException {		

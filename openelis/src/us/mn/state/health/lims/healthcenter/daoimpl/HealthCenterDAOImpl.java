@@ -1,6 +1,5 @@
 package us.mn.state.health.lims.healthcenter.daoimpl;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
@@ -20,8 +19,6 @@ public class HealthCenterDAOImpl implements HealthCenterDAO {
         try {
             String sql = "from HealthCenter";
             Query query = HibernateUtil.getSession().createQuery(sql);
-            HibernateUtil.getSession().flush();
-            HibernateUtil.getSession().clear();
             return query.list();
         } catch (Exception e) {
             LogEvent.logErrorStack("HealthCenterDAOImpl", "getAll()", e);

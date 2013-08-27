@@ -62,4 +62,11 @@ public class Gender extends BaseObject {
 	public String toString() {
 		return "Gender { Id = " + id + ", description=" + description  + " }";
 	}
+
+    public boolean matches(String patientGender) {
+        if (patientGender == null || patientGender.trim().length() == 0)
+            return false;
+
+        return genderType.equalsIgnoreCase(patientGender.trim());
+    }
 }

@@ -5,7 +5,7 @@ import org.bahmni.csv.CSVHeader;
 
 public class CSVPatient extends CSVEntity {
     @CSVHeader(name="Health Centre")
-    public String heathCenter;
+    public String healthCenter;
     @CSVHeader(name="Registration No")
     public String registrationNumber;
     @CSVHeader(name="First Name")
