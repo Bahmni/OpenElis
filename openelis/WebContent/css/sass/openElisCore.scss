@@ -1132,7 +1132,9 @@ input[type=radio] + label {
 }
 /* End experimental CSS for use on updated OE forms */
 
-
+.hide{
+  display:none;
+}
 #ST_ID{
     width:99%;
 }
@@ -1159,6 +1161,11 @@ p{
     color: #ffa000;
     font-size:1.3em;
     padding:5px 0px;      
+}
+.required-message{
+  display: inline-block;
+  margin-left:20px;
+  color:#E4270D;
 }
 .text-gutter{
   margin-left:10px;
