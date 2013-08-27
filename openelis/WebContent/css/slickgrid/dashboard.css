@@ -9,7 +9,7 @@ table td{
     display: block;
     margin:0px auto;
 }
-#inProgressListContainer-slick-grid{
+#inProgressListContainer-slick-grid,#completedListContainer-slick-grid{
     border:1px solid #cecece;
 }
 #patientDetails {
@@ -50,7 +50,10 @@ table td{
 }
 #inProgressListContainer,#completedListContainer{
     width:1202px;
-	padding-bottom: 50px;
+	padding-bottom: 25px;
+}
+#completedListContainer{
+    width:751px;
 }
 #patientDetails.hide{
     display:none;

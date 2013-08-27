@@ -89,7 +89,7 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
             <li><a href="#completedListContainer">Completed</a></li>
          </ul>
         <div id="inProgressListContainer"><div id="inProgressListContainer-slick-grid"></div></div>
-        <div id="completedListContainer"></div>
+        <div id="completedListContainer"><div id="completedListContainer-slick-grid"></div></div>
     </div>
 
     <div id="patientDetails" class="hide">
@@ -138,7 +138,7 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
         gridForInProgressOrder = new Slick.Grid(inProgressObject.div, dataViewForInProgressTab, inProgressObject.columns,options);
         createGrid(gridForInProgressOrder, dataViewForInProgressTab, inProgressObject, onRowSelection);
 
-        completedOrderObject = new order("#completedListContainer", "<%= completedOrderListJson %>", generateLinkForCompletedOrder, getColumnsForCompletedOrder);
+        completedOrderObject = new order("#completedListContainer-slick-grid", "<%= completedOrderListJson %>", generateLinkForCompletedOrder, getColumnsForCompletedOrder);
         dataViewForCompletedTab = new Slick.Data.DataView();
         gridForCompletedOrder = new Slick.Grid(completedOrderObject.div, dataViewForCompletedTab, completedOrderObject.columns, options);
         createGrid(gridForCompletedOrder, dataViewForCompletedTab, completedOrderObject, onRowSelection);

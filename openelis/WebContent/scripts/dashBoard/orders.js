@@ -57,11 +57,11 @@ function getColumnsForInProgressOrder() {
 
 function getColumnsForCompletedOrder(){
     return [
-        {id: "accessionNumber", name: "Accession Number", field: "accessionNumber", sortable: true, index:0, editor: Slick.Editors.Text,  minWidth:120},
-        {id: "stNumber", name: "PatientID", field: "stNumber", sortable: true,  index:1, editor: Slick.Editors.Text },
-        {id: "name", name: "PatientName", field: "name", sortable: true,  index:2,  editor: Slick.Editors.Text, minWidth:160},
-        {id: "source", name: "Source", field: "source", sortable: true,  index:3, editor: Slick.Editors.Text },
-        {id: "link", name: "PrintReport", field: "link",  cssClass: "cell-title", formatter: formatter, index:4, editor: Slick.Editors.Text, searchable: false}
+        {id: "accessionNumber", name: "Accession Number", field: "accessionNumber", sortable: true, index:0, editor: Slick.Editors.Text,  minWidth:150},
+        {id: "stNumber", name: "PatientID", field: "stNumber", sortable: true,  index:1, editor: Slick.Editors.Text,minWidth:150 },
+        {id: "name", name: "PatientName", field: "name", sortable: true,  index:2,  editor: Slick.Editors.Text, minWidth:150},
+        {id: "source", name: "Source", field: "source", sortable: true,  index:3, editor: Slick.Editors.Text,minWidth:150 },
+        {id: "link", name: "PrintReport", field: "link",  cssClass: "cell-title", formatter: formatter, index:4, editor: Slick.Editors.Text, searchable: false,minWidth:150}
     ];
 }
 
