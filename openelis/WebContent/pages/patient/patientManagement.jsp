@@ -464,6 +464,7 @@ function  /*void*/ pt_updateDOB( age )
 function  /*void*/ getDetailedPatientInfo()
 {
 	$("patientPK_ID").value = patientSelectID;
+    jQuery(".required-message").addClass("hide");
 
 	new Ajax.Request (
                        'ajaxQueryXML',  //url
@@ -587,6 +588,8 @@ function /*string*/ getXMLValue( response, key )
 
 function  /*void*/ processSearchPopulateFailure(xhr) {
 		//alert(xhr.responseText); // do something nice for the user
+    jQuery(".required-message").addClass("hide");
+
 }
 
 function  /*void*/ clearPatientInfo(){
@@ -732,6 +735,7 @@ function /*void*/ makeDirty(){
 
 function addPatient(){
 	$("PatientDetail").show();
+    jQuery(".required-message").removeClass("hide");
 	clearPatientInfo();
     clearDynamicAddresses();
 	clearErrors();
@@ -824,6 +828,7 @@ jQuery(function(){
 	<html:button property="newPatient"  onclick="addPatient()" >
 		<bean:message key="patient.new" />
 	</html:button>
+    <span class="required-message hide"><bean:message key="patient.message.newPatient"/></span>
 	</div>
 
 	<div id="PatientDetail">
