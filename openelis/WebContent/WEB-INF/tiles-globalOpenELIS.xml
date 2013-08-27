@@ -313,7 +313,6 @@
     </definition>
 
     <definition name="uploadForm" extends="baseMenuDefinition">
-        <put name="body" value="/pages/upload/upload.html" />
+        <put name="body" value="/pages/upload/upload.jsp" />
     </definition>
-
 </tiles-definitions>

@@ -1586,8 +1586,11 @@
             <forward name="success" path="uploadForm"/>
         </action>
 
-        <action path="/DoUpload" type="us.mn.state.health.lims.upload.UploadAction">
+        <action path="/DoUpload" type="us.mn.state.health.lims.upload.action.UploadAction">
             <forward name="success" path="/Upload.do" redirect="true"/>
+        </action>
+
+        <action path="/UploadDashboard" type="us.mn.state.health.lims.upload.action.UploadDashboardAction">
         </action>
 
     </action-mappings>

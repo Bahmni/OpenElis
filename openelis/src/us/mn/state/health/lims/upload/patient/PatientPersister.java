@@ -106,12 +106,12 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
 
             transaction.commit();
         } catch (Exception e) {
-            logger.error(e);
+            logger.warn(e);
             if (transaction != null) transaction.rollback();
 
             return new RowResult<>(csvPatient, e);
         }
-        return RowResult.SUCCESS;
+        return new RowResult(csvPatient);
     }
 
     @Override
@@ -161,7 +161,7 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
         }
 
         if (isEmpty(errorMessage.toString()))
-            return RowResult.SUCCESS;
+            return new RowResult<>(csvPatient);
 
         return new RowResult<>(csvPatient, errorMessage.toString());
     }

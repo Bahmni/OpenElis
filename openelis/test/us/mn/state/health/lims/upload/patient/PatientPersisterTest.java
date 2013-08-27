@@ -47,7 +47,7 @@ public class PatientPersisterTest {
 
         RowResult<CSVPatient> rowResultForValidPatient = patientPersister.validate(csvPatient);
 
-        Assert.assertEquals(RowResult.SUCCESS, rowResultForValidPatient);
+        Assert.assertEquals(new RowResult(csvPatient), rowResultForValidPatient);
     }
 
     @Test

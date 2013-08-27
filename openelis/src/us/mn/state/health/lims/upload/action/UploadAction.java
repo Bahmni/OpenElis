@@ -1,4 +1,4 @@
-package us.mn.state.health.lims.upload;
+package us.mn.state.health.lims.upload.action;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -8,10 +8,8 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.bahmni.fileimport.FileImporter;
-import org.bahmni.fileimport.dao.JDBCConnectionProvider;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.IActionConstants;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
 import us.mn.state.health.lims.upload.patient.CSVPatient;
 import us.mn.state.health.lims.upload.patient.PatientPersister;
@@ -19,7 +17,6 @@ import us.mn.state.health.lims.upload.patient.PatientPersister;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -101,9 +98,3 @@ public class UploadAction extends BaseAction {
 
 }
 
-class ELISJDBCConnectionProvider implements JDBCConnectionProvider {
-    @Override
-    public Connection getConnection() {
-        return HibernateUtil.getSession().connection();
-    }
-}
