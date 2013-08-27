@@ -43,6 +43,7 @@
             <form-property name="facilityFax" type="java.lang.String" initial=""/>
             <form-property name="sampleXML" type="java.lang.String" initial=""/>
             <form-property name="buttonText" type="java.lang.String" initial=""/>
+            <form-property name="collapsePatientInfo" type="java.lang.Boolean" initial="false"/>
             <form-property name="patientProperties"
                            type="us.mn.state.health.lims.patient.action.bean.PatientManagmentInfo"/>
             <form-property name="patientClinicalProperties"
@@ -82,6 +83,7 @@
             <form-property name="confirmationItems" type="java.util.Collection"/>
             <form-property name="sampleTypes" type="java.util.Collection"/>
             <form-property name="patientPK" type="java.lang.String" initial=""/>
+            <form-property name="collapsePatientInfo" type="java.lang.Boolean" initial="false"/>
             <form-property name="patientProperties"
                            type="us.mn.state.health.lims.patient.action.bean.PatientManagmentInfo"/>
             <form-property name="requestingOrganizationList" type="java.util.Collection"/>

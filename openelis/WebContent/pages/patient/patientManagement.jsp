@@ -23,6 +23,7 @@
 
 <bean:define id="formName"		value='<%=(String) request.getAttribute(IActionConstants.FORM_NAME)%>' />
 <bean:define id="patientProperties" name='<%=formName%>' property='patientProperties' type="PatientManagmentInfo" />
+<bean:define id="collapse" name='<%=formName%>' property='collapsePatientInfo' type="Boolean" />
 
 
 <%!
@@ -518,6 +519,7 @@ function  /*void*/ processSearchPopulateSuccess(xhr)
 	var healthDistrict = getXMLValue(response, "healthDistrict");
 	var primaryRelative = getXMLValue(response, "primaryRelative");
 
+    jQuery("#PatientDetail").show();
 
 	setPatientInfo( nationalIDValue,
 					STValue,
@@ -798,7 +800,13 @@ function healthDistrictSuccess( xhr ){
 	if( selected){
 		healthDistrict.selectedIndex = getSelectIndexFor( "healthDistrictID", selected.childNodes[0].nodeValue);
 	}
-}	
+}
+
+jQuery(function(){
+    if (<%=collapse%>)
+        jQuery("#PatientDetail").hide();
+
+});
 
 </script>
 <nested:hidden name='<%=formName%>' property="patientProperties.currentDate" styleId="currentDate"/>

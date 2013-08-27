@@ -90,6 +90,7 @@ public class SamplePatientEntryAction extends BaseSampleEntryAction {
 
         PropertyUtils.setProperty(dynaForm, "receivedDateForDisplay", dateAsText);
 		PropertyUtils.setProperty(dynaForm, "requestDate", dateAsText);
+        PropertyUtils.setProperty(dynaForm, "collapsePatientInfo", true);
 		PropertyUtils.setProperty(dynaForm, "patientProperties", new PatientManagmentInfo());
 		PropertyUtils.setProperty(dynaForm, "sampleTypes", DisplayListService.getList(ListType.SAMPLE_TYPE));
 		PropertyUtils.setProperty(dynaForm, "orderTypes", DisplayListService.getList(ListType.SAMPLE_PATIENT_PRIMARY_ORDER_TYPE));

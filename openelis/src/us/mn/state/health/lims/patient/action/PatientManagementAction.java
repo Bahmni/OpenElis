@@ -51,6 +51,7 @@ public class PatientManagementAction extends BaseAction {
 
 		dynaForm.initialize(mapping);
 		PropertyUtils.setProperty(dynaForm, "patientProperties", new PatientManagmentInfo());
+        PropertyUtils.setProperty(dynaForm, "collapsePatientInfo", false);
 
 		return mapping.findForward(forward);
 	}
