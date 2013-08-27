@@ -522,7 +522,11 @@ function  /*void*/ savePage()
 function /*void*/ setSave()
 {
 	var validToSave =  patientFormValid() && sampleEntryTopValid();
-	$("saveButtonId").disabled = !validToSave;
+    if (validToSave) {
+        jQuery("#saveButtonId").removeAttr("disabled", "disabled");
+    } else {
+        jQuery("#saveButtonId").attr("disabled", "disabled");
+    }
 }
 
 //called from patientSearch.jsp
