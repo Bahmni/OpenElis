@@ -26,7 +26,9 @@ public class UploadAction extends BaseAction {
 
     // TODO : Mujir, Shruthi - finalize these constants
     public static final String TEMPORARY_FILE_LOCATION = "/tmp";
-    public static final String filePath = "/home/jss/open-elis-upload/";
+
+    public static final String ELIS_IMPORT_FILES_FOLDER = "elisImportFiles";
+    public static final String filePath = "/home/jss/" + ELIS_IMPORT_FILES_FOLDER + "/";
 
     public static int maxFileSize = 50 * 1024 * 1024;
     public static int maxMemSize = 4 * 1024 * 1024;

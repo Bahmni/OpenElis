@@ -24,5 +24,4 @@ public class AccessionNumberUtilTest {
         int communityHealthSortOrder = AccessionNumberUtil.getSortOrder(communityHealthAccessionNumber);
         Assert.assertEquals(99, communityHealthSortOrder);
     }
-
 }

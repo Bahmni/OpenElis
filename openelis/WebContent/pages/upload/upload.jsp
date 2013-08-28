@@ -87,7 +87,16 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
         {id: "status", name: "Status", field: "status", sortable: true, width: 200},
         {id: "successfulRecords", name: "Successful Records", field: "successfulRecords", sortable: true, width: 50},
         {id: "failedRecords", name: "Failed Records", field: "failedRecords", sortable: true, width: 50},
-        {id: "errorFileName", name: "Download Error File", field: "errorFileName", sortable: true, width: 400}
+        {id: "errorFileName", name: "Download Error File", field: "errorFileName", sortable: true, width: 400,
+                formatter: function ( row, cell, value, columnDef, dataContext ) {
+                      if (value) {
+                        console.log( value.substring(value.lastIndexOf("/") + 1) );
+                        return '<a href="' + value + '">' + value.substring(value.lastIndexOf("/") + 1) + '</a>';
+                      }
+                      else {
+                        return "";
+                      }
+                  },}
     ];
 
     var options = {

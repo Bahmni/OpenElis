@@ -1,5 +1,7 @@
 package us.mn.state.health.lims.upload.action;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -21,6 +23,15 @@ public class UploadDashboardAction extends BaseAction {
     protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         LocalDate thirtyDaysBefore = new LocalDate(new Date()).minusDays(30);
         List<ImportStatus> uploads = new ImportStatusDao(new ELISJDBCConnectionProvider()).getImportStatusFromDate(thirtyDaysBefore.toDate());
+
+        for (ImportStatus uploadStatus : uploads) {
+            String errorFileName = uploadStatus.getErrorFileName();
+            if (!StringUtils.isEmpty(errorFileName)) {
+                String name = FilenameUtils.getName(errorFileName);
+                String urlForErrorFile = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + "/" + UploadAction.ELIS_IMPORT_FILES_FOLDER + "/" + name;
+                uploadStatus.setErrorFileName(urlForErrorFile);
+            }
+        }
 
         response.setContentType("application/json");
         ObjectMapper objectMapper = ObjectMapperRepository.objectMapper;
