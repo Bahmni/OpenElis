@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=utf-8" %>
+    <%@ page language="java" contentType="text/html; charset=utf-8" %>
 <%@ page import="us.mn.state.health.lims.common.action.IActionConstants,
 				us.mn.state.health.lims.referral.action.beanitems.ReferralItem,
 				us.mn.state.health.lims.referral.action.beanitems.ReferredTest,
@@ -32,6 +32,18 @@ $jq(document).ready( function() {
 		$jq("select[multiple]").change ( function(e, data) {
 			handleMultiSelectChange( e, data );
 			});
+
+        jQuery("td[id^=resultCell_]").on("change", "input", function(){
+
+            var validationImg = jQuery(this).parents("[class$=Row]").find(".ruled img");
+
+            if (validationImg.length > 0) {
+                var number = jQuery(this).attr("id").split("_")[1];
+                jQuery("#showHideButton_" + number).click();
+                jQuery("#saveButtonId").attr("disabled","disabled");
+            }
+        });
+
 
 	});
 

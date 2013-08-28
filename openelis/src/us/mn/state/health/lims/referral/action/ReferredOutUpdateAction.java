@@ -17,6 +17,7 @@
 package us.mn.state.health.lims.referral.action;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.GenericValidator;
 import org.apache.struts.Globals;
 import org.apache.struts.action.*;
@@ -219,6 +220,11 @@ public class ReferredOutUpdateAction extends BaseAction {
         // if an institution has not been entered then there may not be a test
         if (!institutionEntered(referralItem) && testEntered(referralItem)) {
             ActionError error = new ActionError("error.referral.missingInstitution", referralItem.getAccessionNumber(), null);
+            errors.add(ActionErrors.GLOBAL_MESSAGE, error);
+        }
+
+        if (referralItem.isFailedValidation() && StringUtils.isBlank(referralItem.getNote())){
+            ActionError error = new ActionError("error.referral.missingNote", referralItem.getAccessionNumber(), null);
             errors.add(ActionErrors.GLOBAL_MESSAGE, error);
         }
 
