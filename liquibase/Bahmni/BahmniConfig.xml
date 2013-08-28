@@ -685,4 +685,11 @@
             <column name="stack_trace" type="text" />
         </addColumn>
     </changeSet>
+
+    <changeSet id="46" author="tw" context="bahmni">
+        <update schemaName="clinlims" tableName="site_information">
+            <column name="value" value=""/>
+            <where>name='stringContext'</where>
+        </update>
+    </changeSet>
 </databaseChangeLog>
