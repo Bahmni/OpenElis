@@ -66,7 +66,7 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
         </form>
     </div>
 
-    <div id="importStatusGrid" style="height: 500px; width:1000px">
+    <div id="importStatusGrid" style="width:1000px">
     </div>
 </div>
 
@@ -104,6 +104,7 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
         autoHeight:true,
         enableCellNavigation: true,
         forceFitColumns: true,
+        multiColumnSort: true,
     };
 
     jQuery(document).ready(function() {
@@ -132,11 +133,32 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
                 success: function(data) {
                     gridForInImportStatus = new Slick.Grid("#importStatusGrid", data, columns, options);
                     gridForInImportStatus.init();
+
+                    gridForInImportStatus.onSort.subscribe(function (e, args) {
+                          var cols = args.sortCols;
+
+                          data.sort(function (dataRow1, dataRow2) {
+                            for (var i = 0, l = cols.length; i < l; i++) {
+                              var field = cols[i].sortCol.field;
+                              var sign = cols[i].sortAsc ? 1 : -1;
+                              var value1 = dataRow1[field], value2 = dataRow2[field];
+                              var result = (value1 == value2 ? 0 : (value1 > value2 ? 1 : -1)) * sign;
+                              if (result != 0) {
+                                return result;
+                              }
+                            }
+                            return 0;
+                          });
+                          gridForInImportStatus.invalidate();
+                          gridForInImportStatus.render();
+                    });
+
                 },
             });
         }
 
         renderGrid();
+        resizeCanvas();
     });
 </script>
 
