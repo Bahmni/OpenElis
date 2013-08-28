@@ -35,18 +35,29 @@ $jq(document).ready( function() {
 
         jQuery("td[id^=resultCell_]").on("change", "input", function(){
 
-            var validationImg = jQuery(this).parents("[class$=Row]").find(".ruled img");
+            showNotesWhenReferralOutWasRejected(this);
 
-            if (validationImg.length > 0) {
-                var number = jQuery(this).attr("id").split("_")[1];
-                jQuery("#showHideButton_" + number).click();
-                jQuery("#saveButtonId").attr("disabled","disabled");
-            }
+        });
+
+        jQuery("td[id^=resultCell_]").on("change", "select", function(){
+
+            showNotesWhenReferralOutWasRejected(this);
         });
 
 
 	});
 
+function showNotesWhenReferralOutWasRejected(object){
+
+    var validationImg = jQuery(object).parents("[class$=Row]").find(".ruled img");
+
+    if (validationImg.length > 0) {
+        var number = jQuery(object).attr("id").split("_")[1];
+        jQuery("#showHideButton_" + number).click();
+        jQuery("#saveButtonId").attr("disabled","disabled");
+    }
+
+}
 
 function findRowIndexFromId( id ) {
      var us = id.lastIndexOf("_");
