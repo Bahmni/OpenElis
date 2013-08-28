@@ -60,7 +60,6 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
     private static AddressParts addressParts;
 
     private static Logger logger = Logger.getLogger(PatientPersister.class);
-    public static final SimpleDateFormat DD_MM_YYYY_DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy");
     private List<HealthCenter> allHealthCenters;
     private List<Gender> allGenders;
 
@@ -135,7 +134,7 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
 
         try {
             if (!isEmpty(csvPatient.dob))
-                DD_MM_YYYY_DATE_FORMAT.parse(csvPatient.dob);
+                new SimpleDateFormat("dd-MM-yyyy").parse(csvPatient.dob);
         } catch (ParseException e) {
             errorMessage.append("DOB should be dd-mm-yyyy.\n");
         }
@@ -243,7 +242,7 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
         patient.setHealthCenter(healthCenterDAO.getByName(csvPatient.healthCenter));
 
         if (csvPatient.dob != null && csvPatient.dob.trim().length() > 0) {
-            patient.setBirthDate(new Timestamp(DD_MM_YYYY_DATE_FORMAT.parse(csvPatient.dob).getTime()));
+            patient.setBirthDate(new Timestamp(new SimpleDateFormat("dd-MM-yyyy").parse(csvPatient.dob).getTime()));
         } else {
             Period ageAsPeriod = new Period(Integer.parseInt(csvPatient.age), 0, 0, 0, 0, 0, 0, 0, PeriodType.yearMonthDay());
             LocalDate dateOfBirth = new LocalDate(new Date()).minus(ageAsPeriod);

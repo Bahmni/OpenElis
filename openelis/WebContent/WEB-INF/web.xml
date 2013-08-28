@@ -28,6 +28,9 @@
         <listener-class>
             us.mn.state.health.lims.common.servlet.startup.StartStopListener
         </listener-class>
+        <listener-class>
+            us.mn.state.health.lims.common.servlet.startup.FileImportCleanupListener
+        </listener-class>
     </listener>
 
     <!-- Standard Action Servlet Configuration (with debugging) -->
