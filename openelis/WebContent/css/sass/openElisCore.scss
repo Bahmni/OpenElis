@@ -128,8 +128,8 @@ table {
 }
 th {
   color: #555555;
-  background-color:#f1f1f1;
-  text-align: left;
+  @include background-image(linear-gradient(white, #e2e2e2)); 
+   text-align: left;
   padding:5px  0px 5px 5px ;
 }
 td{
@@ -592,35 +592,32 @@ table.data {
   padding : 6px;
 }
 tr.evenRow {
-  background-color: #FFFCF5;
+  background-color: #ffffff;
 }
 tr.evenRowHead {
-  background-color: #FAECD2;
+  background-color: #ffffff;
   padding: 20px;
 }
 tr.oddRow {
-  background-color: #e2f1ff;
+  background-color: #ffffff;
 }
 tr.oddRowHead {
-  background-color: #CDE5FC;
+  background-color: #ffffff;
 }
 td.InterstitialHead{
   padding: 10px;
-  border-top: 1;
-  border-top-color: black;
-  border-top-style: solid;
+  border-bottom:1px solid #cecece;
+  font-weight: bold;
+  font-size: 14px;
 }
-td.HeadSeperator{
-  border-top: 1;
-  border-top-color: black;
-  border-top-style: solid;
+td.HeadSeperator{  
+  border:1px dotted #cecece;
 }
 td.Highlight{
   background-color: #E0E026;
   border: 0;
 }
 td.ruled{
-  border-top:1px solid #b0c2c2;
   border-collapse: collapse;
 }
 td.textcontent {
@@ -1186,3 +1183,27 @@ p{
 @media screen and (max-width:1200px){
   body{width:1200px;}
 }
+.results-page-block{
+  padding:10px 20px 10px 0px;
+}
+.results-table{
+    border-bottom:1px solid #cecece;
+  th{
+    border-top:1px solid #cecece;
+    border-bottom:1px solid #cecece;
+    font-weight: bold;
+    &:first-child{
+      border-left:1px solid #cecece;  
+    }
+    &:last-child{
+     border-right:1px solid #cecece;   
+    }
+  }
+  textarea{
+    width:96%;
+  }
+  tr.evenRow:hover,tr.oddRow:hover{
+      background-color: #f5f5f5;
+    }
+}
+

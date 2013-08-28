@@ -421,10 +421,10 @@ function /*void*/ processTestReflexCD4Success(xhr)
 	</tr>
 </table>
 <% } %>
-<br/>
 </logic:equal>
 
-<div  style="width:100%" >
+<div class="results-page-block">
+
 <logic:notEqual name="<%=formName%>" property="paging.totalPages" value="0">
 	<html:hidden styleId="currentPageID" name="<%=formName%>" property="paging.currentPage"/>
 	<bean:define id="total" name="<%=formName%>" property="paging.totalPages"/>
@@ -463,10 +463,10 @@ function /*void*/ processTestReflexCD4Success(xhr)
 
 </div>
 
-<Table width="100%" border="0" cellspacing="0" >
-	<tr >
+<Table width="100%" border="0" cellspacing="0" class="results-table">
+	<tr>
 		<% if( !compactHozSpace ){ %>
-		<th style="text-align: left">
+		<th>
 			<%=StringUtil.getContextualMessageForKey("result.sample.id")%>
 		</th>
 		<logic:equal name="<%=formName %>" property="singlePatient" value="false">
@@ -476,7 +476,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 		</logic:equal>
 		<% } %>
 
-		<th style="text-align: left">
+		<th>
 			<bean:message key="result.test.date"/><br/>
 			<bean:message key="sample.date.format"/>
 		</th>
@@ -485,7 +485,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 				<bean:message key="result.method.auto"/>
 			</th>
 		</logic:equal>
-		<th style="text-align: left">
+		<th>
 			<bean:message key="result.test"/>
 		</th>
 		<th width="16px">&nbsp;</th>
@@ -493,12 +493,12 @@ function /*void*/ processTestReflexCD4Success(xhr)
 			<bean:message key="result.result"/>
 		</th>
 		<% if( ableToRefer ){ %>
-		<th style="text-align: left">
+		<th>
 			<bean:message key="referral.referandreason"/>
 		</th>
 		<% } %>
 		<% if( useTechnicianName ){ %>
-		<th style="text-align: left">
+		<th>
 			<bean:message key="result.technician"/>
 			<span class="requiredlabel">*</span><br/>
 			<% if(autofillTechBox){ %>
@@ -506,17 +506,17 @@ function /*void*/ processTestReflexCD4Success(xhr)
 			<% } %>
 		</th>
 		<% }%>
-		<th width="5%" style="text-align: left">
+		<th width="5%">
 			<bean:message key="result.notes"/>
 		</th>
 	</tr>
 	<logic:iterate id="testResult" name="<%=formName%>"  property="testResult" indexId="index" type="TestResultItem">
 	<logic:equal name="testResult" property="isGroupSeparator" value="true">
 	<tr>
-		<td colspan="10"><hr/></td>
+		<td colspan="8"><hr/></td>
 	</tr>
 	<tr>
-		<th >
+		<th>
 			<bean:message key="sample.receivedDate"/> <br/>
 			<bean:write name="testResult" property="receivedDate"/>
 		</th>
@@ -540,7 +540,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
    <% if( compactHozSpace ){ %>
    <logic:equal  name="testResult" property="showSampleDetails" value="true">
 		<tr class='<%= rowColor %>Head <%= accessionNumber%>' >
-			<td colspan="10" class='InterstitialHead' >
+			<td colspan="8" class='InterstitialHead' >
 			    <%=StringUtil.getContextualMessageForKey("result.sample.id")%> : &nbsp;
 				<b><bean:write name="testResult" property="accessionNumber"/> -
 				<bean:write name="testResult" property="sequenceNumber"/></b>
@@ -871,7 +871,6 @@ function /*void*/ processTestReflexCD4Success(xhr)
 					   	   name="testResult"
 			           	   property="note"
 			           	   indexed="true"
-			           	   cols="100"
 			           	   rows="3" />
 		</td>
 	</tr>
@@ -907,6 +906,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 	</logic:equal>
 	</logic:iterate>
 </Table>
+<div class="results-page-block">
 <logic:notEqual name="<%=formName%>" property="paging.totalPages" value="0">
 	<html:hidden styleId="currentPageID" name="<%=formName%>" property="paging.currentPage"/>
 	<bean:define id="total" name="<%=formName%>" property="paging.totalPages"/>
@@ -927,7 +927,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 	<bean:write name="<%=formName%>" property="paging.currentPage"/> of
 	<bean:write name="<%=formName%>" property="paging.totalPages"/>
 </logic:notEqual>
-
+</div>
 </logic:notEqual>
 <logic:equal name="testCount"  value="0">
 <h2><bean:message key="result.noTestsFound"/></h2>
