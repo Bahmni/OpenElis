@@ -58,7 +58,7 @@ table td{
 #patientDetails.hide{
     display:none;
 }
-#inProgressListContainer a{
+.ui-widget-content a{
     color:#14a4c8;
 }
 #inProgressListContainer a:hover{

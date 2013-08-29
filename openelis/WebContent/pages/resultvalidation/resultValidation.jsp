@@ -253,9 +253,10 @@ function /*boolean*/ handleEnterEvent(){
 }
 
 </script>
+<div class="btn-block">
 
 <logic:notEqual name="resultCount" value="0">
-<div  style="width:80%" >
+<div  style="width:100%" >
 	<html:hidden styleId="currentPageID" name="<%=formName%>" property="paging.currentPage"/>
 	<bean:define id="total" name="<%=formName%>" property="paging.totalPages"/>
 	<bean:define id="currentPage" name="<%=formName%>" property="paging.currentPage"/>
@@ -284,7 +285,7 @@ function /*boolean*/ handleEnterEvent(){
 	</span>
 </div>
 </logic:notEqual>
-
+</div>
 <html:hidden name="<%=formName%>"  property="testSection" value="<%=testSection%>" />
 <html:hidden name="<%=formName%>"  property="testName" value="<%=testName%>" />
 <%
@@ -297,7 +298,7 @@ function /*boolean*/ handleEnterEvent(){
 
 
 <logic:notEqual name="resultCount" value="0">
-<Table width="80%" >
+<Table width="100%" >
     <tr>
 		<th width="15%" colspan="3" style="background-color: white">
 			<img src="./images/nonconforming.gif" /> = <bean:message key="result.nonconforming.item"/>		
@@ -326,11 +327,8 @@ function /*boolean*/ handleEnterEvent(){
   	</tr>
 </Table>
 </logic:notEqual>
-<Table width="80%" >
-	<logic:notEqual name="resultCount" value="0">
-	<tr>
-	    <td colspan="9"><hr/></td>
-    </tr>    
+<Table width="100%" >
+	<logic:notEqual name="resultCount" value="0"> 
 	<tr>
     	<th>
 	  		<bean:message key="quick.entry.accession.number.CI"/>
@@ -399,7 +397,7 @@ function /*boolean*/ handleEnterEvent(){
 				<td>
                     <bean:write name="resultList" property="testName"/>
                     <logic:equal name="resultList" property="referredOut" value="true">
-                        <span class="referredout-highlight">(R)</span>
+                        <span class="referredout-highlight">R</span>
                     </logic:equal>
 					<% if( resultList.isNonconforming()){ %>
 						<img src="./images/nonconforming.gif" />
@@ -475,7 +473,7 @@ function /*boolean*/ handleEnterEvent(){
 					<% } %>
 				</td>
 				<% if(resultList.isShowAcceptReject()){ %>
-				<td align="center">
+				<td>
 					<html:checkbox styleId='<%="accepted_" + index %>'
 								   name="resultList"
 								   property="isAccepted"
@@ -484,7 +482,7 @@ function /*boolean*/ handleEnterEvent(){
 								   onchange="markUpdated(); makeDirty();"
 								   onclick='<%="enableDisableCheckboxes(\'rejected_" + index + "\', \'" + resultList.getSampleGroupingNumber() + "\');" %>' />
 				</td>
-				<td align="center">
+				<td>
 					<html:checkbox styleId='<%="rejected_" + index %>'
 									   name="resultList"
 									   property="isRejected"
@@ -496,7 +494,7 @@ function /*boolean*/ handleEnterEvent(){
 				<% }else{ %>
 				<td><bean:message key="label.computed"/></td><td><bean:message key="label.computed"/></td>
 				<% } %>
-				<td align="center">
+				<td>
 					<% if( !resultList.isReadOnly()){ %>
 				    	<logic:empty name="resultList" property="note">
 						 	<img src="./images/note-add.gif"
@@ -514,24 +512,20 @@ function /*boolean*/ handleEnterEvent(){
 					<% } %>
 				</td>
       		</tr>
-      		<tr id='<%="noteRow_" + index %>'
-				style="display: none;">
+      		<tr id='<%="noteRow_" + index %>' style="display: none;">
 				<td colspan="2" valign="top" align="right"><bean:message key="note.note"/>:</td>
-				<td colspan="6" align="left" >
+				<td colspan="4" align="left" >
 					<html:textarea styleId='<%="note_" + index %>'
 								   onchange='<%="markUpdated(" + index + ");"%>'
 							   	   name="resultList"
 					           	   property="note"
 					           	   indexed="true"
-					           	   cols="100"
+					           	   cols=""
 					           	   rows="3" />
 				</td>
 			</tr>
   	</logic:iterate>
-	<tr>
-	    <td colspan="8"><hr/></td>
-    </tr>
-
+	
 
 
   	</logic:notEqual>
@@ -539,7 +533,7 @@ function /*boolean*/ handleEnterEvent(){
 		<h2><bean:message key="result.noTestsFound"/></h2>
 	</logic:equal>
 </Table>
-
+<div class="btn-block">
    <logic:notEqual name="resultCount" value="0">
 		<html:hidden styleId="currentPageID" name="<%=formName%>" property="paging.currentPage"/>
 		<bean:define id="total" name="<%=formName%>" property="paging.totalPages"/>
@@ -560,3 +554,4 @@ function /*boolean*/ handleEnterEvent(){
 		<bean:write name="<%=formName%>" property="paging.currentPage"/> of
 		<bean:write name="<%=formName%>" property="paging.totalPages"/>
 	</logic:notEqual>
+</div>

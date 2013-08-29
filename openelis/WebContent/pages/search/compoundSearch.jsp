@@ -222,7 +222,7 @@ function toUppercase(element){
 <div id="PatientPage" class="colorFill" style="display:inline" >
 
 	<h2><bean:message key="sample.entry.search"/></h2>
-	<table style="width:80%" class="edit-sample">
+	<table style="width:100%" class="edit-sample">
 	<tr>
 		<th rowspan="2" id="accession"><%=StringUtil.getContextualMessageForKey("quick.entry.accession.number")%></th>
 		<th colspan="3" id="patient" >Patient</th>

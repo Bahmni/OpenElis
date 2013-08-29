@@ -193,7 +193,6 @@ function processAccessionFailure(xhr)
 
 </script>
 
-<hr/>
 
 <logic:equal name="<%=formName%>" property="noSampleFound" value="false">
 <DIV  id="patientInfo" class='textcontent'>
@@ -204,7 +203,6 @@ function processAccessionFailure(xhr)
 <bean:write name="<%=formName%>" property="gender"/>&nbsp;
 <bean:write name="<%=formName%>" property="nationalId"/>
 </DIV>
-<hr/>
 <br/>
 <html:hidden name="<%=formName%>" property="accessionNumber"/>
 <html:hidden name="<%=formName%>" property="newAccessionNumber" styleId="newAccessionNumber"/>
@@ -213,7 +211,7 @@ function processAccessionFailure(xhr)
 <bean:define id="paymentSelection" name="<%=formName %>"  property="paymentOptionSelection"/>
 
 <% if( trackPayments){ %>
-	<h1><%=StringUtil.getContextualMessageForKey("sample.edit.patientPayment") %></h1>  
+	<h2><%=StringUtil.getContextualMessageForKey("sample.edit.patientPayment") %></h2>  
 	<bean:message key="sample.entry.patientPayment"/>: 
 		<html:select name="<%=formName %>" 
 		             property="paymentOptionSelection" 
@@ -232,7 +230,7 @@ function processAccessionFailure(xhr)
 		</html:select>
 <% } %>
 <logic:equal name='<%=formName%>' property="isEditable" value="true" >
-	<h1><%=StringUtil.getContextualMessageForKey("sample.edit.accessionNumber") %></h1>  
+	<h2><%=StringUtil.getContextualMessageForKey("sample.edit.accessionNumber") %></h2>  
 	<div id="accessionEditDiv" class="TableMatch">
 		<b><%=StringUtil.getContextualMessageForKey("sample.edit.change.from") %>:</b> <bean:write name="<%=formName%>" property="accessionNumber"/>  
 		<b><%=StringUtil.getContextualMessageForKey("sample.edit.change.to") %>:</b> <%= ((String)accessionNumber).substring(0, nonEditableAccession) %>
@@ -243,25 +241,25 @@ function processAccessionFailure(xhr)
 		       onchange="checkAccessionNumber(this);"
 		       id="accessionEdit">
 		       
-	<br/><br/><hr/>
+	<br/><br/>
 	</div>
 </logic:equal>
 
 <logic:equal name='<%=formName%>' property="isEditable" value="true" >
-	<h1><%=StringUtil.getContextualMessageForKey("sample.edit.tests") %></h1>
+	<h2><%=StringUtil.getContextualMessageForKey("sample.edit.tests") %></h2>
 </logic:equal>
-<table width="60%">
+<table width="100%">
 <caption><bean:message key="sample.edit.existing.tests"/></caption>
 <tr>
 <th><%= StringUtil.getContextualMessageForKey("quick.entry.accession.number") %></th>
 <th><bean:message key="sample.entry.sample.type"/></th>
 <logic:equal name='<%=formName%>' property="isEditable" value="true" >
-	<th width="16px"><bean:message key="sample.edit.remove.sample" /></th>
+	<th ><bean:message key="sample.edit.remove.sample" /></th>
 </logic:equal>
 <th><bean:message key="test.testName"/></th>
 <% if(allowEditOrRemoveTests){ %>
 <logic:equal name='<%=formName%>' property="isEditable" value="true" >
-	<th width="16px"><bean:message key="sample.edit.remove.tests" /></th>
+	<th ><bean:message key="sample.edit.remove.tests" /></th>
 </logic:equal>
 <% } %>
 <logic:equal name='<%=formName%>' property="isEditable" value="false" >
@@ -310,11 +308,10 @@ function processAccessionFailure(xhr)
 	</tr>
 	</logic:iterate>
 </table>
-<hr/>
 <br/>
 <logic:equal name='<%=formName%>' property="isEditable" value="true" >
 <% if(allowEditOrRemoveTests){ %>
-<table id="availableTestTable" width="80%">
+<table id="availableTestTable" width="100%">
 <caption><bean:message key="sample.edit.available.tests"/></caption>
 <tr>
 <th><%= StringUtil.getContextualMessageForKey("quick.entry.accession.number") %></th>
@@ -341,9 +338,8 @@ function processAccessionFailure(xhr)
 </tr>
 </logic:iterate>
 </table>
-<hr>
 <% } %>
-<h1><bean:message key="sample.entry.addSample" /></h1>
+<h2><bean:message key="sample.entry.addSample" /></h2>
 
 <div id="samplesDisplay" class="colorFill" >
 	<tiles:insert attribute="addSample"/>

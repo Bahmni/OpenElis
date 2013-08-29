@@ -357,13 +357,12 @@ function setSave(){
 		value='<%=StringUtil.getMessageForKey("label.button.search")%>'
 		onclick="loadForm();" disabled="disabled">
 </div>
-<hr />
 <bean:define id="readOnly" name='<%=formName%>' property="readOnly"	type="java.lang.Boolean" />
 <logic:notEmpty name='<%=formName%>' property="labNo">
 	<html:hidden name='<%=formName%>' property="sampleId" />
 	<html:hidden name='<%=formName%>' property="patientId" />
 	<html:hidden name='<%=formName%>' styleId="sampleItemsTypeOfSampleIds" property="sampleItemsTypeOfSampleIds" />
-	<table >
+	<table>
 		<tr>
 			<td >
 				<%= StringUtil.getContextualMessageForKey("nonconformity.date") %>
@@ -554,8 +553,7 @@ function setSave(){
 					</tr>
 			</logic:notEqual>
 	</table>
-	<hr />
-	<table width="95%" id="qaEventsTable">
+	<table width="100%" id="qaEventsTable">
 		<thead>
 		<tr>
 			<th width="0%" style="display: none"></th>
