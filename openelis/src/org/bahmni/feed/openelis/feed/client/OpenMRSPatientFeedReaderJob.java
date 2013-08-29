@@ -5,7 +5,6 @@ import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.ict4h.atomfeed.client.service.AtomFeedClient;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 
 @DisallowConcurrentExecution
 public class OpenMRSPatientFeedReaderJob extends OpenMRSFeedReaderJob {
@@ -16,14 +15,20 @@ public class OpenMRSPatientFeedReaderJob extends OpenMRSFeedReaderJob {
         super(logger);
     }
 
+    public OpenMRSPatientFeedReaderJob(AtomFeedClient atomFeedClient) {
+        super(logger);
+        OpenMRSPatientFeedReaderJob.atomFeedClient = atomFeedClient;
+    }
+
     @Override
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        try {
-            if (atomFeedClient == null)
-                atomFeedClient = createAtomFeedClient(AtomFeedProperties.getInstance(), new AtomFeedClientFactory());
-            atomFeedClient.processEvents();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
+    protected void doExecute(JobExecutionContext jobExecutionContext) {
+        if (atomFeedClient == null)
+            atomFeedClient = createAtomFeedClient(AtomFeedProperties.getInstance(), new AtomFeedClientFactory());
+        atomFeedClient.processEvents();
+    }
+
+    @Override
+    protected void reInitializeAtomFeedClient() {
+        atomFeedClient = createAtomFeedClient(AtomFeedProperties.getInstance(), new AtomFeedClientFactory());
     }
 }

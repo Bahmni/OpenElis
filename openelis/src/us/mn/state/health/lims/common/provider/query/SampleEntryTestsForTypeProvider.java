@@ -16,7 +16,7 @@
  */
 package us.mn.state.health.lims.common.provider.query;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import us.mn.state.health.lims.common.util.XMLUtil;
 import us.mn.state.health.lims.panel.dao.PanelDAO;
 import us.mn.state.health.lims.panel.daoimpl.PanelDAOImpl;

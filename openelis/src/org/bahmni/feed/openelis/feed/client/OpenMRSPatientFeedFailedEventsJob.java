@@ -17,13 +17,14 @@ public class OpenMRSPatientFeedFailedEventsJob extends OpenMRSFeedReaderJob {
     }
 
     @Override
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        try {
-            if (atomFeedClient == null)
-                atomFeedClient = createAtomFeedClient(AtomFeedProperties.getInstance(), new AtomFeedClientFactory());
-            atomFeedClient.processFailedEvents();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
+    protected void doExecute(JobExecutionContext jobExecutionContext) {
+        if (atomFeedClient == null)
+            atomFeedClient = createAtomFeedClient(AtomFeedProperties.getInstance(), new AtomFeedClientFactory());
+        atomFeedClient.processFailedEvents();
+    }
+
+    @Override
+    protected void reInitializeAtomFeedClient() {
+        atomFeedClient = createAtomFeedClient(AtomFeedProperties.getInstance(), new AtomFeedClientFactory());
     }
 }
