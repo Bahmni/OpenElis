@@ -171,13 +171,6 @@ public abstract class BaseAction extends Action implements IActionConstants {
         return forward;
     }
 
-    protected String asJson(List objects) throws IOException {
-        ObjectMapper objectMapper = ObjectMapperRepository.objectMapper;
-        objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"));
-        String listJson = objectMapper.writeValueAsString(objects);
-        return JSONObject.escape(listJson);
-    }
-
     protected boolean userHasPermissionForModule(HttpServletRequest request, String module) {
         UserModuleDAO userModuleDAO = new UserModuleDAOImpl();
         if (!userModuleDAO.isUserAdmin(request) && SystemConfiguration.getInstance().getPermissionAgent().equals("ROLE")) {

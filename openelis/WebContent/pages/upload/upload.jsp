@@ -54,6 +54,8 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
     <h1>Uploaded patient file</h1>
     <div>
         <form>
+            <button type="button" id="refresh">Refresh</button>
+            <br/>
             <p id="status"></p>
 
             <div id="progress">
@@ -83,19 +85,31 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
     var columns = [
         {id: "originalFileName", name: "Name of the File", field: "originalFileName", sortable: true, width: 200},
         {id: "type", name: "Type of File", field: "type", sortable: true, width: 75},
-        {id: "startTime", name: "Date of Upload", field: "startTime", sortable: true, width: 100},
+        {id: "startTime", name: "Date of Upload", field: "startTime", sortable: true, width: 100,
+                formatter: function ( row, cell, value, columnDef, dataContext ) {
+                        function padWithZeroes(aField) {
+                            if (aField < 10)
+                                return "0" + aField;
+                            return aField;
+                        }
+
+                        if (value) {
+                            var startTime = new Date(value);
+                            return padWithZeroes(startTime.getDate()) + "-" + padWithZeroes(startTime.getMonth()) + "-" + padWithZeroes(startTime.getFullYear()) + " " +
+                                     padWithZeroes(startTime.getHours()) + ":" + padWithZeroes(startTime.getMinutes()) + ":" + padWithZeroes(startTime.getSeconds());
+                        }
+                        return "";
+                    }
+                },
         {id: "status", name: "Status", field: "status", sortable: true, width: 200},
         {id: "successfulRecords", name: "Successful Records", field: "successfulRecords", sortable: true, width: 50},
         {id: "failedRecords", name: "Failed Records", field: "failedRecords", sortable: true, width: 50},
         {id: "errorFileName", name: "Download Error File", field: "errorFileName", sortable: true, width: 400,
                 formatter: function ( row, cell, value, columnDef, dataContext ) {
                       if (value) {
-                        console.log( value.substring(value.lastIndexOf("/") + 1) );
                         return '<a href="' + value + '">' + value.substring(value.lastIndexOf("/") + 1) + '</a>';
                       }
-                      else {
-                        return "";
-                      }
+                      return "";
                   },}
     ];
 
@@ -126,6 +140,8 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
                 jQuery('#progress .bar').css('width', progress + '%');
             }
         });
+
+        jQuery("#refresh").on("click", renderGrid);
 
         function renderGrid() {
             jQuery.ajax('UploadDashboard.do', {
@@ -158,7 +174,6 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
         }
 
         renderGrid();
-        resizeCanvas();
     });
 </script>
 

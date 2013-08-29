@@ -11,24 +11,36 @@ import org.bahmni.fileimport.dao.ImportStatusDao;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.joda.time.LocalDate;
 import us.mn.state.health.lims.common.action.BaseAction;
+import us.mn.state.health.lims.siteinformation.dao.SiteInformationDAO;
 import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 public class UploadDashboardAction extends BaseAction {
+    private SiteInformationDAO siteInformationDAO;
+    private ImportStatusDao importStatusDao;
+    private ObjectMapper objectMapper;
 
-    public static final String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
+    public UploadDashboardAction() {
+        this(new SiteInformationDAOImpl(), new ImportStatusDao(new ELISJDBCConnectionProvider()), ObjectMapperRepository.objectMapper);
+    }
+
+    public UploadDashboardAction(SiteInformationDAO siteInformationDAO, ImportStatusDao importStatusDao, ObjectMapper objectMapper) {
+        this.siteInformationDAO = siteInformationDAO;
+        this.importStatusDao = importStatusDao;
+        this.objectMapper = objectMapper;
+    }
 
     @Override
     protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        LocalDate thirtyDaysBefore = new LocalDate(new Date()).minusDays(30);
-        List<ImportStatus> uploads = new ImportStatusDao(new ELISJDBCConnectionProvider()).getImportStatusFromDate(thirtyDaysBefore.toDate());
+        String uploadedFilesDirectory = siteInformationDAO.getSiteInformationByName(UploadAction.UPLOADED_FILES_DIRECTORY).getValue();
+        int durationInDaysForDisplayingUploadStatuses = Integer.parseInt(siteInformationDAO.getSiteInformationByName(UploadAction.DURATION_IN_DAYS_FOR_UPLOAD_STATUSES).getValue());
 
-        String uploadedFilesDirectory = new SiteInformationDAOImpl().getSiteInformationByName(UploadAction.UPLOADED_FILES_DIRECTORY).getValue();
+        LocalDate thirtyDaysBefore = new LocalDate(new Date()).minusDays(durationInDaysForDisplayingUploadStatuses);
+        List<ImportStatus> uploads = importStatusDao.getImportStatusFromDate(thirtyDaysBefore.toDate());
 
         for (ImportStatus uploadStatus : uploads) {
             String errorFileName = uploadStatus.getErrorFileName();
@@ -40,8 +52,6 @@ public class UploadDashboardAction extends BaseAction {
         }
 
         response.setContentType("application/json");
-        ObjectMapper objectMapper = ObjectMapperRepository.objectMapper;
-        objectMapper.setDateFormat(new SimpleDateFormat(YYYY_MM_DD_HH_MM_SS));
         objectMapper.writeValue(response.getWriter(), uploads);
 
         return null;

@@ -14,6 +14,7 @@ import us.mn.state.health.lims.dashboard.valueholder.TodayStat;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 public class DashboardAction extends BaseAction {
     private OrderListDAO orderListDAO = new OrderListDAOImpl();
@@ -49,5 +50,10 @@ public class DashboardAction extends BaseAction {
     @Override
     protected String getPageSubtitleKey() {
         return "Dashboard";
+    }
+
+    private String asJson(List objects) throws IOException {
+        String listJson = ObjectMapperRepository.objectMapper.writeValueAsString(objects);
+        return JSONObject.escape(listJson);
     }
 }

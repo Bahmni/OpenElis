@@ -28,6 +28,7 @@ public class UploadAction extends BaseAction {
     public static final String YYYY_MM_DD_HH_MM_SS = "_yyyy-MM-dd_HH:mm:ss";
     public static final String PARENT_OF_UPLOADED_FILES_DIRECTORY = "parentOfUploadedFilesDirectory";
     public static final String UPLOADED_FILES_DIRECTORY = "uploadedFilesDirectory";
+    public static final String DURATION_IN_DAYS_FOR_UPLOAD_STATUSES = "durationInDaysForUploadStatuses";
 
     public static int maxFileSize = 50 * 1024 * 1024;
     public static int maxMemSize = 4 * 1024 * 1024;

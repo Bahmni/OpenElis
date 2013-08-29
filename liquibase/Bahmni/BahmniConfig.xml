@@ -711,6 +711,7 @@
             <column name="lastupdated" valueDate=" now() "/>
         </insert>
     </changeSet>
+
     <changeSet author="tw" id="48" context="bahmni">
         <comment>Set site name</comment>
         <update schemaName="clinlims" tableName="site_information">
@@ -718,4 +719,17 @@
             <where>name='SiteName'</where>
         </update>
     </changeSet>
+
+    <changeSet id="49" author="tw" context="bahmni">
+        <insert schemaName="clinlims" tableName="site_information">
+            <column name="id" valueNumeric=" nextVal( 'site_information_seq' ) "/>
+            <column name="name" value="durationInDaysForUploadStatuses"/>
+            <column name="description"
+                    value="Configures the past number of days for which we display the upload data on Upload Dashboard."/>
+            <column name="value" value="30"/>
+            <column name="value_type" value="int"/>
+            <column name="lastupdated" valueDate=" now() "/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
