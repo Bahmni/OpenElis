@@ -297,7 +297,7 @@ public class ReferredOutUpdateAction extends BaseAction {
                 ResultsLoadUtility.getResultReferenceTableId(),
                 RESULT_SUBJECT,
                 currentUserId);
-        if (!referralItem.getReferredResult().isEmpty()) {
+        if (resultEntered(referralItem)) {
             createReferralResults(referralItem, referralSet);
 
             if (referralItem.getAdditionalTests() != null) {

@@ -665,11 +665,12 @@ function /*void*/ savePage(){
 	<tr class='<%= rowColor %>'>
 		<td colspan="3"></td>
 		<td colspan='2' >
-			<input type="button"
+<%--			<input type="button"
 				   name="addRequest"
 				   value="<%= StringUtil.getMessageForKey("referral.addTest")%>"
 				   class="textButton"
 				   onclick='<%="insertNewTestRequest(this," + index + ");"  %>' >
+--%>
 		</td>
 		<td colspan='4'>
 						 	<img src="./images/note-add.gif"
