@@ -3,7 +3,9 @@ package us.mn.state.health.lims.upload.patient;
 import org.apache.log4j.Logger;
 import org.bahmni.csv.EntityPersister;
 import org.bahmni.csv.RowResult;
+import org.bahmni.feed.openelis.feed.service.EventPublishers;
 import org.bahmni.feed.openelis.feed.service.impl.BahmniPatientService;
+import org.bahmni.feed.openelis.feed.service.impl.OpenElisUrlPublisher;
 import org.bahmni.feed.openelis.utils.AuditingService;
 import org.hibernate.Transaction;
 import org.joda.time.LocalDate;
@@ -54,6 +56,7 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
     private PatientIdentityTypeDAO patientIdentityTypeDAO;
     private HealthCenterDAO healthCenterDAO;
     private GenderDAO genderDao;
+    private OpenElisUrlPublisher patientFeedEventPublisher;
 
     private static String sysUserId;
     private static PatientIdentityTypes patientIdentityTypes;
@@ -62,16 +65,21 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
     private static Logger logger = Logger.getLogger(PatientPersister.class);
     private List<HealthCenter> allHealthCenters;
     private List<Gender> allGenders;
+    private String contextPath;
 
-    public PatientPersister() {
+    public PatientPersister(String contextPath) {
         this(new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl()), new PersonDAOImpl(),
                 new PersonAddressDAOImpl(), new PatientDAOImpl(), new PatientIdentityDAOImpl(),
-                new PatientIdentityTypeDAOImpl(), new HealthCenterDAOImpl(), new GenderDAOImpl());
+                new PatientIdentityTypeDAOImpl(), new HealthCenterDAOImpl(), new GenderDAOImpl(),
+                new EventPublishers().patientPublisher());
+
+        this.contextPath = contextPath;
     }
 
     public PatientPersister(AuditingService auditingService, PersonDAO personDAO, PersonAddressDAO personAddressDAO,
                             PatientDAO patientDAO, PatientIdentityDAO patientIdentityDAO,
-                            PatientIdentityTypeDAO patientIdentityTypeDAO, HealthCenterDAO healthCenterDAO, GenderDAO genderDao) {
+                            PatientIdentityTypeDAO patientIdentityTypeDAO, HealthCenterDAO healthCenterDAO,
+                            GenderDAO genderDao, OpenElisUrlPublisher patientFeedEventPublisher) {
         this.auditingService = auditingService;
         this.personDAO = personDAO;
         this.personAddressDAO = personAddressDAO;
@@ -80,6 +88,7 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
         this.patientIdentityTypeDAO = patientIdentityTypeDAO;
         this.healthCenterDAO = healthCenterDAO;
         this.genderDao = genderDao;
+        this.patientFeedEventPublisher = patientFeedEventPublisher;
     }
 
     @Override
@@ -102,6 +111,8 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
                     csvPatient.fatherOrHusbandsName));
             patientIdentityDAO.insertData(getPatientIdentity(newPatient, BahmniPatientService.OCCUPATION_KEY_NAME,
                     csvPatient.occupation));
+
+            patientFeedEventPublisher.publish(csvPatient.healthCenter + csvPatient.registrationNumber, contextPath);
 
             transaction.commit();
         } catch (Exception e) {

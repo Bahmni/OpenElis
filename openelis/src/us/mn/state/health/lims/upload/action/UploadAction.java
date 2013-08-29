@@ -56,7 +56,7 @@ public class UploadAction extends BaseAction {
 
                     UserSessionData userSessionData = (UserSessionData)request.getSession().getAttribute(USER_SESSION_DATA);
 
-                    PatientPersister patientPersister = new PatientPersister();
+                    PatientPersister patientPersister = new PatientPersister(request.getContextPath());
                     FileImporter<CSVPatient> csvPatientFileImporter = new FileImporter<>();
                     boolean hasStartedUpload = csvPatientFileImporter.importCSV(fileName, getFile(fileName),
                             patientPersister, CSVPatient.class, new ELISJDBCConnectionProvider(), userSessionData.getLoginName());
