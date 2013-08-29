@@ -154,6 +154,10 @@ public class AnalysisItem {
         return this.testName;
     }
 
+    public boolean isReferredOut(){
+        return StatusOfSampleUtil.getStatusID(TechnicalAcceptanceRO).equals(statusId);
+    }
+
     public String getTestDisplayName() {
         if (StatusOfSampleUtil.getStatusID(TechnicalAcceptanceRO).equals(statusId)) {
             return this.testName + "(R)";

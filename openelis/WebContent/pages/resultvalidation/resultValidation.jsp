@@ -397,7 +397,10 @@ function /*boolean*/ handleEnterEvent(){
 	    			<td></td>
 	    		<% } %>
 				<td>
-					<bean:write name="resultList" property="testDisplayName"/>
+                    <bean:write name="resultList" property="testName"/>
+                    <logic:equal name="resultList" property="referredOut" value="true">
+                        <span class="referredout-highlight">(R)</span>
+                    </logic:equal>
 					<% if( resultList.isNonconforming()){ %>
 						<img src="./images/nonconforming.gif" />
 					<% } %>
