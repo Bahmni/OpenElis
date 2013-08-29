@@ -31,7 +31,7 @@ public class PatientPersisterTest {
         validHealthCenter.setName(VALID_HEALTH_CENTRE);
         when(healthCenterDAO.getAll()).thenReturn(Arrays.asList(validHealthCenter));
 
-        patientPersister = new PatientPersister(null, null, null, null, null, null, healthCenterDAO, genderDao);
+        patientPersister = new PatientPersister(null, null, null, null, null, null, healthCenterDAO, genderDao, null);
     }
 
     @Test
