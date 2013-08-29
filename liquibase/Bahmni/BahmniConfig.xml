@@ -692,4 +692,24 @@
             <where>name='stringContext'</where>
         </update>
     </changeSet>
+
+    <changeSet id="47" author="tw" context="bahmni">
+        <insert schemaName="clinlims" tableName="site_information">
+            <column name="id" valueNumeric=" nextVal( 'site_information_seq' ) "/>
+            <column name="name" value="uploadedFilesDirectory"/>
+            <column name="description"
+                    value="Configures the directory where the uploaded files are saved."/>
+            <column name="value" value="/uploaded-files/elis/"/>
+            <column name="lastupdated" valueDate=" now() "/>
+        </insert>
+        <insert schemaName="clinlims" tableName="site_information">
+            <column name="id" valueNumeric=" nextVal( 'site_information_seq' ) "/>
+            <column name="name" value="parentOfUploadedFilesDirectory"/>
+            <column name="description"
+                    value="Configures the parent directory of uploaded files directory."/>
+            <column name="value" value="/home/jss"/>
+            <column name="lastupdated" valueDate=" now() "/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>

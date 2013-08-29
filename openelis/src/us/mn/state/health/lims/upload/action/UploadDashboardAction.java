@@ -11,6 +11,7 @@ import org.bahmni.fileimport.dao.ImportStatusDao;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.joda.time.LocalDate;
 import us.mn.state.health.lims.common.action.BaseAction;
+import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,23 +20,28 @@ import java.util.Date;
 import java.util.List;
 
 public class UploadDashboardAction extends BaseAction {
+
+    public static final String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd hh:mm:ss";
+
     @Override
     protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         LocalDate thirtyDaysBefore = new LocalDate(new Date()).minusDays(30);
         List<ImportStatus> uploads = new ImportStatusDao(new ELISJDBCConnectionProvider()).getImportStatusFromDate(thirtyDaysBefore.toDate());
 
+        String uploadedFilesDirectory = new SiteInformationDAOImpl().getSiteInformationByName(UploadAction.UPLOADED_FILES_DIRECTORY).getValue();
+
         for (ImportStatus uploadStatus : uploads) {
             String errorFileName = uploadStatus.getErrorFileName();
             if (!StringUtils.isEmpty(errorFileName)) {
                 String name = FilenameUtils.getName(errorFileName);
-                String urlForErrorFile = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + "/" + UploadAction.ELIS_IMPORT_FILES_FOLDER + "/" + name;
+                String urlForErrorFile = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + uploadedFilesDirectory + name;
                 uploadStatus.setErrorFileName(urlForErrorFile);
             }
         }
 
         response.setContentType("application/json");
         ObjectMapper objectMapper = ObjectMapperRepository.objectMapper;
-        objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"));
+        objectMapper.setDateFormat(new SimpleDateFormat(YYYY_MM_DD_HH_MM_SS));
         objectMapper.writeValue(response.getWriter(), uploads);
 
         return null;

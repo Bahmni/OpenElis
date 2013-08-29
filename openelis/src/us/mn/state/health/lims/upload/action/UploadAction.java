@@ -11,6 +11,7 @@ import org.bahmni.fileimport.FileImporter;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
+import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 import us.mn.state.health.lims.upload.patient.CSVPatient;
 import us.mn.state.health.lims.upload.patient.PatientPersister;
 
@@ -20,20 +21,17 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 
 public class UploadAction extends BaseAction {
-
-    // TODO : Mujir, Shruthi - finalize these constants
     public static final String TEMPORARY_FILE_LOCATION = "/tmp";
 
-    public static final String ELIS_IMPORT_FILES_FOLDER = "elisImportFiles";
-    public static final String filePath = "/home/jss/" + ELIS_IMPORT_FILES_FOLDER + "/";
+    public static final String YYYY_MM_DD_HH_MM_SS = "_yyyy-MM-dd_hh:mm:ss";
+    public static final String PARENT_OF_UPLOADED_FILES_DIRECTORY = "parentOfUploadedFilesDirectory";
+    public static final String UPLOADED_FILES_DIRECTORY = "uploadedFilesDirectory";
 
     public static int maxFileSize = 50 * 1024 * 1024;
     public static int maxMemSize = 4 * 1024 * 1024;
 
-    private static ExecutorService fileImportExecutorService;
     private static Logger logger = Logger.getLogger(UploadAction.class);
 
     @Override
@@ -84,8 +82,12 @@ public class UploadAction extends BaseAction {
         String fileNameWithoutExtension = substring.substring(0, substring.lastIndexOf("."));
         String fileExtension = substring.substring(substring.lastIndexOf("."));
 
-        String timestampForFile = new SimpleDateFormat("_yyyy-MM-dd_hh:mm:ss").format(new Date());
-        return new File(filePath + fileNameWithoutExtension + timestampForFile + fileExtension);
+        String timestampForFile = new SimpleDateFormat(YYYY_MM_DD_HH_MM_SS).format(new Date());
+
+        String parentForUploadedFilesDirectory = new SiteInformationDAOImpl().getSiteInformationByName(PARENT_OF_UPLOADED_FILES_DIRECTORY).getValue();
+        String uploadedFilesDirectory = new SiteInformationDAOImpl().getSiteInformationByName(UPLOADED_FILES_DIRECTORY).getValue();
+
+        return new File(parentForUploadedFilesDirectory + uploadedFilesDirectory + fileNameWithoutExtension + timestampForFile + fileExtension);
     }
 
     @Override
