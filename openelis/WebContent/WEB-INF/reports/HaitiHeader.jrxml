@@ -44,7 +44,7 @@
 	<detail>
 		<band height="136" splitType="Stretch">
 			<textField evaluationTime="Report" pattern="dd/MM/yyyy" isBlankWhenNull="true">
-				<reportElement key="textField" x="176" y="95" width="226" height="20">
+				<reportElement key="textField" x="0" y="95" width="552" height="20">
 					<printWhenExpression><![CDATA[$P{orderFinishDate} != null]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
@@ -92,7 +92,7 @@
 
 
 			<textField isBlankWhenNull="true">
-				<reportElement x="58" y="5" width="512" height="20">
+				<reportElement x="0" y="5" width="552" height="20">
 					<printWhenExpression><![CDATA[!$V{hasLogo}]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -110,7 +110,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{labName2}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="102" y="46" width="366" height="24">
+				<reportElement positionType="Float" x="0" y="46" width="552" height="24">
 					<printWhenExpression><![CDATA[!$V{hasLogo}]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center">
@@ -119,7 +119,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{reportTitle}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="229" y="75" width="118" height="20"/>
+				<reportElement x="0" y="75" width="552" height="20"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="12" isBold="true"/>
 				</textElement>

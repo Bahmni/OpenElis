@@ -711,5 +711,11 @@
             <column name="lastupdated" valueDate=" now() "/>
         </insert>
     </changeSet>
-
+    <changeSet author="tw" id="48" context="bahmni">
+        <comment>Set site name</comment>
+        <update schemaName="clinlims" tableName="site_information">
+            <column name="value" value="Jan Swasthya Sahyog"/>
+            <where>name='SiteName'</where>
+        </update>
+    </changeSet>
 </databaseChangeLog>
