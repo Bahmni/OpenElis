@@ -436,7 +436,8 @@ function /*void*/ savePage(){
     <th><bean:message key="result.result"/></th>
     <th><bean:message key="referral.report.date"/></th>
     <th><bean:message key="label.button.cancel.referral"/></th>
-  </tr>
+	<th width="5%"><bean:message key="result.notes"/></th>  
+</tr>
   <logic:iterate id="referralItems" name="<%=formName%>"  property="referralItems" indexId="index" type="ReferralItem" >
 	<html:hidden  styleId='<%= "textXML_" + index %>' name="referralItems" property="additionalTestsXMLWad" indexed="true" styleClass="XMLWad" />
 	<html:hidden styleId='<%= "referralResultId_" + index %>' name="referralItems" property="referralResultId" indexed="true" />
@@ -453,7 +454,7 @@ function /*void*/ savePage(){
 		<td colspan="2" class="HeadSeperator" >
 		 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= StringUtil.getContextualMessageForKey("resultsentry.accessionNumber") %>: <b><bean:write name="referralItems" property="accessionNumber"/></b>
     	</td>
-    	<td colspan="7" class="HeadSeperator" >
+    	<td colspan="8" class="HeadSeperator" >
     		<bean:message key="referral.request.date"/>: <b><bean:write name="referralItems" property="referralDate"/></b>
     	</td>
 	</tr>
@@ -461,10 +462,10 @@ function /*void*/ savePage(){
 		<td colspan="2">
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<bean:message key="resultsentry.sampleType"/>: <b><bean:write name="referralItems" property="sampleType"/></b>
 		</td>
-		<td colspan="3">
+		<td colspan="4">
 			<bean:message key="test.testName"/>: <b><bean:write name="referralItems" property="referringTestName"/></b>
 		</td>
-		<td colspan="5">
+		<td colspan="4">
 			<bean:message key="result.result"/>: <b><bean:write name="referralItems" property="referralResults"/></b>
 		</td>
 	</tr>
@@ -578,6 +579,11 @@ function /*void*/ savePage(){
 		<td>
 			<html:checkbox name="referralItems" property="canceled" onchange='<%="markModified(\'" + index + "\'); value=true" %>' indexed="true"  />
 		</td>
+		<td>						 	<img src="./images/note-add.gif"
+						 	     onclick='<%= "showHideNotes(this, " + index + ");" %>'
+						 	     id='<%="showHideButton_" + index %>'
+						    />
+			<input type="hidden" id='<%="hideShow_" + index %>' value="hidden" /></td>
 	</tr>
 	<logic:notEmpty name="referralItems"  property="additionalTests" >
 	<logic:iterate id="additionalTests" name="referralItems"  property="additionalTests" indexId="testIndex" type="ReferredTest" >
@@ -672,12 +678,7 @@ function /*void*/ savePage(){
 				   onclick='<%="insertNewTestRequest(this," + index + ");"  %>' >
 --%>
 		</td>
-		<td colspan='4'>
-						 	<img src="./images/note-add.gif"
-						 	     onclick='<%= "showHideNotes(this, " + index + ");" %>'
-						 	     id='<%="showHideButton_" + index %>'
-						    />
-			<input type="hidden" id='<%="hideShow_" + index %>' value="hidden" />
+		<td colspan='5'>
 		</td>
 	</tr>
 	<logic:notEmpty name="referralItems" property="pastNotes" >
@@ -691,7 +692,7 @@ function /*void*/ savePage(){
 	<tr id='<%="noteRow_" + index %>'
 		class='<%= rowColor %>'
 		style="display: none;">
-		<td  valign="top" align="right"><bean:message key="note.note"/>:</td>
+		<td  colspan="4" valign="top" align="right"><bean:message key="note.note"/>:</td>
 		<td colspan="6" align="left" >
 			<html:textarea styleId='<%="note_" + index %>'
 						   onchange='<%="markModified(" + index + ");"%>'

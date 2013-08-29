@@ -347,13 +347,11 @@ function /*void*/ processTestReflexCD4Success(xhr)
 
 <logic:notEqual name="testCount" value="0">
 <logic:equal name="<%=formName%>" property="displayTestKit" value="true">
-	<hr width="100%" class="hr-style-1"/>
 	<html:button property="showKit" onclick="toggleKitDisplay(this)" >+</html:button>
 	<bean:message key="inventory.testKits"/>
 	<div id="kitView" style="display: none;" class="colorFill" >
 		<tiles:insert attribute="testKitInfo" />
 		<br/>
-		<hr width="100%" class="hr-style-1" />
 	</div>
 </logic:equal>
 
@@ -857,7 +855,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 	<tr id='<%="noteRow_" + index %>'
 		class='<%= rowColor %>'
 		style="display: none;">
-		<td colspan="2" valign="top" align="right"><% if(noteRequired && 
+		<td colspan="4" valign="top" align="right"><% if(noteRequired && 
 														 !(GenericValidator.isBlankOrNull(testResult.getMultiSelectResultValues()) && 
 														   GenericValidator.isBlankOrNull(testResult.getResultValue()))){ %>
 													  <bean:message key="note.required.result.change"/>		

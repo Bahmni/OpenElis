@@ -595,14 +595,14 @@ tr.evenRow {
   background-color: #ffffff;
 }
 tr.evenRowHead {
-  background-color: #ffffff;
+  background-color: #EEEEEE;
   padding: 20px;
 }
 tr.oddRow {
   background-color: #ffffff;
 }
 tr.oddRowHead {
-  background-color: #ffffff;
+  background-color: #EEEEEE;
 }
 td.InterstitialHead{
   padding: 10px;
@@ -612,6 +612,8 @@ td.InterstitialHead{
 }
 td.HeadSeperator{  
   border:1px dotted #cecece;
+  font-weight: bold;
+  font-size: 14px;
 }
 td.Highlight{
   background-color: #E0E026;
@@ -1186,8 +1188,7 @@ p{
 .results-page-block{
   padding:10px 20px 10px 0px;
 }
-.results-table{
-    border-bottom:1px solid #cecece;
+table{
   th{
     border-top:1px solid #cecece;
     border-bottom:1px solid #cecece;
@@ -1205,5 +1206,12 @@ p{
   tr.evenRow:hover,tr.oddRow:hover{
       background-color: #f5f5f5;
     }
+}
+.referredout-highlight{
+  background: green;
+  border-radius: 8px;
+  padding: 2px 4px 2px 4px;
+  color: #fff;
+  font-size: 12px;
 }
 

@@ -601,7 +601,6 @@ function samplesHaveBeenAdded(){
 	</Table>
 
 	<div id="samplesAdded" class="colorFill" style="display: none; ">
-		<hr width="100%" class="hr-style-1"/>
 
 		<table id="samplesAddedTable" width=<%=useCollectionDate ? "100%" : "80%" %>>
 			<tr>
