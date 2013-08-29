@@ -17,8 +17,6 @@ import us.mn.state.health.lims.patientidentity.valueholder.PatientIdentity;
 import us.mn.state.health.lims.patientidentitytype.util.PatientIdentityTypeMap;
 import us.mn.state.health.lims.person.daoimpl.PersonDAOImpl;
 import us.mn.state.health.lims.person.valueholder.Person;
-import us.mn.state.health.lims.result.daoimpl.ResultDAOImpl;
-import us.mn.state.health.lims.result.valueholder.Result;
 import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
 import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.samplehuman.daoimpl.SampleHumanDAOImpl;
@@ -38,12 +36,11 @@ import us.mn.state.health.lims.testanalyte.valueholder.TestAnalyte;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.*;
 
 public class OrderListDAOImplIT extends IT {
@@ -109,9 +106,12 @@ public class OrderListDAOImplIT extends IT {
 
         List<Order> completedOrders = new OrderListDAOImpl().getAllCompletedBefore24Hours();
 
-        assertTrue(completedOrders.contains(new Order(accessionNumber, patientIdentityData, firstName, lastName, sample1.getSampleSource().getName())));
-        assertFalse(completedOrders.contains(new Order(accessionNumber2, patientIdentityData, firstName, lastName, sample2.getSampleSource().getName())));
-        assertFalse(completedOrders.contains(new Order(accessionNumber3, patientIdentityData, firstName, lastName, sample3.getSampleSource().getName())));
+        assertTrue(completedOrders.size() >= 1);
+
+        List<String> accessionNumbers = accessionNumbersIn(completedOrders);
+        assertTrue(accessionNumbers.contains(accessionNumber));
+        assertFalse(accessionNumbers.contains(accessionNumber2));
+        assertFalse(accessionNumbers.contains(accessionNumber3));
     }
 
     @org.junit.Test
@@ -130,7 +130,16 @@ public class OrderListDAOImplIT extends IT {
 
         List<Order> inProgressOrder = new OrderListDAOImpl().getAllInProgress();
 
-        assertFalse(inProgressOrder.contains(new Order(accessionNumber, patientIdentityData, firstName, lastName, sample1.getSampleSource().getName())));
+        assertTrue(inProgressOrder.size() >= 1);
+        assertFalse(accessionNumbersIn(inProgressOrder).contains(accessionNumber));
+    }
+
+    private List<String> accessionNumbersIn(List<Order> inProgressOrder) {
+        List<String> accessionNumbers = new ArrayList<>();
+        for (Order order : inProgressOrder) {
+            accessionNumbers.add(order.getAccessionNumber());
+        }
+        return accessionNumbers;
     }
 
     @org.junit.Test

@@ -32,43 +32,43 @@ public class OrderListDAOImpl implements OrderListDAO {
         String pendingValidationStatus = getPendingValidationAnalysisStatus();
         String nonReferredStatus = getAllNonReferredAnalysisStatus();
 
-        String sqlForPendingTests = "select " +
-                "sample.accession_number as accession_number, " +
-                "count(analysis.test_id) as count " +
-                "from Sample as sample " +
-                "inner join sample_item on sample_item.samp_id = sample.id " +
-                "inner join analysis on analysis.sampitem_id = sample_item.id " +
-                "where analysis.status_id in (" + pendingStatus + ") " +
-                "group by sample.accession_number";
+        String sqlForPendingTests = "SELECT " +
+                "sample.accession_number AS accession_number, " +
+                "COUNT(analysis.test_id) AS COUNT " +
+                "FROM Sample AS sample " +
+                "INNER JOIN sample_item ON sample_item.samp_id = sample.id " +
+                "INNER JOIN analysis ON analysis.sampitem_id = sample_item.id " +
+                "WHERE analysis.status_id IN (" + pendingStatus + ") " +
+                "GROUP BY sample.accession_number";
 
-        String sqlForPendingValidationTests = "select " +
-                "sample.accession_number as accession_number, " +
-                "count(analysis.test_id) as count " +
-                "from Sample as sample " +
-                "inner join sample_item on sample_item.samp_id = sample.id " +
-                "inner join analysis on analysis.sampitem_id = sample_item.id " +
-                "where analysis.status_id in (" + pendingValidationStatus + ") " +
-                "group by sample.accession_number";
+        String sqlForPendingValidationTests = "SELECT " +
+                "sample.accession_number AS accession_number, " +
+                "COUNT(analysis.test_id) AS COUNT " +
+                "FROM Sample AS sample " +
+                "INNER JOIN sample_item ON sample_item.samp_id = sample.id " +
+                "INNER JOIN analysis ON analysis.sampitem_id = sample_item.id " +
+                "WHERE analysis.status_id IN (" + pendingValidationStatus + ") " +
+                "GROUP BY sample.accession_number";
 
-        String sqlForTotalTests = "select " +
-                "sample.accession_number as accession_number, " +
-                "person.first_name as first_name, " +
-                "person.last_name as last_name, " +
-                "patient_identity.identity_data as st_number, " +
-                "sample_source.name as sample_source, " +
-                "count(test.id) as total_test_count " +
-                "from Sample as sample " +
-                "left outer join Sample_Human as sampleHuman on sampleHuman.samp_Id = sample.id " +
-                "left  join sample_source on sample_source.id = sample.sample_source_id " +
-                "inner join Patient as patient on sampleHuman.patient_id = patient.id " +
-                "inner join Person as person on patient.person_id = person.id " +
-                "inner join patient_identity on patient_identity.patient_id = patient.id " +
-                "inner join patient_identity_type on patient_identity.identity_type_id = patient_identity_type.id and patient_identity_type.identity_type='ST' " +
-                "inner join sample_item on sample_item.samp_id = sample.id " +
-                "inner join analysis on analysis.sampitem_id = sample_item.id " +
-                "inner join test on test.id = analysis.test_id " +
-                "where analysis.status_id in (" + nonReferredStatus + ") " +
-                "group by sample.accession_number, person.first_name, person.last_name, sample_source.name, patient_identity.identity_data";
+        String sqlForTotalTests = "SELECT " +
+                "sample.accession_number AS accession_number, " +
+                "person.first_name AS first_name, " +
+                "person.last_name AS last_name, " +
+                "patient_identity.identity_data AS st_number, " +
+                "sample_source.name AS sample_source, " +
+                "COUNT(test.id) AS total_test_count " +
+                "FROM Sample AS sample " +
+                "LEFT OUTER JOIN Sample_Human AS sampleHuman ON sampleHuman.samp_Id = sample.id " +
+                "LEFT  JOIN sample_source ON sample_source.id = sample.sample_source_id " +
+                "INNER JOIN Patient AS patient ON sampleHuman.patient_id = patient.id " +
+                "INNER JOIN Person AS person ON patient.person_id = person.id " +
+                "INNER JOIN patient_identity ON patient_identity.patient_id = patient.id " +
+                "INNER JOIN patient_identity_type ON patient_identity.identity_type_id = patient_identity_type.id AND patient_identity_type.identity_type='ST' " +
+                "INNER JOIN sample_item ON sample_item.samp_id = sample.id " +
+                "INNER JOIN analysis ON analysis.sampitem_id = sample_item.id " +
+                "INNER JOIN test ON test.id = analysis.test_id " +
+                "WHERE analysis.status_id IN (" + nonReferredStatus + ") " +
+                "GROUP BY sample.accession_number, person.first_name, person.last_name, sample_source.name, patient_identity.identity_data";
 
         try {
             Connection connection = HibernateUtil.getSession().connection();
@@ -106,61 +106,42 @@ public class OrderListDAOImpl implements OrderListDAO {
 
     public List<Order> getAllCompletedBefore24Hours() {
         List<Order> orderList = new ArrayList<>();
-        String nonReferredStatus = getAllNonReferredAnalysisStatus();
-        String completedStatus = getCompletedStatus();
 
-        String sqlForCompletedTests = "select " +
-                "sample.accession_number as accession_number, " +
-                "count(analysis.test_id) as count " +
-                "from Sample as sample " +
-                "inner join sample_item on sample_item.samp_id = sample.id " +
-                "inner join analysis on analysis.sampitem_id = sample_item.id " +
-                "where analysis.status_id in (" + completedStatus + ") " +
-                "and age(sample.lastupdated) <= '1 day' "+
-                "group by sample.accession_number";
-
-        String sqlForTotalTests = "select " +
-                "sample.accession_number as accession_number, " +
-                "person.first_name as first_name, " +
-                "person.last_name as last_name, " +
-                "patient_identity.identity_data as st_number, " +
-                "sample_source.name as sample_source, " +
-                "count(test.id) as total_test_count " +
-                "from Sample as sample " +
-                "left outer join Sample_Human as sampleHuman on sampleHuman.samp_Id = sample.id " +
-                "left  join sample_source on sample_source.id = sample.sample_source_id " +
-                "inner join Patient as patient on sampleHuman.patient_id = patient.id " +
-                "inner join Person as person on patient.person_id = person.id " +
-                "inner join patient_identity on patient_identity.patient_id = patient.id " +
-                "inner join patient_identity_type on patient_identity.identity_type_id = patient_identity_type.id and patient_identity_type.identity_type='ST' " +
-                "inner join sample_item on sample_item.samp_id = sample.id " +
-                "inner join analysis on analysis.sampitem_id = sample_item.id " +
-                "inner join test on test.id = analysis.test_id " +
-                "where analysis.status_id in (" + nonReferredStatus + ") " +
-                "group by sample.accession_number, person.first_name, person.last_name, sample_source.name, patient_identity.identity_data";
+        String sqlForTotalTests = "SELECT sample.accession_number AS accession_number, " +
+                "sample.lastupdated AS completed_date, " +
+                "person.first_name AS first_name, " +
+                "person.last_name AS last_name, " +
+                "patient_identity.identity_data AS st_number, " +
+                "sample_source.name AS sample_source, " +
+                "COUNT(analysis.id) AS total_test_count, " +
+                "SUM(CASE WHEN  analysis.status_id IN (" + getCompletedStatus() + ") THEN 1 ELSE 0 END) AS completed_test_count " +
+                "FROM Sample AS sample " +
+                "INNER JOIN sample_item AS sample_item ON sample_item.samp_id = sample.id " +
+                "INNER JOIN analysis AS analysis ON analysis.sampitem_id = sample_item.id " +
+                "INNER JOIN Sample_Human AS sampleHuman ON sampleHuman.samp_Id = sample.id " +
+                "INNER JOIN sample_source ON sample_source.id = sample.sample_source_id " +
+                "INNER JOIN Patient AS patient ON sampleHuman.patient_id = patient.id " +
+                "INNER JOIN Person AS person ON patient.person_id = person.id " +
+                "INNER JOIN patient_identity ON patient_identity.patient_id = patient.id " +
+                "INNER JOIN patient_identity_type ON patient_identity.identity_type_id = patient_identity_type.id AND patient_identity_type.identity_type='ST' " +
+                "WHERE age(sample.lastupdated) <= '1 day' " +
+                "AND analysis.status_id NOT IN ("+ getAllReferredAnalysisStatus() +") " +
+                "GROUP BY sample.accession_number, sample.lastupdated, person.first_name, person.last_name, sample_source.name, patient_identity.identity_data " +
+                "HAVING COUNT(analysis.id) = SUM(CASE WHEN  analysis.status_id IN (" +getCompletedStatus()+ " ) THEN 1 ELSE 0 END);";
 
         try {
             Connection connection = HibernateUtil.getSession().connection();
-            PreparedStatement queryForCompletedTests = connection.prepareStatement(sqlForCompletedTests);
             PreparedStatement queryForTotalTest = connection.prepareStatement(sqlForTotalTests);
 
-            ResultSet resultSetForCompletedTests = queryForCompletedTests.executeQuery();
-            ResultSet resultSetForTotalTest = queryForTotalTest.executeQuery();
+            ResultSet completedAccessions = queryForTotalTest.executeQuery();
 
-            Map completedTestsCountMap = createMap(resultSetForCompletedTests);
-
-            while (resultSetForTotalTest.next()) {
-                String accession_number = resultSetForTotalTest.getString("accession_number");
-                int totalTestsCount = Integer.parseInt(resultSetForTotalTest.getString("total_test_count"));
-                Integer completedTestsCount = completedTestsCountMap.get(accession_number) == null ? 0 : (Integer) completedTestsCountMap.get(accession_number);
-
-                if (completedTestsCount == totalTestsCount) {
-                    orderList.add(new Order(accession_number,
-                            resultSetForTotalTest.getString("st_number"),
-                            resultSetForTotalTest.getString("first_name"),
-                            resultSetForTotalTest.getString("last_name"),
-                            resultSetForTotalTest.getString("sample_source")));
-                }
+            while (completedAccessions.next()) {
+                orderList.add(new Order(completedAccessions.getString("accession_number"),
+                        completedAccessions.getString("st_number"),
+                        completedAccessions.getString("first_name"),
+                        completedAccessions.getString("last_name"),
+                        completedAccessions.getString("sample_source"),
+                        completedAccessions.getTimestamp("completed_date")));
             }
             return orderList;
         } catch (SQLException e) {
@@ -237,6 +218,16 @@ public class OrderListDAOImpl implements OrderListDAO {
         inProgressAnalysisStatus.add(parseInt(getStatusID(TechnicalAcceptance)));
         inProgressAnalysisStatus.add(parseInt(getStatusID(TechnicalRejected)));
         inProgressAnalysisStatus.add(parseInt(getStatusID(Finalized)));
+        return StringUtils.join(inProgressAnalysisStatus.iterator(), ',');
+    }
+
+    private String getAllReferredAnalysisStatus() {
+        List<Object> inProgressAnalysisStatus = new ArrayList<>();
+        inProgressAnalysisStatus.add(parseInt(getStatusID(BiologistRejectedRO)));
+        inProgressAnalysisStatus.add(parseInt(getStatusID(TechnicalAcceptanceRO)));
+        inProgressAnalysisStatus.add(parseInt(getStatusID(FinalizedRO)));
+        inProgressAnalysisStatus.add(parseInt(getStatusID(ReferedOut)));
+        inProgressAnalysisStatus.add(parseInt(getStatusID(ReferredIn)));
         return StringUtils.join(inProgressAnalysisStatus.iterator(), ',');
     }
 

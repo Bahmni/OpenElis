@@ -363,7 +363,7 @@
 					<subreportParameterExpression><![CDATA[$P{siteName}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="reportTitle">
-					<subreportParameterExpression><![CDATA["Test Results"]]></subreportParameterExpression>
+					<subreportParameterExpression><![CDATA["Laboratory Report"]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="directorName">
 					<subreportParameterExpression><![CDATA[$P{directorName}]]></subreportParameterExpression>

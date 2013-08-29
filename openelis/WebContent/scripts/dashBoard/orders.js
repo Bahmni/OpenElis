@@ -7,7 +7,7 @@ function order(div, orderJson, generateLink, getColumns) {
                 var indexes = [];
 
                 jQuery.each(this.columns, function(id, column){
-                    
+
                     //we shouldn't add the id for the column if column.searchable is null.
                     // It assumes that we don't need to specify searchable property when the column is searchable
                     if (column.searchable == false){
@@ -55,13 +55,19 @@ function getColumnsForInProgressOrder() {
          ];
 }
 
+function dateFormatter(row, cell, value, columnDef, dataContext) {
+    var date = new Date(value);
+    return date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear() + " " + date.toLocaleTimeString();
+}
+
 function getColumnsForCompletedOrder(){
     return [
         {id: "accessionNumber", name: "Accession Number", field: "accessionNumber", sortable: true, index:0, editor: Slick.Editors.Text,  minWidth:150},
         {id: "stNumber", name: "PatientID", field: "stNumber", sortable: true,  index:1, editor: Slick.Editors.Text,minWidth:150 },
         {id: "name", name: "PatientName", field: "name", sortable: true,  index:2,  editor: Slick.Editors.Text, minWidth:150},
         {id: "source", name: "Source", field: "source", sortable: true,  index:3, editor: Slick.Editors.Text,minWidth:150 },
-        {id: "link", name: "PrintReport", field: "link",  cssClass: "cell-title", formatter: formatter, index:4, editor: Slick.Editors.Text, searchable: false,minWidth:150}
+        {id: "completedDate", name: "Completed Date", sortable: true, field: "completedDate",  formatter: dateFormatter, cssClass: "cell-title", index:4, editor: Slick.Editors.Text, searchable: false,minWidth:180},
+        {id: "link", name: "PrintReport", field: "link",  cssClass: "cell-title", formatter: formatter, index:5, editor: Slick.Editors.Text, searchable: false,minWidth:150}
     ];
 }
 
