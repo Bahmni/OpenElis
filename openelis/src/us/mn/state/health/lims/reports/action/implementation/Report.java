@@ -19,10 +19,7 @@ package us.mn.state.health.lims.reports.action.implementation;
 import static org.apache.commons.validator.GenericValidator.isBlankOrNull;
 
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import javax.xml.ws.Response;
 
@@ -97,6 +94,9 @@ public abstract class Report implements IReportCreator {
         reportParameters.put("siteName", ConfigurationProperties.getInstance().getPropertyValue(Property.SiteName));
         reportParameters.put("additionalSiteInfo", ConfigurationProperties.getInstance().getPropertyValue(Property.ADDITIONAL_SITE_INFO));
         reportParameters.put("usePageNumbers", ConfigurationProperties.getInstance().getPropertyValue(Property.USE_PAGE_NUMBERS_ON_REPORTS));
+
+        ConfigurationProperties properties = ConfigurationProperties.getInstance();
+        reportParameters.put("REPORT_LOCALE", Locale.forLanguageTag(properties.getPropertyValue(Property.defaultLangLocale)));
     }
 
     /**
