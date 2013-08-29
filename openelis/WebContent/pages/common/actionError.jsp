@@ -77,8 +77,8 @@ var myActionForm;
 					ResourceLocator.getInstance().getMessageResources().getMessage(
 					locale,
                     error.getKey(),
-                    error.getValues());
-        
+                    error.getValues()).replace("\r\n","");
+
         		if( message == null ){
         			message = error.getKey();
         		}
