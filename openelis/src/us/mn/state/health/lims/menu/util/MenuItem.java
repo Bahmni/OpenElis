@@ -17,39 +17,98 @@
 package us.mn.state.health.lims.menu.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import us.mn.state.health.lims.menu.valueholder.Menu;
+import us.mn.state.health.lims.test.valueholder.TestSection;
 
 public class MenuItem {
-	private Menu menu;
-	
 	private List<MenuItem> childMenus = new ArrayList<MenuItem>();
+    private String elementId;
+    private String localizedTooltip;
+    private boolean openInNewWindow;
+    private String actionURL;
+    private String clickAction;
+    private String localizedTitle;
+    private int presentationOrder;
 
-	public void setChildMenus(List<MenuItem> childMenus) {
-		this.childMenus = childMenus;
-	}
+    public static MenuItem create(Menu menu) {
+        MenuItem menuItem = new MenuItem(menu.getElementId(), menu.getLocalizedTooltip(), menu.isOpenInNewWindow(), menu.getActionURL(), menu.getClickAction(), menu.getLocalizedTitle(), menu.getPresentationOrder());
+        return menuItem;
+    }
+
+    public static MenuItem emptyMenu() {
+        return new MenuItem();
+    }
+
+    public static MenuItem create(TestSection testSection) {
+        String testSectionName = testSection.getTestSectionName();
+        return new MenuItem("test_section_" + testSection.getId(), testSectionName, false, "/LogbookResults.do?type=" + testSectionName, "", testSectionName, testSection.getSortOrderInt());
+    }
+
+    private MenuItem(String elementId, String localizedTooltip, boolean openInNewWindow, String actionURL, String clickAction, String localizedTitle, int presentationOrder) {
+        this.elementId = elementId;
+        this.localizedTooltip = localizedTooltip;
+        this.openInNewWindow = openInNewWindow;
+        this.actionURL = actionURL;
+        this.clickAction = clickAction;
+        this.localizedTitle = localizedTitle;
+        this.presentationOrder = presentationOrder;
+    }
+
+    private MenuItem() {
+
+    }
 
 	public List<MenuItem> getChildMenus() {
-		return childMenus;
+		return Collections.unmodifiableList(childMenus);
 	}
 
-	public void setMenu(Menu menu) {
-		this.menu = menu;
-	}
-
-	public Menu getMenu() {
-		return menu;
-	}
-	
 	public void sortChildren(){
 		Collections.sort(childMenus, new Comparator<MenuItem>(){
 
 			@Override
 			public int compare(MenuItem o1, MenuItem o2) {
-				return o1.getMenu().getPresentationOrder() - o2.getMenu().getPresentationOrder(); 
+				return o1.presentationOrder - o2.presentationOrder;
 			}});
 	}
+
+    public String getElementId() {
+        return elementId;
+    }
+
+    public String getLocalizedTooltip() {
+        return localizedTooltip;
+    }
+
+    public boolean isOpenInNewWindow() {
+        return openInNewWindow;
+    }
+
+    public String getActionURL() {
+        return actionURL;
+    }
+
+    public String getClickAction() {
+        return clickAction;
+    }
+
+    public String getLocalizedTitle() {
+        return localizedTitle;
+    }
+
+    public void addChild(MenuItem menuItem){
+        childMenus.add(menuItem);
+    }
+
+    public void addAllChildren(Collection<MenuItem> menuItems){
+        childMenus.addAll(menuItems);
+    }
+
+    public boolean containsChild(MenuItem menuItem){
+        return childMenus.contains(menuItem);
+    }
 }

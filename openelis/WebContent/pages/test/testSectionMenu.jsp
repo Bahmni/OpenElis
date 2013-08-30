@@ -39,6 +39,9 @@
 	   <th>
 	   	  <bean:message key="testsection.description"/>
 	   </th>
+       <th>
+          <bean:message key="testsection.isActive"/>
+       </th>
 	   
 	</tr>
 	<logic:iterate id="testSec" indexId="ctr" name="<%=formName%>" property="menuList" type="us.mn.state.health.lims.test.valueholder.TestSection">
@@ -79,8 +82,10 @@
 	   </td>
 	   <td class="textcontent">
 	     <bean:write name="testSec" property="description"/>
-	   	  &nbsp;
-	    </td>
+	   </td>
+       <td class="textcontent">
+         <bean:write name="testSec" property="isActive"/>
+       </td>
      </tr>
 	</logic:iterate>
 </table>

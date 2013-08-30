@@ -105,7 +105,18 @@ function validateForm(form) {
 							<html:text name="<%=formName%>" property="description" />
 						</td>
 		</tr>
-	
+        <tr>
+                        <td class="label">
+                            <bean:message key="testsection.isActive"/>:<span class="requiredlabel">*</span>
+                        </td>
+                        <td>
+                            <html:select name="<%=formName%>" property="isActive">
+                                <html:option value="Y"><bean:message key="label.button.yes"/></html:option>
+                                <html:option value="N"><bean:message key="label.button.no"/></html:option>
+                            </html:select>
+                        </td>
+        </tr>
+
  		<tr>
 		<td>&nbsp;</td>
 		</tr>

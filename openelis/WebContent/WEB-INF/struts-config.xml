@@ -1847,7 +1847,8 @@
     <form-property name="id" type="java.lang.String" initial=""/> 
     <form-property name="testSectionName" type="java.lang.String" initial=""/> 
     <form-property name="isExternal" type="java.lang.String" initial=""/> 
-    <form-property name="description" type="java.lang.String" initial=""/> 
+    <form-property name="isActive" type="java.lang.String" initial=""/>
+    <form-property name="description" type="java.lang.String" initial=""/>
     <form-property name="organization" type="us.mn.state.health.lims.organization.valueholder.Organization"/>
     <form-property name="organizationName" type="java.lang.String"/>
     <form-property name="organizations" type="java.util.Collection"/>
