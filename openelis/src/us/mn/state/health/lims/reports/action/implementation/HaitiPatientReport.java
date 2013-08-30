@@ -157,7 +157,7 @@ public abstract class HaitiPatientReport extends Report {
     protected static String PRIMARYRELATIVE_IDENTITY_TYPE_ID = "0";
     protected static String LAB_TYPE_OBSERVATION_ID = "0";
     protected static String LAB_SUBTYPE_OBSERVATION_ID = "0";
-    protected static Long PERSON_REQUESTER_TYPE_ID;
+    protected static Long PROVIDER_REQUESTER_TYPE_ID;
     protected static Long ORGANIZATION_REQUESTER_TYPE_ID;
     protected Map<String, Boolean> sampleCompleteMap;
 
@@ -183,7 +183,7 @@ public abstract class HaitiPatientReport extends Report {
         RequesterTypeDAO requesterTypeDAO = new RequesterTypeDAOImpl();
         RequesterType type = requesterTypeDAO.getRequesterTypeByName("provider");
         if (type != null) {
-            PERSON_REQUESTER_TYPE_ID = Long.parseLong(type.getId());
+            PROVIDER_REQUESTER_TYPE_ID = Long.parseLong(type.getId());
         }
 
         type = requesterTypeDAO.getRequesterTypeByName("organization");
@@ -346,17 +346,15 @@ public abstract class HaitiPatientReport extends Report {
                 break;
             }
 
-            if (PERSON_REQUESTER_TYPE_ID == requester.getRequesterTypeId()) {
+            if (PROVIDER_REQUESTER_TYPE_ID == requester.getRequesterTypeId()) {
                 StringBuffer buffer = new StringBuffer();
-                Person person = new Person();
-                person.setId(String.valueOf(requester.getRequesterId()));
-                personDAO.getData(person);
+                currentProvider = providerDAO.get(((Long) requester.getRequesterId()).toString());
+                Person person = currentProvider.getPerson();
+
                 if (person.getId() != null) {
                     buffer.append(person.getLastName());
                     buffer.append(", ");
                     buffer.append(person.getFirstName());
-
-                    currentProvider = providerDAO.getProviderByPerson(person);
                 }
 
                 currentContactInfo = buffer.toString();

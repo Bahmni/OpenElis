@@ -15,23 +15,22 @@
  */
 package us.mn.state.health.lims.provider.daoimpl;
 
-import java.util.List;
-import java.util.Vector;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.Query;
-
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
 import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.daoimpl.BaseDAOImpl;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
-import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.common.log.LogEvent;
+import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.person.valueholder.Person;
 import us.mn.state.health.lims.provider.dao.ProviderDAO;
 import us.mn.state.health.lims.provider.valueholder.Provider;
+
+import java.util.List;
+import java.util.Vector;
 
 /**
  * @author diane benz
@@ -143,6 +142,10 @@ public class ProviderDAOImpl extends BaseDAOImpl implements ProviderDAO {
             LogEvent.logError("ProviderDAOImpl", "getData()", e.toString());
             throw new LIMSRuntimeException("Error in Provider getData()", e);
         }
+    }
+
+    public Provider get(String id) {
+        return (Provider) HibernateUtil.getSession().get(Provider.class, id);
     }
 
     public List getAllProviders() throws LIMSRuntimeException {

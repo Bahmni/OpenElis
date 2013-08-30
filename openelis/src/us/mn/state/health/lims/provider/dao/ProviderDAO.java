@@ -15,12 +15,12 @@
 */
 package us.mn.state.health.lims.provider.dao;
 
-import java.util.List;
-
 import us.mn.state.health.lims.common.dao.BaseDAO;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.person.valueholder.Person;
 import us.mn.state.health.lims.provider.valueholder.Provider;
+
+import java.util.List;
 
 /**
  * @author diane benz
@@ -36,6 +36,8 @@ public interface ProviderDAO extends BaseDAO {
 	public void deleteData(List providers) throws LIMSRuntimeException;
 
 	public List getAllProviders() throws LIMSRuntimeException;
+
+    public Provider get(String id) throws LIMSRuntimeException;
 
 	public List getPageOfProviders(int startingRecNo)
 			throws LIMSRuntimeException;
