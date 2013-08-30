@@ -16,18 +16,16 @@
 */
 package us.mn.state.health.lims.menu.util;
 
+import org.apache.commons.validator.GenericValidator;
+import us.mn.state.health.lims.menu.daoimpl.MenuDAOImpl;
+import us.mn.state.health.lims.menu.valueholder.Menu;
+import us.mn.state.health.lims.test.daoimpl.TestSectionDAOImpl;
+import us.mn.state.health.lims.test.valueholder.TestSection;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.validator.GenericValidator;
-
-import us.mn.state.health.lims.menu.daoimpl.MenuDAOImpl;
-import us.mn.state.health.lims.menu.valueholder.Menu;
-import us.mn.state.health.lims.test.dao.TestSectionDAO;
-import us.mn.state.health.lims.test.daoimpl.TestSectionDAOImpl;
-import us.mn.state.health.lims.test.valueholder.TestSection;
 
 public class MenuUtil {
 
@@ -43,27 +41,16 @@ public class MenuUtil {
 		List<Menu> menuList = new MenuDAOImpl().getAllMenus();
         List<TestSection> allTestSections = new TestSectionDAOImpl().getAllActiveTestSections();
 
-        Map<Menu, MenuItem> menuToMenuItemMap = new HashMap<>();
-		
-		for( Menu menu : menuList){
-            MenuItem menuItem = MenuItem.create(menu);
-			menuToMenuItemMap.put(menu, menuItem);
-		}
-		
-		MenuItem rootWrapper = MenuItem.emptyMenu();
+        MenuItem rootWrapper = MenuItem.emptyMenu();
+
+        Map<Menu, MenuItem> menuToMenuItemMap = createMapMenuAndMenuItems(menuList);
         MenuItem enterMenu = createMenuBasedOnTestSections(allTestSections);
 
         for( Menu menu : menuList){
             if( menu.getParent() == null){
                 rootWrapper.addChild(menuToMenuItemMap.get(menu));
             }else{
-                MenuItem parentMenuItem = menuToMenuItemMap.get(menu.getParent());
-
-                parentMenuItem.addChild(menuToMenuItemMap.get(menu));
-
-                if (parentMenuItem.getElementId().equals(MENU_RESULTS) && !parentMenuItem.containsChild(enterMenu)){
-                    parentMenuItem.addChild(enterMenu);
-                }
+                createTreeWithMenuItems(menuToMenuItemMap, enterMenu, menu);
             }
         }
 
@@ -71,6 +58,30 @@ public class MenuUtil {
 
 		root = rootWrapper.getChildMenus();
 	}
+
+    private static void createTreeWithMenuItems(Map<Menu, MenuItem> menuToMenuItemMap, MenuItem enterTestSectionMenu, Menu menu) {
+        MenuItem parentMenuItem = menuToMenuItemMap.get(menu.getParent());
+
+        parentMenuItem.addChild(menuToMenuItemMap.get(menu));
+
+        injectTestSectionsNames(enterTestSectionMenu, parentMenuItem);
+    }
+
+    private static void injectTestSectionsNames(MenuItem enterMenu, MenuItem parentMenuItem) {
+        if (parentMenuItem.getElementId().equals(MENU_RESULTS) && !parentMenuItem.containsChild(enterMenu)){
+            parentMenuItem.addChild(enterMenu);
+        }
+    }
+
+    private static Map<Menu, MenuItem> createMapMenuAndMenuItems(List<Menu> menuList) {
+        Map<Menu, MenuItem> menuToMenuItemMap = new HashMap<>();
+
+        for( Menu menu : menuList){
+            MenuItem menuItem = MenuItem.create(menu);
+            menuToMenuItemMap.put(menu, menuItem);
+        }
+        return menuToMenuItemMap;
+    }
 
     private static MenuItem createMenuBasedOnTestSections(List<TestSection> allTestSections) {
         List<MenuItem> testSectionMenuItems = new ArrayList<>();
@@ -139,14 +150,16 @@ public class MenuUtil {
 			if( menuItem.isOpenInNewWindow()){
 				html.append(" target=\"_blank\" ");
 			}
-			
-			if( GenericValidator.isBlankOrNull(menuItem.getActionURL()) && GenericValidator.isBlankOrNull(menuItem.getClickAction())){
+
+            String actionURL = menuItem.getActionURL();
+
+            if( GenericValidator.isBlankOrNull(actionURL) && GenericValidator.isBlankOrNull(menuItem.getClickAction())){
 				html.append(" class=\"no-link\" >");
 			}else{
-				html.append(" href=\"");
-				html.append(contextPath);
-				html.append(menuItem.getActionURL());
-				html.append("\" >"); 
+                html.append(" href=\"");
+                html.append(contextPath);
+                html.append(actionURL);
+				html.append("\" >");
 			}
 						
 			html.append(menuItem.getLocalizedTitle());
@@ -162,8 +175,9 @@ public class MenuUtil {
 		}
 		
 	}
-		
-	private static void sortChildren(MenuItem menuItem) {
+
+
+    private static void sortChildren(MenuItem menuItem) {
 		menuItem.sortChildren();
 		
 		for( MenuItem child : menuItem.getChildMenus()){

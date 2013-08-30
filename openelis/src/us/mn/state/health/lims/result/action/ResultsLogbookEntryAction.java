@@ -17,7 +17,10 @@
  */
 package us.mn.state.health.lims.result.action;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -51,8 +54,9 @@ import us.mn.state.health.lims.test.valueholder.TestSection;
 public class ResultsLogbookEntryAction extends ResultsLogbookBaseAction {
 
 	private InventoryUtility inventoryUtility = new InventoryUtility();
+    private String testSectionName;
 
-	protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request,
+    protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 
 		String forward = FWD_SUCCESS;
@@ -60,16 +64,20 @@ public class ResultsLogbookEntryAction extends ResultsLogbookBaseAction {
 		String requestedPage = request.getParameter("page");
 		request.getSession().setAttribute(SAVE_DISABLED, TRUE);
 
-		DynaActionForm dynaForm = (DynaActionForm) form;
+        String type = request.getParameter("type");
 
-		currentDate = getCurrentDate(request);
-		PropertyUtils.setProperty(dynaForm, "currentDate", currentDate);
-		PropertyUtils.setProperty(dynaForm, "logbookType", request.getParameter("type"));
+        DynaActionForm dynaForm = (DynaActionForm) form;
+
+        currentDate = getCurrentDate(request);
+        PropertyUtils.setProperty(dynaForm, "currentDate", currentDate);
+        PropertyUtils.setProperty(dynaForm, "logbookType", type);
 		PropertyUtils.setProperty(dynaForm, "referralReasons", ReferralUtil.getReferralReasons());
 
-		setLogbookRequest(request.getParameter("type"));
+        testSectionName = getDecoded(type);
 
-		String testSectionId = getTestSelectId();
+        setLogbookRequest(testSectionName);
+
+		String testSectionId = getTestSelectId(testSectionName);
 		List<TestResultItem> tests = null;
 
 		ResultsPaging paging = new ResultsPaging();
@@ -115,7 +123,20 @@ public class ResultsLogbookEntryAction extends ResultsLogbookBaseAction {
 		return mapping.findForward(forward);
 	}
 
-	private void setDisplayProperties(DynaActionForm dynaForm) throws IllegalAccessException,
+    private String getDecoded(String type) {
+        try {
+            return URLDecoder.decode(type, Charset.defaultCharset().displayName());
+        } catch (UnsupportedEncodingException e) {
+            return "UTF-8";
+        }
+    }
+
+    @Override
+    public String getPageSubtitleKey() {
+        return testSectionName;
+    }
+
+    private void setDisplayProperties(DynaActionForm dynaForm) throws IllegalAccessException,
 			InvocationTargetException, NoSuchMethodException {
 
 		switch (logbookRequest) {
@@ -156,19 +177,19 @@ public class ResultsLogbookEntryAction extends ResultsLogbookBaseAction {
 		}case ENDOCRINOLOGY: {
 			PropertyUtils.setProperty(dynaForm, "displayTestMethod", true);
 			break;
-		}
-		default: {
-			// no-op
-		}
+        }
+        default: {
+                PropertyUtils.setProperty(dynaForm, "displayTestMethod", true);
+		    }
 		}
 
 	}
 
-	private String getTestSelectId() {
+	private String getTestSelectId(String testSectionName) {
 
 		TestSection testSection = new TestSection();
-		String logbookName = getNameForLogbookType(logbookRequest);
-		testSection.setTestSectionName(logbookName);
+		//String logbookName = getNameForLogbookType(logbookRequest);
+		testSection.setTestSectionName(testSectionName);
 
 		TestSectionDAO testSectionDAO = new TestSectionDAOImpl();
 		testSection = testSectionDAO.getTestSectionByName(testSection);

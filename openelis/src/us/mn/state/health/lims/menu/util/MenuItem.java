@@ -16,6 +16,9 @@
 */
 package us.mn.state.health.lims.menu.util;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -46,7 +49,21 @@ public class MenuItem {
 
     public static MenuItem create(TestSection testSection) {
         String testSectionName = testSection.getTestSectionName();
-        return new MenuItem("test_section_" + testSection.getId(), testSectionName, false, "/LogbookResults.do?type=" + testSectionName, "", testSectionName, testSection.getSortOrderInt());
+        String urlTest = getEncoded(testSectionName);
+        return new MenuItem("test_section_" + testSection.getId(), testSectionName, false, "/LogbookResults.do?type=" + urlTest, "", testSectionName, testSection.getSortOrderInt());
+    }
+
+
+    private static String getEncoded(String actionURL) {
+        String encode = "";
+
+        try {
+            encode = URLEncoder.encode(actionURL, Charset.defaultCharset().displayName());
+        } catch (UnsupportedEncodingException e) {
+            encode = "UTF-8";
+        }
+
+        return encode;
     }
 
     private MenuItem(String elementId, String localizedTooltip, boolean openInNewWindow, String actionURL, String clickAction, String localizedTitle, int presentationOrder) {
