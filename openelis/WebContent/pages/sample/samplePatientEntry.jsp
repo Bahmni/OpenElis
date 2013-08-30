@@ -224,8 +224,12 @@ function processAccessionFailure(xhr)
 
 function checkAccessionNumber( accessionNumber )
 {
+    if ( !new RegExp("^([0-9]+)([-]*)([0-9]*)$").test(accessionNumber.value) ) {
+        setSampleFieldInvalid(accessionNumber.name );
+       	setValidIndicaterOnField(false, accessionNumber.name);
+    }
 	//check if empty
-	if ( !fieldIsEmptyById( "labNo" ) )
+	else if ( !fieldIsEmptyById( "labNo" ) )
 	{
 		validateAccessionNumberOnServer(false, accessionNumber.id, accessionNumber.value, processAccessionSuccess, processAccessionFailure );
 	}
