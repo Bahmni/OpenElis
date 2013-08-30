@@ -31,14 +31,16 @@ public class StatusRules{
                 StatusOfSampleUtil.getStatusID(AnalysisStatus.BiologistRejectedRO).equals(analysisStatusId);
 	}
 
-	public void setAllowableStatusForLoadingResults(ResultsLoadUtility resultsLoadUtility) {
-		resultsLoadUtility.addIncludedAnalysisStatus(AnalysisStatus.BiologistRejected);
+	public ResultsLoadUtility setAllowableStatusForLoadingResults(String currentUserId) {
+        ResultsLoadUtility resultsLoadUtility = new ResultsLoadUtility(currentUserId);
+        resultsLoadUtility.addIncludedAnalysisStatus(AnalysisStatus.BiologistRejected);
 		resultsLoadUtility.addIncludedAnalysisStatus(AnalysisStatus.TechnicalRejected);
 		resultsLoadUtility.addIncludedAnalysisStatus(AnalysisStatus.NotTested);
 		resultsLoadUtility.addIncludedAnalysisStatus(AnalysisStatus.NonConforming_depricated);
 		resultsLoadUtility.addIncludedSampleStatus(OrderStatus.Entered);
 		resultsLoadUtility.addIncludedSampleStatus(OrderStatus.Started);
 		resultsLoadUtility.addIncludedSampleStatus(OrderStatus.NonConforming_depricated);
+        return resultsLoadUtility;
 	}
 
 	public String getStartingAnalysisStatus() {

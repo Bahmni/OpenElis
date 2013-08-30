@@ -101,7 +101,8 @@ public abstract class BaseAction extends Action implements IActionConstants {
 
         // bugzilla 1348
         if (StringUtil.isNullorNill(pageSubtitleKeyParameter)) {
-            pageSubtitle = getMessageForKey(pageSubtitleKey);
+            String messageForKey = getMessageForKey(pageSubtitleKey);
+            pageSubtitle = (messageForKey == null) ? pageSubtitleKey : messageForKey;
         } else {
             pageSubtitle = getMessageForKey(request, pageSubtitleKey, pageSubtitleKeyParameter);
         }

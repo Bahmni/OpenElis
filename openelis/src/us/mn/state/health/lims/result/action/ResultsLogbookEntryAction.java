@@ -37,6 +37,7 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.DynaActionForm;
 
+import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.util.ConfigurationProperties;
 import us.mn.state.health.lims.common.util.ConfigurationProperties.Property;
 import us.mn.state.health.lims.common.util.DateUtil;
@@ -51,7 +52,7 @@ import us.mn.state.health.lims.test.dao.TestSectionDAO;
 import us.mn.state.health.lims.test.daoimpl.TestSectionDAOImpl;
 import us.mn.state.health.lims.test.valueholder.TestSection;
 
-public class ResultsLogbookEntryAction extends ResultsLogbookBaseAction {
+public class ResultsLogbookEntryAction extends BaseAction {
 
 	private InventoryUtility inventoryUtility = new InventoryUtility();
     private String testSectionName;
@@ -59,66 +60,59 @@ public class ResultsLogbookEntryAction extends ResultsLogbookBaseAction {
     protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 
-		String forward = FWD_SUCCESS;
+        request.getSession().setAttribute(SAVE_DISABLED, TRUE);
 
-		String requestedPage = request.getParameter("page");
-		request.getSession().setAttribute(SAVE_DISABLED, TRUE);
-
+        String forward = FWD_SUCCESS;
+        String requestedPage = request.getParameter("page");
         String type = request.getParameter("type");
+        String currentDate = getCurrentDate(request);
 
         DynaActionForm dynaForm = (DynaActionForm) form;
 
-        currentDate = getCurrentDate(request);
         PropertyUtils.setProperty(dynaForm, "currentDate", currentDate);
         PropertyUtils.setProperty(dynaForm, "logbookType", type);
-		PropertyUtils.setProperty(dynaForm, "referralReasons", ReferralUtil.getReferralReasons());
+        PropertyUtils.setProperty(dynaForm, "referralReasons", ReferralUtil.getReferralReasons());
+        PropertyUtils.setProperty(dynaForm, "displayTestMethod", true);
 
         testSectionName = getDecoded(type);
 
-        setLogbookRequest(testSectionName);
+        String testSectionId = getTestSelectId(testSectionName);
+        List<TestResultItem> tests = null;
 
-		String testSectionId = getTestSelectId(testSectionName);
-		List<TestResultItem> tests = null;
+        ResultsPaging paging = new ResultsPaging();
+        List<InventoryKitItem> inventoryList = new ArrayList<InventoryKitItem>();
 
-		ResultsPaging paging = new ResultsPaging();
-		List<InventoryKitItem> inventoryList = new ArrayList<InventoryKitItem>();
-		ResultsLoadUtility resultsLoadUtility = new ResultsLoadUtility(currentUserId);
+        ResultsLoadUtility resultsLoadUtility = new StatusRules().setAllowableStatusForLoadingResults(currentUserId);
 
-		if (GenericValidator.isBlankOrNull(requestedPage)) {
-			
-			new StatusRules().setAllowableStatusForLoadingResults(resultsLoadUtility);
-			
-			if (testSectionId != null) {
-				tests = resultsLoadUtility.getUnfinishedTestResultItemsInTestSection(testSectionId);
-			} else {
-				tests = new ArrayList<TestResultItem>();
-			}
+        if (GenericValidator.isBlankOrNull(requestedPage)) {
 
-			if( ConfigurationProperties.getInstance().isPropertyValueEqual(Property.patientDataOnResultsByRole, "true") &&   
+            if (testSectionId != null) {
+                tests = resultsLoadUtility.getUnfinishedTestResultItemsInTestSection(testSectionId);
+            } else {
+                tests = new ArrayList<TestResultItem>();
+            }
+
+            if( ConfigurationProperties.getInstance().isPropertyValueEqual(Property.patientDataOnResultsByRole, "true") &&
 					!userHasPermissionForModule(request, "PatientResults") ){
-				for( TestResultItem resultItem : tests){
-					resultItem.setPatientInfo("---");
-				}
-				
-			}
-			
-			paging.setDatabaseResults(request, dynaForm, tests);
+                for( TestResultItem resultItem : tests){
+                    resultItem.setPatientInfo("---");
+                }
+            }
 
-		} else {
-			paging.page(request, dynaForm, requestedPage);
-		}
+            paging.setDatabaseResults(request, dynaForm, tests);
+        } else {
+            paging.page(request, dynaForm, requestedPage);
+        }
 
-		//this does not look right what happens after a new page!!!
-		if (resultsLoadUtility.inventoryNeeded() || logbookRequest == logbooks.HIV) {
-			inventoryList = inventoryUtility.getExistingActiveInventory();
-			PropertyUtils.setProperty(dynaForm, "displayTestKit", true);
-		} else {
-			PropertyUtils.setProperty(dynaForm, "displayTestKit", false);
-		}
+        //this does not look right what happens after a new page!!!
+        if (resultsLoadUtility.inventoryNeeded()) {
+            inventoryList = inventoryUtility.getExistingActiveInventory();
+            PropertyUtils.setProperty(dynaForm, "displayTestKit", true);
+        } else {
+            PropertyUtils.setProperty(dynaForm, "displayTestKit", false);
+        }
 
-		PropertyUtils.setProperty(dynaForm, "inventoryItems", inventoryList);
-
-		setDisplayProperties(dynaForm);
+        PropertyUtils.setProperty(dynaForm, "inventoryItems", inventoryList);
 
 		return mapping.findForward(forward);
 	}
@@ -136,59 +130,14 @@ public class ResultsLogbookEntryAction extends ResultsLogbookBaseAction {
         return testSectionName;
     }
 
-    private void setDisplayProperties(DynaActionForm dynaForm) throws IllegalAccessException,
-			InvocationTargetException, NoSuchMethodException {
-
-		switch (logbookRequest) {
-		case HEMATOLOGY: {
-			PropertyUtils.setProperty(dynaForm, "displayTestMethod", true);
-			break;
-		}
-		case CHEM: {
-			PropertyUtils.setProperty(dynaForm, "displayTestMethod", true);
-			break;
-		}
-		case BACTERIOLOGY: {
-			PropertyUtils.setProperty(dynaForm, "displayTestMethod", true);
-			break;
-		}
-		case PARASITOLOGY: {
-			PropertyUtils.setProperty(dynaForm, "displayTestMethod", true);
-			break;
-		}
-		case IMMUNO: {
-			PropertyUtils.setProperty(dynaForm, "displayTestMethod", true);
-			break;
-		}
-		case ECBU: {
-			PropertyUtils.setProperty(dynaForm, "displayTestMethod", true);
-			break;
-		}
-		case HIV: {
-			PropertyUtils.setProperty(dynaForm, "displayTestMethod", true);
-			break;
-		}
-		case MOLECULAR_BIOLOGY: {
-			PropertyUtils.setProperty(dynaForm, "displayTestMethod", true);
-			break;
-		}case LIQUID_BIOLOGY: {
-			PropertyUtils.setProperty(dynaForm, "displayTestMethod", true);
-			break;
-		}case ENDOCRINOLOGY: {
-			PropertyUtils.setProperty(dynaForm, "displayTestMethod", true);
-			break;
-        }
-        default: {
-                PropertyUtils.setProperty(dynaForm, "displayTestMethod", true);
-		    }
-		}
-
-	}
+    @Override
+    public String getPageTitleKey() {
+        return "banner.menu.results";
+    }
 
 	private String getTestSelectId(String testSectionName) {
 
 		TestSection testSection = new TestSection();
-		//String logbookName = getNameForLogbookType(logbookRequest);
 		testSection.setTestSectionName(testSectionName);
 
 		TestSectionDAO testSectionDAO = new TestSectionDAOImpl();
