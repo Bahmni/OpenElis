@@ -383,7 +383,6 @@
   </html:link>
 </li>
 <% } %>
-<hr>
 <% if(adminFields.useField(Field.OpenReports)){ %>
 <li>
   <html:link href="OpenReportsAdmin.do?action=limsloginadmin">

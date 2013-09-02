@@ -14,7 +14,6 @@ if (request.getAttribute("menuDefinition") != null) {
 //System.out.println("menuDef " + menuDef);
 %>
 <bean:define id="menuDef" value="<%=menuDef%>" />
-<center>
 <table cellpadding="0" cellspacing="0" width="100%" height="100%" border="0">
 <tr>
 <td>
@@ -189,4 +188,3 @@ if (request.getAttribute("menuDefinition") != null) {
 </td>
 </tr>
 </table>
-</center>

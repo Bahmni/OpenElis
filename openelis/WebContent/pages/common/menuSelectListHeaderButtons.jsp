@@ -72,13 +72,10 @@
 <table width="100%" border="0" cellspacing="0" cellpadding="0" >
 	<tr>
 		<td class="pageTitle" align="center">
-			<b> &nbsp;&nbsp;&nbsp;&nbsp;
 				<logic:notEmpty
 					name="<%=IActionConstants.PAGE_SUBTITLE_KEY%>">
 					<bean:write name="<%=IActionConstants.PAGE_SUBTITLE_KEY%>" />
 				</logic:notEmpty>
-		 	&nbsp;&nbsp;
-		 	</b>
 		</td>
 	</tr>
 </table>
@@ -104,94 +101,102 @@ function submitSearchForClick(button){
 }
 </script>
 
-<table border="0" cellpadding="0" cellspacing="0" width="100%">
-	<tbody >
-	<tr>
-	<td >
-  	   <html:button onclick="setMenuAction(this, window.document.forms[0], '', 'yes', '?ID=0');return false;" property="add" disabled="<%=Boolean.valueOf(addDisabled).booleanValue()%>" >
-  		  <bean:message key="label.button.add"/>
-  	   </html:button>
-  	</td>
-  	</tr>
-  	<tr>
-  	<td >
-	   <bean:message key="label.form.selectand"/>&nbsp;
-	</td>
-	<td >
-	   <html:button onclick="setMenuAction(this, window.document.forms[0], '', 'yes', '?ID=');return false;" property="edit" disabled="<%= disableEdit %>">
-  			   	<bean:message key="label.button.edit"/>
-  		</html:button>
-	 </td>
-     <td >
-  			<html:button onclick="setMenuAction(this, window.document.forms[0], 'Delete', 'yes', '?ID=');return false;" property="deactivate" disabled="<%=Boolean.valueOf(deactivateDisabled).booleanValue()%>">
-  			   <bean:message key="label.button.deactivate"/>
-  			</html:button>
-	</td>
+<table border="0" cellpadding="0" cellspacing="0" width="100%" class="menu-select-header-btns">
+  <tbody >
+    <tr>
+     <td>
+        <ul>
+          <li class="menu-select-header-seperator">
+            <logic:notEmpty name="<%=IActionConstants.MENU_SEARCH_BY_TABLE_COLUMN%>">
+                  <ul>
+                    <li>
+                      <span class="menu-select-header-btns-text">
+                       <bean:message key="label.form.searchby"/></span>
+                       <span class="menu-select-header-btns-text">
+                       <bean:message key="<%=searchColumn%>"/>
+                     </span>
+                   </li>
+                    <li>   
+                        <html:text name="<%=formName%>" property = "searchString" onkeypress="submitSearchForEnter(event);" size = "20" maxlength= "20" value="<%=searchStr%>" disabled="<%=Boolean.valueOf(notAllowSearching).booleanValue()%>" />
+                    </li>
+                    <li>
+                        <html:button property="search" styleId="searchButton" onclick="submitSearchForClick(this);return false;" disabled="<%=Boolean.valueOf(notAllowSearching).booleanValue()%>">
+                         <bean:message key="label.button.search"/>
+                        </html:button>
+                    </li>
+                    
+                  </ul>
+             </logic:notEmpty>
+          </li>
+        <li>
+             <html:button onclick="setMenuAction(this, window.document.forms[0], '', 'yes', '?ID=0');return false;" property="add" disabled="<%=Boolean.valueOf(addDisabled).booleanValue()%>" >
+               <bean:message key="label.button.add"/>
+             </html:button>
+        </li>
+        <!-- <li>
+            <span class="menu-select-header-btns-text">
+              <bean:message key="label.form.selectand"/>&nbsp;
+            </span>
+       </li> -->
+        <li>
+             <html:button onclick="setMenuAction(this, window.document.forms[0], '', 'yes', '?ID=');return false;" property="edit" disabled="<%= disableEdit %>">
+                  <bean:message key="label.button.edit"/>
+             </html:button>
+        </li>
+        <li class="menu-select-header-seperator">
+             <html:button onclick="setMenuAction(this, window.document.forms[0], 'Delete', 'yes', '?ID=');return false;" property="deactivate" disabled="<%=Boolean.valueOf(deactivateDisabled).booleanValue()%>">
+               <bean:message key="label.button.deactivate"/>
+             </html:button>
+       </li>
 
-	    <%
-		    String previousDisabled = "false";
-            String nextDisabled = "false";
-            if (request.getAttribute(IActionConstants.PREVIOUS_DISABLED) != null) {
-               previousDisabled = (String)request.getAttribute(IActionConstants.PREVIOUS_DISABLED);
-            }
-            if (request.getAttribute(IActionConstants.NEXT_DISABLED) != null) {
-               nextDisabled = (String)request.getAttribute(IActionConstants.NEXT_DISABLED);
-            }
-
+        <%
+          String previousDisabled = "false";
+              String nextDisabled = "false";
+              if (request.getAttribute(IActionConstants.PREVIOUS_DISABLED) != null) {
+                 previousDisabled = (String)request.getAttribute(IActionConstants.PREVIOUS_DISABLED);
+              }
+              if (request.getAttribute(IActionConstants.NEXT_DISABLED) != null) {
+                 nextDisabled = (String)request.getAttribute(IActionConstants.NEXT_DISABLED);
+              }
         %>
-      </tr>
-      <tr>
-    	   <td>
-  			<html:button onclick="setMenuAction(this, window.document.forms[0], '', 'yes', '?paging=1');return false;" property="previous" disabled="<%=Boolean.valueOf(previousDisabled).booleanValue()%>">
-  			   <bean:message key="label.button.previous"/>
-  			</html:button>
-	   </td>
-	   <td>
-  			<html:button onclick="setMenuAction(this, window.document.forms[0], '', 'yes', '?paging=2');return false;" property="next" disabled="<%=Boolean.valueOf(nextDisabled).booleanValue()%>">
-  			   <bean:message key="label.button.next"/>
-  			</html:button>
-	   </td>
+          <li class="seperator">
+            <html:button onclick="setMenuAction(this, window.document.forms[0], '', 'yes', '?paging=1');return false;" property="previous" disabled="<%=Boolean.valueOf(previousDisabled).booleanValue()%>">
+               <bean:message key="label.button.previous"/>
+            </html:button>
+          </li>
+           <li>
+            <span class="menu-select-header-btns-text">
+             <%
+                 if (request.getAttribute(IActionConstants.MENU_TOTAL_RECORDS) != null) {
+                     totalCount = (String)request.getAttribute(IActionConstants.MENU_TOTAL_RECORDS);
+                 }
+                 if (request.getAttribute(IActionConstants.MENU_FROM_RECORD) != null) {
+                     fromCount = (String)request.getAttribute(IActionConstants.MENU_FROM_RECORD);
+                 }
+                 if (request.getAttribute(IActionConstants.MENU_TO_RECORD) != null) {
+                    toCount = (String)request.getAttribute(IActionConstants.MENU_TO_RECORD);
+                 }
 
-      <logic:notEmpty name="<%=IActionConstants.MENU_SEARCH_BY_TABLE_COLUMN%>">
-          <td>
-               <html:text name="<%=formName%>" property = "searchString" onkeypress="submitSearchForEnter(event);" size = "20" maxlength= "20" value="<%=searchStr%>" disabled="<%=Boolean.valueOf(notAllowSearching).booleanValue()%>" />
-          </td>
+                  java.util.Locale locale = (Locale)request.getSession().getAttribute(org.apache.struts.Globals.LOCALE_KEY);
+                  String msgResults = ResourceLocator.getInstance().getMessageResources().getMessage(locale,"list.showing");
+                  String msgOf = ResourceLocator.getInstance().getMessageResources().getMessage(locale,"list.of");
 
-          <td align="right">
-               <html:button property="search" styleId="searchButton" onclick="submitSearchForClick(this);return false;" disabled="<%=Boolean.valueOf(notAllowSearching).booleanValue()%>">
-  			       <bean:message key="label.button.search"/>
-  		       </html:button>
-          </td>
-          <td>
-  		       <bean:message key="label.form.searchby"/>
- 	           <bean:message key="<%=searchColumn%>"/>
-
-	       </td>
-
-       </logic:notEmpty>
-
-       <%
-           if (request.getAttribute(IActionConstants.MENU_TOTAL_RECORDS) != null) {
-               totalCount = (String)request.getAttribute(IActionConstants.MENU_TOTAL_RECORDS);
-           }
-           if (request.getAttribute(IActionConstants.MENU_FROM_RECORD) != null) {
-               fromCount = (String)request.getAttribute(IActionConstants.MENU_FROM_RECORD);
-           }
-           if (request.getAttribute(IActionConstants.MENU_TO_RECORD) != null) {
-              toCount = (String)request.getAttribute(IActionConstants.MENU_TO_RECORD);
-           }
-
-            java.util.Locale locale = (Locale)request.getSession().getAttribute(org.apache.struts.Globals.LOCALE_KEY);
-            String msgResults = ResourceLocator.getInstance().getMessageResources().getMessage(locale,"list.showing");
-            String msgOf = ResourceLocator.getInstance().getMessageResources().getMessage(locale,"list.of");
-
-            paginationMessage = msgResults + " " + fromCount + " - " + toCount + " " + msgOf + " " + totalCount;
-       %>
+                  paginationMessage = msgResults + " " + fromCount + " - " + toCount + " " + msgOf + " " + totalCount;
+             %>
       
-       <td width="20%" align="right">
-         <%=paginationMessage%>
+              <%=paginationMessage%>
+            </span>
+          </li>
+          <li>
+            <html:button onclick="setMenuAction(this, window.document.forms[0], '', 'yes', '?paging=2');return false;" property="next" disabled="<%=Boolean.valueOf(nextDisabled).booleanValue()%>">
+               <bean:message key="label.button.next"/>
+            </html:button>
+          </li>
+         
+          
+        </ul>
        </td>
- 	</tr>
+    </tr>
    </tbody>
 </table>
 
