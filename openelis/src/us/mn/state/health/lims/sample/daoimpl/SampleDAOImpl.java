@@ -782,7 +782,7 @@ public class SampleDAOImpl extends BaseDAOImpl implements SampleDAO {
 	}
 
     @Override
-    public String saveSample(Sample sample) throws LIMSRuntimeException {
+    public Sample saveSample(Sample sample) throws LIMSRuntimeException {
         String id;
         try
         {
@@ -793,6 +793,6 @@ public class SampleDAOImpl extends BaseDAOImpl implements SampleDAO {
             LogEvent.logError("SampleDAOImpl","insertData()",e.toString());
             throw new LIMSRuntimeException("Error in Sample insertData()", e);
         }
-        return sample.getId();
+        return sample;
     }
 }

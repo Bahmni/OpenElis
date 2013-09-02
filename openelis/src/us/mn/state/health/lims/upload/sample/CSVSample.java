@@ -15,16 +15,19 @@ public class CSVSample extends CSVEntity {
     public String accessionNumber;
     @CSVHeader(name = "Date of Test")
     public String sampleDate;
+    @CSVHeader(name = "Sample Source")
+    public String sampleSource;
     @CSVRepeatingHeaders(names = {"Test", "Result"}, type = CSVTestResult.class)
     public List<CSVTestResult> testResults;
 
     public CSVSample() { }
 
-    public CSVSample(String healthCenter, String patientRegistrationNumber, String accessionNumber, String sampleDate, List<CSVTestResult> testResults) {
+    public CSVSample(String healthCenter, String patientRegistrationNumber, String accessionNumber, String sampleDate, String sampleSource, List<CSVTestResult> testResults) {
         this.healthCenter = healthCenter;
         this.patientRegistrationNumber = patientRegistrationNumber;
         this.accessionNumber = accessionNumber;
         this.sampleDate = sampleDate;
+        this.sampleSource = sampleSource;
         this.testResults = testResults;
     }
 }
