@@ -136,6 +136,8 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
             errorMessage.append("Registration Number is mandatory.\n");
         if (isEmpty(csvPatient.firstName))
             errorMessage.append("First Name is mandatory.\n");
+        if (isEmpty(csvPatient.lastName))
+            errorMessage.append("Last Name is mandatory.\n");
         if (isEmpty(csvPatient.gender))
             errorMessage.append("Gender is mandatory.\n");
         if (isEmpty(csvPatient.cityVillage))

@@ -49,21 +49,22 @@ public class UploadAction extends BaseAction {
 
         try {
             String fileName = file.getFileName();
-            writeToFileSystem(file, fileName);
+            File downloadedFile = getFile(fileName);
+            writeToFileSystem(file, downloadedFile);
 
             UserSessionData userSessionData = (UserSessionData) request.getSession().getAttribute(USER_SESSION_DATA);
 
             if (importType.equals("patient")) {
                 PatientPersister patientPersister = new PatientPersister(request.getContextPath());
                 FileImporter<CSVPatient> csvPatientFileImporter = new FileImporter<>();
-                boolean hasStartedUpload = csvPatientFileImporter.importCSV(fileName, getFile(fileName), patientPersister, CSVPatient.class, new ELISJDBCConnectionProvider(), userSessionData.getLoginName());
+                boolean hasStartedUpload = csvPatientFileImporter.importCSV(fileName, downloadedFile, patientPersister, CSVPatient.class, new ELISJDBCConnectionProvider(), userSessionData.getLoginName());
                 if (!hasStartedUpload) {
                     return mapping.findForward(IActionConstants.FWD_VALIDATION_ERROR);
                 }
             } else if (importType.equals("sample")) {
                 TestResultPersister testResultPersister = new TestResultPersister();
                 FileImporter <CSVSample> fileImporter = new FileImporter<>();
-                boolean hasStartedUpload = fileImporter.importCSV(fileName, getFile(fileName), testResultPersister, CSVSample.class, new ELISJDBCConnectionProvider(), userSessionData.getLoginName());
+                boolean hasStartedUpload = fileImporter.importCSV(fileName, downloadedFile, testResultPersister, CSVSample.class, new ELISJDBCConnectionProvider(), userSessionData.getLoginName());
                 if (!hasStartedUpload) {
                     return mapping.findForward(IActionConstants.FWD_VALIDATION_ERROR);
                 }
@@ -75,8 +76,8 @@ public class UploadAction extends BaseAction {
         return mapping.findForward(IActionConstants.FWD_SUCCESS);
     }
 
-    private void writeToFileSystem(FormFile file, String fileName) throws IOException {
-        FileOutputStream fileOutputStream = new FileOutputStream(getFile(fileName));
+    private void writeToFileSystem(FormFile file, File aFile) throws IOException {
+        FileOutputStream fileOutputStream = new FileOutputStream(aFile);
         fileOutputStream.write(file.getFileData());
         fileOutputStream.flush();
         fileOutputStream.close();
@@ -84,7 +85,7 @@ public class UploadAction extends BaseAction {
 
     private File getFile(String fileName) {
         int indexForSlash = fileName.lastIndexOf("\\");
-        String substring = null;
+        String substring;
         if (indexForSlash >= 0) {
             substring = fileName.substring(indexForSlash);
         } else {

@@ -41,6 +41,7 @@ public class PatientPersisterTest {
         csvPatient.cityVillage = "ganiyari";
         csvPatient.district = "ganiyari";
         csvPatient.firstName = "firstName";
+        csvPatient.lastName = "lastName";
         csvPatient.registrationNumber = "12345";
         csvPatient.gender = VALID_GENDER_TYPE;
         csvPatient.healthCenter = VALID_HEALTH_CENTRE;

@@ -67,6 +67,6 @@ public class Gender extends BaseObject {
         if (patientGender == null || patientGender.trim().length() == 0)
             return false;
 
-        return genderType.equalsIgnoreCase(patientGender.trim());
+        return genderType.equals(patientGender.trim());
     }
 }
