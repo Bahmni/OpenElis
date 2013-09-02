@@ -780,4 +780,19 @@ public class SampleDAOImpl extends BaseDAOImpl implements SampleDAO {
 		}
 		return null;
 	}
+
+    @Override
+    public String saveSample(Sample sample) throws LIMSRuntimeException {
+        String id;
+        try
+        {
+            insertDataWithAccessionNumber(sample);
+        }
+        catch (Exception e)
+        {
+            LogEvent.logError("SampleDAOImpl","insertData()",e.toString());
+            throw new LIMSRuntimeException("Error in Sample insertData()", e);
+        }
+        return sample.getId();
+    }
 }

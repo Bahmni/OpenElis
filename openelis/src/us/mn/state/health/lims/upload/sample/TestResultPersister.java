@@ -13,12 +13,19 @@ import us.mn.state.health.lims.healthcenter.daoimpl.HealthCenterDAOImpl;
 import us.mn.state.health.lims.healthcenter.valueholder.HealthCenter;
 import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
 import us.mn.state.health.lims.patient.daoimpl.PatientDAOImpl;
+import us.mn.state.health.lims.patientidentity.dao.PatientIdentityDAO;
 import us.mn.state.health.lims.patientidentity.daoimpl.PatientIdentityDAOImpl;
+import us.mn.state.health.lims.patientidentity.valueholder.PatientIdentity;
+import us.mn.state.health.lims.patientidentitytype.dao.PatientIdentityTypeDAO;
 import us.mn.state.health.lims.patientidentitytype.daoimpl.PatientIdentityTypeDAOImpl;
+import us.mn.state.health.lims.patientidentitytype.valueholder.PatientIdentityType;
 import us.mn.state.health.lims.person.daoimpl.PersonDAOImpl;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
 import us.mn.state.health.lims.sample.valueholder.Sample;
+import us.mn.state.health.lims.samplehuman.dao.SampleHumanDAO;
+import us.mn.state.health.lims.samplehuman.daoimpl.SampleHumanDAOImpl;
+import us.mn.state.health.lims.samplehuman.valueholder.SampleHuman;
 import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.test.dao.TestDAO;
@@ -33,6 +40,8 @@ import java.util.Date;
 import java.util.List;
 
 public class TestResultPersister implements EntityPersister<CSVSample> {
+    private PatientIdentityTypeDAO patientIdentityTypeDAO;
+    private PatientIdentityDAO patientIdentityDAO;
     private HealthCenterDAO healthCenterDAO;
     private TestDAO testDAO;
     private SampleDAO sampleDAO;
@@ -42,26 +51,49 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
     private List<String> testNames;
     private static String sysUserId;
     private List<String> errorMessages;
+    private SampleHumanDAO sampleHumanDAO;
 
     public TestResultPersister() {
-        this(new HealthCenterDAOImpl(), new TestDAOImpl(), new SampleDAOImpl(),
-            new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl()));
+        this(new HealthCenterDAOImpl(), new TestDAOImpl(), new SampleDAOImpl(), new PatientIdentityTypeDAOImpl(), new PatientIdentityDAOImpl(),
+                new SampleHumanDAOImpl(), new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl()));
     }
 
-    public TestResultPersister(HealthCenterDAO healthCenterDAO, TestDAO testDAO, SampleDAO sampleDAO, AuditingService auditingService) {
+    public TestResultPersister(HealthCenterDAO healthCenterDAO, TestDAO testDAO, SampleDAO sampleDAO,
+                               PatientIdentityTypeDAO patientIdentityTypeDAO, PatientIdentityDAO patientIdentityDAO,
+                               SampleHumanDAO sampleHumanDAO, AuditingService auditingService) {
         this.healthCenterDAO = healthCenterDAO;
         this.testDAO = testDAO;
         this.sampleDAO = sampleDAO;
+        this.patientIdentityTypeDAO = patientIdentityTypeDAO;
+        this.patientIdentityDAO = patientIdentityDAO;
+        this.sampleHumanDAO = sampleHumanDAO;
         this.auditingService = auditingService;
+
     }
 
     @Override
     public RowResult<CSVSample> persist(CSVSample csvSample) {
-        saveSample(csvSample);
+        String patientId = getPatientId(csvSample.patientRegistrationNumber);
+        String sampleId = saveSample(csvSample);
+        saveSampleHuman(sampleId,patientId);
         return new RowResult<>(csvSample, StringUtils.join(errorMessages, ", "));
     }
 
-    private void saveSample(CSVSample csvSample) {
+    private void saveSampleHuman(String sampleId, String patientId) {
+        SampleHuman sampleHuman = new SampleHuman();
+        sampleHuman.setPatientId(patientId);
+        sampleHuman.setSampleId(sampleId);
+        sampleHuman.setSysUserId(getSysUserId());
+        sampleHumanDAO.insertData(sampleHuman);
+    }
+
+    private String getPatientId(String patientIdentity) {
+        PatientIdentityType stIdentityType = patientIdentityTypeDAO.getNamedIdentityType("ST");
+        List<PatientIdentity> patientIdentities = patientIdentityDAO.getPatientIdentitiesByValueAndType(patientIdentity, stIdentityType.getId());
+        return patientIdentities.get(0).getPatientId();
+    }
+
+    private String saveSample(CSVSample csvSample) {
         Sample sample = new Sample();
         sample.setAccessionNumber(csvSample.accessionNumber);
         SimpleDateFormat datetimeFormatter = new SimpleDateFormat("dd-MM-yyyy");
@@ -79,7 +111,7 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
         sample.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.OrderStatus.Finished));
         sample.setDomain(SystemConfiguration.getInstance().getHumanDomain());
         sample.setSysUserId(getSysUserId());
-        sampleDAO.insertData(sample);
+        return sampleDAO.saveSample(sample);
     }
 
     @Override
