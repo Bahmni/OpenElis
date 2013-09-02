@@ -476,7 +476,7 @@
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["Panel: " + ($F{panelName} != null ? $F{panelName} : "Aucun")]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA["Panel: " + ($F{panelName} != null ? $F{panelName} : "None")]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
