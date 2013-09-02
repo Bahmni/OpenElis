@@ -92,7 +92,7 @@
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{firstName} + " " + $F{lastName}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement x="132" y="64" width="200" height="14"/>
+					<reportElement x="200" y="64" width="200" height="14"/>
 					<box leftPadding="4">
 						<pen lineWidth="0.0"/>
 						<topPen lineWidth="0.0"/>
@@ -104,7 +104,7 @@
 					<textFieldExpression class="java.lang.String"><![CDATA["Accession Number: " + $F{accessionNumber}]]></textFieldExpression>
 				</textField>
 				<textField pattern="dd/MM/yyyy" isBlankWhenNull="false">
-					<reportElement x="0" y="64" width="120" height="14"/>
+					<reportElement x="0" y="64" width="200" height="14"/>
 					<box leftPadding="0">
 						<pen lineWidth="0.0"/>
 						<topPen lineWidth="0.0"/>
