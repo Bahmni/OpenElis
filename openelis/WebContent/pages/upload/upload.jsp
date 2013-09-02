@@ -46,31 +46,25 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
 <script type="text/javascript" src="<%=basePath%>scripts/dashBoard/createGrid.js"></script>
 <script type="text/javascript" src="<%=basePath%>scripts/utils.js"></script>
 
-<script type="text/javascript" src="<%=basePath%>scripts/jquery-file-upload/jquery.ui.widget.js"></script>
-<script type="text/javascript" src="<%=basePath%>scripts/jquery-file-upload/jquery.iframe-transport.js"></script>
-<script type="text/javascript" src="<%=basePath%>scripts/jquery-file-upload/jquery.fileupload.js"></script>
-
 <div>
-    <h1>Uploaded patient file</h1>
+    <h1>Uploaded file</h1>
     <div>
-        <form>
-            <button type="button" id="refresh">Refresh</button>
+        <form method="POST" action="/openelis/DoUpload.do" enctype="multipart/form-data">
+            <br>
+            <input type="file" name="file" value="test_results_Upload_Template.csv">
             <br/>
-            <p id="status"></p>
-
-            <div id="progress">
-                <div class="bar" style="width: 0%;"></div>
-            </div>
-            <br/>
-            <input id="file" type="file" data-url="/openelis/DoUpload.do" accept="text/csv">
-            <br/>
-            <button type="button" id="upload">Upload</button>
+            <span><input type="radio" name="importType" value="patient" checked="checked"> Patient</span>
+            <span><input type="radio" name="importType" value="sample"> Sample</span>
+            <input type="submit" value="Upload">
         </form>
     </div>
 
+    <button type="button" id="refresh">Refresh</button>
     <div id="importStatusGrid" style="width:1000px">
     </div>
 </div>
+
+
 
 <style>
     .bar {
@@ -122,25 +116,6 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
     };
 
     jQuery(document).ready(function() {
-        jQuery('#file').fileupload({
-            dataType: 'text',
-            replaceFileInput: false,
-            add: function (e, data) {
-                data.context = jQuery('#upload').click(function () {
-                    data.context = jQuery('#status').text('Uploading...');
-                    data.submit();
-                });
-            },
-            done: function (e, data) {
-                data.context.text('Upload finished.');
-                renderGrid();
-            },
-            progressall: function (e, data) {
-                var progress = parseInt(data.loaded / data.total * 100, 10);
-                jQuery('#progress .bar').css('width', progress + '%');
-            }
-        });
-
         jQuery("#refresh").on("click", renderGrid);
 
         function renderGrid() {
@@ -151,24 +126,22 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
                     gridForInImportStatus.init();
 
                     gridForInImportStatus.onSort.subscribe(function (e, args) {
-                          var cols = args.sortCols;
-
-                          data.sort(function (dataRow1, dataRow2) {
+                        var cols = args.sortCols;
+                        data.sort(function (dataRow1, dataRow2) {
                             for (var i = 0, l = cols.length; i < l; i++) {
-                              var field = cols[i].sortCol.field;
-                              var sign = cols[i].sortAsc ? 1 : -1;
-                              var value1 = dataRow1[field], value2 = dataRow2[field];
-                              var result = (value1 == value2 ? 0 : (value1 > value2 ? 1 : -1)) * sign;
-                              if (result != 0) {
+                                var field = cols[i].sortCol.field;
+                                var sign = cols[i].sortAsc ? 1 : -1;
+                                var value1 = dataRow1[field], value2 = dataRow2[field];
+                                var result = (value1 == value2 ? 0 : (value1 > value2 ? 1 : -1)) * sign;
+                                if (result != 0) {
                                 return result;
-                              }
+                                }
                             }
                             return 0;
-                          });
-                          gridForInImportStatus.invalidate();
-                          gridForInImportStatus.render();
+                        });
+                        gridForInImportStatus.invalidate();
+                        gridForInImportStatus.render();
                     });
-
                 },
             });
         }

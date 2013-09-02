@@ -140,6 +140,10 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
         } catch (ParseException e) {
             errorMessage.append("Date should be in dd-mm-yyyy format.\n");
         }
+
+        if (isEmpty(errorMessage.toString()))
+            return new RowResult<>(csvSample);
+
         return new RowResult<>(csvSample, errorMessage.toString());
     }
 

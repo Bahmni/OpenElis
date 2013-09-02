@@ -1,12 +1,12 @@
 package us.mn.state.health.lims.upload.action;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.DynaActionForm;
+import org.apache.struts.upload.FormFile;
 import org.bahmni.fileimport.FileImporter;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.IActionConstants;
@@ -14,13 +14,16 @@ import us.mn.state.health.lims.login.valueholder.UserSessionData;
 import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 import us.mn.state.health.lims.upload.patient.CSVPatient;
 import us.mn.state.health.lims.upload.patient.PatientPersister;
+import us.mn.state.health.lims.upload.sample.CSVSample;
+import us.mn.state.health.lims.upload.sample.TestResultPersister;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 public class UploadAction extends BaseAction {
     public static final String TEMPORARY_FILE_LOCATION = "/tmp";
@@ -40,29 +43,29 @@ public class UploadAction extends BaseAction {
         if (!ServletFileUpload.isMultipartContent(request)) {
             return mapping.findForward(IActionConstants.FWD_VALIDATION_ERROR);
         }
-        DiskFileItemFactory factory = new DiskFileItemFactory();
-        factory.setSizeThreshold(maxMemSize);
-        factory.setRepository(new File(TEMPORARY_FILE_LOCATION));
-
-        ServletFileUpload upload = new ServletFileUpload(factory);
-        upload.setSizeMax(maxFileSize);
+        DynaActionForm dynaForm = (DynaActionForm) form;
+        String importType = dynaForm.getString("importType");
+        FormFile file = (FormFile) dynaForm.get("file");
 
         try {
-            List fileItems = upload.parseRequest(request);
-            for (Object fileItem : fileItems) {
-                FileItem fi = (FileItem) fileItem;
-                if (!fi.isFormField()) {
-                    String fileName = fi.getName();
-                    fi.write(getFile(fileName));
+            String fileName = file.getFileName();
+            writeToFileSystem(file, fileName);
 
-                    UserSessionData userSessionData = (UserSessionData)request.getSession().getAttribute(USER_SESSION_DATA);
+            UserSessionData userSessionData = (UserSessionData) request.getSession().getAttribute(USER_SESSION_DATA);
 
-                    PatientPersister patientPersister = new PatientPersister(request.getContextPath());
-                    FileImporter<CSVPatient> csvPatientFileImporter = new FileImporter<>();
-                    boolean hasStartedUpload = csvPatientFileImporter.importCSV(fileName, getFile(fileName),
-                            patientPersister, CSVPatient.class, new ELISJDBCConnectionProvider(), userSessionData.getLoginName());
-                    if (!hasStartedUpload)
-                        return mapping.findForward(IActionConstants.FWD_VALIDATION_ERROR);
+            if (importType.equals("patient")) {
+                PatientPersister patientPersister = new PatientPersister(request.getContextPath());
+                FileImporter<CSVPatient> csvPatientFileImporter = new FileImporter<>();
+                boolean hasStartedUpload = csvPatientFileImporter.importCSV(fileName, getFile(fileName), patientPersister, CSVPatient.class, new ELISJDBCConnectionProvider(), userSessionData.getLoginName());
+                if (!hasStartedUpload) {
+                    return mapping.findForward(IActionConstants.FWD_VALIDATION_ERROR);
+                }
+            } else if (importType.equals("sample")) {
+                TestResultPersister testResultPersister = new TestResultPersister();
+                FileImporter <CSVSample> fileImporter = new FileImporter<>();
+                boolean hasStartedUpload = fileImporter.importCSV(fileName, getFile(fileName), testResultPersister, CSVSample.class, new ELISJDBCConnectionProvider(), userSessionData.getLoginName());
+                if (!hasStartedUpload) {
+                    return mapping.findForward(IActionConstants.FWD_VALIDATION_ERROR);
                 }
             }
         } catch (Exception ex) {
@@ -70,6 +73,13 @@ public class UploadAction extends BaseAction {
             return mapping.findForward(IActionConstants.FWD_VALIDATION_ERROR);
         }
         return mapping.findForward(IActionConstants.FWD_SUCCESS);
+    }
+
+    private void writeToFileSystem(FormFile file, String fileName) throws IOException {
+        FileOutputStream fileOutputStream = new FileOutputStream(getFile(fileName));
+        fileOutputStream.write(file.getFileData());
+        fileOutputStream.flush();
+        fileOutputStream.close();
     }
 
     private File getFile(String fileName) {
