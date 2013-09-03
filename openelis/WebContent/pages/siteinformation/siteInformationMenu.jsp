@@ -10,7 +10,7 @@
 
 <bean:define id="formName" value='<%= (String)request.getAttribute(IActionConstants.FORM_NAME) %>' />
 
-<table width="80%" border="2">
+<table width="100%" border="2">
 	<tr>
 		<th>&nbsp;</th>
 	   	<th><bean:message key="generic.name" /></th>

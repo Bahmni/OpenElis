@@ -18,15 +18,14 @@
 
 	<table cellpadding="0" cellspacing="1" width="100%" height="100%" border="0">
 	
-			<tr valign="top">
-				<td>
+			<!-- <tr valign="top"> -->
+				<!-- <td> -->
 					<%--tiles:insert attribute="error"/--%>
-				</td>
-			</tr>
+				<!-- </td> -->
+			<!-- </tr> -->
+
 			<tr valign="top">
-				<td>
-					<tiles:insert attribute="preSelectionHeader"/>
-				</td>
+				<td><tiles:insert attribute="preSelectionHeader"/></td>
 			</tr>
 			<tr valign="top">
 				<td>

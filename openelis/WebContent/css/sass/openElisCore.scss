@@ -1260,4 +1260,12 @@ table{
       }
     }
 }
+table.administration{ 
+  td{
+    vertical-align:top;
 
+    &.textcontent{
+      vertical-align:middle;
+    }
+  }
+}

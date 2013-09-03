@@ -3,7 +3,7 @@
 
 Build number: <%= Versioning.getBuildNumber() %><br/>
 Database version: <%= Versioning.getDatabaseVersion() %>
-<table width="100%">
+<table width="100%" class="administration">
 <tr width="100%">
 <td width="15%" valign="top"><tiles:insert attribute="left"/></td>
 <td width="85%"><tiles:insert attribute="right"/></td>
