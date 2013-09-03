@@ -43,18 +43,30 @@ public class UploadDashboardAction extends BaseAction {
         List<ImportStatus> uploads = importStatusDao.getImportStatusFromDate(thirtyDaysBefore.toDate());
 
         for (ImportStatus uploadStatus : uploads) {
-            String errorFileName = uploadStatus.getErrorFileName();
-            if (!StringUtils.isEmpty(errorFileName)) {
-                String name = FilenameUtils.getName(errorFileName);
-                String urlForErrorFile = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + uploadedFilesDirectory + name;
-                uploadStatus.setErrorFileName(urlForErrorFile);
-            }
+            createHTMLLinkForErrorFile(request, uploadedFilesDirectory, uploadStatus);
+            retainErrorMessageOnlyFromStackTrace(uploadStatus);
         }
 
         response.setContentType("application/json");
         objectMapper.writeValue(response.getWriter(), uploads);
 
         return null;
+    }
+
+    private void retainErrorMessageOnlyFromStackTrace(ImportStatus uploadStatus) {
+        String stackTrace = uploadStatus.getStackTrace();
+        if (stackTrace != null && stackTrace.trim().length() > 0) {
+            uploadStatus.setStackTrace(stackTrace.substring(stackTrace.indexOf(":") + 1, stackTrace.indexOf("\n")));
+        }
+    }
+
+    private void createHTMLLinkForErrorFile(HttpServletRequest request, String uploadedFilesDirectory, ImportStatus uploadStatus) {
+        String errorFileName = uploadStatus.getErrorFileName();
+        if (!StringUtils.isEmpty(errorFileName)) {
+            String name = FilenameUtils.getName(errorFileName);
+            String urlForErrorFile = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + uploadedFilesDirectory + name;
+            uploadStatus.setErrorFileName(urlForErrorFile);
+        }
     }
 
     @Override

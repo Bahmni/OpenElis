@@ -77,7 +77,7 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
     var gridForInImportStatus;
 
     var columns = [
-        {id: "originalFileName", name: "Name of the File", field: "originalFileName", sortable: true, width: 200},
+        {id: "originalFileName", name: "Name of the File", field: "originalFileName", sortable: true, width: 175},
         {id: "type", name: "Type of File", field: "type", sortable: true, width: 75},
         {id: "startTime", name: "Date of Upload", field: "startTime", sortable: true, width: 100,
                 formatter: function ( row, cell, value, columnDef, dataContext ) {
@@ -98,7 +98,8 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
         {id: "status", name: "Status", field: "status", sortable: true, width: 200},
         {id: "successfulRecords", name: "Successful Records", field: "successfulRecords", sortable: true, width: 50},
         {id: "failedRecords", name: "Failed Records", field: "failedRecords", sortable: true, width: 50},
-        {id: "errorFileName", name: "Download Error File", field: "errorFileName", sortable: true, width: 400,
+        {id: "errorMessage", name: "Error Message", field: "stackTrace", sortable: true, width: 50},
+        {id: "errorFileName", name: "Download Error File", field: "errorFileName", sortable: true, width: 375,
                 formatter: function ( row, cell, value, columnDef, dataContext ) {
                       if (value) {
                         return '<a href="' + value + '">' + value.substring(value.lastIndexOf("/") + 1) + '</a>';
