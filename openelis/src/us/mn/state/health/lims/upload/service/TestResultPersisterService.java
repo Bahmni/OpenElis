@@ -7,13 +7,24 @@ import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
+import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
+import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
+import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
 import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
+import us.mn.state.health.lims.patient.dao.PatientDAO;
+import us.mn.state.health.lims.patient.daoimpl.PatientDAOImpl;
+import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.patientidentity.dao.PatientIdentityDAO;
 import us.mn.state.health.lims.patientidentity.daoimpl.PatientIdentityDAOImpl;
 import us.mn.state.health.lims.patientidentity.valueholder.PatientIdentity;
 import us.mn.state.health.lims.patientidentitytype.dao.PatientIdentityTypeDAO;
 import us.mn.state.health.lims.patientidentitytype.daoimpl.PatientIdentityTypeDAOImpl;
 import us.mn.state.health.lims.patientidentitytype.valueholder.PatientIdentityType;
+import us.mn.state.health.lims.result.action.util.ResultsLoadUtility;
+import us.mn.state.health.lims.result.dao.ResultDAO;
+import us.mn.state.health.lims.result.daoimpl.ResultDAOImpl;
+import us.mn.state.health.lims.result.valueholder.Result;
+import us.mn.state.health.lims.resultlimits.valueholder.ResultLimit;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
 import us.mn.state.health.lims.sample.valueholder.Sample;
@@ -26,6 +37,9 @@ import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
 import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.test.valueholder.Test;
+import us.mn.state.health.lims.testresult.dao.TestResultDAO;
+import us.mn.state.health.lims.testresult.daoimpl.TestResultDAOImpl;
+import us.mn.state.health.lims.testresult.valueholder.TestResult;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleDAO;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleTestDAO;
 import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleDAOImpl;
@@ -52,20 +66,27 @@ public class TestResultPersisterService {
     private SampleItemDAO sampleItemDAO;
     private TypeOfSampleTestDAO typeOfSampleTestDAO;
     private TypeOfSampleDAO typeOfSampleDAO;
-    protected HashMap<String, SampleItem> typeOfSampleToSampleItemMap;
-    protected Map<String, String> testToTypeOfSampleMap;
     private static final String DEFAULT_ANALYSIS_TYPE = "MANUAL";
     private AnalysisDAO analysisDAO;
+    private Map<String, SampleItem> typesOfSamplesAdded;
+    private TestResultDAO testResultDao;
+    private ResultDAO resultDAO;
+    private PatientDAO patientDAO;
+    private DictionaryDAO dictionaryDAO;
+    private ResultsLoadUtility utility;
 
     public TestResultPersisterService() {
         this(new PatientIdentityTypeDAOImpl(), new PatientIdentityDAOImpl(), new SampleDAOImpl(), new SampleHumanDAOImpl(),
                 new SampleItemDAOImpl(), new TypeOfSampleTestDAOImpl(), new TypeOfSampleDAOImpl(), new AnalysisDAOImpl(),
-                new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl()));
+                new TestResultDAOImpl(), new ResultDAOImpl(), new PatientDAOImpl(), new DictionaryDAOImpl(),
+                new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl()), new ResultsLoadUtility());
     }
 
     public TestResultPersisterService(PatientIdentityTypeDAO patientIdentityTypeDAO, PatientIdentityDAO patientIdentityDAO,
                                       SampleDAO sampleDAO, SampleHumanDAO sampleHumanDAO, SampleItemDAO sampleItemDAO,
-                                      TypeOfSampleTestDAO typeOfSampleTestDAO, TypeOfSampleDAO typeOfSampleDAO, AnalysisDAO analysisDAO, AuditingService auditingService) {
+                                      TypeOfSampleTestDAO typeOfSampleTestDAO, TypeOfSampleDAO typeOfSampleDAO,
+                                      AnalysisDAO analysisDAO, TestResultDAO testResultDao, ResultDAO resultDAO,
+                                      PatientDAO patientDAO, DictionaryDAO dictionaryDAO, AuditingService auditingService, ResultsLoadUtility utility) {
         this.patientIdentityTypeDAO = patientIdentityTypeDAO;
         this.patientIdentityDAO = patientIdentityDAO;
         this.sampleDAO = sampleDAO;
@@ -74,66 +95,119 @@ public class TestResultPersisterService {
         this.typeOfSampleTestDAO = typeOfSampleTestDAO;
         this.typeOfSampleDAO = typeOfSampleDAO;
         this.analysisDAO = analysisDAO;
+        this.resultDAO = resultDAO;
+        this.patientDAO = patientDAO;
+        this.dictionaryDAO = dictionaryDAO;
         this.auditingService = auditingService;
+        this.testResultDao = testResultDao;
+        this.utility = utility;
         this.sysUserId = null;
         this.errorMessages = new ArrayList<>();
-        this.typeOfSampleToSampleItemMap = new HashMap<>();
-        this.testToTypeOfSampleMap = new HashMap<>();
+        this.typesOfSamplesAdded = new HashMap<>();
     }
 
     public RowResult<CSVSample> persist(CSVSample csvSample) {
         try {
-            List<Test> tests = new ArrayList<>();
-            Map<String, String> testResults = new HashMap<>();
+            Map<Test, String> testResults = new HashMap<>();
             Sample sample = saveSample(csvSample);
-            saveSampleHuman(sample.getId(), csvSample.patientRegistrationNumber);
+            SampleHuman sampleHuman = saveSampleHuman(sample.getId(), csvSample.patientRegistrationNumber);
+            Patient patient = patientDAO.getPatientById(sampleHuman.getPatientId());
             for (CSVTestResult testResult : csvSample.testResults) {
                 Test test = getTest(testResult);
-                tests.add(test);
-//            String resultValue = getResultValue(testResult);
-//            testResults.put(test.getId(), resultValue);
+                testResults.put(test, testResult.result);
+                SampleItem sampleItem = saveSampleItem(sample, test);
+                Analysis analysis = saveAnalysis(test, csvSample.sampleDate, sampleItem);
+                saveTestResult(analysis, test, testResult.result, patient);
             }
-            saveSampleItems(sample, tests);
-            saveAnalysis(tests, csvSample.sampleDate);
         } catch (Exception e) {
             errorMessages.add(e.getMessage());
         }
         return new RowResult<>(csvSample, StringUtils.join(errorMessages, ", "));
     }
 
-    protected void saveAnalysis(List<Test> tests, String sampleDate) throws ParseException {
-        for (Test test : tests) {
-            Analysis analysis = new Analysis();
-            analysis.setSysUserId(getSysUserId());
-            analysis.setSampleItem(typeOfSampleToSampleItemMap.get(testToTypeOfSampleMap.get(test.getId())));
-            analysis.setTest(test);
-            SimpleDateFormat datetimeFormatter = new SimpleDateFormat("dd-MM-yyyy");
-            Date parsedDate = datetimeFormatter.parse(sampleDate);
-            java.sql.Date analysisDate = new java.sql.Date(parsedDate.getTime());
-            analysis.setStartedDate(analysisDate);
-            analysis.setCompletedDate(analysisDate);
-            analysis.setIsReportable(test.getIsReportable());
-            analysis.setAnalysisType(DEFAULT_ANALYSIS_TYPE);
-            analysis.setRevision(SystemConfiguration.getInstance().getAnalysisDefaultRevision());
-            analysis.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.Finalized));
-            analysis.setTestSection(test.getTestSection());
-            analysisDAO.insertData(analysis, false);
+    protected Analysis saveAnalysis(Test test, String sampleDate, SampleItem sampleItem) throws ParseException {
+        Analysis analysis = new Analysis();
+        analysis.setSysUserId(getSysUserId());
+        analysis.setSampleItem(sampleItem);
+        analysis.setTest(test);
+        SimpleDateFormat datetimeFormatter = new SimpleDateFormat("dd-MM-yyyy");
+        Date parsedDate = datetimeFormatter.parse(sampleDate);
+        java.sql.Date analysisDate = new java.sql.Date(parsedDate.getTime());
+        analysis.setStartedDate(analysisDate);
+        analysis.setCompletedDate(analysisDate);
+        analysis.setIsReportable(test.getIsReportable());
+        analysis.setAnalysisType(DEFAULT_ANALYSIS_TYPE);
+        analysis.setRevision(SystemConfiguration.getInstance().getAnalysisDefaultRevision());
+        analysis.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.Finalized));
+        analysis.setTestSection(test.getTestSection());
+        analysisDAO.insertData(analysis, false);
+        return analysis;
+    }
+
+    protected void saveTestResult(Analysis analysis, Test test, String testResultValue, Patient patient) {
+        List<TestResult> testResults = testResultDao.getTestResultsByTest(test.getId());
+        Result result = new Result();
+        result.setSysUserId(getSysUserId());
+        result.setAnalysis(analysis);
+
+        for (TestResult testResult : testResults) {
+            String testResultType = testResult.getTestResultType();
+            result.setResultType(testResultType);
+            switch (testResultType) {
+                case "N":
+                    saveNumericTestResult(result, testResult, testResultValue, test, patient);
+                    break;
+                case "R":
+                    saveRemarkTestResult(result, testResult, testResultValue);
+                    break;
+                case "D":
+                    Dictionary dictionary = dictionaryDAO.getDictionaryByDictEntry(testResultValue);
+                    if (dictionary.getId().equals(testResult.getValue())) {
+                        saveDictionaryTestResult(result, testResult);
+                    }
+                    break;
+            }
         }
     }
 
-    protected void saveSampleItems(Sample sample, List<Test> tests) {
-        List<TypeOfSample> uniqueTypeOfSamples = getUniqueSampleTypesForTests(tests);
+    private void saveDictionaryTestResult(Result result, TestResult testResult) {
+        result.setValue(testResult.getValue());
+        result.setTestResult(testResult);
+        resultDAO.insertData(result);
+    }
+
+    private void saveRemarkTestResult(Result result, TestResult testResult, String testResultValue) {
+        saveTestResultValue(result, testResult, testResultValue);
+    }
+
+    private void saveNumericTestResult(Result result, TestResult testResult, String testResultValue, Test test, Patient patient) {
+        ResultLimit resultLimit = utility.getResultLimitForTestAndPatient(test, patient);
+        result.setMaxNormal(resultLimit.getHighNormal());
+        result.setMinNormal(resultLimit.getLowNormal());
+        saveTestResultValue(result, testResult, testResultValue);
+    }
+
+    private void saveTestResultValue(Result result, TestResult testResult, String testResultValue) {
+        result.setValue(testResultValue);
+        result.setTestResultId(testResult.getId());
+        resultDAO.insertData(result);
+    }
+
+    protected SampleItem saveSampleItem(Sample sample, Test test) {
+        TypeOfSample sampleType = getSampleType(test);
         int sortOrder = 1;
-        for (TypeOfSample typeOfSample : uniqueTypeOfSamples) {
+        if (!typesOfSamplesAdded.containsKey(sampleType.getId())) {
             SampleItem sampleItem = new SampleItem();
             sampleItem.setSample(sample);
-            sampleItem.setTypeOfSample(typeOfSample);
+            sampleItem.setTypeOfSample(sampleType);
             sampleItem.setSysUserId(getSysUserId());
             sampleItem.setSortOrder(String.valueOf(sortOrder++));
             sampleItem.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.SampleStatus.Entered));
             sampleItemDAO.insertData(sampleItem);
-            typeOfSampleToSampleItemMap.put(typeOfSample.getId(), sampleItem);
+            typesOfSamplesAdded.put(sampleType.getId(), sampleItem);
+            return sampleItem;
         }
+        return typesOfSamplesAdded.get(sampleType.getId());
     }
 
     protected Sample saveSample(CSVSample csvSample) throws ParseException {
@@ -152,13 +226,14 @@ public class TestResultPersisterService {
         return sample;
     }
 
-    protected void saveSampleHuman(String sampleId, String registrationNumber) {
+    protected SampleHuman saveSampleHuman(String sampleId, String registrationNumber) {
         String patientId = getPatientId(registrationNumber);
         SampleHuman sampleHuman = new SampleHuman();
         sampleHuman.setPatientId(patientId);
         sampleHuman.setSampleId(sampleId);
         sampleHuman.setSysUserId(getSysUserId());
         sampleHumanDAO.insertData(sampleHuman);
+        return sampleHuman;
     }
 
     private String getPatientId(String patientIdentity) {
@@ -171,19 +246,9 @@ public class TestResultPersisterService {
         return null;
     }
 
-    private List<TypeOfSample> getUniqueSampleTypesForTests(List<Test> tests) {
-        List<String> uniqueTypesOfSampleId = new ArrayList();
-        List<TypeOfSample> uniqueTypesOfSample = new ArrayList();
-        for (Test test : tests) {
-            TypeOfSampleTest typeOfSampleTest = typeOfSampleTestDAO.getTypeOfSampleTestsForTest(test.getId()).get(0);
-            testToTypeOfSampleMap.put(test.getId(), typeOfSampleTest.getTypeOfSampleId());
-            if (!uniqueTypesOfSampleId.contains(typeOfSampleTest.getTypeOfSampleId())) {
-                String typeOfSampleId = typeOfSampleTest.getTypeOfSampleId();
-                uniqueTypesOfSampleId.add(typeOfSampleId);
-                uniqueTypesOfSample.add(typeOfSampleDAO.getTypeOfSampleById(typeOfSampleId));
-            }
-        }
-        return uniqueTypesOfSample;
+    private TypeOfSample getSampleType(Test test) {
+        List<TypeOfSampleTest> typeOfSampleTestsForTest = typeOfSampleTestDAO.getTypeOfSampleTestsForTest(test.getId());
+        return typeOfSampleDAO.getTypeOfSampleById(typeOfSampleTestsForTest.get(0).getTypeOfSampleId());
     }
 
     private String getSysUserId() {

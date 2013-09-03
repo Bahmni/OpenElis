@@ -153,6 +153,11 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
         return getPatientByStringProperty("uuid", uuid);
     }
 
+    @Override
+    public Patient getPatientById(String id) {
+        return getPatientByStringProperty("id", id);
+    }
+
     public void getData(Patient patient) throws LIMSRuntimeException {
 		try {
 			Patient pat = (Patient) HibernateUtil.getSession().get(	Patient.class, patient.getId());
