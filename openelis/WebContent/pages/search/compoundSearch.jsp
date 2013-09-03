@@ -216,6 +216,24 @@ function toUppercase(element){
     element.value = element.value.toUpperCase();
 }
 
+
+jQuery(function(){
+
+    jQuery(".edit-sample").on("keypress", "input", function(event){
+        if(event.which == 13 && jQuery(this).val().length > 0) {
+            setSearch();
+            doSelectionSearch();
+        }
+    });
+
+    jQuery("#searchID").on("keypress", function(event){
+        if(event.which == 13) {
+            doSelectionSearch();
+        }
+    });
+
+})
+
 </script>
 
 
