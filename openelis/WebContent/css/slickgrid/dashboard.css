@@ -9,7 +9,7 @@ table td{
     display: block;
     margin:0px auto;
 }
-#inProgressListContainer-slick-grid,#completedListContainer-slick-grid{
+#inProgressListContainer-slick-grid,#completedListContainer-slick-grid,#importStatusGrid{
     border:1px solid #cecece;
 }
 #patientDetails {
@@ -64,13 +64,13 @@ table td{
 #inProgressListContainer a:hover{
     text-decoration: underline;
 }
-#todayStat{
+#todayStat,#upload{
     margin-bottom:20px;
 }
-#todayStat table{
+#todayStat table,#upload table{
     font-size: 15px;
 }
-#todayStat td{
+#todayStat td,#upload td{
    padding:0px 20px; 
 }
 .arrow-text{

@@ -45,22 +45,24 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
 <script type="text/javascript" src="<%=basePath%>scripts/ui/jquery.ui.tabs.js"></script>
 <script type="text/javascript" src="<%=basePath%>scripts/dashBoard/createGrid.js"></script>
 <script type="text/javascript" src="<%=basePath%>scripts/utils.js"></script>
+<script type="text/javascript" src="<%=basePath%>scripts/slickgrid/slick.autotooltips.js"></script>
 
 <div>
     <h1>Uploaded file</h1>
-    <div>
+    <div id="upload">
         <form method="POST" action="/openelis/DoUpload.do" enctype="multipart/form-data">
-            <br>
-            <input type="file" name="file" value="test_results_Upload_Template.csv">
-            <br/>
-            <span><input type="radio" name="importType" value="patient" checked="checked"> Patient</span>
-            <span><input type="radio" name="importType" value="sample"> Sample</span>
-            <input type="submit" value="Upload">
+            <table>
+                <tr>
+                <td><button type="button" id="refresh">Refresh</button></td>
+                <td><input type="file" name="file" value="test_results_Upload_Template.csv"></td>
+                <td><span><input type="radio" name="importType" value="patient" checked="checked"> Patient</span></td>
+                <td><span><input type="radio" name="importType" value="sample"> Sample</span> </td>
+                <td><input type="submit" value="Upload">  </td>
+            </table>
         </form>
     </div>
 
-    <button type="button" id="refresh">Refresh</button>
-    <div id="importStatusGrid" style="width:1000px">
+    <div id="importStatusGrid" style="width:1200px">
     </div>
 </div>
 
@@ -77,9 +79,9 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
     var gridForInImportStatus;
 
     var columns = [
-        {id: "originalFileName", name: "Name of the File", field: "originalFileName", sortable: true, width: 175},
-        {id: "type", name: "Type of File", field: "type", sortable: true, width: 75},
-        {id: "startTime", name: "Date of Upload", field: "startTime", sortable: true, width: 100,
+        {id: "originalFileName", name: "Name of the File", field: "originalFileName", sortable: true, width: 210},
+        {id: "type", name: "Type", field: "type", sortable: true, width: 100},
+        {id: "startTime", name: "Date of Upload", field: "startTime", sortable: true, width: 150,
                 formatter: function ( row, cell, value, columnDef, dataContext ) {
                         function padWithZeroes(aField) {
                             if (aField < 10)
@@ -95,14 +97,15 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
                         return "";
                     }
                 },
-        {id: "status", name: "Status", field: "status", sortable: true, width: 200},
-        {id: "successfulRecords", name: "Successful Records", field: "successfulRecords", sortable: true, width: 50},
-        {id: "failedRecords", name: "Failed Records", field: "failedRecords", sortable: true, width: 50},
-        {id: "errorMessage", name: "Error Message", field: "stackTrace", sortable: true, width: 50},
-        {id: "errorFileName", name: "Download Error File", field: "errorFileName", sortable: true, width: 375,
+        {id: "status", name: "Status", field: "status", sortable: true, width: 160},
+        {id: "successfulRecords", name: "Successful", field: "successfulRecords", sortable: true, width: 90},
+        {id: "failedRecords", name: "Failed", field: "failedRecords", sortable: true, width: 100},
+        {id: "stage", name: "Stage", field: "stageName", sortable: true, width: 100},
+        {id: "errorMessage", name: "Error Message", field: "stackTrace", sortable: true, width: 200},
+        {id: "errorFileName", name: "Download", field: "errorFileName", sortable: true, width: 100,
                 formatter: function ( row, cell, value, columnDef, dataContext ) {
                       if (value) {
-                        return '<a href="' + value + '">' + value.substring(value.lastIndexOf("/") + 1) + '</a>';
+                        return '<a href="' + value + '">ErrorFile</a>';
                       }
                       return "";
                   },}
@@ -124,6 +127,7 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
                 type: 'get',
                 success: function(data) {
                     gridForInImportStatus = new Slick.Grid("#importStatusGrid", data, columns, options);
+                    gridForInImportStatus.registerPlugin( new Slick.AutoTooltips({ enableForHeaderCells: true }) );
                     gridForInImportStatus.init();
 
                     gridForInImportStatus.onSort.subscribe(function (e, args) {
