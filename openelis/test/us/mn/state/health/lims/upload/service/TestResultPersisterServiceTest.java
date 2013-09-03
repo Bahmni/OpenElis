@@ -1,353 +1,107 @@
 package us.mn.state.health.lims.upload.service;
 
 import org.bahmni.feed.openelis.utils.AuditingService;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
 import org.junit.Before;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
-import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
-import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
 import us.mn.state.health.lims.patient.dao.PatientDAO;
 import us.mn.state.health.lims.patient.valueholder.Patient;
-import us.mn.state.health.lims.patientidentity.dao.PatientIdentityDAO;
-import us.mn.state.health.lims.patientidentity.valueholder.PatientIdentity;
-import us.mn.state.health.lims.patientidentitytype.dao.PatientIdentityTypeDAO;
-import us.mn.state.health.lims.patientidentitytype.valueholder.PatientIdentityType;
-import us.mn.state.health.lims.result.action.util.ResultsLoadUtility;
-import us.mn.state.health.lims.result.dao.ResultDAO;
-import us.mn.state.health.lims.result.valueholder.Result;
-import us.mn.state.health.lims.resultlimits.valueholder.ResultLimit;
-import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.valueholder.Sample;
-import us.mn.state.health.lims.samplehuman.dao.SampleHumanDAO;
 import us.mn.state.health.lims.samplehuman.valueholder.SampleHuman;
-import us.mn.state.health.lims.sampleitem.dao.SampleItemDAO;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
-import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.valueholder.Test;
-import us.mn.state.health.lims.testresult.dao.TestResultDAO;
-import us.mn.state.health.lims.testresult.valueholder.TestResult;
-import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleDAO;
-import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleTestDAO;
-import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSample;
-import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSampleTest;
 import us.mn.state.health.lims.upload.sample.CSVSample;
 import us.mn.state.health.lims.upload.sample.CSVTestResult;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
 
-import static junit.framework.Assert.assertEquals;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.matches;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class TestResultPersisterServiceTest {
     @Mock
-    private AnalysisDAO analysisDAO;
+    private SamplePersisterService samplePersisterService;
     @Mock
-    private SampleDAO sampleDAO;
+    private SampleHumanPersisterService sampleHumanPersisterService;
     @Mock
-    private SampleHumanDAO sampleHumanDAO;
+    private AnalysisPersisterService analysisPersisterService;
     @Mock
-    private PatientIdentityDAO patientIdentityDAO;
+    private SampleItemPersisterService sampleItemPersisterService;
     @Mock
-    private PatientIdentityTypeDAO patientIdentityTypeDAO;
+    private ResultPersisterService resultPersisterService;
     @Mock
-    private ResultDAO resultDAO;
+    private PatientDAO patientDAO;
     @Mock
     private AuditingService auditingService;
     @Mock
-    private TypeOfSampleTestDAO typeOfSampleTestDAO;
-    @Mock
-    private SampleItemDAO sampleItemDAO;
-    @Mock
     private TestDAO testDAO;
-    @Mock
-    private TypeOfSampleDAO typeOfSampleDAO;
-    @Mock
-    private TestResultDAO testResultDAO;
-    @Mock
-    private DictionaryDAO dictionaryDAO;
-    @Mock
-    private ResultsLoadUtility utility;
-    @Mock
-    private PatientDAO patientDao;
 
-    private String subscenterNameGAN;
-    private String accessionNumber;
-    private String testName1;
-    private String testName2;
-    private List<CSVTestResult> testResults;
     private TestResultPersisterService testResultPersisterService;
-    private String testId1;
-    private String testId2;
-    private String testId3;
-    private Test test1;
-    private Test test2;
-    private Test test3;
-    private String typeOfSampleId1;
-    private String typeOfSampleId2;
-    private SampleItem sampleItem1;
-    private SampleItem sampleItem2;
-    private String sysUserId;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        sysUserId = "123";
-        subscenterNameGAN = "GAN";
-        accessionNumber = "123456-001";
-        testName1 = "Test1";
-        testName2 = "Test2";
-        testId1 = "1";
-        testId2 = "2";
-        testId3 = "3";
-        test1 = new Test();
-        test1.setId(testId1);
-        test2 = new Test();
-        test2.setId(testId2);
-        test3 = new Test();
-        test3.setId(testId3);
-        typeOfSampleId1 = "1";
-        typeOfSampleId2 = "2";
-        sampleItem1 = new SampleItem();
-        sampleItem1.setId("1");
-        sampleItem2 = new SampleItem();
-        sampleItem2.setId("2");
-        testResults = Arrays.asList(new CSVTestResult(testName1, "someValueForValue1"), new CSVTestResult(testName2, "someValueForTest2"));
-
-        testResultPersisterService = new TestResultPersisterServiceMock(patientIdentityTypeDAO, patientIdentityDAO,
-                sampleDAO, sampleHumanDAO, sampleItemDAO, typeOfSampleTestDAO, typeOfSampleDAO, analysisDAO, testResultDAO, resultDAO, patientDao, dictionaryDAO, auditingService, utility);
+        testResultPersisterService = new TestResultPersisterService(samplePersisterService, sampleHumanPersisterService, analysisPersisterService, sampleItemPersisterService, resultPersisterService, patientDAO, testDAO, auditingService);
     }
 
     @org.junit.Test
-    public void shouldPersistSampleForPersistingTestResults() throws ParseException {
+    public void shouldPersistAllEntitiesForTestResults() throws ParseException {
         String sampleDate = "25-02-2012";
-        String sysUserId = "123";
-        PatientIdentityType stIdentityType = new PatientIdentityType();
-        stIdentityType.setId("stIdentityId");
+        final String sampleSource = "source";
+        String testName1 = "test1";
+        String testName2 = "test2";
+        String result1 = "someValueForValue1";
+        String result2 = "someValueForTest2";
+        List<CSVTestResult> testResults = Arrays.asList(new CSVTestResult(testName1, result1), new CSVTestResult(testName2, result2));
+        String accessionNumber = "123";
+        Sample sample = new Sample();
+        sample.setId("1");
         String patientRegistrationNumber = "patientRegistrationNumber";
-        PatientIdentity patientIdentity = new PatientIdentity();
-        String patientId = "1";
-        Sample sample = new Sample();
-        sample.setId("123");
-        patientIdentity.setPatientId(patientId);
-        CSVSample csvSample_invalidDate = new CSVSample(subscenterNameGAN, "patientRegistrationNumber", accessionNumber, sampleDate, "", testResults);
+        String patientId = "patientId";
+        SampleHuman sampleHuman = new SampleHuman();
+        sampleHuman.setPatientId(patientId);
+        Patient patient = new Patient();
+        patient.setId(patientId);
+        Test test1 = new Test();
+        test1.setTestName(testName1);
+        Test test2 = new Test();
+        test2.setTestName(testName2);
+        SampleItem sampleItem1 = new SampleItem();
+        SampleItem sampleItem2 = new SampleItem();
+        Analysis analysis1 = new Analysis();
+        Analysis analysis2 = new Analysis();
+        CSVSample csvSample = new CSVSample("gan", patientRegistrationNumber, accessionNumber, sampleDate, sampleSource, testResults);
 
-        when(auditingService.getSysUserId()).thenReturn(sysUserId);
-        when(patientIdentityTypeDAO.getNamedIdentityType(anyString())).thenReturn(stIdentityType);
-        when(patientIdentityDAO.getPatientIdentitiesByValueAndType(patientRegistrationNumber, stIdentityType.getId())).thenReturn(Arrays.asList(patientIdentity));
-
-        testResultPersisterService.saveSample(csvSample_invalidDate);
-
-        ArgumentCaptor<Sample> sampleCaptor = ArgumentCaptor.forClass(Sample.class);
-        verify(sampleDAO).insertDataWithAccessionNumber(sampleCaptor.capture());
-        Sample persistedSample = sampleCaptor.getValue();
-        assertEquals(accessionNumber, persistedSample.getAccessionNumber());
-        assertEquals(sysUserId, persistedSample.getSysUserId());
-        assertEquals(sampleDate, new SimpleDateFormat("dd-MM-yyyy").format(persistedSample.getCollectionDate()));
-        assertEquals(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.OrderStatus.Finished), persistedSample.getStatusId());
-        assertEquals("H", persistedSample.getDomain());
-    }
-
-    @org.junit.Test
-    public void shouldPersistSampleHumanForPersistingTestResult() throws Exception {
         String sysUserId = "123";
-        String sampleId = "12";
-        PatientIdentityType stIdentityType = new PatientIdentityType();
-        stIdentityType.setId("stIdentityId");
-        String patientRegistrationNumber = "patientRegistrationNumber";
-        PatientIdentity patientIdentity = new PatientIdentity();
-        String patientId = "1";
-        patientIdentity.setPatientId(patientId);
-        Sample sample = new Sample();
-        sample.setId(sampleId);
-
         when(auditingService.getSysUserId()).thenReturn(sysUserId);
-        when(patientIdentityTypeDAO.getNamedIdentityType(anyString())).thenReturn(stIdentityType);
-        when(patientIdentityDAO.getPatientIdentitiesByValueAndType(patientRegistrationNumber, stIdentityType.getId())).thenReturn(Arrays.asList(patientIdentity));
-
-        testResultPersisterService.saveSampleHuman(sampleId, patientRegistrationNumber);
-
-        ArgumentCaptor<SampleHuman> captor = ArgumentCaptor.forClass(SampleHuman.class);
-        verify(sampleHumanDAO).insertData(captor.capture());
-        SampleHuman sampleHuman = captor.getValue();
-        assertEquals(sampleId, sampleHuman.getSampleId());
-        assertEquals(patientId, sampleHuman.getPatientId());
-    }
-
-    @org.junit.Test
-    public void testPersistSampleItems() {
-        String statusID = StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.SampleStatus.Entered);
-        TypeOfSampleTest typeOfSampleTest1 = new TypeOfSampleTest();
-        typeOfSampleTest1.setTypeOfSampleId(typeOfSampleId1);
-        typeOfSampleTest1.setTestId(testId1);
-        TypeOfSampleTest typeOfSampleTest2 = new TypeOfSampleTest();
-        typeOfSampleTest2.setTypeOfSampleId(typeOfSampleId1);
-        typeOfSampleTest2.setTestId(testId2);
-        Sample sample = new Sample();
-        sample.setId("12");
-        TypeOfSample typeOfSample1 = new TypeOfSample();
-        typeOfSample1.setId(typeOfSampleId1);
-        TypeOfSample typeOfSample2 = new TypeOfSample();
-        typeOfSample2.setId(typeOfSampleId2);
-
-        when(auditingService.getSysUserId()).thenReturn(sysUserId);
+        when(samplePersisterService.save(csvSample, sysUserId)).thenReturn(sample);
+        when(sampleHumanPersisterService.save(sample.getId(), patientRegistrationNumber, sysUserId)).thenReturn(sampleHuman);
+        when(patientDAO.getPatientById(patientId)).thenReturn(patient);
         when(testDAO.getTestByName(testName1)).thenReturn(test1);
         when(testDAO.getTestByName(testName2)).thenReturn(test2);
-        when(typeOfSampleTestDAO.getTypeOfSampleTestsForTest(test1.getId())).thenReturn(Arrays.asList(typeOfSampleTest1));
-        when(typeOfSampleTestDAO.getTypeOfSampleTestsForTest(test2.getId())).thenReturn(Arrays.asList(typeOfSampleTest2));
-        when(typeOfSampleDAO.getTypeOfSampleById(typeOfSample1.getId())).thenReturn(typeOfSample1);
+        when(sampleItemPersisterService.save(sample, test1, sysUserId)).thenReturn(sampleItem1);
+        when(sampleItemPersisterService.save(sample, test2, sysUserId)).thenReturn(sampleItem2);
+        when(analysisPersisterService.save(test1, sampleDate, sampleItem1, sysUserId)).thenReturn(analysis1);
+        when(analysisPersisterService.save(test2, sampleDate, sampleItem2, sysUserId)).thenReturn(analysis2);
 
-        SampleItem sampleItem1 = testResultPersisterService.saveSampleItem(sample, test1);
+        testResultPersisterService.persist(csvSample);
 
-        ArgumentCaptor<SampleItem> captor = ArgumentCaptor.forClass(SampleItem.class);
-        verify(sampleItemDAO).insertData(captor.capture());
-        SampleItem item1 = captor.getValue();
-        assertEquals(sample.getId(), item1.getSample().getId());
-        assertEquals(typeOfSample1.getId(), item1.getTypeOfSample().getId());
-        assertEquals(sysUserId, item1.getSysUserId());
-        assertEquals("1", item1.getSortOrder());
-        assertEquals(statusID, item1.getStatusId());
-
-        SampleItem sampleItem2 = testResultPersisterService.saveSampleItem(sample, test2);
-
-        verify(sampleItemDAO, times(1)).insertData(any(SampleItem.class));
-        assertEquals(sampleItem1.getId(), sampleItem2.getId());
-    }
-
-    @org.junit.Test
-    public void shouldPersistAnalysis() throws ParseException {
-        String sampleDate = "25-02-2012";
-        SimpleDateFormat datetimeFormatter = new SimpleDateFormat("dd-MM-yyyy");
-        Date parsedDate = datetimeFormatter.parse(sampleDate);
-        java.sql.Date analysisDate = new java.sql.Date(parsedDate.getTime());
-        when(auditingService.getSysUserId()).thenReturn(sysUserId);
-
-        Analysis analysis = testResultPersisterService.saveAnalysis(test1, sampleDate, sampleItem1);
-
-        verify(analysisDAO).insertData(analysis, false);
-        assertEquals(sysUserId, analysis.getSysUserId());
-        assertEquals(test1.getId(), analysis.getTest().getId());
-        assertEquals(sampleItem1.getId(), analysis.getSampleItem().getId());
-        assertEquals(analysisDate, analysis.getCompletedDate());
-        assertEquals(analysisDate, analysis.getStartedDate());
-        assertEquals("MANUAL", analysis.getAnalysisType());
-        assertEquals(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.Finalized), analysis.getStatusId());
-    }
-
-    @org.junit.Test
-    public void shouldPersistTestResultsOfNumericType() {
-        String numericResultValue = "10";
-        Analysis analysis1 = new Analysis();
-        analysis1.setId("1");
-        Patient patient = new Patient();
-        double lowNormal = 10.0;
-        double highNormal = 20.0;
-        ResultLimit resultLimit = new ResultLimit();
-        resultLimit.setLowNormal(lowNormal);
-        resultLimit.setHighNormal(highNormal);
-        TestResult numericTestResult = new TestResult();
-        numericTestResult.setTestResultType("N");
-
-        when(testResultDAO.getTestResultsByTest(testId1)).thenReturn(Arrays.asList(numericTestResult));
-        when(utility.getResultLimitForTestAndPatient(test1,patient)).thenReturn(resultLimit);
-
-        testResultPersisterService.saveTestResult(analysis1, test1, numericResultValue, patient);
-
-        ArgumentCaptor<Result> captor = ArgumentCaptor.forClass(Result.class);
-        verify(resultDAO).insertData(captor.capture());
-        Result savedResult = captor.getValue();
-        assertEquals(numericResultValue, savedResult.getValue());
-        assertEquals(analysis1.getId(), savedResult.getAnalysisId());
-        assertEquals(resultLimit.getHighNormal(), savedResult.getMaxNormal());
-        assertEquals(resultLimit.getLowNormal(), savedResult.getMinNormal());
-    }
-
-    @org.junit.Test
-    public void shouldPersistTestResultsOfDictionaryType() {
-        String dictionaryResultValue = "positive";
-        Analysis analysis = new Analysis();
-        analysis.setId("2");
-        Patient patient = null;
-        TestResult dictionaryTestResult = new TestResult();
-        dictionaryTestResult.setTestResultType("D");
-        String dictId = "153";
-        dictionaryTestResult.setValue(dictId);
-        Dictionary dictionary = new Dictionary();
-        dictionary.setId(dictId);
-        dictionary.setDictEntry(dictionaryResultValue);
-
-        when(testResultDAO.getTestResultsByTest(testId2)).thenReturn(Arrays.asList(dictionaryTestResult));
-        when(dictionaryDAO.getDictionaryByDictEntry(dictionaryResultValue)).thenReturn(dictionary);
-        testResultPersisterService.saveTestResult(analysis, test2, dictionaryResultValue, patient);
-
-        ArgumentCaptor<Result> captor = ArgumentCaptor.forClass(Result.class);
-        verify(resultDAO).insertData(captor.capture());
-        Result savedResult = captor.getValue();
-        assertEquals(dictId, savedResult.getValue());
-        assertEquals(analysis.getId(), savedResult.getAnalysisId());
-    }
-
-    @org.junit.Test
-    public void shouldPersistTestResultsOfRemarkType() {
-        Patient patient = null;
-        String remarkResultValue = "abcdefg";
-        Analysis analysis = new Analysis();
-        analysis.setId("2");
-        TestResult remarkTestResult = new TestResult();
-        remarkTestResult.setTestResultType("R");
-
-        when(testResultDAO.getTestResultsByTest(testId3)).thenReturn(Arrays.asList(remarkTestResult));
-        testResultPersisterService.saveTestResult(analysis, test3, remarkResultValue, patient);
-
-        ArgumentCaptor<Result> captor = ArgumentCaptor.forClass(Result.class);
-        verify(resultDAO).insertData(captor.capture());
-        Result savedResult = captor.getValue();
-        assertEquals(remarkResultValue, savedResult.getValue());
-        assertEquals(analysis.getId(), savedResult.getAnalysisId());
-    }
-
-    private class TestResultPersisterServiceMock extends TestResultPersisterService {
-        private TestResultPersisterServiceMock(PatientIdentityTypeDAO patientIdentityTypeDAO, PatientIdentityDAO patientIdentityDAO, SampleDAO sampleDAO,
-                                               SampleHumanDAO sampleHumanDAO, SampleItemDAO sampleItemDAO, TypeOfSampleTestDAO typeOfSampleTestDAO,
-                                               TypeOfSampleDAO typeOfSampleDAO, AnalysisDAO analysisDAO, TestResultDAO testResultDao, ResultDAO resultDAO,
-                                               PatientDAO patientDAO, DictionaryDAO dictionaryDAO, AuditingService auditingService, ResultsLoadUtility utility) {
-            super(patientIdentityTypeDAO, patientIdentityDAO, sampleDAO, sampleHumanDAO, sampleItemDAO, typeOfSampleTestDAO,
-                    typeOfSampleDAO, analysisDAO, testResultDao, resultDAO, patientDAO, dictionaryDAO, auditingService, utility);
-        }
-
-        @Override
-        protected SampleItem saveSampleItem(Sample sample, Test test) {
-            return super.saveSampleItem(sample, test);    //To change body of overridden methods use File | Settings | File Templates.
-        }
-
-        @Override
-        protected Sample saveSample(CSVSample csvSample) throws ParseException {
-            return super.saveSample(csvSample);    //To change body of overridden methods use File | Settings | File Templates.
-        }
-
-        @Override
-        protected SampleHuman saveSampleHuman(String sampleId, String registrationNumber) {
-            super.saveSampleHuman(sampleId, registrationNumber);    //To change body of overridden methods use File | Settings | File Templates.
-            return null;
-        }
-
-        @Override
-        protected Analysis saveAnalysis(Test test, String sampleDate, SampleItem sampleItem) throws ParseException {
-            return super.saveAnalysis(test, sampleDate, sampleItem);    //To change body of overridden methods use File | Settings | File Templates.
-        }
-
-        @Override
-        protected void saveTestResult(Analysis analysis, Test test, String testResultValue, Patient patient) {
-            super.saveTestResult(analysis, test, testResultValue, patient);    //To change body of overridden methods use File | Settings | File Templates.
-        }
+        verify(samplePersisterService).save(csvSample, sysUserId);
+        verify(sampleHumanPersisterService).save(sample.getId(), patientRegistrationNumber, sysUserId);
+        verify(sampleItemPersisterService).save(sample, test1, sysUserId);
+        verify(sampleItemPersisterService).save(sample, test2, sysUserId);
+        verify(analysisPersisterService).save(test1, sampleDate, sampleItem1, sysUserId);
+        verify(analysisPersisterService).save(test2, sampleDate, sampleItem2, sysUserId);
+        verify(resultPersisterService).save(analysis1, test1, result1, patient, sysUserId);
+        verify(resultPersisterService).save(analysis2, test2, result2, patient, sysUserId);
     }
 }
