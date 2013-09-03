@@ -146,10 +146,11 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
             errorMessage.append("Either Age or DOB is mandatory.\n");
 
         try {
-            if (!isEmpty(csvPatient.dob))
-                new SimpleDateFormat("dd-MM-yyyy").parse(csvPatient.dob);
+            if (!isEmpty(csvPatient.dob)) {
+                getSimpleDateFormat().parse(csvPatient.dob);
+            }
         } catch (ParseException e) {
-            errorMessage.append("DOB should be dd-mm-yyyy.\n");
+            errorMessage.append("DOB should be dd-mm-yyyy and should be a valid date.\n");
         }
 
         try {
@@ -176,6 +177,12 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
             return new RowResult<>(csvPatient);
 
         return new RowResult<>(csvPatient, errorMessage.toString());
+    }
+
+    private SimpleDateFormat getSimpleDateFormat() {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        simpleDateFormat.setLenient(false);
+        return simpleDateFormat;
     }
 
     private String getValidGenders() {
@@ -255,7 +262,7 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
         patient.setHealthCenter(healthCenterDAO.getByName(csvPatient.healthCenter));
 
         if (csvPatient.dob != null && csvPatient.dob.trim().length() > 0) {
-            patient.setBirthDate(new Timestamp(new SimpleDateFormat("dd-MM-yyyy").parse(csvPatient.dob).getTime()));
+            patient.setBirthDate(new Timestamp(getSimpleDateFormat().parse(csvPatient.dob).getTime()));
         } else {
             Period ageAsPeriod = new Period(Integer.parseInt(csvPatient.age), 0, 0, 0, 0, 0, 0, 0, PeriodType.yearMonthDay());
             LocalDate dateOfBirth = new LocalDate(new Date()).minus(ageAsPeriod);

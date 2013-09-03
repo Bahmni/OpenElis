@@ -52,6 +52,25 @@ public class PatientPersisterTest {
     }
 
     @Test
+    public void accept_only_valid_dob() {
+        CSVPatient csvPatient = new CSVPatient();
+        csvPatient.dob = "32-12-2001";
+        csvPatient.cityVillage = "ganiyari";
+        csvPatient.district = "ganiyari";
+        csvPatient.firstName = "firstName";
+        csvPatient.lastName = "lastName";
+        csvPatient.registrationNumber = "12345";
+        csvPatient.gender = VALID_GENDER_TYPE;
+        csvPatient.healthCenter = VALID_HEALTH_CENTRE;
+
+        RowResult<CSVPatient> rowResultForValidPatient = patientPersister.validate(csvPatient);
+
+        String[] rowWithErrorColumn = rowResultForValidPatient.getRowWithErrorColumn();
+        String errorMessage = rowWithErrorColumn[rowWithErrorColumn.length - 1];
+        Assert.assertTrue("DOB should be dd-mm-yyyy", errorMessage.contains("DOB should be dd-mm-yyyy and should be a valid date"));
+    }
+
+    @Test
     public void valid_gender_for_validation() {
         CSVPatient csvPatient = new CSVPatient();
         csvPatient.age = "85";
