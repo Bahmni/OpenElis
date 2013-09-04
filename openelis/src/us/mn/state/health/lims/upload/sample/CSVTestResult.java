@@ -4,6 +4,9 @@ public class CSVTestResult {
     public String test;
     public String result;
 
+    public CSVTestResult() {
+    }
+
     public CSVTestResult(String test, String result) {
         this.test = test;
         this.result = result;

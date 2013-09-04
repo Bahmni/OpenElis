@@ -40,7 +40,7 @@ public class AnalysisPersisterService {
         analysis.setRevision(SystemConfiguration.getInstance().getAnalysisDefaultRevision());
         analysis.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.Finalized));
         analysis.setTestSection(test.getTestSection());
-        analysisDAO.insertData(analysis, false);
+        analysisDAO.insertData(analysis, true);
         return analysis;
     }
 

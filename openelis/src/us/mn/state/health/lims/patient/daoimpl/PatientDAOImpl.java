@@ -155,7 +155,18 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 
     @Override
     public Patient getPatientById(String id) {
-        return getPatientByStringProperty("id", id);
+        String sql = "from Patient p where p.id = :id";
+        try {
+            Query query = HibernateUtil.getSession().createQuery(sql);
+            query.setInteger("id", Integer.parseInt(id));
+            Patient patient = (Patient)query.uniqueResult();
+            HibernateUtil.getSession().flush();
+            HibernateUtil.getSession().clear();
+            return patient;
+        } catch (Exception e) {
+            LogEvent.logErrorStack("PatientDAOImpl","getPatientById()",e);
+            throw new LIMSRuntimeException("Error in Patient getPatientById()", e);
+        }
     }
 
     public void getData(Patient patient) throws LIMSRuntimeException {

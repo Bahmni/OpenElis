@@ -48,10 +48,10 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
     @Override
     public RowResult<CSVSample> validate(CSVSample csvSample) {
         StringBuilder errorMessage = new StringBuilder();
-        if(isEmpty(csvSample.healthCenter) || !getHealthCenterCodes().contains(csvSample.healthCenter)) {
+        if (isEmpty(csvSample.healthCenter) || !getHealthCenterCodes().contains(csvSample.healthCenter)) {
             errorMessage.append("Invalid Subcenter code.\n");
         }
-        if(isEmpty(csvSample.sampleSource) || !getSampleSources().contains(csvSample.sampleSource)) {
+        if (isEmpty(csvSample.sampleSource) || !getSampleSources().contains(csvSample.sampleSource)) {
             errorMessage.append("Invalid Sample source.\n");
         }
 
@@ -59,11 +59,11 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
         errorMessage.append(validateAtLeastOneTestIsNonEmpty(csvSample.testResults));
         errorMessage.append(validateAllTestResultsAreValid(csvSample.testResults));
 
-        if(isEmpty(csvSample.accessionNumber)){
+        if (isEmpty(csvSample.accessionNumber)) {
             errorMessage.append("AccessionNumber should not be blank.\n");
         }
 
-        if(!csvSample.accessionNumber.matches("^[\\d-]+$")){
+        if (!csvSample.accessionNumber.matches("^[\\d-]+$")) {
             errorMessage.append("AccessionNumber format is invalid.\n");
         }
 
@@ -82,7 +82,7 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
     }
 
     private List<String> getSampleSources() {
-        if(!sampleSourceNames.isEmpty()){
+        if (!sampleSourceNames.isEmpty()) {
             return sampleSourceNames;
         }
         List<SampleSource> sampleSources = sampleSourceDAO.getAll();
@@ -94,7 +94,7 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
 
     private String validateAllTestResultsAreValid(List<CSVTestResult> testResults) {
         for (CSVTestResult testResult : testResults) {
-            if(!testResult.isValid()) {
+            if (!testResult.isValid()) {
                 return "All Tests should have a result.\n";
             }
         }
@@ -103,7 +103,7 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
 
     private String validateAtLeastOneTestIsNonEmpty(List<CSVTestResult> testResults) {
         for (CSVTestResult testResult : testResults) {
-            if(!testResult.isEmpty()) {
+            if (!testResult.isEmpty()) {
                 return "";
             }
         }
@@ -113,7 +113,7 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
     private String validateTestNames(List<CSVTestResult> testResults) {
         List<String> invalidTestNames = new ArrayList<>();
         for (CSVTestResult testResult : testResults) {
-            if(!testResult.isEmpty() && !getTestNames().contains(testResult.test)){
+            if (!testResult.isEmpty() && !getTestNames().contains(testResult.test)) {
                 invalidTestNames.add(testResult.test);
             }
         }
@@ -125,7 +125,7 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
     }
 
     private List<String> getHealthCenterCodes() {
-        if(healthCenterCodes != null) {
+        if (healthCenterCodes != null) {
             return healthCenterCodes;
         }
         healthCenterCodes = new ArrayList<>();
@@ -137,7 +137,7 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
     }
 
     public List<String> getTestNames() {
-        if(testNames != null) {
+        if (testNames != null) {
             return testNames;
         }
         testNames = new ArrayList<>();

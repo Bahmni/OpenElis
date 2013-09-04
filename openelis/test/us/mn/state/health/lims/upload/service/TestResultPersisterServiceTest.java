@@ -54,7 +54,7 @@ public class TestResultPersisterServiceTest {
     }
 
     @org.junit.Test
-    public void shouldPersistAllEntitiesForTestResults() throws ParseException {
+    public void shouldPersistAllEntitiesForTestResults() throws Exception {
         String sampleDate = "25-02-2012";
         final String sampleSource = "source";
         String testName1 = "test1";

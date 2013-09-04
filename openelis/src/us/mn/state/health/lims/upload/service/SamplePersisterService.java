@@ -1,5 +1,7 @@
 package us.mn.state.health.lims.upload.service;
 
+import org.bahmni.csv.exception.MigrationException;
+import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
@@ -32,21 +34,29 @@ public class SamplePersisterService {
         sampleSources = new ArrayList<>();
     }
 
-    protected Sample save(CSVSample csvSample, String sysUserId) throws ParseException {
-        Sample sample = new Sample();
-        sample.setAccessionNumber(csvSample.accessionNumber);
-        SimpleDateFormat datetimeFormatter = new SimpleDateFormat("dd-MM-yyyy");
-        Date parsedDate = datetimeFormatter.parse(csvSample.sampleDate);
-        Timestamp timestamp = new Timestamp(parsedDate.getTime());
-        sample.setCollectionDate(timestamp);
-        sample.setEnteredDate(new java.sql.Date(parsedDate.getTime()));
-        sample.setReceivedTimestamp(timestamp);
-        sample.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.OrderStatus.Finished));
-        sample.setDomain(SystemConfiguration.getInstance().getHumanDomain());
-        sample.setSysUserId(sysUserId);
-        sample.setSampleSource(getSampleSource(csvSample.sampleSource));
-        sampleDAO.insertDataWithAccessionNumber(sample);
-        return sample;
+    protected Sample save(CSVSample csvSample, String sysUserId) throws Exception {
+        if (sampleForAccessionNumberExists(csvSample.accessionNumber)) {
+            throw new LIMSDuplicateRecordException("Sample with accessionNumber exists");
+        } else {
+            Sample sample = new Sample();
+            sample.setAccessionNumber(csvSample.accessionNumber);
+            SimpleDateFormat datetimeFormatter = new SimpleDateFormat("dd-MM-yyyy");
+            Date parsedDate = datetimeFormatter.parse(csvSample.sampleDate);
+            Timestamp timestamp = new Timestamp(parsedDate.getTime());
+            sample.setCollectionDate(timestamp);
+            sample.setEnteredDate(new java.sql.Date(parsedDate.getTime()));
+            sample.setReceivedTimestamp(timestamp);
+            sample.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.OrderStatus.Finished));
+            sample.setDomain(SystemConfiguration.getInstance().getHumanDomain());
+            sample.setSysUserId(sysUserId);
+            sample.setSampleSource(getSampleSource(csvSample.sampleSource));
+            sampleDAO.insertDataWithAccessionNumber(sample);
+            return sample;
+        }
+    }
+
+    private boolean sampleForAccessionNumberExists(String accessionNumber) {
+        return sampleDAO.getSampleByAccessionNumber(accessionNumber) != null;
     }
 
 

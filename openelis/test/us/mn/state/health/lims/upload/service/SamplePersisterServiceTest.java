@@ -1,6 +1,7 @@
 package us.mn.state.health.lims.upload.service;
 
 import org.junit.Before;
+import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
@@ -11,14 +12,12 @@ import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.upload.sample.CSVSample;
 import us.mn.state.health.lims.upload.sample.CSVTestResult;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class SamplePersisterServiceTest {
@@ -36,7 +35,7 @@ public class SamplePersisterServiceTest {
     }
 
     @org.junit.Test
-    public void shouldPersistSampleForPersistingTestResults() throws ParseException {
+    public void shouldPersistSampleForPersistingTestResults() throws Exception {
         String sampleDate = "25-02-2012";
         String sysUserId = "123";
         final String sampleSource = "source";
@@ -44,7 +43,9 @@ public class SamplePersisterServiceTest {
         String accessionNumber = "123";
         CSVSample csvSample = new CSVSample("gan", "patientRegistrationNumber", accessionNumber, sampleDate, sampleSource, testResults);
 
-        when(sampleSourceDAO.getAll()).thenReturn(Arrays.<SampleSource>asList(new SampleSource(){{this.setName(sampleSource);}}));
+        when(sampleSourceDAO.getAll()).thenReturn(Arrays.<SampleSource>asList(new SampleSource() {{
+            this.setName(sampleSource);
+        }}));
 
         samplePersisterService.save(csvSample, sysUserId);
 
@@ -57,5 +58,28 @@ public class SamplePersisterServiceTest {
         assertEquals(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.OrderStatus.Finished), persistedSample.getStatusId());
         assertEquals("H", persistedSample.getDomain());
         assertEquals(sampleSource, persistedSample.getSampleSource().getName());
+    }
+
+    @Test
+    public void shouldNotPersistIfSampleWithAccessionNumberAlreadyExists() throws Exception {
+        String sampleDate = "25-02-2012";
+        String sysUserId = "123";
+        final String sampleSource = "source";
+        List<CSVTestResult> testResults = Arrays.asList(new CSVTestResult("test1", "someValueForValue1"), new CSVTestResult("test2", "someValueForTest2"));
+        String accessionNumber = "123";
+        CSVSample csvSample = new CSVSample("gan", "patientRegistrationNumber", accessionNumber, sampleDate, sampleSource, testResults);
+
+        when(sampleDAO.getSampleByAccessionNumber(accessionNumber)).thenReturn(new Sample());
+        when(sampleSourceDAO.getAll()).thenReturn(Arrays.<SampleSource>asList(new SampleSource() {{
+            this.setName(sampleSource);
+        }}));
+
+        try {
+            samplePersisterService.save(csvSample, sysUserId);
+        } catch (Exception e) {
+            assertEquals("Sample with accessionNumber exists", e.getMessage());
+        }
+        verify(sampleDAO, never()).insertDataWithAccessionNumber(any(Sample.class));
+
     }
 }

@@ -43,7 +43,7 @@ public class AnalysisPersisterServiceTest {
 
         Analysis analysis = analysisPersisterService.save(test1, sampleDate, sampleItem1, sysUserId);
 
-        verify(analysisDAO).insertData(analysis, false);
+        verify(analysisDAO).insertData(analysis, true);
         assertEquals(sysUserId, analysis.getSysUserId());
         assertEquals(test1.getId(), analysis.getTest().getId());
         assertEquals(sampleItem1.getId(), analysis.getSampleItem().getId());
