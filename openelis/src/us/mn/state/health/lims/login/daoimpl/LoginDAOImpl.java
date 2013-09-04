@@ -156,8 +156,8 @@ public class LoginDAOImpl extends BaseDAOImpl implements LoginDAO {
 			HibernateUtil.getSession().clear();
 			if (l != null) {
 				Crypto crypto = new Crypto();
-				l.setPassword(crypto.getDecrypt(l.getPassword()));
 				PropertyUtils.copyProperties(login, l);
+                login.setPassword(crypto.getDecrypt(login.getPassword()));
 			} else {
 				login.setId(null);
 			}
