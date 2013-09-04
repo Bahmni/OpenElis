@@ -1,0 +1,316 @@
+CREATE OR REPLACE FUNCTION insert_test_section(test_section_name TEXT) RETURNS VOID AS
+$$
+DECLARE
+    test_section_id int;
+    org_id int;
+    result_role_id int;
+    validation_role_id int;
+BEGIN
+
+    SELECT id INTO test_section_id FROM clinlims.test_section WHERE name = test_section_name;
+        IF NOT FOUND THEN
+            BEGIN
+                SELECT id INTO STRICT org_id from clinlims.organization WHERE name = 'JSS';
+                EXCEPTION   
+                    WHEN NO_DATA_FOUND THEN
+                    RAISE EXCEPTION 'organization % not found', 'JSS';
+                    WHEN TOO_MANY_ROWS THEN
+                    RAISE EXCEPTION 'organization % not unique', 'JSS';   
+            END;
+
+            BEGIN
+                SELECT id INTO STRICT result_role_id from clinlims.system_role WHERE name like 'Results%entry%';
+                EXCEPTION   
+                    WHEN NO_DATA_FOUND THEN
+                    RAISE EXCEPTION 'role % not found', 'Result Entry';
+                    WHEN TOO_MANY_ROWS THEN
+                    RAISE EXCEPTION 'role % not unique', 'Result Entry';   
+            END;
+
+            BEGIN
+                SELECT id INTO STRICT validation_role_id from clinlims.system_role WHERE name like 'Validation%';
+                EXCEPTION   
+                    WHEN NO_DATA_FOUND THEN
+                    RAISE EXCEPTION 'role % not found', 'Validation';
+                    WHEN TOO_MANY_ROWS THEN
+                    RAISE EXCEPTION 'role % not unique', 'Validation';   
+            END;
+
+            INSERT INTO clinlims.test_section (id, name, description, org_id, is_external, lastupdated, sort_order, is_active)
+            VALUES (nextval('clinlims.test_section_seq'), test_section_name, test_section_name, org_id, 'N', localtimestamp, 0, 'Y');
+
+
+            INSERT INTO clinlims.system_module (id, name, description, has_select_flag, has_add_flag, has_update_flag, has_delete_flag)
+            VALUES (nextval('clinlims.system_module_seq'), 'LogbookResults:' || test_section_name, 'Results=>Enter=>' || test_section_name, 'Y', 'Y', 'Y', 'Y');                     
+
+
+            INSERT INTO clinlims.system_role_module (id, has_select, has_add, has_update, has_delete, system_role_id, system_module_id)
+            VALUES (nextval('clinlims.system_user_module_seq'), 'Y', 'Y', 'Y', 'Y', result_role_id, currval('clinlims.system_module_seq'));
+
+
+            INSERT INTO clinlims.system_role_module (id, has_select, has_add, has_update, has_delete, system_role_id, system_module_id)
+            VALUES (nextval('clinlims.system_user_module_seq'), 'Y', 'Y', 'Y', 'Y', validation_role_id, currval('clinlims.system_module_seq'));
+
+            
+        END IF;
+END
+$$
+LANGUAGE plpgsql;
+
+
+
+CREATE OR REPLACE FUNCTION insert_sample_type(sample_type_name TEXT) RETURNS VOID AS
+$$
+DECLARE
+    sample_type_id int;
+BEGIN
+
+    SELECT id INTO sample_type_id FROM clinlims.type_of_sample WHERE description = sample_type_name;
+    IF NOT FOUND THEN
+
+        INSERT INTO clinlims.type_of_sample (id, description, domain, lastupdated, local_abbrev, is_active, sort_order)
+        VALUES (nextval('clinlims.type_of_sample_seq'), sample_type_name, 'H', localtimestamp, SUBSTRING(sample_type_name, 1, 1), true, 10);
+
+    END IF;    
+
+   
+END
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION insert_panel(panel_name TEXT) RETURNS VOID AS
+$$
+DECLARE
+    panel_id int;
+BEGIN
+
+    SELECT id INTO panel_id FROM clinlims.panel WHERE name = panel_name;
+    IF NOT FOUND THEN
+
+        INSERT INTO clinlims.panel (id, name, description, lastupdated, sort_order, is_active)
+        VALUES (nextval('clinlims.panel_seq'), panel_name, panel_name, localtimestamp, 10, 'Y');
+
+    END IF;    
+
+   
+END
+$$
+LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION create_relationship_panel_sampletype(panel_name TEXT, sample_type_name TEXT) RETURNS VOID AS
+$$
+DECLARE
+    relationship_id int;
+    panel_id_value int;
+    sample_type_id_value int;
+BEGIN
+
+    BEGIN
+        SELECT id INTO STRICT panel_id_value FROM clinlims.panel WHERE name = panel_name;
+        EXCEPTION   
+                    WHEN NO_DATA_FOUND THEN
+                    RAISE EXCEPTION 'panel % not found', panel_name;
+                    WHEN TOO_MANY_ROWS THEN
+                    RAISE EXCEPTION 'panel % not unique', panel_name;  
+    END;
+
+    BEGIN
+        SELECT id INTO STRICT sample_type_id_value FROM clinlims.type_of_sample WHERE description = sample_type_name;
+        EXCEPTION   
+                    WHEN NO_DATA_FOUND THEN
+                    RAISE EXCEPTION 'sample type % not found', sample_type_name;
+                    WHEN TOO_MANY_ROWS THEN
+                    RAISE EXCEPTION 'sample type % not unique', sample_type_name;  
+    END;
+
+    SELECT id INTO relationship_id FROM clinlims.sampletype_panel WHERE panel_id = panel_id_value and sample_type_id = sample_type_id_value;
+    IF NOT FOUND THEN
+
+        INSERT INTO clinlims.sampletype_panel (id, sample_type_id, panel_id)
+        VALUES (nextval('clinlims.sample_type_panel_seq'), sample_type_id_value, panel_id_value);
+
+    END IF;    
+
+   
+END
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION create_relationship_panel_test(panel_name TEXT, test_name TEXT) RETURNS VOID AS
+$$
+DECLARE
+    relationship_id int;
+    panel_id_value int;
+    test_id_value int;
+BEGIN
+
+    BEGIN
+        SELECT id INTO STRICT panel_id_value FROM clinlims.panel WHERE name = panel_name;
+        EXCEPTION   
+                    WHEN NO_DATA_FOUND THEN
+                    RAISE EXCEPTION 'panel % not found', panel_name;
+                    WHEN TOO_MANY_ROWS THEN
+                    RAISE EXCEPTION 'panel % not unique', panel_name;  
+    END;
+
+    BEGIN
+        SELECT id INTO STRICT test_id_value FROM clinlims.test WHERE name = test_name or description = test_name;
+        EXCEPTION   
+                    WHEN NO_DATA_FOUND THEN
+                    RAISE EXCEPTION 'test % not found', test_name;
+                    WHEN TOO_MANY_ROWS THEN
+                    RAISE EXCEPTION 'test % not unique', test_name;  
+    END;
+
+    SELECT id INTO relationship_id FROM clinlims.panel_item WHERE panel_id = panel_id_value and test_id = test_id_value;
+    IF NOT FOUND THEN
+
+        INSERT INTO clinlims.panel_item (id, panel_id, sort_order, test_local_abbrev, lastupdated, test_id)
+        VALUES (nextval('clinlims.panel_item_seq'), panel_id_value, 1, test_name, localtimestamp, test_id_value);
+
+    END IF;    
+
+   
+END
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION create_relationship_sample_test(sample_type_name TEXT, test_name TEXT) RETURNS VOID AS
+$$
+DECLARE
+    relationship_id int;
+    sample_type_id_value int;
+    test_id_value int;
+BEGIN
+
+    BEGIN
+        SELECT id INTO STRICT sample_type_id_value FROM clinlims.type_of_sample WHERE description = sample_type_name;
+        EXCEPTION   
+                    WHEN NO_DATA_FOUND THEN
+                    RAISE EXCEPTION 'sample type % not found', sample_type_name;
+                    WHEN TOO_MANY_ROWS THEN
+                    RAISE EXCEPTION 'sample type % not unique', sample_type_name;  
+    END;
+
+    BEGIN
+        SELECT id INTO STRICT test_id_value FROM clinlims.test WHERE name = test_name or description = test_name;
+        EXCEPTION   
+                    WHEN NO_DATA_FOUND THEN
+                    RAISE EXCEPTION 'test % not found', test_name;
+                    WHEN TOO_MANY_ROWS THEN
+                    RAISE EXCEPTION 'test % not unique', test_name;  
+    END;
+
+    SELECT id INTO relationship_id FROM clinlims.sampletype_test WHERE sample_type_id = sample_type_id_value and test_id = test_id_value;
+    IF NOT FOUND THEN
+
+        INSERT INTO clinlims.sampletype_test (id, sample_type_id, test_id, is_panel)
+        VALUES (nextval('clinlims.sample_type_test_seq'), sample_type_id_value, test_id_value, false);
+
+    END IF;    
+
+   
+END
+$$
+LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION insert_unit_of_measure(unit_of_measure_name TEXT) RETURNS VOID AS
+$$
+DECLARE
+    unit_id int;
+BEGIN
+
+    SELECT id INTO unit_id FROM clinlims.unit_of_measure WHERE name = unit_of_measure_name;
+    IF NOT FOUND THEN
+
+        INSERT INTO clinlims.unit_of_measure (id, name, description, lastupdated)
+        VALUES (nextval('clinlims.unit_of_measure_seq'), unit_of_measure_name, unit_of_measure_name, localtimestamp);
+
+    END IF;    
+
+   
+END
+$$
+LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION insert_result_limit_normal_range(test_name TEXT, lower_limit INT, upper_limit INT) RETURNS VOID AS
+$$
+DECLARE
+    result_limits_id int;
+    test_id_value int;
+BEGIN
+
+    IF lower_limit = -1 AND upper_limit = -1 THEN
+        RETURN ;
+    END IF;
+
+    BEGIN
+        SELECT id INTO test_id_value FROM clinlims.test WHERE name = test_name or description = test_name;
+        EXCEPTION   
+                    WHEN NO_DATA_FOUND THEN
+                    RAISE EXCEPTION 'test % not found', test_name;
+                    WHEN TOO_MANY_ROWS THEN
+                    RAISE EXCEPTION 'test % not unique', test_name;  
+    END;  
+
+    SELECT id INTO result_limits_id FROM clinlims.result_limits WHERE test_id = test_id_value;
+    IF NOT FOUND THEN
+
+        INSERT INTO clinlims.result_limits (id, test_id, test_result_type_id, low_normal, high_normal, lastupdated)
+        VALUES (nextval('clinlims.result_limits_seq'), test_id_value, 4, lower_limit, upper_limit, localtimestamp);
+
+    ELSE
+
+        UPDATE clinlims.result_limits SET low_normal = lower_limit, high_normal = upper_limit, lastupdated = localtimestamp 
+        WHERE id = result_limits_id;
+
+    END IF;    
+
+   
+END
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION insert_result_limit_valid_range(test_name TEXT, lower_limit INT, upper_limit INT) RETURNS VOID AS
+$$
+DECLARE
+    result_limits_id int;
+    test_id_value int;
+BEGIN
+
+    IF lower_limit = -1 AND upper_limit = -1 THEN
+        RETURN ;
+    END IF;
+
+    BEGIN
+        SELECT id INTO test_id_value FROM clinlims.test WHERE name = test_name or description = test_name;
+        EXCEPTION   
+                    WHEN NO_DATA_FOUND THEN
+                    RAISE EXCEPTION 'test % not found', test_name;
+                    WHEN TOO_MANY_ROWS THEN
+                    RAISE EXCEPTION 'test % not unique', test_name;  
+    END;  
+
+    SELECT id INTO result_limits_id FROM clinlims.result_limits WHERE test_id = test_id_value;
+    IF NOT FOUND THEN
+
+        INSERT INTO clinlims.result_limits (id, test_id, test_result_type_id, low_valid, high_valid, lastupdated)
+        VALUES (nextval('clinlims.result_limits_seq'), test_id_value, 4, lower_limit, upper_limit, localtimestamp);
+
+    ELSE
+
+        UPDATE clinlims.result_limits SET low_valid = lower_limit, high_valid = upper_limit, lastupdated = localtimestamp 
+        WHERE id = result_limits_id;
+
+    END IF;    
+
+   
+END
+$$
+LANGUAGE plpgsql;
+
+
+
