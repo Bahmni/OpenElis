@@ -17,12 +17,11 @@
 */
 package us.mn.state.health.lims.common.security;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.validator.GenericValidator;
-
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class PageIdentityUtil {
 
@@ -38,7 +37,7 @@ public class PageIdentityUtil {
 	/*
 	 * This is ripped and simplified from UserModuleDAOImp.  In it's most basic form it gets the ACTION_KEY
 	 */
-	public static String getActionName(HttpServletRequest request, boolean useParameterExtention) throws LIMSRuntimeException {
+	public static String getActionName(HttpServletRequest request) throws LIMSRuntimeException {
 
 		String actionName = null;
 
@@ -63,17 +62,15 @@ public class PageIdentityUtil {
 
 		actionName = actionName.endsWith("Menu") ? actionName.substring(0, actionName.length() - 4) : actionName;
 
-		if(useParameterExtention){
-			String parameter = request.getParameter(TYPE_PARAMETER);
+        String parameter = request.getParameter(TYPE_PARAMETER);
 
-			if( GenericValidator.isBlankOrNull(parameter)){
-				parameter = request.getParameter(REPORT_PARAMETER);
-			}
+        if (GenericValidator.isBlankOrNull(parameter)) {
+            parameter = request.getParameter(REPORT_PARAMETER);
+        }
 
-			if( !GenericValidator.isBlankOrNull(parameter)){
-				actionName += ":" + parameter;
-			}
-		}
+        if (!GenericValidator.isBlankOrNull(parameter)) {
+            actionName += ":" + parameter;
+        }
 
 		return actionName;
 	}

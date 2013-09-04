@@ -20,9 +20,6 @@ package us.mn.state.health.lims.common.action;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts.Globals;
 import org.apache.struts.action.*;
-import org.bahmni.feed.openelis.ObjectMapperRepository;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.json.simple.JSONObject;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
@@ -43,9 +40,7 @@ import us.mn.state.health.lims.login.valueholder.UserSessionData;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public abstract class BaseAction extends Action implements IActionConstants {
@@ -157,7 +152,7 @@ public abstract class BaseAction extends Action implements IActionConstants {
                     @SuppressWarnings("rawtypes")
                     HashSet accessMap = (HashSet) request.getSession().getAttribute(IActionConstants.PERMITTED_ACTIONS_MAP);
 
-                    if (!accessMap.contains(PageIdentityUtil.getActionName(request, USE_PARAMETERS))) {
+                    if (!accessMap.contains(PageIdentityUtil.getActionName(request))) {
                         return handlePermissionDenied(mapping, request, userModuleDAO.isSessionExpired(request));
                     }
                 }

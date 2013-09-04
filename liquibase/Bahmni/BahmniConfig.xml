@@ -731,5 +731,57 @@
             <column name="lastupdated" valueDate=" now() "/>
         </insert>
     </changeSet>
-
+    <changeSet id="50" author="tw" context="bahmni">
+        <comment>Adjust modules and roles for the new pages</comment>
+        <insert schemaName="clinlims" tableName="system_module">
+            <column name="id" valueNumeric=" nextVal( 'system_module_seq' ) "/>
+            <column name="name" value="Dashboard"/>
+            <column name="description" value="Lab Dashboard"/>
+            <column name="has_select_flag" value="N"/>
+            <column name="has_add_flag" value="N"/>
+            <column name="has_update_flag" value="N"/>
+            <column name="has_delete_flag" value="N"/>
+        </insert>
+        <insert schemaName="clinlims" tableName="system_module">
+            <column name="id" valueNumeric=" nextVal( 'system_module_seq' ) "/>
+            <column name="name" value="Upload"/>
+            <column name="description" value="Upload"/>
+            <column name="has_select_flag" value="N"/>
+            <column name="has_add_flag" value="N"/>
+            <column name="has_update_flag" value="N"/>
+            <column name="has_delete_flag" value="N"/>
+        </insert>
+        <insert schemaName="clinlims" tableName="system_role">
+            <column name="id" valueNumeric=" nextVal( 'system_role_seq' ) "/>
+            <column name="name" value="LabDashboard"/>
+            <column name="description" value="View Lab Dashboard"/>
+            <column name="is_grouping_role" value="f"/>
+            <column name="active" valueBoolean="true"/>
+            <column name="editable" valueBoolean="false"/>
+        </insert>
+        <insert schemaName="clinlims" tableName="system_role">
+            <column name="id" valueNumeric=" nextVal( 'system_role_seq' ) "/>
+            <column name="name" value="Upload"/>
+            <column name="description" value="csv upload facility"/>
+            <column name="is_grouping_role" value="f"/>
+            <column name="active" valueBoolean="true"/>
+            <column name="editable" valueBoolean="false"/>
+        </insert>
+        <sql endDelimiter=";\n" splitStatements="true" stripComments="true">
+            insert into system_role_module 
+                (id, has_select, has_add, has_update, has_delete, system_role_id, system_module_id)
+            select nextval( 'system_user_module_seq' ), 'Y', 'Y', 'Y', 'Y', r.id, m.id 
+                from system_role r, system_module m 
+                where trim(r.name) = 'LabDashboard' and 
+                    m.name = 'LabDashboard'
+        </sql>
+        <sql endDelimiter=";\n" splitStatements="true" stripComments="true">
+            insert into system_role_module 
+                (id, has_select, has_add, has_update, has_delete, system_role_id, system_module_id)
+            select nextval( 'system_user_module_seq' ), 'Y', 'Y', 'Y', 'Y', r.id, m.id 
+                from system_role r, system_module m 
+                where trim(r.name) = 'Upload' and 
+                    m.name = 'Upload'
+        </sql>
+    </changeSet>
 </databaseChangeLog>
