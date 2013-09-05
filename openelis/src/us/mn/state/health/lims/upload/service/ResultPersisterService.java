@@ -1,6 +1,7 @@
 package us.mn.state.health.lims.upload.service;
 
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
+import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
 import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
 import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
@@ -52,6 +53,7 @@ public class ResultPersisterService {
         result.setSysUserId(sysUserId);
         result.setAnalysis(analysis);
 
+        Dictionary dictionary = null;
         List<TestResult> testResults = testResultDAO.getTestResultsByTest(test.getId());
         if (!(testResults == null)) {
             for (TestResult testResult : testResults) {
@@ -65,8 +67,11 @@ public class ResultPersisterService {
                         saveRemarkTestResult(result, testResult, testResultValue);
                         break;
                     case "D":
-                        Dictionary dictionary = dictionaryDAO.getDictionaryByDictEntry(testResultValue);
-                        if (dictionary.getId().equals(testResult.getValue())) {
+                        dictionary = dictionary == null ? dictionaryDAO.getDictionaryByDictEntry(testResultValue) : dictionary;
+                        if(dictionary == null){
+                            throw new LIMSRuntimeException("Wrong entry for result for test " + test.getTestName());
+                        }
+                        else if (dictionary.getId().equals(testResult.getValue())) {
                             saveDictionaryTestResult(result, testResult);
                         }
                         break;
@@ -101,6 +106,11 @@ public class ResultPersisterService {
     }
 
     private void saveNumericTestResult(Result result, TestResult testResult, String testResultValue, Test test, Patient patient) {
+        try{
+            Double.parseDouble(testResultValue);
+        }catch (Exception e){
+            throw new LIMSRuntimeException("Result should be numbers for test" + test.getTestName());
+        }
         ResultLimit resultLimit = resultsLoadUtility.getResultLimitForTestAndPatient(test, patient);
         result.setMaxNormal(resultLimit.getHighNormal());
         result.setMinNormal(resultLimit.getLowNormal());
