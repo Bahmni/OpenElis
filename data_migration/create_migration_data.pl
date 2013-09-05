@@ -6,9 +6,14 @@ use Spreadsheet::Read;
 
 my $workbook = ReadData ("lab_data.xlsx");
 
+unlink('migration_data.sql');
+
 open(my $file, '>>', 'migration_data.sql') or die 'Could not create migration_data.sql file. Check your permissions';
+
+print $file "-- This file is generated automatically. If you need to change it, change the spreedsheet and run the script create_migration_data.pl \n\n\n";
+
 my $sheet = $workbook -> [1];
-my ( $row_min, $row_max ) = $sheet->{row_range};
+
 my $row_max = $sheet->{maxrow};
 
 for (my $row = 2 ; $row<= $row_max; $row++) 
@@ -52,9 +57,6 @@ sub create_migration_scripts_for_line
 	my $sample_type = $select . "insert_sample_type('" . $sample_type_name . "'); \n";
 	print $file $sample_type;
 
-	my $panel = $select . "insert_panel('" . $panel_name . "'); \n";
-	print $file $panel;
-
  	my $relation_panel_sampletype = $select . "create_relationship_panel_sampletype('" . $panel_name . "','" . $sample_type_name . "'); \n";
  	print $file $relation_panel_sampletype;
 
@@ -64,8 +66,11 @@ sub create_migration_scripts_for_line
  	my $relation_sample_test = $select . "create_relationship_sample_test('" . $sample_type_name . "','" . $test_name . "'); \n";
  	print $file $relation_sample_test;
 
-	my $unit = $select . "insert_unit_of_measure('" . $unit_measure. "'); \n";
+	my $unit = $select . "insert_unit_of_measure('" . $unit_measure. "','" . $test_name . "'); \n";
 	print $file $unit;
+
+	my $relation_test_section_test = $select . "create_relationship_test_section_test('" . $test_section_name . "','" . $test_name . "'); \n";
+	print $file $relation_test_section_test;
 
 	if ($lower_limit_normal ne '' && $upper_limit_normal ne '') 
 	{

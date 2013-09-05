@@ -216,17 +216,35 @@ $$
 LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE FUNCTION insert_unit_of_measure(unit_of_measure_name TEXT) RETURNS VOID AS
+CREATE OR REPLACE FUNCTION insert_unit_of_measure(unit_of_measure_name TEXT, test_name TEXT) RETURNS VOID AS
 $$
 DECLARE
     unit_id int;
+    test_id_value int;
 BEGIN
+    
+    BEGIN
+        SELECT id INTO STRICT test_id_value FROM clinlims.test WHERE name = test_name or description = test_name;
+        EXCEPTION   
+                    WHEN NO_DATA_FOUND THEN
+                    RAISE EXCEPTION 'test % not found', test_name;
+                    WHEN TOO_MANY_ROWS THEN
+                    RAISE EXCEPTION 'test % not unique', test_name;  
+    END;  
 
     SELECT id INTO unit_id FROM clinlims.unit_of_measure WHERE name = unit_of_measure_name;
     IF NOT FOUND THEN
 
         INSERT INTO clinlims.unit_of_measure (id, name, description, lastupdated)
         VALUES (nextval('clinlims.unit_of_measure_seq'), unit_of_measure_name, unit_of_measure_name, localtimestamp);
+
+        UPDATE clinlims.test SET uom_id = currval('clinlims.unit_of_measure_seq'), lastupdated = localtimestamp 
+        WHERE id = test_id_value;
+
+    ELSE
+
+        UPDATE clinlims.test SET uom_id = unit_id, lastupdated = localtimestamp 
+        WHERE id = test_id_value;    
 
     END IF;    
 
@@ -248,7 +266,7 @@ BEGIN
     END IF;
 
     BEGIN
-        SELECT id INTO test_id_value FROM clinlims.test WHERE name = test_name or description = test_name;
+        SELECT id INTO STRICT test_id_value FROM clinlims.test WHERE name = test_name or description = test_name;
         EXCEPTION   
                     WHEN NO_DATA_FOUND THEN
                     RAISE EXCEPTION 'test % not found', test_name;
@@ -286,7 +304,7 @@ BEGIN
     END IF;
 
     BEGIN
-        SELECT id INTO test_id_value FROM clinlims.test WHERE name = test_name or description = test_name;
+        SELECT id INTO STRICT test_id_value FROM clinlims.test WHERE name = test_name or description = test_name;
         EXCEPTION   
                     WHEN NO_DATA_FOUND THEN
                     RAISE EXCEPTION 'test % not found', test_name;
@@ -312,5 +330,38 @@ END
 $$
 LANGUAGE plpgsql;
 
+
+CREATE OR REPLACE FUNCTION create_relationship_test_section_test(test_section_name TEXT, test_name TEXT) RETURNS VOID AS
+$$
+DECLARE
+    test_section_id_value int;
+    test_id_value INT;
+BEGIN
+
+
+    BEGIN
+        SELECT id INTO STRICT test_section_id_value FROM clinlims.test_section WHERE name = test_section_name or description = test_section_name;
+        EXCEPTION   
+                    WHEN NO_DATA_FOUND THEN
+                    RAISE EXCEPTION 'test section % not found', test_section_name;
+                    WHEN TOO_MANY_ROWS THEN
+                    RAISE EXCEPTION 'test section % not unique', test_section_name;  
+    END; 
+
+    BEGIN
+        SELECT id INTO STRICT test_id_value FROM clinlims.test WHERE name = test_name or description = test_name;
+        EXCEPTION   
+                    WHEN NO_DATA_FOUND THEN
+                    RAISE EXCEPTION 'test % not found', test_name;
+                    WHEN TOO_MANY_ROWS THEN
+                    RAISE EXCEPTION 'test % not unique', test_name;  
+    END;   
+
+    UPDATE clinlims.test SET test_section_id = test_section_id_value, lastupdated = localtimestamp WHERE id = test_id_value;
+
+   
+END
+$$
+LANGUAGE plpgsql;
 
 
