@@ -52,22 +52,18 @@ public class PatientPersisterTest {
     }
 
     @Test
-    public void accept_only_valid_dob() {
-        CSVPatient csvPatient = new CSVPatient();
-        csvPatient.dob = "32-12-2001";
-        csvPatient.cityVillage = "ganiyari";
-        csvPatient.district = "ganiyari";
-        csvPatient.firstName = "firstName";
-        csvPatient.lastName = "lastName";
-        csvPatient.registrationNumber = "12345";
-        csvPatient.gender = VALID_GENDER_TYPE;
-        csvPatient.healthCenter = VALID_HEALTH_CENTRE;
+    public void accept_valid_dob() {
+        checkForValidDate("31-12-2001", true);
+    }
 
-        RowResult<CSVPatient> rowResultForValidPatient = patientPersister.validate(csvPatient);
+    @Test
+    public void fail_if_day_is_invalid_for_dob() {
+        checkForValidDate("32-12-2001", false);
+    }
 
-        String[] rowWithErrorColumn = rowResultForValidPatient.getRowWithErrorColumn();
-        String errorMessage = rowWithErrorColumn[rowWithErrorColumn.length - 1];
-        Assert.assertTrue("DOB should be dd-mm-yyyy", errorMessage.contains("DOB should be dd-mm-yyyy and should be a valid date"));
+    @Test
+    public void fail_for_future_dob() {
+        checkForValidDate("06-09-2013", false);
     }
 
     @Test
@@ -157,8 +153,33 @@ public class PatientPersisterTest {
         Assert.assertTrue("Mandatory fields need to be populated", errorMessage.contains("Health Center is mandatory"));
         Assert.assertTrue("Mandatory fields need to be populated", errorMessage.contains("Registration Number is mandatory."));
         Assert.assertTrue("Mandatory fields need to be populated", errorMessage.contains("First Name is mandatory"));
+        Assert.assertTrue("Mandatory fields need to be populated", errorMessage.contains("Last Name is mandatory"));
         Assert.assertTrue("Mandatory fields need to be populated", errorMessage.contains("Gender is mandatory"));
         Assert.assertTrue("Mandatory fields need to be populated", errorMessage.contains("Village is mandatory"));
         Assert.assertTrue("Mandatory fields need to be populated", errorMessage.contains("Either Age or DOB is mandatory"));
+    }
+
+    private void checkForValidDate(String dateArg, boolean isValid) {
+        CSVPatient csvPatient = new CSVPatient();
+        csvPatient.dob = dateArg;
+        csvPatient.cityVillage = "ganiyari";
+        csvPatient.district = "ganiyari";
+        csvPatient.firstName = "firstName";
+        csvPatient.lastName = "lastName";
+        csvPatient.registrationNumber = "12345";
+        csvPatient.gender = VALID_GENDER_TYPE;
+        csvPatient.healthCenter = VALID_HEALTH_CENTRE;
+
+        RowResult<CSVPatient> rowResultForValidPatient = patientPersister.validate(csvPatient);
+
+        if (isValid) {
+            Assert.assertTrue("Is valid date", rowResultForValidPatient.isSuccessful());
+            return;
+        }
+        Assert.assertFalse("Should be invalid date", rowResultForValidPatient.isSuccessful());
+
+        String[] rowWithErrorColumn = rowResultForValidPatient.getRowWithErrorColumn();
+        String errorMessage = rowWithErrorColumn[rowWithErrorColumn.length - 1];
+        Assert.assertTrue("DOB should be dd-mm-yyyy", errorMessage.contains("DOB should be dd-mm-yyyy and should be a valid date"));
     }
 }

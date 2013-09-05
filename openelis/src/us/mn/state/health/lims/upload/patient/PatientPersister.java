@@ -147,7 +147,10 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
 
         try {
             if (!isEmpty(csvPatient.dob)) {
-                getSimpleDateFormat().parse(csvPatient.dob);
+                Date parsedDate = getSimpleDateFormat().parse(csvPatient.dob);
+                if (parsedDate.after(new Date())) {
+                    errorMessage.append("DOB should be dd-mm-yyyy and should be a valid date.\n");
+                }
             }
         } catch (ParseException e) {
             errorMessage.append("DOB should be dd-mm-yyyy and should be a valid date.\n");
