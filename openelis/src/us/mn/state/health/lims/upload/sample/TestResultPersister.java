@@ -135,7 +135,7 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
     }
 
     private List<String> getHealthCenterCodes() {
-        if (healthCenterCodes != null) {
+        if (healthCenterCodes != null && !healthCenterCodes.isEmpty()) {
             return healthCenterCodes;
         }
         healthCenterCodes = new ArrayList<>();
@@ -147,7 +147,7 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
     }
 
     public List<String> getTestNames() {
-        if (testNames != null) {
+        if (testNames != null && !testNames.isEmpty()) {
             return testNames;
         }
         testNames = new ArrayList<>();
