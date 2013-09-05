@@ -64,7 +64,8 @@ public class TestResultPersisterService {
             transaction = HibernateUtil.getSession().beginTransaction();
             sysUserId = getSysUserId();
             Sample sample = samplePersisterService.save(csvSample, sysUserId);
-            SampleHuman sampleHuman = sampleHumanPersisterService.save(sample.getId(), csvSample.patientRegistrationNumber, sysUserId);
+            String identifier = csvSample.healthCenter + csvSample.patientRegistrationNumber;
+            SampleHuman sampleHuman = sampleHumanPersisterService.save(sample.getId(), identifier, sysUserId);
             Patient patient = patientDAO.getPatientById(sampleHuman.getPatientId());
             for (CSVTestResult testResult : csvSample.testResults) {
                 if(testResult.isEmpty())

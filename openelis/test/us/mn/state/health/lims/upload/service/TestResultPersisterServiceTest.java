@@ -1,8 +1,6 @@
 package us.mn.state.health.lims.upload.service;
 
 import org.bahmni.feed.openelis.utils.AuditingService;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
 import org.junit.Before;
 import org.mockito.Mock;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
@@ -16,13 +14,9 @@ import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.upload.sample.CSVSample;
 import us.mn.state.health.lims.upload.sample.CSVTestResult;
 
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
 
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.matches;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -67,6 +61,7 @@ public class TestResultPersisterServiceTest {
         sample.setId("1");
         String patientRegistrationNumber = "patientRegistrationNumber";
         String patientId = "patientId";
+        String healthCenter = "gan";
         SampleHuman sampleHuman = new SampleHuman();
         sampleHuman.setPatientId(patientId);
         Patient patient = new Patient();
@@ -79,7 +74,8 @@ public class TestResultPersisterServiceTest {
         SampleItem sampleItem2 = new SampleItem();
         Analysis analysis1 = new Analysis();
         Analysis analysis2 = new Analysis();
-        CSVSample csvSample = new CSVSample("gan", patientRegistrationNumber, accessionNumber, sampleDate, sampleSource, testResults);
+        CSVSample csvSample = new CSVSample(healthCenter, patientRegistrationNumber, accessionNumber, sampleDate, sampleSource, testResults);
+        patientRegistrationNumber = healthCenter + patientRegistrationNumber;
 
         String sysUserId = "123";
         when(auditingService.getSysUserId()).thenReturn(sysUserId);
