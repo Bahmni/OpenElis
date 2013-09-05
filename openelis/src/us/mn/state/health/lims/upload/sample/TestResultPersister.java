@@ -51,6 +51,16 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
         if (isEmpty(csvSample.healthCenter) || !getHealthCenterCodes().contains(csvSample.healthCenter)) {
             errorMessage.append("Invalid Subcenter code.\n");
         }
+
+        if (isEmpty(csvSample.patientRegistrationNumber))
+            errorMessage.append("Registration Number is mandatory.\n");
+
+        try {
+            Integer.parseInt(csvSample.patientRegistrationNumber);
+        } catch (NumberFormatException e) {
+            errorMessage.append("Registration number should be a number.\n");
+        }
+
         if (isEmpty(csvSample.sampleSource) || !getSampleSources().contains(csvSample.sampleSource)) {
             errorMessage.append("Invalid Sample source.\n");
         }
@@ -72,7 +82,7 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
             simpleDateFormat.setLenient(false);
             simpleDateFormat.parse(csvSample.sampleDate);
         } catch (ParseException e) {
-            errorMessage.append("Date should be in dd-mm-yyyy format.\n");
+            errorMessage.append("Date should be in dd-mm-yyyy format and should be a valid date.\n");
         }
 
         if (isEmpty(errorMessage.toString()))
@@ -113,7 +123,7 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
     private String validateTestNames(List<CSVTestResult> testResults) {
         List<String> invalidTestNames = new ArrayList<>();
         for (CSVTestResult testResult : testResults) {
-            if (!testResult.isEmpty() && !getTestNames().contains(testResult.test)) {
+            if (!testResult.isEmpty() && !getTestNames().contains(testResult.test.toLowerCase())) {
                 invalidTestNames.add(testResult.test);
             }
         }
@@ -143,7 +153,7 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
         testNames = new ArrayList<>();
         List<Test> tests = testDAO.getAllTests(false);
         for (Test test : tests) {
-            testNames.add(test.getTestName());
+            testNames.add(test.getTestName().toLowerCase());
         }
         return testNames;
     }

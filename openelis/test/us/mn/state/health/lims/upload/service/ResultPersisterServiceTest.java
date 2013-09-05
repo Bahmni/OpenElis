@@ -10,11 +10,14 @@ import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.result.action.util.ResultsLoadUtility;
 import us.mn.state.health.lims.result.dao.ResultDAO;
 import us.mn.state.health.lims.result.valueholder.Result;
+import us.mn.state.health.lims.resultlimits.dao.ResultLimitDAO;
 import us.mn.state.health.lims.resultlimits.valueholder.ResultLimit;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
 import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.testresult.dao.TestResultDAO;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
+import us.mn.state.health.lims.typeoftestresult.dao.TypeOfTestResultDAO;
+import us.mn.state.health.lims.typeoftestresult.valueholder.TypeOfTestResult;
 
 import java.util.Arrays;
 
@@ -38,10 +41,16 @@ public class ResultPersisterServiceTest {
     private SampleItem sampleItem1;
     private SampleItem sampleItem2;
     private ResultPersisterService resultPersisterService;
+    private TypeOfTestResult typeOfTestResult1;
+    private TypeOfTestResult typeOfTestResult2;
     @Mock
     private ResultDAO resultDAO;
     @Mock
     private DictionaryDAO dictionaryDAO;
+    @Mock
+    private ResultLimitDAO resultLimitDAO;
+    @Mock
+    private TypeOfTestResultDAO typeOfTestResultDAO;
 
     @Before
     public void setUp() throws Exception {
@@ -60,8 +69,14 @@ public class ResultPersisterServiceTest {
         sampleItem1.setId("1");
         sampleItem2 = new SampleItem();
         sampleItem2.setId("2");
+        typeOfTestResult1 = new TypeOfTestResult();
+        typeOfTestResult1.setTestResultType("N");
+        typeOfTestResult1.setId("1");
+        typeOfTestResult2 = new TypeOfTestResult();
+        typeOfTestResult2.setTestResultType("D");
+        typeOfTestResult2.setId("2");
 
-        resultPersisterService = new ResultPersisterService(testResultDAO, dictionaryDAO, resultDAO, utility);
+        resultPersisterService = new ResultPersisterService(testResultDAO, dictionaryDAO, resultDAO, resultLimitDAO, typeOfTestResultDAO, utility);
     }
 
     @org.junit.Test
@@ -75,10 +90,13 @@ public class ResultPersisterServiceTest {
         ResultLimit resultLimit = new ResultLimit();
         resultLimit.setLowNormal(lowNormal);
         resultLimit.setHighNormal(highNormal);
-        TestResult numericTestResult = new TestResult();
-        numericTestResult.setTestResultType("N");
+        resultLimit.setResultTypeId("1");
+        resultLimit.setTestId(testId1);
 
-        when(testResultDAO.getTestResultsByTest(testId1)).thenReturn(Arrays.asList(numericTestResult));
+
+        when(testResultDAO.getTestResultsByTest(testId1)).thenReturn(null);
+        when(resultLimitDAO.getAllResultLimitsForTest(testId1)).thenReturn(Arrays.asList(resultLimit));
+        when(typeOfTestResultDAO.getAllTypeOfTestResults()).thenReturn(Arrays.asList(typeOfTestResult1,typeOfTestResult2));
         when(utility.getResultLimitForTestAndPatient(test1, patient)).thenReturn(resultLimit);
 
         resultPersisterService.save(analysis1, test1, numericResultValue, patient, sysUserId);
@@ -107,6 +125,7 @@ public class ResultPersisterServiceTest {
         dictionary.setDictEntry(dictionaryResultValue);
 
         when(testResultDAO.getTestResultsByTest(testId2)).thenReturn(Arrays.asList(dictionaryTestResult));
+        when(resultLimitDAO.getAllResultLimitsForTest(testId2)).thenReturn(null);
         when(dictionaryDAO.getDictionaryByDictEntry(dictionaryResultValue)).thenReturn(dictionary);
         resultPersisterService.save(analysis, test2, dictionaryResultValue, patient, sysUserId);
 
@@ -127,6 +146,7 @@ public class ResultPersisterServiceTest {
         remarkTestResult.setTestResultType("R");
 
         when(testResultDAO.getTestResultsByTest(testId3)).thenReturn(Arrays.asList(remarkTestResult));
+        when(resultLimitDAO.getAllResultLimitsForTest(testId3)).thenReturn(null);
         resultPersisterService.save(analysis, test3, remarkResultValue, patient, sysUserId);
 
         ArgumentCaptor<Result> captor = ArgumentCaptor.forClass(Result.class);

@@ -470,9 +470,9 @@ public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
 
 	public Test getTestByName(String testName) throws LIMSRuntimeException {
 		try {
-			String sql = "from Test t where t.testName = :testName and t.isActive='Y'";
+			String sql = "from Test t where lower(t.testName) = :testName and t.isActive='Y'";
 			Query query = HibernateUtil.getSession().createQuery(sql);
-			query.setParameter("testName", testName);
+			query.setParameter("testName", testName.toLowerCase());
 
 
 			@SuppressWarnings("unchecked")
