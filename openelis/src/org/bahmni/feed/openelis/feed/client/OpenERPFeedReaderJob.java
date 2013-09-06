@@ -14,7 +14,7 @@ public abstract class OpenERPFeedReaderJob implements Job {
     }
 
     protected OpenERPFeedReaderJob() {
-        this(AtomFeedClientFactory.getERPLabTestFeedClient(AtomFeedProperties.getInstance(), FEED_NAME,
+        this(new AtomFeedClientFactory().getERPLabTestFeedClient(AtomFeedProperties.getInstance(), FEED_NAME,
                 new LabTestFeedEventWorker()));
     }
 }

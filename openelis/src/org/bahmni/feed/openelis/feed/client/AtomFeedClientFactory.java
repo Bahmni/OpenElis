@@ -18,13 +18,14 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 public class AtomFeedClientFactory {
-    static AtomFeedClient getERPLabTestFeedClient(AtomFeedProperties atomFeedProperties, String feedName, EventWorker eventWorker) {
+    public AtomFeedClient getERPLabTestFeedClient(AtomFeedProperties atomFeedProperties, String feedName, EventWorker eventWorker) {
         String uri = atomFeedProperties.getProperty(feedName);
         try {
             return new AtomFeedClientBuilder().
                     forFeedAt(new URI(uri)).
                     processedBy(eventWorker).
                     usingConnectionProvider(new OpenElisConnectionProvider()).
+                    with(createAtomFeedClientProperties(atomFeedProperties)).
                     build();
         } catch (URISyntaxException e) {
             throw new RuntimeException(String.format("Is not a valid URI - %s", uri));
@@ -33,15 +34,10 @@ public class AtomFeedClientFactory {
 
     public AtomFeedClient getMRSPatientFeedClient(AtomFeedProperties atomFeedProperties, String feedName,
                                                   String authenticationURI, WebClient authenticatedWebClient) {
-        PatientFeedWorker patientFeedWorker = new PatientFeedWorker(authenticatedWebClient,
-                getURLPrefix(atomFeedProperties, authenticationURI));
+        PatientFeedWorker patientFeedWorker = new PatientFeedWorker(authenticatedWebClient, getURLPrefix(atomFeedProperties, authenticationURI));
         String uri = atomFeedProperties.getProperty(feedName);
         try {
-            org.ict4h.atomfeed.client.factory.AtomFeedProperties feedProperties = new org.ict4h.atomfeed.client.factory.AtomFeedProperties();
-            feedProperties.setConnectTimeout(Integer.parseInt(atomFeedProperties.getFeedConnectionTimeout()));
-            feedProperties.setReadTimeout(Integer.parseInt(atomFeedProperties.getFeedReplyTimeout()));
-            feedProperties.setMaxFailedEvents(Integer.parseInt(atomFeedProperties.getMaxFailedEvents()));
-            feedProperties.setControlsEventProcessing(true);
+            org.ict4h.atomfeed.client.factory.AtomFeedProperties feedProperties = createAtomFeedClientProperties(atomFeedProperties);
 
             return new AtomFeedClientBuilder().
                     forFeedAt(new URI(uri)).
@@ -52,6 +48,15 @@ public class AtomFeedClientFactory {
         } catch (URISyntaxException e) {
             throw new RuntimeException(String.format("Is not a valid URI - %s", uri));
         }
+    }
+
+    private org.ict4h.atomfeed.client.factory.AtomFeedProperties createAtomFeedClientProperties(AtomFeedProperties atomFeedProperties) {
+        org.ict4h.atomfeed.client.factory.AtomFeedProperties feedProperties = new org.ict4h.atomfeed.client.factory.AtomFeedProperties();
+        feedProperties.setConnectTimeout(Integer.parseInt(atomFeedProperties.getFeedConnectionTimeout()));
+        feedProperties.setReadTimeout(Integer.parseInt(atomFeedProperties.getFeedReplyTimeout()));
+        feedProperties.setMaxFailedEvents(Integer.parseInt(atomFeedProperties.getMaxFailedEvents()));
+        feedProperties.setControlsEventProcessing(true);
+        return feedProperties;
     }
 
     public WebClient getAuthenticatedOpenMRSWebClient(String authenticationURI, String userName, String password,
