@@ -63,7 +63,7 @@ public class PatientPersisterTest {
 
     @Test
     public void fail_for_future_dob() {
-        checkForValidDate("06-09-2013", false);
+        checkForValidDate("06-09-4100", false); //if this test fails .. run
     }
 
     @Test
