@@ -61,12 +61,14 @@ public class SampleItemPersisterServiceTest {
         TypeOfSample typeOfSample2 = new TypeOfSample();
         typeOfSample2.setId(typeOfSampleId2);
         String sysUserId = "123";
-
         when(typeOfSampleTestDAO.getTypeOfSampleTestsForTest(test1.getId())).thenReturn(Arrays.asList(typeOfSampleTest1));
         when(typeOfSampleTestDAO.getTypeOfSampleTestsForTest(test2.getId())).thenReturn(Arrays.asList(typeOfSampleTest2));
         when(typeOfSampleDAO.getTypeOfSampleById(typeOfSample1.getId())).thenReturn(typeOfSample1);
+        when(sampleItemDAO.getSampleItemsBySampleId(sample.getId())).thenReturn(null);
 
         SampleItem sampleItem1 = sampleItemPersisterService.save(sample, test1, sysUserId);
+
+        when(sampleItemDAO.getSampleItemsBySampleId(sample.getId())).thenReturn(Arrays.asList(sampleItem1));
 
         ArgumentCaptor<SampleItem> captor = ArgumentCaptor.forClass(SampleItem.class);
         verify(sampleItemDAO).insertData(captor.capture());

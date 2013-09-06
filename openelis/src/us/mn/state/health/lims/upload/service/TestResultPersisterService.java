@@ -1,6 +1,5 @@
 package us.mn.state.health.lims.upload.service;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.bahmni.csv.RowResult;
 import org.bahmni.feed.openelis.utils.AuditingService;
@@ -21,9 +20,6 @@ import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.upload.sample.CSVSample;
 import us.mn.state.health.lims.upload.sample.CSVTestResult;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class TestResultPersisterService {
     private String sysUserId;

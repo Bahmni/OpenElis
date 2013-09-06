@@ -1425,7 +1425,7 @@ public class AuditTrailDAOImpl extends BaseDAOImpl implements AuditTrailDAO {
 			HibernateUtil.getSession().clear();
 		} catch (Exception e) {
 			//buzilla 2154
-        	LogEvent.logError("AuditTrailDAOImpl","insertData()",e.toString());
+        	LogEvent.logErrorStack("AuditTrailDAOImpl","insertData()",e);
 			throw new LIMSRuntimeException("Error in AuditTrail insertData()", e);
 		}
     }

@@ -13,12 +13,9 @@ import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleTestDAOImpl;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSample;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSampleTest;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class SampleItemPersisterService {
-    private Map<String, SampleItem> typesOfSamplesAdded;
     private SampleItemDAO sampleItemDAO;
     private TypeOfSampleTestDAO typeOfSampleTestDAO;
     private TypeOfSampleDAO typeOfSampleDAO;
@@ -31,29 +28,50 @@ public class SampleItemPersisterService {
         this.sampleItemDAO = sampleItemDAO;
         this.typeOfSampleTestDAO = typeOfSampleTestDAO;
         this.typeOfSampleDAO = typeOfSampleDAO;
-        typesOfSamplesAdded = new HashMap<>();
     }
 
     public SampleItem save(Sample sample, Test test, String sysUserId) {
         TypeOfSample sampleType = getSampleType(test);
         int sortOrder = 1;
-        if (!typesOfSamplesAdded.containsKey(sampleType.getId())) {
+        List<SampleItem> existingSampleItems = sampleItemDAO.getSampleItemsBySampleId(sample.getId());
+        SampleItem existingSampleItem = null;
+        if(existingSampleItems != null && !existingSampleItems.isEmpty()){
+            sortOrder = getSortOrder(existingSampleItems);
+            existingSampleItem = sampleItemExistsForSampleType(existingSampleItems, sampleType);
+        }
+        if (existingSampleItems == null || existingSampleItems.isEmpty() || existingSampleItem == null) {
             SampleItem sampleItem = new SampleItem();
             sampleItem.setSample(sample);
             sampleItem.setTypeOfSample(sampleType);
             sampleItem.setSysUserId(sysUserId);
-            sampleItem.setSortOrder(String.valueOf(sortOrder++));
+            sampleItem.setSortOrder(String.valueOf(sortOrder));
             sampleItem.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.SampleStatus.Entered));
             sampleItemDAO.insertData(sampleItem);
-            typesOfSamplesAdded.put(sampleType.getId(), sampleItem);
             return sampleItem;
         }
-        return typesOfSamplesAdded.get(sampleType.getId());
+        return existingSampleItem;
+    }
+
+    private int getSortOrder(List<SampleItem> existingSampleItems) {
+        int sortOrder = 0;
+        for (SampleItem existingSampleItem : existingSampleItems) {
+            int order = Integer.parseInt(existingSampleItem.getSortOrder());
+            if (order > sortOrder)
+                sortOrder = order;
+        }
+        return sortOrder + 1;
+    }
+
+    private SampleItem sampleItemExistsForSampleType(List<SampleItem> existingSampleItems, TypeOfSample sampleType) {
+        for (SampleItem existingSampleItem : existingSampleItems) {
+            if(existingSampleItem.getTypeOfSample().getId() == sampleType.getId())
+                return existingSampleItem;
+        }
+        return null;
     }
 
     private TypeOfSample getSampleType(Test test) {
         List<TypeOfSampleTest> typeOfSampleTestsForTest = typeOfSampleTestDAO.getTypeOfSampleTestsForTest(test.getId());
         return typeOfSampleDAO.getTypeOfSampleById(typeOfSampleTestsForTest.get(0).getTypeOfSampleId());
     }
-
 }
