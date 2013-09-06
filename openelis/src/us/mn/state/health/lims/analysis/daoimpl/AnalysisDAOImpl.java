@@ -120,8 +120,7 @@ public class AnalysisDAOImpl extends BaseDAOImpl implements AnalysisDAO {
 			HibernateUtil.getSession().clear();
 
 		} catch (Exception e) {
-
-			LogEvent.logError("AnalysisDAOImpl", "insertData()", e.toString());
+			LogEvent.logErrorStack("AnalysisDAOImpl", "insertData()", e);
 			throw new LIMSRuntimeException("Error in Analysis insertData()", e);
 		}
 

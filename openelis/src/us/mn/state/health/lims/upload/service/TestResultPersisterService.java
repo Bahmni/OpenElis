@@ -6,6 +6,7 @@ import org.bahmni.csv.RowResult;
 import org.bahmni.feed.openelis.utils.AuditingService;
 import org.hibernate.Transaction;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
+import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
 import us.mn.state.health.lims.patient.dao.PatientDAO;
@@ -25,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestResultPersisterService {
-    private List<String> errorMessages;
     private String sysUserId;
     private AuditingService auditingService;
     private PatientDAO patientDAO;
@@ -54,7 +54,6 @@ public class TestResultPersisterService {
         this.testDAO = testDAO;
         this.auditingService = auditingService;
         this.sysUserId = null;
-        this.errorMessages = new ArrayList<>();
     }
 
     public RowResult<CSVSample> persist(CSVSample csvSample) {
@@ -64,24 +63,42 @@ public class TestResultPersisterService {
             transaction = HibernateUtil.getSession().beginTransaction();
             sysUserId = getSysUserId();
             Sample sample = samplePersisterService.save(csvSample, sysUserId);
-            String identifier = csvSample.healthCenter + csvSample.patientRegistrationNumber;
-            SampleHuman sampleHuman = sampleHumanPersisterService.save(sample.getId(), identifier, sysUserId);
+            SampleHuman sampleHuman = sampleHumanPersisterService.save(sample.getId(),
+                    csvSample.healthCenter + csvSample.patientRegistrationNumber, sysUserId);
             Patient patient = patientDAO.getPatientById(sampleHuman.getPatientId());
+
+            boolean hasFailed = false;
+            StringBuilder errorMessageBuilder = new StringBuilder();
             for (CSVTestResult testResult : csvSample.testResults) {
-                if(testResult.isEmpty())
-                    continue;
-                Test test = getTest(testResult.test);
-                SampleItem sampleItem = sampleItemPersisterService.save(sample, test, sysUserId);
-                Analysis analysis = analysisPersisterService.save(test, csvSample.sampleDate, sampleItem, sysUserId);
-                resultPersisterService.save(analysis, test, testResult.result, patient, sysUserId);
+                try {
+                    if (testResult.isEmpty())
+                        continue;
+                    Test test = getTest(testResult.test);
+                    SampleItem sampleItem = sampleItemPersisterService.save(sample, test, sysUserId);
+                    Analysis analysis = analysisPersisterService.save(test, csvSample.sampleDate, sampleItem, sysUserId);
+                    resultPersisterService.save(analysis, test, testResult.result, patient, sysUserId);
+                } catch (LIMSRuntimeException e) {
+                    hasFailed = true;
+                    if (errorMessageBuilder.length() > 0) {
+                        errorMessageBuilder.append(",").append(e.getMessage());
+                    } else {
+                        errorMessageBuilder.append(e.getMessage());
+                    }
+                }
+            }
+            if (hasFailed) {
+                transaction.rollback();
+                return new RowResult<>(csvSample, errorMessageBuilder.toString());
+
             }
             transaction.commit();
+
         } catch (Exception e) {
             logger.warn(e);
             if (transaction != null) transaction.rollback();
             return new RowResult<>(csvSample, e);
         }
-        return new RowResult<>(csvSample, StringUtils.join(errorMessages, ", "));
+        return new RowResult<>(csvSample);
     }
 
     private Test getTest(String testName) {

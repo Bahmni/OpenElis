@@ -736,11 +736,11 @@ public class DictionaryDAOImpl extends BaseDAOImpl implements DictionaryDAO {
 	}
 
 	public Dictionary getDictionaryByDictEntry(String dictEntry) throws LIMSRuntimeException{
-		String sql = "from Dictionary d where d.dictEntry = :dictionaryEntry";
+		String sql = "from Dictionary d where lower(d.dictEntry) = :dictionaryEntry";
 		
 		try{
 			Query query = HibernateUtil.getSession().createQuery(sql);
-			query.setString("dictionaryEntry", dictEntry);
+			query.setString("dictionaryEntry", dictEntry.toLowerCase());
 			Dictionary dictionary = (Dictionary)query.uniqueResult();
 			closeSession();
 			return dictionary;
