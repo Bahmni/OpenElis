@@ -254,7 +254,7 @@ $$
 LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE FUNCTION insert_result_limit_normal_range(test_name TEXT, lower_limit INT, upper_limit INT) RETURNS VOID AS
+CREATE OR REPLACE FUNCTION insert_result_limit_normal_range(test_name TEXT, lower_limit double precision, upper_limit double precision) RETURNS VOID AS
 $$
 DECLARE
     result_limits_id int;
@@ -292,7 +292,7 @@ END
 $$
 LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION insert_result_limit_valid_range(test_name TEXT, lower_limit INT, upper_limit INT) RETURNS VOID AS
+CREATE OR REPLACE FUNCTION insert_result_limit_valid_range(test_name TEXT, lower_limit double precision, upper_limit double precision) RETURNS VOID AS
 $$
 DECLARE
     result_limits_id int;

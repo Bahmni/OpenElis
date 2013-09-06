@@ -784,4 +784,10 @@
                     m.name = 'Upload'
         </sql>
     </changeSet>
+    <changeSet id="51" author="tw" context="bahmni">
+        <comment>Increase the column size for panel_item </comment>
+        <sql endDelimiter=";\n" splitStatements="true" stripComments="true">
+            alter table "panel_item" alter column "test_local_abbrev" type varchar(100);
+        </sql>
+    </changeSet>
 </databaseChangeLog>
