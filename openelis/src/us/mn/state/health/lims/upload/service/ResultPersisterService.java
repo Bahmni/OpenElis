@@ -55,7 +55,7 @@ public class ResultPersisterService {
 
         Dictionary dictionary = null;
         List<TestResult> testResults = testResultDAO.getTestResultsByTest(test.getId());
-        if (!(testResults == null)) {
+        if (!(testResults == null || testResults.isEmpty())) {
             for (TestResult testResult : testResults) {
                 String testResultType = testResult.getTestResultType();
                 result.setResultType(testResultType);
@@ -109,7 +109,7 @@ public class ResultPersisterService {
         try{
             Double.parseDouble(testResultValue);
         }catch (Exception e){
-            throw new LIMSRuntimeException("Result should be numbers for test" + test.getTestName());
+            throw new LIMSRuntimeException("Result should be numbers for test " + test.getTestName());
         }
         ResultLimit resultLimit = resultsLoadUtility.getResultLimitForTestAndPatient(test, patient);
         result.setMaxNormal(resultLimit.getHighNormal());
