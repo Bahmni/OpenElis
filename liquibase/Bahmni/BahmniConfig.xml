@@ -790,4 +790,19 @@
             alter table "panel_item" alter column "test_local_abbrev" type varchar(100);
         </sql>
     </changeSet>
+    <changeSet id="52" author="tw" context="bahmni">
+        <comment>Fix changeset 50</comment>
+        <update schemaName="clinlims" tableName="system_module">
+            <column name="name" value="LabDashboard"/>
+            <where>name='Dashboard'</where>
+        </update>
+        <sql endDelimiter=";\n" splitStatements="true" stripComments="true">
+            insert into system_role_module 
+                (id, has_select, has_add, has_update, has_delete, system_role_id, system_module_id)
+            select nextval( 'system_user_module_seq' ), 'Y', 'Y', 'Y', 'Y', r.id, m.id 
+                from system_role r, system_module m 
+                where trim(r.name) = 'LabDashboard' and 
+                    m.name = 'LabDashboard'
+        </sql>
+    </changeSet>
 </databaseChangeLog>
