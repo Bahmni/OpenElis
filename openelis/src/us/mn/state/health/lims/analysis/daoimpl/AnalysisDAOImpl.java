@@ -534,7 +534,7 @@ public class AnalysisDAOImpl extends BaseDAOImpl implements AnalysisDAO {
 			return getAnalysesBySampleId(id);
 		}
 
-		String sql = "from Analysis a where a.sampleItem.sample.id = :sampleId and a.statusId in ( :statusIds)";
+		String sql = "from Analysis a where a.sampleItem.sample.id = :sampleId and a.statusId in ( :statusIds) order by a.testSection.id, a.panel.id";
 
 		try {
 			Query query = HibernateUtil.getSession().createQuery(sql);
@@ -548,7 +548,6 @@ public class AnalysisDAOImpl extends BaseDAOImpl implements AnalysisDAO {
 		}
 
 		return null;
-
 	}
 
 	/**
@@ -969,7 +968,7 @@ public class AnalysisDAOImpl extends BaseDAOImpl implements AnalysisDAO {
 	private boolean duplicateAnalysisExists(Analysis analysis) throws LIMSRuntimeException {
 		try {
 
-			List list = new ArrayList();
+			List list;
 
 			// not case sensitive hemolysis and Hemolysis are considered
 			// duplicates
@@ -1131,10 +1130,10 @@ public class AnalysisDAOImpl extends BaseDAOImpl implements AnalysisDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Analysis> getAnalysisBySampleAndTestIds(String sampleId, List<Integer> testIds) {
-		List<Analysis> list = null;
+		List<Analysis> list;
 		try {
 			if (testIds == null || testIds.size() == 0) {
-				return new ArrayList<Analysis>();
+				return new ArrayList<>();
 			}
 			String sql = "from Analysis a WHERE a.sampleItem.sample.id = :sampleId AND a.test.id IN ( :testIds )";
 			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
