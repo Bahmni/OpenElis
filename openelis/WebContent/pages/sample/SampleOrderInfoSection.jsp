@@ -212,7 +212,7 @@
 <% if(supportfirstNameFirst) { %>
 <tr>
     <td class="firstNameLabel">
-    <bean:message key="sample.entry.provider.firstName"/>:
+    <bean:message key="sample.entry.provider.fullName"/>:
     </td>
     <td>
         <html:select name="<%=formName%>" property="providerId" styleId="providerId">
