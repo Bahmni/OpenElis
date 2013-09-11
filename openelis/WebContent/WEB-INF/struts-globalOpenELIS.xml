@@ -962,7 +962,7 @@
             <forward name="success" path="commonReportDefiniton"/>
         </action>
 
-        <action path="/ReportPrint" name="ReportForm"
+        <action path="/ReportPrint" name="ReportForm" scope="request"
                 type="us.mn.state.health.lims.reports.action.CommonReportPrintAction">
             <forward name="success" path="homePageDefinition"/>
         </action>
