@@ -65,6 +65,7 @@ var patientChangeListeners = new Array();
 var localDB = '<%=localDBOnly%>' == "true";
 var newSearchInfo = false;
 var supportHealthCenter = <%= supportHealthCenter%> ;
+var supportfirstNameFirst = <%=supportfirstNameFirst %>;
 
 function searchPatients()
 {
@@ -177,8 +178,13 @@ function createRow(table, firstName, lastName, gender, DOB, stNumber, subjectNum
 
 		var selectionCell = newRow.insertCell(++cellCounter);
         var stCell = supportSTNumber ? newRow.insertCell(++cellCounter) : null;
-        var lastNameCell = newRow.insertCell(++cellCounter);
-		var firstNameCell = newRow.insertCell(++cellCounter);
+        if (supportfirstNameFirst) {
+            var firstNameCell = newRow.insertCell(++cellCounter);
+            var lastNameCell = newRow.insertCell(++cellCounter);
+        } else {
+            var lastNameCell = newRow.insertCell(++cellCounter);
+            var firstNameCell = newRow.insertCell(++cellCounter);
+        }
 		var genderCell = newRow.insertCell(++cellCounter);
 		var dobCell = newRow.insertCell(++cellCounter);
 		var motherCell = supportMothersName ? newRow.insertCell(++cellCounter) : null;
@@ -376,12 +382,21 @@ function /*void*/ dirtySearchInfo(e){
                     <bean:message key="patient.ST.number"/>
                 </th>
                 <% } %>
-				<th class="lastName" width="18%">
-					<bean:message key="patient.epiLastName"/>
-				</th>
-				<th class="firstName" width="15%">
-					<bean:message key="patient.epiFirstName"/>
-				</th>
+                <% if (supportfirstNameFirst) { %>
+                <th class="firstName" width="15%">
+                    <bean:message key="patient.epiFirstName"/>
+                </th>
+                <th class="lastName" width="18%">
+                    <bean:message key="patient.epiLastName"/>
+                </th>
+                <% } else {%>
+                <th class="lastName" width="18%">
+                    <bean:message key="patient.epiLastName"/>
+                </th>
+                <th class="firstName" width="15%">
+                    <bean:message key="patient.epiFirstName"/>
+                </th>
+                <% } %>
 				<th width="5%">
 					<bean:message key="patient.gender"/>
 				</th>
