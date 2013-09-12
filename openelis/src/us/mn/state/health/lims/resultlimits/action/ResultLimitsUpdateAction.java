@@ -130,7 +130,7 @@ public class ResultLimitsUpdateAction extends BaseAction {
             List<ResultLimit> resultLimits = resultLimitDAO.getAllResultLimitsForTest(testId);
             String gender = resultLimit.getGender();
             for (ResultLimit limit : resultLimits) {
-                if(limit.getGender().equals(gender))
+                if(limit.getGender() != null && gender != null && limit.getGender().equals(gender))
                     throw new LIMSDuplicateRecordException("duplicateEntry");
             }
         }
