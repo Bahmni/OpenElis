@@ -76,7 +76,7 @@ ul.nav-menu {
 .nav-menu ul, .nav-menu ul li,  .nav-menu ul li ul { display: block }
 .nav-menu li ul a { display:block; width:auto; white-space:nowrap } 
 
-#main-nav { font-size: 13px; margin-top: 4px; min-width: 940px } /* FIXME: min-width to prevent wrapping of nav items. */
+#main-nav { font-size: 13px; margin-top: 4px; min-width: 920px } /* FIXME: min-width to prevent wrapping of nav items. */
 #main-nav a { color: #444444 }
 
 /*** corners for first and last top-level items ***/

@@ -338,7 +338,7 @@ jQuery(function(){
 		<p class="results-message"><bean:message key="patient.search.not.found"/></p>
 	</div>
 	<div id="patientSearchDiv" style="display:none">
-		<table id="searchResultTable" style="width:70%">
+		<table id="searchResultTable" style="width:100%">
 			<tr>
 				<th width="2%"></th>
 				<% if(supportfirstNameFirst){ %>

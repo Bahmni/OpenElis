@@ -46,14 +46,14 @@ function generateLinkForInProgressOrder(order){
 
 function getColumnsForInProgressOrder() {
      return [
-                {id: "accessionNumber", name: "Accession Number", field: "accessionNumber", sortable: true, index:0, editor: Slick.Editors.Text,  minWidth:150},
-                {id: "stNumber", name: "PatientID", field: "stNumber", sortable: true, editor: Slick.Editors.Text,  index:1 , minWidth:150},
-                {id: "name", name: "PatientName", field: "name", sortable: true,  index:2, editor: Slick.Editors.Text,  minWidth:150},
-                {id: "pendingTestCount", name: "Pending Tests", field: "pendingTestCount", sortable: true, editor: Slick.Editors.Text,  index:3, searchable: false, minWidth:150},
-                {id: "pendingValidationCount", name: "Pending Validation", field: "pendingValidationCount", sortable: true, editor: Slick.Editors.Text,  index:4, searchable: false, minWidth:150},
-                {id: "totalTestCount", name: "Total Tests", field: "totalTestCount", sortable: true, editor: Slick.Editors.Text,  index:5, searchable: false, minWidth:150},
-                {id: "source", name: "Source", field: "source", sortable: true,  index:6, editor: Slick.Editors.Text, minWidth:150},
-                {id: "link", name: "Action", field: "link",  cssClass: "cell-title", formatter: formatter, index:7,editor: Slick.Editors.Text, searchable: false, minWidth:150}
+                {id: "accessionNumber", name: "Accession Number", field: "accessionNumber", sortable: true, index:0, editor: Slick.Editors.Text,  minWidth:140},
+                {id: "stNumber", name: "PatientID", field: "stNumber", sortable: true, editor: Slick.Editors.Text,  index:1 , minWidth:140},
+                {id: "name", name: "PatientName", field: "name", sortable: true,  index:2, editor: Slick.Editors.Text,  minWidth:140},
+                {id: "pendingTestCount", name: "Pending Tests", field: "pendingTestCount", sortable: true, editor: Slick.Editors.Text,  index:3, searchable: false, minWidth:110},
+                {id: "pendingValidationCount", name: "Pending Validation", field: "pendingValidationCount", sortable: true, editor: Slick.Editors.Text,  index:4, searchable: false, minWidth:140},
+                {id: "totalTestCount", name: "Total Tests", field: "totalTestCount", sortable: true, editor: Slick.Editors.Text,  index:5, searchable: false, minWidth:90},
+                {id: "source", name: "Source", field: "source", sortable: true,  index:6, editor: Slick.Editors.Text, minWidth:100},
+                {id: "link", name: "Action", field: "link",  cssClass: "cell-title", formatter: formatter, index:7,editor: Slick.Editors.Text, searchable: false, minWidth:100}
          ];
 }
 

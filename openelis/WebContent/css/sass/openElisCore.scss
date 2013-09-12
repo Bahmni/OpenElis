@@ -63,7 +63,6 @@ table {
 /***** Overrides of default browser styles *****/
 body {
   /* FIXME - set margin to 0 and then define main content area with margin/padding */
-  margin: 8px;
   font-family: Arial, Helvetica, sans-serif;
   font-size:13px;
   color:#444;
@@ -136,7 +135,7 @@ th {
   padding:5px  0px 5px 5px ;
 }
 td{
-    padding:5px  0px 5px 5px ;}
+    padding:5px 5px 5px 5px ;}
 tr {
   text-align : left;
   vertical-align : middle;
@@ -207,7 +206,7 @@ input[type="button"],input[type="file"],input[type="submit"],button{
   font-size:13px;
   line-height: 1em;
   min-width: 970px;
-  margin: 0 -8px; /* FIXME - temporarily using negative margin b/c default body settings and need to create content area with padding for main tables */
+  margin: 0px; /* FIXME - temporarily using negative margin b/c default body settings and need to create content area with padding for main tables */
   padding: 10px 0 0 5px;
   height: 86px;
   overflow: visible;
@@ -222,6 +221,9 @@ input[type="button"],input[type="file"],input[type="submit"],button{
 }
 #header a, #header a:active, #header a:visited {
   font-size:13px;
+}
+.header-def{
+  float:left;
 }
 #oe-logo {
   float: left;
@@ -1205,8 +1207,8 @@ p{
     }
     }
 }
-@media screen and (max-width:1200px){
-  body{width:1200px;}
+@media screen and (max-width:1024px){
+  body{width:1024px;}
 }
 .results-page-block,.btn-block{
   padding:10px 20px 10px 0px;

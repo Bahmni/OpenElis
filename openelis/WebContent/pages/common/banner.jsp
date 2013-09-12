@@ -105,7 +105,7 @@ function displayHelp(){
 
 <div id="header">
   	<div id="oe-logo" style="width: 89px" onclick="navigateToHomePage();"><img src="images/openelis_logo.png" title="OpenELIS" alt="OpenELIS" /></div>
-	<div style="margin-left: 94px">
+	<div class="header-def">
  		<div style="display: block">
 			<%
 				UserSessionData usd = null;
