@@ -56,7 +56,7 @@ public interface PanelItemDAO extends BaseDAO {
 	public Integer getTotalPanelItemCount() throws LIMSRuntimeException; 
 	
 	//bugzilla 2207
-	public boolean getDuplicateSortOrderForPanel(PanelItem panelItem);
+	public boolean getDuplicateSortOrderForPanel(PanelItem panelItem, boolean isNew);
 	
 	// bugzilla 2223
 	public List getPanelItemByPanel(Panel panel, boolean onlyTestsFullySetup) throws LIMSRuntimeException;

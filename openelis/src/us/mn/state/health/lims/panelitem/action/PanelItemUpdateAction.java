@@ -106,7 +106,8 @@ public class PanelItemUpdateAction extends BaseAction {
 
 		if (errors != null && errors.size() > 0) {
 			saveErrors(request, errors);
-			// since we forward to jsp - not Action we don't need to repopulate
+            request.setAttribute(Globals.ERROR_KEY, errors);
+            // since we forward to jsp - not Action we don't need to repopulate
 			// the lists here
 			return mapping.findForward(FWD_FAIL);
 		}
@@ -292,7 +293,7 @@ public class PanelItemUpdateAction extends BaseAction {
 
 		    String messageKey = "panelitem.sortOrder";
 
-		    if (panelItemDAO.getDuplicateSortOrderForPanel(panelItem)) {
+		    if (panelItemDAO.getDuplicateSortOrderForPanel(panelItem, isNew)) {
 			// There is already one with the same panel name and sort order id in the database
                 addError(errors, messageKey, "errors.DuplicateItem");
 		    }

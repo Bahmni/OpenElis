@@ -395,7 +395,7 @@ public class PanelItemDAOImpl extends BaseDAOImpl implements PanelItemDAO {
 	}
 	
 	//bugzilla 2207
-	public boolean getDuplicateSortOrderForPanel(PanelItem panelItem) throws LIMSRuntimeException {
+	public boolean getDuplicateSortOrderForPanel(PanelItem panelItem, boolean isNew) throws LIMSRuntimeException {
 		try {
 			List list ;
 
@@ -418,14 +418,15 @@ public class PanelItemDAOImpl extends BaseDAOImpl implements PanelItemDAO {
 
 			query.setInteger("panelItemId", Integer.parseInt(panelItemId));
 
-			
 			list = query.list();
 			HibernateUtil.getSession().flush();
 			HibernateUtil.getSession().clear();
 
-			if (list.size() > 0) {
+			if (isNew && list.size() > 0) {
 				return true;
-			} else { 
+			} else if(!isNew && list.size() > 1){
+                return true;
+            } else {
 				return false;
 			}
 
