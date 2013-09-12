@@ -453,7 +453,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 </logic:notEqual>
 
 <div style="float: right" >
-<img src="./images/nonconforming.gif" /> = <bean:message key="result.nonconforming.item"/>&nbsp;&nbsp;&nbsp;&nbsp;
+	<div><img src="./images/nonconforming.gif" /> = <bean:message key="result.nonconforming.item"/></div>
 <% if(failedValidationMarks){ %> 
 <img src="./images/validation-rejected.gif" /> = <bean:message key="result.validation.failed"/>&nbsp;&nbsp;&nbsp;&nbsp;
 <% } %>

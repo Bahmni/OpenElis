@@ -195,6 +195,7 @@ function processAccessionFailure(xhr)
 
 
 <logic:equal name="<%=formName%>" property="noSampleFound" value="false">
+<br/>
 <DIV  id="patientInfo" class='textcontent'>
 <bean:message key="sample.entry.patient"/>:&nbsp;
 <bean:write name="<%=formName%>" property="firstName"/>&nbsp;

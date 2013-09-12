@@ -148,6 +148,8 @@ function submitSearchForClick(button){
                <bean:message key="label.button.deactivate"/>
              </html:button>
        </li>
+     </ul>
+     <ul class="paginator">
 
         <%
           String previousDisabled = "false";
@@ -159,7 +161,7 @@ function submitSearchForClick(button){
                  nextDisabled = (String)request.getAttribute(IActionConstants.NEXT_DISABLED);
               }
         %>
-          <li class="seperator">
+          <li class="paginator-previous">
             <html:button onclick="setMenuAction(this, window.document.forms[0], '', 'yes', '?paging=1');return false;" property="previous" disabled="<%=Boolean.valueOf(previousDisabled).booleanValue()%>">
                <bean:message key="label.button.previous"/>
             </html:button>

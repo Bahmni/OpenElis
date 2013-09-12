@@ -833,7 +833,7 @@ jQuery(function(){
 
 	<div id="PatientDetail">
 	<h2><bean:message key="patient.information"/></h2>
-	<table width="80%" border="0">
+	<table width="100%" border="0">
 	<tr>
         <% if( !supportSubjectNumber){ %>
         <td>
@@ -939,7 +939,7 @@ jQuery(function(){
 					  onchange="updatePatientEditStatus();"
 					  styleId="firstNameID"/>
 		</td>
-		<td class="lastNameLabel" align="right" width="10%">
+		<td class="lastNameLabel" align="right" width="15%">
         			<bean:message key="patient.epiLastName" />
         			:
         			<% if( patientNamesRequired){ %>
@@ -955,7 +955,7 @@ jQuery(function(){
         				      styleId="lastNameID"/>
         		</td>
 		 <% } else { %>
-		  <td class="lastNameLabel" align="right" width="10%">
+		  <td class="lastNameLabel" align="right" width="15%">
           			<bean:message key="patient.epiLastName" />
           			:
           			<% if( patientNamesRequired){ %>

@@ -160,8 +160,8 @@ hr.hr-style-1 {
 }
 input[type="button"],input[type="file"],input[type="submit"],button{
   @include background-image(linear-gradient(white, #eaeaea));
-  @include border-radius(6px, 6px);
-  padding:5px 10px;
+  @include border-radius(5px, 5px);
+  padding:7px 15px;
   border:1px solid #cccccc;
   cursor:pointer !important;
   color:#555555;
@@ -175,7 +175,6 @@ input[type="button"],input[type="file"],input[type="submit"],button{
   &.primary-btn{
       @include background-image(linear-gradient(#a1d030, #88af28));
       color:#fff; 
-      @include text-shadow(rgba(blue, 0.2) 1px 1px 0, rgba(blue, 0.2) 2px 2px 0, rgba(blue, 0.2) 3px 3px 0);
       border: 1px solid #88af28; 
       &:hover{
         background: #8eb82a;
@@ -1156,7 +1155,12 @@ input[type=radio] + label {
   display:none;
 }
 #ST_ID{
-    width:99%;
+    width:70%;
+}
+#healthCenterName{
+    width:25%;
+    float:left;
+    margin-right:2%;
 }
 h1,h2{
   color:#333333;
@@ -1206,10 +1210,18 @@ p{
     }
     }
 }
+.paginator{
+    width: 330px;
+    float: left;
+    background:#f1f1f1;
+}
 @media screen and (max-width:1024px){
   body{width:1024px;}
   ul.leftnavigation li a{
     font-size: 13px;
+  }
+  #mainTable select{
+    width:120px;
   }
 }
 .results-page-block,.btn-block{

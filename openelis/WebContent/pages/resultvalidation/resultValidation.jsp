@@ -300,10 +300,10 @@ function /*boolean*/ handleEnterEvent(){
 <logic:notEqual name="resultCount" value="0">
 <Table width="100%" >
     <tr>
-		<th width="15%" colspan="3" style="background-color: white">
+		<th width="77%" colspan="3" style="background-color: white">
 			<img src="./images/nonconforming.gif" /> = <bean:message key="result.nonconforming.item"/>		
 		</th>
-		<th width="3%" align="center" style="background-color: white">&nbsp;
+		<th width="10%" align="center" style="background-color: white">&nbsp;
 				<bean:message key="validation.accept.all" />
 			<input type="checkbox"
 				name="selectAllAccept"
@@ -313,7 +313,7 @@ function /*boolean*/ handleEnterEvent(){
 				id="selectAllAccept"
 				class="accepted acceptAll">
 		</th>
-		<th width="3%" align="center" style="background-color: white">&nbsp;
+		<th width="12%" align="center" style="background-color: white">&nbsp;
 		<bean:message key="validation.reject.all" />
 			<input type="checkbox"
 					name="selectAllReject"
@@ -323,7 +323,7 @@ function /*boolean*/ handleEnterEvent(){
 					id="selectAllReject"
 					class="rejected rejectAll">
 		</th>
-		<th width="5%" style="background-color: white">&nbsp;</th>
+		<th width="3%" style="background-color: white">&nbsp;</th>
   	</tr>
 </Table>
 </logic:notEqual>
