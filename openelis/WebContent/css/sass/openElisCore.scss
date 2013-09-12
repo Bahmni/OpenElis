@@ -223,7 +223,6 @@ input[type="button"],input[type="file"],input[type="submit"],button{
   font-size:13px;
 }
 .header-def{
-  float:left;
 }
 #oe-logo {
   float: left;
@@ -1209,6 +1208,9 @@ p{
 }
 @media screen and (max-width:1024px){
   body{width:1024px;}
+  ul.leftnavigation li a{
+    font-size: 13px;
+  }
 }
 .results-page-block,.btn-block{
   padding:10px 20px 10px 0px;
