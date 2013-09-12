@@ -805,4 +805,24 @@
                     m.name = 'LabDashboard'
         </sql>
     </changeSet>
+    <changeSet id="53" author="tw" context="bahmni">
+        <comment>Add module for validation of all sections</comment>
+        <insert schemaName="clinlims" tableName="system_module">
+            <column name="id" valueNumeric=" nextVal( 'system_module_seq' ) "/>
+            <column name="name" value="ResultValidation:All Sections"/>
+            <column name="description" value="Validation of all sections"/>
+            <column name="has_select_flag" value="N"/>
+            <column name="has_add_flag" value="N"/>
+            <column name="has_update_flag" value="N"/>
+            <column name="has_delete_flag" value="N"/>
+        </insert>
+        <sql endDelimiter=";\n" splitStatements="true" stripComments="true">
+            insert into system_role_module 
+                (id, has_select, has_add, has_update, has_delete, system_role_id, system_module_id)
+            select nextval( 'system_user_module_seq' ), 'Y', 'Y', 'Y', 'Y', r.id, m.id 
+                from system_role r, system_module m 
+                where trim(r.name) = 'Validation' and 
+                    m.name = 'ResultValidation:All Sections'
+        </sql>
+    </changeSet>
 </databaseChangeLog>
