@@ -39,7 +39,9 @@ function generateLinkForCompletedOrder(order){
 }
 
 function generateLinkForInProgressOrder(order){
-    return "<a target='validation' href='ResultValidationForAccessionNumber.do?accessionNumber=" + order.accessionNumber + "&type=Validation+By+Accession+Number&test='>Validate</a>";
+    var enterResultLink = "<a target='_blank' href='AccessionResults.do?accessionNumber=" + order.accessionNumber + "'>Result</a>";
+    var validationLink = "<a target='validation' href='ResultValidationForAccessionNumber.do?accessionNumber=" + order.accessionNumber + "&type=Validation+By+Accession+Number&test='>Validate</a>";
+    return enterResultLink + " | " + validationLink;
 }
 
 function getColumnsForInProgressOrder() {
