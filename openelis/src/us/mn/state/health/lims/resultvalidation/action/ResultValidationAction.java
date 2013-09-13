@@ -73,11 +73,7 @@ public class ResultValidationAction extends BaseResultValidationAction {
 			paging.page(request, dynaForm, newPage);
 		}
 
-		if (testSectionName.equals("serology")) {
-			return mapping.findForward("elisaSuccess");
-		} else {
-			return mapping.findForward(FWD_SUCCESS);
-		}
+        return mapping.findForward(FWD_SUCCESS);
 	}
 
     private boolean getResultsForAPage(String newPage) {

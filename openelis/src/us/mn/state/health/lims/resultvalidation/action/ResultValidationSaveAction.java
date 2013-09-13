@@ -44,7 +44,6 @@ import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
 import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
-import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.OrderStatus;
 import us.mn.state.health.lims.systemuser.dao.SystemUserDAO;
 import us.mn.state.health.lims.systemuser.daoimpl.SystemUserDAOImpl;
@@ -155,7 +154,17 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 		}
 
 		if (GenericValidator.isBlankOrNull(testSectionName)) {
-			return mapping.findForward(forward);
+            Map<String, String> params = new HashMap<>();
+
+            String accessionNumber = request.getParameter(ACCESSION_NUMBER);
+            if (accessionNumber != null && !accessionNumber.trim().isEmpty()) {
+                forward =  FWD_SUCCESS_FOR_ACCESSION_NUMBER;
+                params.put(ACCESSION_NUMBER, accessionNumber);
+            }
+
+            params.put("forward", forward);
+
+            return getForwardWithParameters(mapping.findForward(forward), params);
 		} else {
 			Map<String, String> params = new HashMap<>();
 			params.put("type", testSectionName);

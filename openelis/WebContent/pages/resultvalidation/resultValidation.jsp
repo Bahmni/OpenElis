@@ -22,8 +22,8 @@
 
 <bean:define id="formName"	value='<%=(String) request.getAttribute(IActionConstants.FORM_NAME)%>' />
 
-<bean:define id="testSection"	value='<%=(String) request.getParameter("type")%>' />
-<bean:define id="testName"	value='<%=(String) request.getParameter("test")%>' />
+<bean:define id="testSection"	value='<%=request.getParameter("type") == null || request.getParameter("type").isEmpty() ? "" : request.getParameter("type")%>' />
+<bean:define id="testName"	value='<%=request.getParameter("test") == null || request.getParameter("test").isEmpty() ? "" : request.getParameter("test")%>' />
 
 <bean:define id="results" name="<%=formName%>" property="resultList" />
 <bean:define id="pagingSearch" name='<%=formName%>' property="paging.searchTermToPage" type="List<IdValuePair>" /> 

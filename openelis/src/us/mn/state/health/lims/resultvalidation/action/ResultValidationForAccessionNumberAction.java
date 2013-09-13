@@ -1,6 +1,5 @@
 package us.mn.state.health.lims.resultvalidation.action;
 
-import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -14,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 public class ResultValidationForAccessionNumberAction extends BaseResultValidationAction {
-    private static Logger logger = Logger.getLogger(ResultValidationForAccessionNumberAction.class);
 
     @Override
     protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request,
