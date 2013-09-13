@@ -1295,11 +1295,11 @@ table.administration{
     float:left;
     width:220px;
     span{
-      display: inline-block;
       padding:3px 5px;
       float:left;
       &.checkbox-label{
         width:180px;
+        padding-top:6px;
       }
     }
   }
