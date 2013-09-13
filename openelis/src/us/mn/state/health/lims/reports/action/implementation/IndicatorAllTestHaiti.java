@@ -95,10 +95,8 @@ public abstract class IndicatorAllTestHaiti extends HaitiIndicatorReport impleme
 			TestBucket bucket = new TestBucket();
 
 			bucket.testName = test.getTestName();
-			bucket.testSort = Integer.parseInt(getSortOrder(test.getSortOrder()));
 			bucket.testSection = test.getTestSection().getLocalizedName();
-			bucket.sectionSort = test.getTestSection().getSortOrderInt();
-			
+
 			testNameToBucketList.put(test.getTestName(), bucket);
 			testBucketList.add(bucket);
 		}
@@ -121,9 +119,7 @@ public abstract class IndicatorAllTestHaiti extends HaitiIndicatorReport impleme
 					if (testBucket == null) {
 						testBucket = new TestBucket();
 						testBucket.testName = test.getReportingDescription();
-                        testBucket.testSort = Integer.parseInt(getSortOrder(test.getSortOrder()));
 						testBucket.testSection = analysis.getTestSection().getLocalizedName();
-						testBucket.sectionSort = analysis.getTestSection().getSortOrderInt();
 						concatSection_TestToBucketMap.put(concatedName, testBucket);
 					}
 				} else {
@@ -163,16 +159,18 @@ public abstract class IndicatorAllTestHaiti extends HaitiIndicatorReport impleme
 		Collections.sort(testBucketList, new Comparator<TestBucket>() {
 			@Override
 			public int compare(TestBucket o1, TestBucket o2) {
-				int order = o1.sectionSort - o2.sectionSort;
-				
-				if( order == 0){
-					order = o1.testSort - o2.testSort;
-				}
-				
-				return order;
+                int compareSections = compareSections(o1, o2);
+                return compareSections == 0 ? compareTest(o1, o2) : compareSections;
 			}
 
-		});
+            private int compareSections(TestBucket o1, TestBucket o2) {
+                return o1.testSection.compareTo(o2.testSection);
+            }
+
+            private int compareTest(TestBucket o1, TestBucket o2) {
+                return o1.testName.compareTo(o2.testName);
+            }
+        });
 
 	}
 
@@ -201,9 +199,7 @@ public abstract class IndicatorAllTestHaiti extends HaitiIndicatorReport impleme
 
 	private class TestBucket {
 		public String testName = "";
-		public int testSort = 0;
 		public String testSection = "";
-		public int sectionSort = 0;
 		public int notStartedCount = 0;
 		public int inProgressCount = 0;
 		public int finishedCount = 0;
