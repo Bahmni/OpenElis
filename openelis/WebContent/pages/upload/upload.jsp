@@ -64,9 +64,16 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
 
     <div id="importStatusGrid" style="width:1000px">
     </div>
+
+    <div id="uploadDetails" class="hide details">
+        <div class='details-more-info'><span class='details-key'>File Name: </span><span class='details-value' id="originalFileName"></span></div>
+        <div class='details-more-info'><span class='details-key'>Uploaded By: </span><span class='details-value' id="uploadedBy"></span></div>
+        <div class='details-more-info'><span class='details-key'>Status: </span><span class='details-value' id="uploadStatus"></span></div>
+        <div class='details-more-info'><span class='details-key'>Success Count: </span><span class='details-value' id="successfulRecordsCount"></span></div>
+        <div class='details-more-info'><span class='details-key'>Fail Count: </span><span class='details-value' id="failedRecordsCount"></span></div>
+        <div class='details-more-info'><span class='details-key'>Error Message: </span><span id="errorMessage"></span></div>
+    </div>
 </div>
-
-
 
 <style>
     .bar {
@@ -79,36 +86,34 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
     var gridForInImportStatus;
 
     var columns = [
-        {id: "originalFileName", name: "Name of the File", field: "originalFileName", sortable: true, width: 145},
-        {id: "type", name: "Type", field: "type", sortable: true, width: 90},
-        {id: "startTime", name: "Date of Upload", field: "startTime", sortable: true, width: 150,
-                formatter: function ( row, cell, value, columnDef, dataContext ) {
-                        function padWithZeroes(aField) {
-                            if (aField < 10)
-                                return "0" + aField;
-                            return aField;
-                        }
+        {id: "originalFileName", name: "Name of the File", field: "originalFileName", sortable: true, width: 200},
+        {id: "type", name: "Type", field: "type", sortable: true, width: 100},
+        {id: "startTime", name: "Date of Upload", field: "startTime", sortable: true, width: 200,
+            formatter: function ( row, cell, value, columnDef, dataContext ) {
+                function padWithZeroes(aField) {
+                    if (aField < 10)
+                        return "0" + aField;
+                    return aField;
+                }
 
-                        if (value) {
-                            var startTime = new Date(value);
-                            return padWithZeroes(startTime.getDate()) + "-" + padWithZeroes(startTime.getMonth()) + "-" + padWithZeroes(startTime.getFullYear()) + " " +
-                                     padWithZeroes(startTime.getHours()) + ":" + padWithZeroes(startTime.getMinutes()) + ":" + padWithZeroes(startTime.getSeconds());
-                        }
-                        return "";
-                    }
-                },
-        {id: "status", name: "Status", field: "status", sortable: true, width: 150},
-        {id: "successfulRecords", name: "Successful", field: "successfulRecords", sortable: true, width: 70},
-        {id: "failedRecords", name: "Failed", field: "failedRecords", sortable: true, width: 70},
-        {id: "stage", name: "Stage", field: "stageName", sortable: true, width: 80},
-        {id: "errorMessage", name: "Error Message", field: "stackTrace", sortable: true, width: 150},
+                if (value) {
+                    var startTime = new Date(value);
+                    return padWithZeroes(startTime.getDate()) + "-" + padWithZeroes(startTime.getMonth()) + "-" + padWithZeroes(startTime.getFullYear()) + " " +
+                             padWithZeroes(startTime.getHours()) + ":" + padWithZeroes(startTime.getMinutes()) + ":" + padWithZeroes(startTime.getSeconds());
+                }
+                return "";
+            }
+        },
+        {id: "status", name: "Status", field: "status", sortable: true, width: 300},
+        {id: "stage", name: "Stage", field: "stageName", sortable: true, width: 100},
         {id: "errorFileName", name: "Download", field: "errorFileName", sortable: true, width: 100,
-                formatter: function ( row, cell, value, columnDef, dataContext ) {
-                      if (value) {
-                        return '<a href="' + value + '">ErrorFile</a>';
-                      }
-                      return "";
-                  },}
+            formatter: function ( row, cell, value, columnDef, dataContext ) {
+                if (value) {
+                    return '<a href="' + value + '">ErrorFile</a>';
+                }
+                return "";
+            },
+        }
     ];
 
     var options = {
@@ -119,6 +124,16 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
         multiColumnSort: true,
     };
 
+    var showUploadDetails = function(row) {
+        jQuery("#uploadDetails").show();
+        jQuery("#originalFileName").text(row.originalFileName);
+        jQuery("#uploadedBy").text(row.uploadedBy);
+        jQuery("#uploadStatus").text(row.status);
+        jQuery("#successfulRecordsCount").text(row.successfulRecords);
+        jQuery("#failedRecordsCount").text(row.failedRecords);
+        jQuery("#errorMessage").text(row.stackTrace);
+    }
+
     jQuery(document).ready(function() {
         jQuery("#refresh").on("click", renderGrid);
 
@@ -127,25 +142,31 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
                 type: 'get',
                 success: function(data) {
                     gridForInImportStatus = new Slick.Grid("#importStatusGrid", data, columns, options);
+                    gridForInImportStatus .setSelectionModel(new Slick.RowSelectionModel());
                     gridForInImportStatus.registerPlugin( new Slick.AutoTooltips({ enableForHeaderCells: true }) );
                     gridForInImportStatus.init();
 
                     gridForInImportStatus.onSort.subscribe(function (e, args) {
                         var cols = args.sortCols;
-                        data.sort(function (dataRow1, dataRow2) {
+                        data.sort(function(dataRow1, dataRow2) {
                             for (var i = 0, l = cols.length; i < l; i++) {
                                 var field = cols[i].sortCol.field;
                                 var sign = cols[i].sortAsc ? 1 : -1;
                                 var value1 = dataRow1[field], value2 = dataRow2[field];
                                 var result = (value1 == value2 ? 0 : (value1 > value2 ? 1 : -1)) * sign;
                                 if (result != 0) {
-                                return result;
+                                    return result;
                                 }
                             }
                             return 0;
                         });
                         gridForInImportStatus.invalidate();
                         gridForInImportStatus.render();
+                    });
+
+                    gridForInImportStatus.onSelectedRowsChanged.subscribe(function(e, args) {
+                        var row = args.grid.getDataItem(args.rows[0]);
+                        showUploadDetails(row);
                     });
                 },
             });

@@ -92,13 +92,13 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
         <div id="completedListContainer"><div id="completedListContainer-slick-grid"></div></div>
     </div>
 
-    <div id="patientDetails" class="hide">
-        <div class='pd-more-info'><span class='pd-key'>Patient ID: </span><span class='pd-value' id="patientId"></span></div>
-        <div class='pd-more-info'><span class='pd-key'>Name : </span><span class='pd-value' id="name"></span></div>
-        <div class='pd-more-info'><span class='pd-key'>Father/Husband's Name : </span><span class='pd-value' id="primaryRelative"></span></div>
-        <div class='pd-more-info'><span class='pd-key'>Village : </span><span class='pd-value' id="village"></span></div>
-        <div class='pd-more-info'><span class='pd-key'>Gender : </span><span  class='pd-value' id="gender"></span></div>
-        <div class='pd-more-info'><span class='pd-key'>Age : </span><span class='pd-value' id="age"></span></div>
+    <div id="patientDetails" class="hide details">
+        <div class='details-more-info'><span class='details-key'>Patient ID : </span><span class='details-value' id="patientId"></span></div>
+        <div class='details-more-info'><span class='details-key'>Name : </span><span class='details-value' id="name"></span></div>
+        <div class='details-more-info'><span class='details-key'>Father/Husband's Name : </span><span class='details-value' id="primaryRelative"></span></div>
+        <div class='details-more-info'><span class='details-key'>Village : </span><span class='details-value' id="village"></span></div>
+        <div class='details-more-info'><span class='details-key'>Gender : </span><span  class='details-value' id="gender"></span></div>
+        <div class='details-more-info'><span class='details-key'>Age : </span><span class='details-value' id="age"></span></div>
     </div>
 
 </div>

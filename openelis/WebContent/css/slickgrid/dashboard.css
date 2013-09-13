@@ -8,11 +8,12 @@ table td{
 #tabs {
     display: block;
     margin:0px auto;
+    margin-bottom: 40px;
 }
 #inProgressListContainer-slick-grid,#completedListContainer-slick-grid,#importStatusGrid{
     border:1px solid #cecece;
 }
-#patientDetails {
+.details {
     border-top: 2px solid #F0A506;
     border-left: 1px solid #cecece;
     border-right: 1px solid #cecece;
@@ -32,18 +33,18 @@ table td{
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
 }
-#patientDetails .pd-more-info{
+.details .details-more-info{
 	float:left;
 	padding:5px 20px;
 	font-weight: bold;
 	color:#000000;
     font-family: Arial,sans-serif;
 }
-#patientDetails .pd-key{
+.details .details-key{
     color:#FFD870;
     font-size:16px;
 }
-#patientDetails .pd-value{
+.details .details-value{
     text-transform:capitalize;
     font-size:18px;
     color:#ffffff;
@@ -55,7 +56,7 @@ table td{
 #completedListContainer{
     width:932px;
 }
-#patientDetails.hide{
+.details.hide{
     display:none;
 }
 .ui-widget-content a{
@@ -86,4 +87,12 @@ table td{
     border-bottom: 10px solid transparent;  
     border-left: 10px solid green;
     margin-left:10px;
+}
+
+#importStatusGrid {
+    margin-bottom: 60px;
+}
+#uploadDetails #errorMessage {
+    text-transform:capitalize;
+    color:#ffffff;
 }
