@@ -48,7 +48,7 @@ public class TestResultPersisterTest {
         validTestResults = Arrays.asList(new CSVTestResult(testName1, "someValueForValue1"), new CSVTestResult(testName2, "someValueForTest2"));
 
         when(healthCenterDAO.getAll()).thenReturn(Arrays.asList(new HealthCenter(validSubscenterNameGAN, "Ganiyari"), new HealthCenter("SEM", "Semariya")));
-        when(testDAO.getAllTests(false)).thenReturn(Arrays.asList(createTest(testName1), createTest(testName2)));
+        when(testDAO.getAllActiveTests(false)).thenReturn(Arrays.asList(createTest(testName1), createTest(testName2)));
         when(sampleSourceDAO.getAll()).thenReturn(Arrays.<SampleSource>asList(new SampleSource() {{this.setName("sub center");}}));
 
         testResultPersister = new TestResultPersister(healthCenterDAO, sampleSourceDAO, testDAO, testResultPersisterService);
