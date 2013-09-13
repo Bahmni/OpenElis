@@ -62,7 +62,7 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
         </form>
     </div>
 
-    <div id="importStatusGrid" style="width:1200px">
+    <div id="importStatusGrid" style="width:1000px">
     </div>
 </div>
 
@@ -79,8 +79,8 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
     var gridForInImportStatus;
 
     var columns = [
-        {id: "originalFileName", name: "Name of the File", field: "originalFileName", sortable: true, width: 210},
-        {id: "type", name: "Type", field: "type", sortable: true, width: 100},
+        {id: "originalFileName", name: "Name of the File", field: "originalFileName", sortable: true, width: 145},
+        {id: "type", name: "Type", field: "type", sortable: true, width: 90},
         {id: "startTime", name: "Date of Upload", field: "startTime", sortable: true, width: 150,
                 formatter: function ( row, cell, value, columnDef, dataContext ) {
                         function padWithZeroes(aField) {
@@ -97,11 +97,11 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
                         return "";
                     }
                 },
-        {id: "status", name: "Status", field: "status", sortable: true, width: 160},
-        {id: "successfulRecords", name: "Successful", field: "successfulRecords", sortable: true, width: 90},
-        {id: "failedRecords", name: "Failed", field: "failedRecords", sortable: true, width: 100},
-        {id: "stage", name: "Stage", field: "stageName", sortable: true, width: 100},
-        {id: "errorMessage", name: "Error Message", field: "stackTrace", sortable: true, width: 200},
+        {id: "status", name: "Status", field: "status", sortable: true, width: 150},
+        {id: "successfulRecords", name: "Successful", field: "successfulRecords", sortable: true, width: 70},
+        {id: "failedRecords", name: "Failed", field: "failedRecords", sortable: true, width: 70},
+        {id: "stage", name: "Stage", field: "stageName", sortable: true, width: 80},
+        {id: "errorMessage", name: "Error Message", field: "stackTrace", sortable: true, width: 150},
         {id: "errorFileName", name: "Download", field: "errorFileName", sortable: true, width: 100,
                 formatter: function ( row, cell, value, columnDef, dataContext ) {
                       if (value) {
