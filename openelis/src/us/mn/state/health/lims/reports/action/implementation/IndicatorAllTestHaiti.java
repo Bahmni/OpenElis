@@ -33,21 +33,6 @@ import us.mn.state.health.lims.test.valueholder.Test;
 
 import java.util.*;
 
-/**
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with the
- * License. You may obtain a copy of the License at http://www.mozilla.org/MPL/
- * 
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
- * the specific language governing rights and limitations under the License.
- * 
- * The Original Code is OpenELIS code.
- * 
- * Copyright (C) CIRG, University of Washington, Seattle WA. All Rights
- * Reserved.
- * 
- */
 public abstract class IndicatorAllTestHaiti extends HaitiIndicatorReport implements IReportCreator,
 		IReportParameterSetter {
 
@@ -99,9 +84,9 @@ public abstract class IndicatorAllTestHaiti extends HaitiIndicatorReport impleme
 	}
 
 	private void setTestMapForAllTests() {
-		testNameToBucketList = new HashMap<String, TestBucket>();
-		concatSection_TestToBucketMap = new HashMap<String, TestBucket>();
-		testBucketList = new ArrayList<TestBucket>();
+		testNameToBucketList = new HashMap<>();
+		concatSection_TestToBucketMap = new HashMap<>();
+		testBucketList = new ArrayList<>();
 
 		TestDAO testDAO = new TestDAOImpl();
 		List<Test> testList = testDAO.getAllActiveTests(false);
@@ -128,7 +113,7 @@ public abstract class IndicatorAllTestHaiti extends HaitiIndicatorReport impleme
 			Test test = analysis.getTest();
 
 			if (test != null) {
-				TestBucket testBucket = null;
+				TestBucket testBucket;
 				if (USER_TEST_SECTION_ID.equals(analysis.getTestSection().getId())) {
 					String concatedName = analysis.getTestSection().getLocalizedName()
 							+ analysis.getTest().getLocalizedName();
@@ -197,7 +182,7 @@ public abstract class IndicatorAllTestHaiti extends HaitiIndicatorReport impleme
 	}
 
 	private void setTestAggregates() {
-		reportItems = new ArrayList<HaitiAggregateReportData>();
+		reportItems = new ArrayList<>();
 
 		for (TestBucket bucket : testBucketList) {
 			if ((bucket.finishedCount + bucket.notStartedCount + bucket.inProgressCount) > 0) {
