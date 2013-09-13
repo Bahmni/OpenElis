@@ -1245,6 +1245,9 @@ table{
   tr.evenRow:hover,tr.oddRow:hover,#searchResultTable tr:hover{
       background-color: #f5f5f5;  
     }
+    .last-child{
+      border-right:1px solid #cecece;
+    }
 }
 .referredout-highlight{
   background: green;
@@ -1282,6 +1285,22 @@ table.administration{
 
     &.textcontent{
       vertical-align:middle;
+    }
+  }
+}
+#addsample-list{
+  overflow:hidden;
+  clear:both;
+  li{
+    float:left;
+    width:220px;
+    span{
+      display: inline-block;
+      padding:3px 5px;
+      float:left;
+      &.checkbox-label{
+        width:180px;
+      }
     }
   }
 }

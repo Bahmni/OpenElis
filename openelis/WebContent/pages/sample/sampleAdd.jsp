@@ -323,23 +323,43 @@ function insertTestIntoTestTable( test, testTable ){
 	var id = getValueFromXmlElement( test, "id" );
 	var userBench = "true" == getValueFromXmlElement( test, "userBenchChoice" );
 	var row = testTable.rows.length;
-	var nominalRow = row - 1;
-	var newRow = testTable.insertRow(row);
-	var selectionCell = newRow.insertCell(0);
-	var nameCell = newRow.insertCell(1);
-	var selectionCell;
-	newRow.id = "availRow_" + nominalRow;
+	//var newrow= testTable.insertRow(row).incertCell(0);
 
-	selectionCell.innerHTML = getCheckBoxesHtml( nominalRow, userBench );
-	nameCell.innerHTML = getTestDisplayRowHtml( name, id, nominalRow );
+	if($jq("#addTestTable ul").length ==0){
+		$jq("#addTestTable").append("<tr><td colspan='3'><ul id='addsample-list'></td></tr>")
+		//var newrow= testTable.insertRow(row).incertCell(0);
+	}
+	var row = $jq("#addsample-list li").length;
+	//var nominalRow = row - 1;
+	var nominalRow =row;
+	var newRow=$jq("<li></li>");
+	$jq("#addsample-list").append(newRow);console.log(newRow);
+	//var newRow = testTable.insertRow(row);
+	//var selectionCell = newRow.insertCell(0);
+	//var nameCell = newRow.insertCell(1);
+	//var selectionCell;
 
-	if( userBench ){
+	var selectionCell =$jq("<span class='checkbox'></span>");
+	newRow.append(selectionCell);
+
+	var nameCell = $jq("<span class='checkbox-label'></span>");
+	newRow.append(nameCell);
+
+	var idli="availRow_" + nominalRow;
+	newRow.attr('id',idli); 
+
+	//selectionCell.innerHTML = getCheckBoxesHtml( nominalRow, userBench );
+	//nameCell.innerHTML = getTestDisplayRowHtml( name, id, nominalRow );
+selectionCell.html(getCheckBoxesHtml( nominalRow, userBench ));
+nameCell.html(getTestDisplayRowHtml( name, id, nominalRow ));
+
+	/*if( userBench ){
 		$("sectionHead").show();
 		selectionCell = newRow.insertCell(2);
 		selectionCell.id = "testSection_" + nominalRow;
 		var selectionClone = $jq("#sectionPrototype").clone().show();
 		selectionCell.innerHTML = selectionClone.html();
-	}
+	}*/
 }
 
 function insertPanelIntoPanelTable( panel, panelTable ){
@@ -646,7 +666,7 @@ function samplesHaveBeenAdded(){
 			</tr>
 		</table>
 		<div id="testSelections" class="colorFill" style="display:none;" >
-		<table width="50%" style="margin-left: 1%" id="addTables">
+		<table width="99%" style="margin-left: 1%" id="addTables">
 		<tr>
 			<td valign="top" width="30%">
 				<table width="97%" id="addPanelTable" >
@@ -673,10 +693,10 @@ function samplesHaveBeenAdded(){
 						<th width="10%">&nbsp;
 							
 						</th>
-						<th width="50%">
+						<th width="90%" class="last-child">
 							<bean:message key="sample.entry.available.test.names"/>
 						</th>
-						<th width="40%" style="display:none" id="sectionHead">
+						<th width="0%" style="display:none;" id="sectionHead">
 							Section
 						</th>
 					</tr>
