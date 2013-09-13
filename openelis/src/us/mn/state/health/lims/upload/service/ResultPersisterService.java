@@ -33,6 +33,7 @@ public class ResultPersisterService {
     private ResultLimitDAO resultLimitDAO;
     private Map<String, String> typeOfTestResultsTypeToIdMap;
     private TypeOfTestResultDAO typeOfTestResultDAO;
+    private final String NUMERIC_RESULT_TYPE;
 
     public ResultPersisterService() {
         this(new TestResultDAOImpl(), new DictionaryDAOImpl(), new ResultDAOImpl(), new ResultLimitDAOImpl(), new TypeOfTestResultDAOImpl(), new ResultsLoadUtility());
@@ -46,12 +47,15 @@ public class ResultPersisterService {
         this.typeOfTestResultDAO = typeOfTestResultDAO;
         this.resultsLoadUtility = resultsLoadUtility;
         this.typeOfTestResultsTypeToIdMap = new HashMap<>();
+        NUMERIC_RESULT_TYPE = "N";
     }
 
     protected void save(Analysis analysis, Test test, String testResultValue, Patient patient, String sysUserId) {
+        String isReportable = "N";
         Result result = new Result();
         result.setSysUserId(sysUserId);
         result.setAnalysis(analysis);
+        result.setIsReportable(isReportable);
 
         Dictionary dictionary = null;
         List<TestResult> testResults = testResultDAO.getTestResultsByTest(test.getId());
@@ -61,17 +65,16 @@ public class ResultPersisterService {
                 result.setResultType(testResultType);
                 switch (testResultType) {
                     case "N":
-                        saveNumericTestResult(result, testResult, testResultValue, test, patient);
+                        saveNumericTestResult(result, testResultValue, test, patient);
                         break;
                     case "R":
                         saveRemarkTestResult(result, testResult, testResultValue);
                         break;
                     case "D":
                         dictionary = dictionary == null ? dictionaryDAO.getDictionaryByDictEntry(testResultValue) : dictionary;
-                        if(dictionary == null){
+                        if (dictionary == null) {
                             throw new LIMSRuntimeException("Wrong entry for result for test " + test.getTestName());
-                        }
-                        else if (dictionary.getId().equals(testResult.getValue())) {
+                        } else if (dictionary.getId().equals(testResult.getValue())) {
                             saveDictionaryTestResult(result, testResult);
                         }
                         break;
@@ -80,7 +83,7 @@ public class ResultPersisterService {
         } else {
             List<ResultLimit> resultLimitsForTest = resultLimitDAO.getAllResultLimitsForTest(test.getId());
             if (!(resultLimitsForTest == null) && resultLimitsForTest.get(0).getResultTypeId().equals(getResultTypesId("N"))) {
-                saveNumericTestResult(result, null, testResultValue, test, patient);
+                saveNumericTestResult(result, testResultValue, test, patient);
             }
         }
     }
@@ -95,32 +98,31 @@ public class ResultPersisterService {
         return typeOfTestResultsTypeToIdMap.get(testResultType);
     }
 
-    private void saveDictionaryTestResult(Result result, TestResult testResult) {
-        result.setValue(testResult.getValue());
-        result.setTestResult(testResult);
-        resultDAO.insertData(result);
-    }
-
-    private void saveRemarkTestResult(Result result, TestResult testResult, String testResultValue) {
-        saveTestResultValue(result, testResult, testResultValue);
-    }
-
-    private void saveNumericTestResult(Result result, TestResult testResult, String testResultValue, Test test, Patient patient) {
-        try{
+    private void saveNumericTestResult(Result result, String testResultValue, Test test, Patient patient) {
+        try {
             Double.parseDouble(testResultValue);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new LIMSRuntimeException("Result should be numbers for test " + test.getTestName());
         }
         ResultLimit resultLimit = resultsLoadUtility.getResultLimitForTestAndPatient(test, patient);
         result.setMaxNormal(resultLimit.getHighNormal());
         result.setMinNormal(resultLimit.getLowNormal());
-        saveTestResultValue(result, testResult, testResultValue);
+        result.setValue(testResultValue);
+        result.setResultType(NUMERIC_RESULT_TYPE);
+        resultDAO.insertData(result);
     }
 
-    private void saveTestResultValue(Result result, TestResult testResult, String testResultValue) {
+    private void saveRemarkTestResult(Result result, TestResult testResult, String testResultValue) {
+        result.setResultType(testResult.getTestResultType());
         result.setValue(testResultValue);
-        if (testResult != null)
-            result.setTestResultId(testResult.getId());
+        result.setTestResultId(testResult.getId());
+        resultDAO.insertData(result);
+    }
+
+    private void saveDictionaryTestResult(Result result, TestResult testResult) {
+        result.setValue(testResult.getValue());
+        result.setTestResult(testResult);
+        result.setResultType(testResult.getTestResultType());
         resultDAO.insertData(result);
     }
 }

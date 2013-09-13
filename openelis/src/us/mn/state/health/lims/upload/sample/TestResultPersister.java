@@ -151,7 +151,7 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
             return testNames;
         }
         testNames = new ArrayList<>();
-        List<Test> tests = testDAO.getAllTests(false);
+        List<Test> tests = testDAO.getAllActiveTests(false);
         for (Test test : tests) {
             testNames.add(test.getTestName().toLowerCase());
         }

@@ -1,5 +1,6 @@
 package us.mn.state.health.lims.upload.service;
 
+import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.sampleitem.dao.SampleItemDAO;
 import us.mn.state.health.lims.sampleitem.daoimpl.SampleItemDAOImpl;
@@ -31,11 +32,16 @@ public class SampleItemPersisterService {
     }
 
     public SampleItem save(Sample sample, Test test, String sysUserId) {
-        TypeOfSample sampleType = getSampleType(test);
+        TypeOfSample sampleType;
+        try {
+            sampleType = getSampleType(test);
+        } catch (Exception e) {
+            throw new LIMSRuntimeException("Type of sample does not exist for test: " + test.getTestName(), e);
+        }
         int sortOrder = 1;
         List<SampleItem> existingSampleItems = sampleItemDAO.getSampleItemsBySampleId(sample.getId());
         SampleItem existingSampleItem = null;
-        if(existingSampleItems != null && !existingSampleItems.isEmpty()){
+        if (existingSampleItems != null && !existingSampleItems.isEmpty()) {
             sortOrder = getSortOrder(existingSampleItems);
             existingSampleItem = sampleItemExistsForSampleType(existingSampleItems, sampleType);
         }
@@ -64,7 +70,7 @@ public class SampleItemPersisterService {
 
     private SampleItem sampleItemExistsForSampleType(List<SampleItem> existingSampleItems, TypeOfSample sampleType) {
         for (SampleItem existingSampleItem : existingSampleItems) {
-            if(existingSampleItem.getTypeOfSample().getId() == sampleType.getId())
+            if (existingSampleItem.getTypeOfSample().getId() == sampleType.getId())
                 return existingSampleItem;
         }
         return null;

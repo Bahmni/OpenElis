@@ -1,5 +1,6 @@
 package us.mn.state.health.lims.upload.service;
 
+import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.patientidentity.dao.PatientIdentityDAO;
 import us.mn.state.health.lims.patientidentity.daoimpl.PatientIdentityDAOImpl;
 import us.mn.state.health.lims.patientidentity.valueholder.PatientIdentity;
@@ -27,7 +28,7 @@ public class SampleHumanPersisterService {
         this.patientIdentityDAO = patientIdentityDAO;
     }
 
-    public SampleHuman save(String sampleId, String registrationNumber, String sysUserId) {
+    public SampleHuman save(String sampleId, String registrationNumber, String sysUserId) throws Exception {
         String patientId = getPatientId(registrationNumber);
         SampleHuman sampleHuman = new SampleHuman();
         sampleHuman.setPatientId(patientId);
@@ -37,10 +38,14 @@ public class SampleHumanPersisterService {
         return sampleHuman;
     }
 
-    private String getPatientId(String patientIdentity) {
-        PatientIdentityType stIdentityType = patientIdentityTypeDAO.getNamedIdentityType("ST");
-        List<PatientIdentity> patientIdentities = patientIdentityDAO.getPatientIdentitiesByValueAndType(patientIdentity, stIdentityType.getId());
-        return patientIdentities.get(0).getPatientId();
+    private String getPatientId(String patientIdentity) throws Exception {
+        try {
+            PatientIdentityType stIdentityType = patientIdentityTypeDAO.getNamedIdentityType("ST");
+            List<PatientIdentity> patientIdentities = patientIdentityDAO.getPatientIdentitiesByValueAndType(patientIdentity, stIdentityType.getId());
+            return patientIdentities.get(0).getPatientId();
+        } catch (Exception e) {
+            throw new LIMSRuntimeException("Invalid patient identifier", e);
+        }
     }
 
 }

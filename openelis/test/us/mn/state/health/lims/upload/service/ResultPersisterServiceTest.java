@@ -31,6 +31,15 @@ public class ResultPersisterServiceTest {
     private TestResultDAO testResultDAO;
     @Mock
     private ResultsLoadUtility utility;
+    @Mock
+    private ResultDAO resultDAO;
+    @Mock
+    private DictionaryDAO dictionaryDAO;
+    @Mock
+    private ResultLimitDAO resultLimitDAO;
+    @Mock
+    private TypeOfTestResultDAO typeOfTestResultDAO;
+
     private String sysUserId;
     private String testId1;
     private String testId2;
@@ -43,14 +52,6 @@ public class ResultPersisterServiceTest {
     private ResultPersisterService resultPersisterService;
     private TypeOfTestResult typeOfTestResult1;
     private TypeOfTestResult typeOfTestResult2;
-    @Mock
-    private ResultDAO resultDAO;
-    @Mock
-    private DictionaryDAO dictionaryDAO;
-    @Mock
-    private ResultLimitDAO resultLimitDAO;
-    @Mock
-    private TypeOfTestResultDAO typeOfTestResultDAO;
 
     @Before
     public void setUp() throws Exception {
@@ -127,6 +128,7 @@ public class ResultPersisterServiceTest {
         when(testResultDAO.getTestResultsByTest(testId2)).thenReturn(Arrays.asList(dictionaryTestResult));
         when(resultLimitDAO.getAllResultLimitsForTest(testId2)).thenReturn(null);
         when(dictionaryDAO.getDictionaryByDictEntry(dictionaryResultValue)).thenReturn(dictionary);
+
         resultPersisterService.save(analysis, test2, dictionaryResultValue, patient, sysUserId);
 
         ArgumentCaptor<Result> captor = ArgumentCaptor.forClass(Result.class);
