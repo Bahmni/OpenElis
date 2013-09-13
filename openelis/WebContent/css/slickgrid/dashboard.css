@@ -61,7 +61,7 @@ table td{
 .ui-widget-content a{
     color:#14a4c8;
 }
-#inProgressListContainer a:hover{
+#inProgressListContainer a:hover, #completedListContainer a:hover{
     text-decoration: underline;
 }
 #todayStat,#upload{
