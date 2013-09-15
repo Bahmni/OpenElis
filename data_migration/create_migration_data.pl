@@ -43,12 +43,7 @@ sub create_migration_scripts_for_line
 	my $panel_name = $workbook->[1]{"C" .$line};
 	my $test_name = $workbook->[1]{"D" .$line};
 	my $unit_measure = $workbook->[1]{"F" .$line};
-
-	my $lower_limit_normal = $workbook->[1]{"G" .$line};
-	my $upper_limit_normal = $workbook->[1]{"H" .$line};
-
-	my $lower_limit_valid = $workbook->[1]{"J" .$line};
-	my $upper_limit_valid = $workbook->[1]{"K" .$line};
+	my $result_type = $workbook->[1]{"G" .$line};
 
 
 	my $test_section = $select . "insert_test_section('" . $test_section_name . "'); \n";
@@ -72,18 +67,31 @@ sub create_migration_scripts_for_line
 	my $relation_test_section_test = $select . "create_relationship_test_section_test('" . $test_section_name . "','" . $test_name . "'); \n";
 	print $file $relation_test_section_test;
 
-	if ($lower_limit_normal ne '' && $upper_limit_normal ne '') 
-	{
-		my $test_limits = $select . "insert_result_limit_normal_range('" . $test_name . "'," . $lower_limit_normal . "," . $upper_limit_normal ."); \n";
-		print $file $test_limits;
+	if ($result_type eq 'Numeric') {
+		my $lower_limit_normal = $workbook->[1]{"H" .$line};
+		my $upper_limit_normal = $workbook->[1]{"I" .$line};
+
+		my $lower_limit_valid = $workbook->[1]{"J" .$line};
+		my $upper_limit_valid = $workbook->[1]{"K" .$line};
+
+		if ($lower_limit_normal ne '' && $upper_limit_normal ne '') {
+			my $test_limits = $select . "insert_result_limit_normal_range('" . $test_name . "'," . $lower_limit_normal . "," . $upper_limit_normal ."); \n";
+			print $file $test_limits;
+		}
+
+		if ($lower_limit_valid ne '' && $upper_limit_valid ne '') {
+			my $test_valid_limits = $select . "insert_result_limit_valid_range('" . $test_name . "'," . $lower_limit_valid . "," . $upper_limit_valid ."); \n";
+			print $file $test_valid_limits;
+		}
+
+	} elsif	($result_type eq 'Remark') {
+		my $test_result = $select . "add_test_result_type('" . $test_name . "','R'); \n";
+		print $file $test_result;
+	} elsif ($result_type eq 'Drop-down') {
+		my $possible_results = $workbook->[1]{"H" .$line};
+		my @values = split(';', $possible_results);
+		foreach my $val (@values) {
+			print $file $select . "add_test_result_type('" . $test_name . "','D', '" . $val . "'); \n";
+		}
 	}
-
-
-	if ($lower_limit_valid ne '' && $upper_limit_valid ne '') 
-    {
-		my $test_valid_limits = $select . "insert_result_limit_valid_range('" . $test_name . "'," . $lower_limit_valid . "," . $upper_limit_valid ."); \n";
-		print $file $test_valid_limits;
-	}		
-
 }
-

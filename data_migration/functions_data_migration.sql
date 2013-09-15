@@ -365,3 +365,74 @@ $$
 LANGUAGE plpgsql;
 
 
+CREATE OR REPLACE FUNCTION add_test_result_type(test_name TEXT, test_result_type TEXT) RETURNS VOID AS
+$$
+DECLARE
+    test_id_value INT;
+BEGIN
+
+    BEGIN
+        SELECT id INTO STRICT test_id_value FROM clinlims.test WHERE name = test_name or description = test_name;
+        EXCEPTION
+                    WHEN NO_DATA_FOUND THEN
+                    RAISE EXCEPTION 'test % not found', test_name;
+                    WHEN TOO_MANY_ROWS THEN
+                    RAISE EXCEPTION 'test % not unique', test_name;
+    END;
+
+    BEGIN
+        SELECT id FROM clinlims.test_result WHERE test_id = test_id_value;
+        IF NOT FOUND THEN
+            INSERT INTO clinlims.test_result(id, test_id, tst_rslt_type)
+            VALUES (nextval('clinlims.test_result_seq'), test_id_value, test_result_type);
+        END IF;
+    END;
+END
+$$
+LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION add_test_result_type(test_name TEXT, test_result_type TEXT, test_result_value TEXT) RETURNS VOID AS
+$$
+DECLARE
+    test_id_value INT;
+    dictionary_id_value INT;
+    dictionary_categ_id_value INT;
+BEGIN
+
+    BEGIN
+        SELECT id INTO STRICT test_id_value FROM clinlims.test WHERE name = test_name or description = test_name;
+        EXCEPTION
+                    WHEN NO_DATA_FOUND THEN
+                    RAISE EXCEPTION 'test % not found', test_name;
+                    WHEN TOO_MANY_ROWS THEN
+                    RAISE EXCEPTION 'test % not unique', test_name;
+    END;
+
+    BEGIN
+        SELECT id INTO STRICT dictionary_categ_id_value FROM clinlims.dictionary_category WHERE name = 'Bahmni Lab';
+        EXCEPTION
+                    WHEN NO_DATA_FOUND THEN
+                    RAISE EXCEPTION 'JSS Lab dictionary category';
+                    WHEN TOO_MANY_ROWS THEN
+                    RAISE EXCEPTION 'JSS Lab dictionary category is not unique';
+    END;
+
+    BEGIN
+        SELECT id INTO STRICT dictionary_id_value FROM clinlims.dictionary WHERE dict_entry = test_result_value and dictionary_category_id = dictionary_categ_id_value;
+        IF NOT FOUND THEN
+            INSERT INTO clinlims.dictionary(id, dict_entry, dictionary_category_id, lastupdated)
+            VALUES (nextval('dictionary_seq'), test_result_value, dictionary_categ_id_value, localtimestamp);
+        END IF;
+    END;
+
+    BEGIN
+        SELECT id FROM clinlims.test_result WHERE test_id = test_id_value and tst_rslt_type = test_result_type and value = currval('dictionary_seq');
+        IF NOT FOUND THEN
+            INSERT INTO clinlims.test_result(id, test_id, tst_rslt_type, value)
+            VALUES (nextval('clinlims.test_result_seq'), test_id_value, test_result_type, currval('dictionary_seq'));
+        END IF;
+    END;
+END
+$$
+LANGUAGE plpgsql;

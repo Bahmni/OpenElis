@@ -825,4 +825,13 @@
                     m.name = 'ResultValidation:All Sections'
         </sql>
     </changeSet>
+    <changeSet id="54" author="tw" context="bahmni">
+        <comment>Add Bahmni Lab Dictionary category</comment>
+        <insert schemaName="clinlims" tableName="dictionary_category">
+            <column name="id" valueNumeric=" nextVal( 'dictionary_category_seq' ) "/>
+            <column name="name" value="Bahmni Lab"/>
+            <column name="description" value="Bahmni Lab"/>
+            <column name="lastupdated" valueDate=" now() "/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>
