@@ -24,6 +24,7 @@
 
 <bean:define id="testSection"	value='<%=request.getParameter("type") == null || request.getParameter("type").isEmpty() ? "" : request.getParameter("type")%>' />
 <bean:define id="testName"	value='<%=request.getParameter("test") == null || request.getParameter("test").isEmpty() ? "" : request.getParameter("test")%>' />
+<bean:define id="patientId"	value='<%=request.getParameter("patientId") == null || request.getParameter("patientId").isEmpty() ? "" : request.getParameter("patientId")%>' />
 
 <bean:define id="results" name="<%=formName%>" property="resultList" />
 <bean:define id="pagingSearch" name='<%=formName%>' property="paging.searchTermToPage" type="List<IdValuePair>" /> 
@@ -253,6 +254,10 @@ function /*boolean*/ handleEnterEvent(){
 }
 
 </script>
+<logic:notEmpty name="patientId">
+    <h3><span>PatientID: </span><span><%=patientId%></span></h3>
+</logic:notEmpty>
+
 <div class="btn-block">
 
 <logic:notEqual name="resultCount" value="0">
