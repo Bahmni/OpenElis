@@ -369,6 +369,7 @@ CREATE OR REPLACE FUNCTION add_test_result_type(test_name TEXT, test_result_type
 $$
 DECLARE
     test_id_value INT;
+    test_result_id_value INT;
 BEGIN
 
     BEGIN
@@ -381,7 +382,7 @@ BEGIN
     END;
 
     BEGIN
-        SELECT id FROM clinlims.test_result WHERE test_id = test_id_value;
+        SELECT id INTO test_result_id_value FROM clinlims.test_result WHERE test_id = test_id_value;
         IF NOT FOUND THEN
             INSERT INTO clinlims.test_result(id, test_id, tst_rslt_type)
             VALUES (nextval('clinlims.test_result_seq'), test_id_value, test_result_type);
@@ -396,6 +397,7 @@ CREATE OR REPLACE FUNCTION add_test_result_type(test_name TEXT, test_result_type
 $$
 DECLARE
     test_id_value INT;
+    test_result_id_value INT;
     dictionary_id_value INT;
     dictionary_categ_id_value INT;
 BEGIN
@@ -419,7 +421,7 @@ BEGIN
     END;
 
     BEGIN
-        SELECT id INTO STRICT dictionary_id_value FROM clinlims.dictionary WHERE dict_entry = test_result_value and dictionary_category_id = dictionary_categ_id_value;
+        SELECT id INTO dictionary_id_value FROM clinlims.dictionary WHERE dict_entry = test_result_value and dictionary_category_id = dictionary_categ_id_value;
         IF NOT FOUND THEN
             INSERT INTO clinlims.dictionary(id, dict_entry, dictionary_category_id, lastupdated)
             VALUES (nextval('dictionary_seq'), test_result_value, dictionary_categ_id_value, localtimestamp);
@@ -427,7 +429,7 @@ BEGIN
     END;
 
     BEGIN
-        SELECT id FROM clinlims.test_result WHERE test_id = test_id_value and tst_rslt_type = test_result_type and value = currval('dictionary_seq');
+        SELECT id INTO test_result_id_value FROM clinlims.test_result WHERE test_id = test_id_value and tst_rslt_type = test_result_type and value = cast(currval('dictionary_seq') as text);
         IF NOT FOUND THEN
             INSERT INTO clinlims.test_result(id, test_id, tst_rslt_type, value)
             VALUES (nextval('clinlims.test_result_seq'), test_id_value, test_result_type, currval('dictionary_seq'));
