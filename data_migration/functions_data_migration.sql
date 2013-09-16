@@ -429,10 +429,11 @@ BEGIN
     END;
 
     BEGIN
-        SELECT id INTO test_result_id_value FROM clinlims.test_result WHERE test_id = test_id_value and tst_rslt_type = test_result_type and value = cast(currval('dictionary_seq') as text);
+        SELECT id INTO STRICT dictionary_id_value FROM clinlims.dictionary WHERE dict_entry = test_result_value and dictionary_category_id = dictionary_categ_id_value;
+        SELECT id INTO test_result_id_value FROM clinlims.test_result WHERE test_id = test_id_value and tst_rslt_type = test_result_type and value = cast(dictionary_id_value as text);
         IF NOT FOUND THEN
             INSERT INTO clinlims.test_result(id, test_id, tst_rslt_type, value)
-            VALUES (nextval('clinlims.test_result_seq'), test_id_value, test_result_type, currval('dictionary_seq'));
+            VALUES (nextval('clinlims.test_result_seq'), test_id_value, test_result_type, dictionary_id_value);
         END IF;
     END;
 END
