@@ -359,37 +359,6 @@
             </band>
 		</groupFooter>
 	</group>
-	<group name="section name" isReprintHeaderOnEachPage="true">
-		<groupExpression><![CDATA[$F{testSection}]]></groupExpression>
-		<groupHeader>
-			<band height="15" splitType="Prevent">
-				<frame>
-					<reportElement mode="Opaque" x="0" y="0" width="465" height="15" backcolor="#EAEAEA"/>
-					<box>
-						<pen lineWidth="0.5"/>
-						<topPen lineWidth="0.5"/>
-						<leftPen lineWidth="0.5"/>
-						<bottomPen lineWidth="0.5"/>
-						<rightPen lineWidth="0.5"/>
-					</box>
-				</frame>
-				<textField>
-					<reportElement mode="Opaque" x="2" y="1" width="461" height="14" backcolor="#EAEAEA"/>
-					<box>
-						<pen lineWidth="0.0"/>
-						<topPen lineWidth="0.0"/>
-						<leftPen lineWidth="0.0"/>
-						<bottomPen lineWidth="0.0"/>
-						<rightPen lineWidth="0.0"/>
-					</box>
-					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font isBold="true"/>
-					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{testSection}]]></textFieldExpression>
-				</textField>
-			</band>
-		</groupHeader>
-	</group>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
