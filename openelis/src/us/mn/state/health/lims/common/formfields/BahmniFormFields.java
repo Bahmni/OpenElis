@@ -55,6 +55,7 @@ public class BahmniFormFields implements IFormFieldsForImplementation {
         settings.put(Field.MothersName, Boolean.FALSE);
         settings.put(Field.SupportPrimaryRelative, Boolean.TRUE);
         settings.put(Field.StNumber, Boolean.TRUE);
+        settings.put(Field.CollectionDate, Boolean.FALSE);
 		return settings;
 	}
 
