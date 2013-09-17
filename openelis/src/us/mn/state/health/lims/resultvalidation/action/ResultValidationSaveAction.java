@@ -90,8 +90,9 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 			throws Exception {
 
 		String forward = FWD_SUCCESS;
+        String referer = request.getParameter("referer");
 
-		request.getSession().setAttribute(SAVE_DISABLED, "true");
+        request.getSession().setAttribute(SAVE_DISABLED, "true");
 
 		BaseActionForm dynaForm = (BaseActionForm) form;
 
@@ -152,6 +153,10 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 			tx.rollback();
             throw lre;
 		}
+
+        if(referer != null && referer.matches("LabDashboard")) {
+            return mapping.findForward(FWD_DASHBOARD);
+        }
 
 		if (GenericValidator.isBlankOrNull(testSectionName)) {
             Map<String, String> params = new HashMap<>();

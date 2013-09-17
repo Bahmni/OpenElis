@@ -25,6 +25,7 @@
 <bean:define id="testSection"	value='<%=request.getParameter("type") == null || request.getParameter("type").isEmpty() ? "" : request.getParameter("type")%>' />
 <bean:define id="testName"	value='<%=request.getParameter("test") == null || request.getParameter("test").isEmpty() ? "" : request.getParameter("test")%>' />
 <bean:define id="patientId"	value='<%=request.getParameter("patientId") == null || request.getParameter("patientId").isEmpty() ? "" : request.getParameter("patientId")%>' />
+<bean:define id="referer"	value='<%=request.getParameter("referer") == null || request.getParameter("referer").isEmpty() ? "" : request.getParameter("referer")%>' />
 
 <bean:define id="results" name="<%=formName%>" property="resultList" />
 <bean:define id="pagingSearch" name='<%=formName%>' property="paging.searchTermToPage" type="List<IdValuePair>" /> 
@@ -143,7 +144,7 @@ function savePage() {
 
   window.onbeforeunload = null; // Added to flag that formWarning alert isn't needed.
 	var form = window.document.forms[0];
-	form.action = "ResultValidationSave.do";
+	form.action = "ResultValidationSave.do?referer=<%=referer%>";
 	form.submit();
 }
 
@@ -462,7 +463,6 @@ function /*boolean*/ handleEnterEvent(){
 								  styleId='<%="results_" + index %>'
 								  onkeyup='value = value.substr(0, 200); markUpdated();'
 								  />
-						<br/>200 char max
 					</logic:equal>
 					<% if(resultList.isDisplayResultAsLog()){ %>
 						<br/>

@@ -77,6 +77,7 @@ public interface IActionConstants {
 	public static final String FWD_PREVIOUS = "previous";
 	public static final String FWD_SUCCESS_HUMAN = "successHuman";
 	public static final String FWD_SUCCESS_ANIMAL = "successAnimal";
+	public static final String FWD_DASHBOARD = "forwardDashboard";
 	//bugzilla 2566
 	public static final String FWD_SUCCESS_NEWBORN = "successNewborn";
 	public static final String FWD_FAIL_HUMAN = "failHuman";

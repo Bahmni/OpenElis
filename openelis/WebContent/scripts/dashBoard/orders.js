@@ -39,9 +39,9 @@ function generateLinkForCompletedOrder(order){
 }
 
 function generateLinkForInProgressOrder(order){
-    var enterResultLink = "<a href='AccessionResults.do?accessionNumber=" + order.accessionNumber + "'>Result</a>";
+    var enterResultLink = "<a href='AccessionResults.do?accessionNumber=" + order.accessionNumber + "&referer=LabDashboard'>Result</a>";
     //TODO: &type= is required in the url because of a bug I can't find the source of. The bug causes people without
-    var validationLink = "<a href='ResultValidationForAccessionNumber.do?accessionNumber=" + order.accessionNumber + "&patientId=" + order.stNumber + "&type=&test='>Validate</a>";
+    var validationLink = "<a href='ResultValidationForAccessionNumber.do?accessionNumber=" + order.accessionNumber + "&patientId=" + order.stNumber + "&referer=LabDashboard&type=&test='>Validate</a>";
     return enterResultLink + " | " + validationLink;
 }
 

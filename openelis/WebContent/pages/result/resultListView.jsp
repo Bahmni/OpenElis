@@ -36,7 +36,7 @@
 <bean:define id="pagingSearch" name='<%=formName%>' property="paging.searchTermToPage"  />
 
 <bean:define id="logbookType" name="<%=formName%>" property="logbookType" />
-
+<bean:define id="referer" value='<%= request.getParameter("referer") == null || request.getParameter("referer").isEmpty() ? "" : request.getParameter("referer")%>' />
 
 <%!
 	List<String> hivKits;
@@ -276,7 +276,7 @@ function  /*void*/ savePage()
 {
 	window.onbeforeunload = null; // Added to flag that formWarning alert isn't needed.
 	var form = window.document.forms[0];
-	form.action = '<%=formName%>'.sub('Form','') + "Update.do"  + '<%= logbookType == "" ? "" : "?type=" + logbookType  %>';
+	form.action = '<%=formName%>'.sub('Form','') + "Update.do?referer=" + '<%= referer %>'  + '<%= logbookType == "" ? "" : "&type=" + logbookType  %>';
 	form.submit();
 }
 

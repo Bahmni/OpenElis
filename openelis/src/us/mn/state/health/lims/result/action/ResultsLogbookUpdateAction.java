@@ -133,6 +133,7 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
             throws Exception {
 
         String forward = FWD_SUCCESS;
+        String referer = request.getParameter("referer");
         List<IResultUpdate> updaters = ResultUpdateRegister.getRegisteredUpdaters();
 
         BaseActionForm dynaForm = (BaseActionForm) form;
@@ -278,6 +279,10 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
         }
 
         setSuccessFlag(request, forward);
+
+        if(referer != null && referer.matches("LabDashboard")) {
+            return mapping.findForward(FWD_DASHBOARD);
+        }
 
         if (GenericValidator.isBlankOrNull(dynaForm.getString("logbookType"))) {
             return mapping.findForward(forward);
