@@ -730,6 +730,11 @@ function noenter() {
 
 //bugzilla # 1400 
 function focusOnFirstInputField() {
+  var autofocusInput = jQuery("input[autofocus]");
+  if(autofocusInput.length > 0) {
+    autofocusInput.get(0).focus();
+    return;
+  }
 
   var bFound = false;
 

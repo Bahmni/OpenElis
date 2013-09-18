@@ -338,7 +338,7 @@ function /*void*/ dirtySearchInfo(e){
 
 	<% if(supportSTNumber){ %>
 	<td class="searchST">
-		<input name="searchST" size="15" value="" id="searchSTID" class="text" type="text" onkeyup="dirtySearchInfo( event )">
+		<input name="searchST" size="15" value="" id="searchSTID" class="text" type="text" onkeyup="dirtySearchInfo( event )" autofocus="autofocus">
 	</td>
 	<% } %>
 	<% if(supportSubjectNumber){ %>
