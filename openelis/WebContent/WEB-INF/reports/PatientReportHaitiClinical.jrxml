@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PatientReport" pageWidth="505" pageHeight="650" whenNoDataType="AllSectionsNoDetail" columnWidth="465" leftMargin="20" rightMargin="20" topMargin="10" bottomMargin="10" whenResourceMissingType="Empty">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PatientReport" pageWidth="485" pageHeight="650" whenNoDataType="AllSectionsNoDetail" columnWidth="465" leftMargin="10" rightMargin="10" topMargin="10" bottomMargin="10" whenResourceMissingType="Empty">
 	<property name="ireport.scriptlethandling" value="0"/>
 	<property name="ireport.encoding" value="UTF-8"/>
 	<property name="ireport.zoom" value="1.0"/>
@@ -63,9 +63,9 @@
 	<group name="Accession Number" isStartNewPage="true" isResetPageNumber="true"  footerPosition="StackAtBottom">
 		<groupExpression><![CDATA[$F{accessionNumber}]]></groupExpression>
 		<groupHeader>
-			<band height="160" splitType="Prevent">
+			<band height="130" splitType="Prevent">
 			<subreport>
-				<reportElement x="0" y="0" width="465" height="80" printWhenGroupChanges="person"/>
+				<reportElement x="0" y="0" width="465" height="50" printWhenGroupChanges="person"/>
 				<subreportParameter name="labName2">
 					<subreportParameterExpression><![CDATA[$P{additionalSiteInfo}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -94,7 +94,7 @@
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + $P{headerName}]]></subreportExpression>
 			</subreport>
 				<staticText>
-					<reportElement mode="Opaque" x="0" y="84" width="100" height="14" backcolor="#CCCCCC"/>
+					<reportElement mode="Opaque" x="0" y="54" width="100" height="14" backcolor="#CCCCCC"/>
 					<box leftPadding="4">
 						<pen lineWidth="0.5"/>
 						<topPen lineWidth="0.5"/>
@@ -106,7 +106,7 @@
 					<text><![CDATA[Name]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement x="100" y="84" width="220" height="14"/>
+					<reportElement x="100" y="54" width="220" height="14"/>
 					<box leftPadding="4">
 						<pen lineWidth="0.5"/>
 						<topPen lineWidth="0.5"/>
@@ -118,7 +118,7 @@
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{firstName} + " " + $F{lastName}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement mode="Opaque" x="320" y="84" width="50" height="14" backcolor="#CCCCCC"/>
+					<reportElement mode="Opaque" x="320" y="54" width="50" height="14" backcolor="#CCCCCC"/>
 					<box>
 						<pen lineWidth="0.5"/>
 						<topPen lineWidth="0.5"/>
@@ -130,7 +130,7 @@
 					<text><![CDATA[  Age]]></text>
 				</staticText>
 				<textField pattern="" isBlankWhenNull="true">
-					<reportElement x="370" y="84" width="30" height="14"/>
+					<reportElement x="370" y="54" width="30" height="14"/>
 					<box leftPadding="4">
 						<pen lineWidth="0.5"/>
 						<topPen lineWidth="0.5"/>
@@ -142,7 +142,7 @@
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{age}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement mode="Opaque" x="400" y="84" width="40" height="14" backcolor="#CCCCCC"/>
+					<reportElement mode="Opaque" x="400" y="54" width="40" height="14" backcolor="#CCCCCC"/>
 					<box>
 						<pen lineWidth="0.5"/>
 						<topPen lineWidth="0.5"/>
@@ -154,7 +154,7 @@
 					<text><![CDATA[ Sex]]></text>
 				</staticText>
 				<textField pattern="" isBlankWhenNull="true">
-					<reportElement x="440" y="84" width="25" height="14">
+					<reportElement x="440" y="54" width="25" height="14">
 						<printWhenExpression><![CDATA[!"0".equals($F{gender})]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="4">
@@ -168,7 +168,7 @@
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{gender}]]></textFieldExpression>
 				</textField>
                 <staticText>
-                    <reportElement mode="Opaque" x="0" y="98" width="100" height="14" backcolor="#CCCCCC"></reportElement>
+                    <reportElement mode="Opaque" x="0" y="68" width="100" height="14" backcolor="#CCCCCC"></reportElement>
                     <box>
                         <pen lineWidth="0.5"/>
                         <topPen lineWidth="0.5"/>
@@ -180,7 +180,7 @@
                     <text><![CDATA[ Patient ID]]></text>
                 </staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement x="100" y="98" width="80" height="14"></reportElement>
+					<reportElement x="100" y="68" width="80" height="14"></reportElement>
 					<box leftPadding="4">
 						<pen lineWidth="0.5"/>
 						<topPen lineWidth="0.5"/>
@@ -192,7 +192,7 @@
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{stNumber}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement mode="Opaque" x="180" y="98" width="130" height="14" backcolor="#CCCCCC"></reportElement>
+					<reportElement mode="Opaque" x="180" y="68" width="130" height="14" backcolor="#CCCCCC"></reportElement>
 					<box leftPadding="4">
 						<pen lineWidth="0.5"/>
 						<topPen lineWidth="0.5"/>
@@ -204,7 +204,7 @@
 					<text><![CDATA[Father/Husband's Name]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement x="310" y="98" width="155" height="14"></reportElement>
+					<reportElement x="310" y="68" width="155" height="14"></reportElement>
 					<box leftPadding="4">
 						<pen lineWidth="0.5"/>
 						<topPen lineWidth="0.5"/>
@@ -216,7 +216,7 @@
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{primaryRelative}]]></textFieldExpression>
 				</textField>
                 <staticText>
-					<reportElement mode="Opaque" x="0" y="112" width="100" height="14" backcolor="#CCCCCC"/>
+					<reportElement mode="Opaque" x="0" y="82" width="100" height="14" backcolor="#CCCCCC"/>
 					<box leftPadding="4">
 						<pen lineWidth="0.5"/>
 						<topPen lineWidth="0.5"/>
@@ -228,7 +228,7 @@
 					<text><![CDATA[Requesting Doctor]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-                    <reportElement x="100" y="112" width="365" height="14"/>
+                    <reportElement x="100" y="82" width="365" height="14"/>
                     <box leftPadding="4">
                         <pen lineWidth="0.5"/>
                         <topPen lineWidth="0.5"/>
@@ -240,7 +240,7 @@
                     <textFieldExpression class="java.lang.String"><![CDATA[$F{contactInfo}]]></textFieldExpression>
                 </textField>
 				<textField pattern="dd/MM/yyyy" isBlankWhenNull="false">
-					<reportElement x="0" y="132" width="200" height="14"/>
+					<reportElement x="0" y="102" width="200" height="14"/>
 					<box leftPadding="0">
 						<pen lineWidth="0.0"/>
 						<topPen lineWidth="0.0"/>
@@ -252,7 +252,7 @@
 					<textFieldExpression class="java.lang.String"><![CDATA["Order Date: " + $F{orderDate}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement x="265" y="132" width="200" height="14"/>
+					<reportElement x="265" y="102" width="200" height="14"/>
 					<box leftPadding="4">
 						<pen lineWidth="0.0"/>
 						<topPen lineWidth="0.0"/>
@@ -264,7 +264,7 @@
 					<textFieldExpression class="java.lang.String"><![CDATA["Accession Number: " + $F{accessionNumber}]]></textFieldExpression>
 				</textField>
             <staticText>
-                <reportElement mode="Opaque" x="0" y="146" width="163" height="14" backcolor="#CCCCCC"/>
+                <reportElement mode="Opaque" x="0" y="116" width="163" height="14" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -276,7 +276,7 @@
                 <text><![CDATA[Test]]></text>
             </staticText>
             <staticText>
-                <reportElement mode="Opaque" x="163" y="146" width="63" height="14" backcolor="#CCCCCC"/>
+                <reportElement mode="Opaque" x="163" y="116" width="63" height="14" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -288,7 +288,7 @@
                 <text><![CDATA[Result]]></text>
             </staticText>
             <staticText>
-                <reportElement mode="Opaque" x="226" y="146" width="44" height="14" backcolor="#CCCCCC"/>
+                <reportElement mode="Opaque" x="226" y="116" width="44" height="14" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -300,7 +300,7 @@
                 <text><![CDATA[Alert]]></text>
             </staticText>
             <staticText>
-                <reportElement mode="Opaque" x="270" y="146" width="128" height="14" backcolor="#CCCCCC"/>
+                <reportElement mode="Opaque" x="270" y="116" width="128" height="14" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -312,7 +312,7 @@
                 <text><![CDATA[Valid Range]]></text>
             </staticText>
             <staticText>
-                <reportElement mode="Opaque" x="398" y="146" width="67" height="14" backcolor="#CCCCCC"/>
+                <reportElement mode="Opaque" x="398" y="116" width="67" height="14" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -364,10 +364,9 @@
 	</background>
 	<pageHeader>
 			<band height="33" splitType="Prevent">
+			    <printWhenExpression><![CDATA[new Boolean($V{PAGE_NUMBER}.intValue() != 1)]]></printWhenExpression>
 				<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
-					<reportElement x="0" y="5" width="200" height="14">
-                        <printWhenExpression><![CDATA[new Boolean($V{PAGE_NUMBER}.intValue() != 1)]]></printWhenExpression>
-					</reportElement>
+					<reportElement x="0" y="5" width="200" height="14"/>
 					<box leftPadding="0">
 						<pen lineWidth="0.0"/>
 						<topPen lineWidth="0.0"/>
@@ -379,9 +378,7 @@
 					<textFieldExpression class="java.lang.String"><![CDATA["Patient ID: " + $F{stNumber}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement x="265" y="5" width="200" height="14">
-                        <printWhenExpression><![CDATA[new Boolean($V{PAGE_NUMBER}.intValue() != 1)]]></printWhenExpression>
-                    </reportElement>
+					<reportElement x="265" y="5" width="200" height="14"/>
 					<box leftPadding="4">
 						<pen lineWidth="0.0"/>
 						<topPen lineWidth="0.0"/>
@@ -393,9 +390,7 @@
 					<textFieldExpression class="java.lang.String"><![CDATA["Accession Number: " + $F{accessionNumber}]]></textFieldExpression>
 				</textField>
             <staticText>
-                <reportElement mode="Opaque" x="0" y="19" width="163" height="14" backcolor="#CCCCCC">
-                    <printWhenExpression><![CDATA[new Boolean($V{PAGE_NUMBER}.intValue() != 1)]]></printWhenExpression>
-                </reportElement>
+                <reportElement mode="Opaque" x="0" y="19" width="163" height="14" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -407,9 +402,7 @@
                 <text><![CDATA[Test]]></text>
             </staticText>
             <staticText>
-                <reportElement mode="Opaque" x="163" y="19" width="63" height="14" backcolor="#CCCCCC">
-                    <printWhenExpression><![CDATA[new Boolean($V{PAGE_NUMBER}.intValue() != 1)]]></printWhenExpression>
-                </reportElement>
+                <reportElement mode="Opaque" x="163" y="19" width="63" height="14" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -421,9 +414,7 @@
                 <text><![CDATA[Result]]></text>
             </staticText>
             <staticText>
-                <reportElement mode="Opaque" x="226" y="19" width="44" height="14" backcolor="#CCCCCC">
-                    <printWhenExpression><![CDATA[new Boolean($V{PAGE_NUMBER}.intValue() != 1)]]></printWhenExpression>
-                </reportElement>
+                <reportElement mode="Opaque" x="226" y="19" width="44" height="14" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -435,9 +426,7 @@
                 <text><![CDATA[Alert]]></text>
             </staticText>
             <staticText>
-                <reportElement mode="Opaque" x="270" y="19" width="128" height="14" backcolor="#CCCCCC">
-                    <printWhenExpression><![CDATA[new Boolean($V{PAGE_NUMBER}.intValue() != 1)]]></printWhenExpression>
-                </reportElement>
+                <reportElement mode="Opaque" x="270" y="19" width="128" height="14" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -449,9 +438,7 @@
                 <text><![CDATA[Valid Range]]></text>
             </staticText>
             <staticText>
-                <reportElement mode="Opaque" x="398" y="19" width="67" height="14" backcolor="#CCCCCC">
-                    <printWhenExpression><![CDATA[new Boolean($V{PAGE_NUMBER}.intValue() != 1)]]></printWhenExpression>
-                </reportElement>
+                <reportElement mode="Opaque" x="398" y="19" width="67" height="14" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>

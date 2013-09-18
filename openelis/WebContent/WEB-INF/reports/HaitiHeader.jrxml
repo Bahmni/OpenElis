@@ -42,37 +42,39 @@
 		<band splitType="Stretch"/>
 	</columnHeader>
 	<detail>
-		<band height="80" splitType="Stretch">
+		<band height="50" splitType="Stretch">
 			<image>
-				<reportElement x="0" y="0" width="80" height="80"/>
+				<reportElement x="0" y="0" width="80" height="50"/>
 				<imageExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "images/JSSLogo.png"]]></imageExpression>
 			</image>
 			<textField isBlankWhenNull="true">
-				<reportElement x="0" y="0" width="465" height="20"></reportElement>
+				<reportElement x="0" y="0" width="465" height="12"></reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="12" isBold="true"/>
+					<font size="10" isBold="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{labName1}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="0" y="20" width="465" height="20"></reportElement>
+				<reportElement positionType="Float" x="0" y="12" width="465" height="12"></reportElement>
 				<textElement textAlignment="Center">
-					<font size="16" isBold="true"/>
+					<font size="12" isBold="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{reportTitle}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="40" width="465" height="20"/>
+				<reportElement x="0" y="26" width="465" height="12"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="12" isBold="true"/>
+					<font size="10" isBold="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{completeFlag}]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report" pattern="dd/MM/yyyy" isBlankWhenNull="true">
-				<reportElement key="textField" x="0" y="60" width="465" height="20">
+				<reportElement key="textField" x="0" y="38" width="465" height="12">
 					<printWhenExpression><![CDATA[$P{orderFinishDate} != null]]></printWhenExpression>
 				</reportElement>
-				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA["Completion Date: " + $P{orderFinishDate}]]></textFieldExpression>
 			</textField>
 		</band>
