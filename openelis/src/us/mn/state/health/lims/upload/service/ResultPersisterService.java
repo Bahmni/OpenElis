@@ -82,7 +82,7 @@ public class ResultPersisterService {
             }
         } else {
             List<ResultLimit> resultLimitsForTest = resultLimitDAO.getAllResultLimitsForTest(test.getId());
-            if (!(resultLimitsForTest == null) && resultLimitsForTest.get(0).getResultTypeId().equals(getResultTypesId("N"))) {
+            if (!(resultLimitsForTest.isEmpty()) && resultLimitsForTest.get(0).getResultTypeId().equals(getResultTypesId("N"))) {
                 saveNumericTestResult(result, testResultValue, test, patient);
             }
         }
