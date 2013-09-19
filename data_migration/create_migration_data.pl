@@ -52,11 +52,13 @@ sub create_migration_scripts_for_line
 	my $sample_type = $select . "insert_sample_type('" . $sample_type_name . "'); \n";
 	print $file $sample_type;
 
- 	my $relation_panel_sampletype = $select . "create_relationship_panel_sampletype('" . $panel_name . "','" . $sample_type_name . "'); \n";
- 	print $file $relation_panel_sampletype;
+	if($panel_name ne '') {
+	 	my $relation_panel_sampletype = $select . "create_relationship_panel_sampletype('" . $panel_name . "','" . $sample_type_name . "'); \n";
+	 	print $file $relation_panel_sampletype;
 
- 	my $relation_panel_test = $select . "create_relationship_panel_test('" . $panel_name . "','" . $test_name . "'); \n"; 
- 	print $file $relation_panel_test;
+	 	my $relation_panel_test = $select . "create_relationship_panel_test('" . $panel_name . "','" . $test_name . "'); \n"; 
+	 	print $file $relation_panel_test;
+	}
 
  	my $relation_sample_test = $select . "create_relationship_sample_test('" . $sample_type_name . "','" . $test_name . "'); \n";
  	print $file $relation_sample_test;
