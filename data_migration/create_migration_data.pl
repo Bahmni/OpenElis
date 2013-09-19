@@ -22,6 +22,11 @@ for (my $row = 2 ; $row<= $row_max; $row++)
 }
 close $file;
 
+sub escape_quote {
+	my ($str) = @_;
+	$str =~ s/\'/\'\'/g;
+	return $str;
+}
 
 sub create_migration_scripts_for_line
 {
@@ -39,11 +44,11 @@ sub create_migration_scripts_for_line
 
 	print $file "-- Begin Line: $line \n";
 
-	my $sample_type_name = $workbook->[1]{"B" .$line};
-	my $panel_name = $workbook->[1]{"C" .$line};
-	my $test_name = $workbook->[1]{"D" .$line};
-	my $unit_measure = $workbook->[1]{"F" .$line};
-	my $result_type = $workbook->[1]{"G" .$line};
+	my $sample_type_name = escape_quote($workbook->[1]{"B" .$line});
+	my $panel_name = escape_quote($workbook->[1]{"C" .$line});
+	my $test_name = escape_quote($workbook->[1]{"D" .$line});
+	my $unit_measure = escape_quote($workbook->[1]{"F" .$line});
+	my $result_type = escape_quote($workbook->[1]{"G" .$line});
 
 
 	my $test_section = $select . "insert_test_section('" . $test_section_name . "'); \n";
