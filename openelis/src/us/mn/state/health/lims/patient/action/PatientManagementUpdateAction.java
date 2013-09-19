@@ -303,7 +303,9 @@ public class PatientManagementUpdateAction extends BaseAction implements IPatien
 		persistPatientRelatedInformation(patientInfo, patient);
 		patientID = patient.getId();
 
-        patientPublisher.publish(patientInfo.getSTnumber(), contextPath);
+        if(patientUpdateStatus == PatientUpdateStatus.ADD) {
+            patientPublisher.publish(patientInfo.getSTnumber(), contextPath);
+        }
 	}
 
     protected void persistPatientRelatedInformation(PatientManagmentInfo patientInfo, Patient patient) {
