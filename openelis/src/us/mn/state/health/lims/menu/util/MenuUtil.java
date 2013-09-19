@@ -29,7 +29,7 @@ import java.util.Map;
 
 public class MenuUtil {
 
-    public static final String MENU_RESULTS = "menu_results";
+    public static final String MENU_RESULTS_LOGBOOK = "menu_results_logbook";
     private static List<MenuItem> root;
 	
 	public static List<MenuItem> getMenuTree(){
@@ -39,18 +39,16 @@ public class MenuUtil {
 
 	private static void createTree() {
 		List<Menu> menuList = new MenuDAOImpl().getAllMenus();
-        List<TestSection> allTestSections = new TestSectionDAOImpl().getAllActiveTestSections();
-
         MenuItem rootWrapper = MenuItem.emptyMenu();
-
         Map<Menu, MenuItem> menuToMenuItemMap = createMapMenuAndMenuItems(menuList);
-        MenuItem enterMenu = createMenuBasedOnTestSections(allTestSections);
+
+        AddTestSectionsInLogBookMenu(menuToMenuItemMap);
 
         for( Menu menu : menuList){
             if( menu.getParent() == null){
                 rootWrapper.addChild(menuToMenuItemMap.get(menu));
             }else{
-                createTreeWithMenuItems(menuToMenuItemMap, enterMenu, menu);
+                createTreeWithMenuItems(menuToMenuItemMap, menu);
             }
         }
 
@@ -59,18 +57,21 @@ public class MenuUtil {
 		root = rootWrapper.getChildMenus();
 	}
 
-    private static void createTreeWithMenuItems(Map<Menu, MenuItem> menuToMenuItemMap, MenuItem enterTestSectionMenu, Menu menu) {
+    private static void AddTestSectionsInLogBookMenu(Map<Menu, MenuItem> menuToMenuItemMap) {
+        for(MenuItem menuItem: menuToMenuItemMap.values()) {
+            if(MENU_RESULTS_LOGBOOK.equals(menuItem.getElementId())){
+                List<TestSection> allTestSections = new TestSectionDAOImpl().getAllActiveTestSections();
+                List<MenuItem> testSectionMenuItems = getTestSectionMenuItems(allTestSections);
+                menuItem.addAllChildren(testSectionMenuItems);
+                break;
+            }
+        }
+    }
+
+    private static void createTreeWithMenuItems(Map<Menu, MenuItem> menuToMenuItemMap, Menu menu) {
         MenuItem parentMenuItem = menuToMenuItemMap.get(menu.getParent());
 
         parentMenuItem.addChild(menuToMenuItemMap.get(menu));
-
-        injectTestSectionsNames(enterTestSectionMenu, parentMenuItem);
-    }
-
-    private static void injectTestSectionsNames(MenuItem enterMenu, MenuItem parentMenuItem) {
-        if (parentMenuItem.getElementId().equals(MENU_RESULTS) && !parentMenuItem.containsChild(enterMenu)){
-            parentMenuItem.addChild(enterMenu);
-        }
     }
 
     private static Map<Menu, MenuItem> createMapMenuAndMenuItems(List<Menu> menuList) {
@@ -83,29 +84,13 @@ public class MenuUtil {
         return menuToMenuItemMap;
     }
 
-    private static MenuItem createMenuBasedOnTestSections(List<TestSection> allTestSections) {
+    private static List<MenuItem> getTestSectionMenuItems(List<TestSection> allTestSections) {
         List<MenuItem> testSectionMenuItems = new ArrayList<>();
 
         for (TestSection testSection : allTestSections) {
             testSectionMenuItems.add(MenuItem.create(testSection));
         }
-
-        MenuItem enterMenu = MenuItem.create(createEnterMenu());
-        enterMenu.addAllChildren(testSectionMenuItems);
-
-        return enterMenu;
-    }
-
-    private static Menu createEnterMenu() {
-        Menu menu = new Menu();
-        menu.setElementId("menu_enter_testsection");
-        menu.setToolTipKey("banner.menu.results.logbook");
-        menu.setDisplayKey("banner.menu.results.logbook");
-        menu.setOpenInNewWindow(false);
-        menu.setActionURL("");
-        menu.setClickAction("");
-        menu.setPresentationOrder(1);
-        return menu;
+        return testSectionMenuItems;
     }
 
     public static String getMenuAsHTML( String contextPath){

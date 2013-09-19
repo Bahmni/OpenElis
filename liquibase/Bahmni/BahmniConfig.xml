@@ -834,4 +834,23 @@
             <column name="lastupdated" valueDate=" now() "/>
         </insert>
     </changeSet>
+     <changeSet id="55" author="tw" context="bahmni">
+        <update schemaName="clinlims" tableName="menu">
+            <column name="presentation_order" value="1"/>
+            <where>element_id='menu_results_search'</where>
+        </update>
+        <update schemaName="clinlims" tableName="menu">
+            <column name="presentation_order" value="3"/>
+            <where>element_id='menu_results_referredOut'</where>
+        </update>
+        <insert schemaName="clinlims" tableName="menu">
+            <column name="id" valueNumeric=" nextval( 'menu_seq' ) " />
+            <column name="parent_id"
+                valueNumeric=" ( select id from clinlims.menu where element_id = 'menu_results' ) " />
+            <column name="presentation_order" valueNumeric="2" />
+            <column name="element_id" value="menu_results_logbook" />
+            <column name="display_key" value="banner.menu.results.logbook" />
+            <column name="tool_tip_key" value="tooltip.banner.menu.results.logbook" />
+        </insert>
+    </changeSet>    
 </databaseChangeLog>
