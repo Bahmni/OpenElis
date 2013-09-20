@@ -15,6 +15,7 @@
 
 <bean:define id="formName"	value='<%=(String) request.getAttribute(IActionConstants.FORM_NAME)%>' />
 <bean:define id="nonNumericTests" name='<%=formName %>' property="nonNumericTests" type="List<NonNumericTests>" />
+<bean:define id="patientSTNumber"	value='<%=request.getParameter("patientSTNumber") == null || request.getParameter("patientSTNumber").isEmpty() ? "" : request.getParameter("patientSTNumber")%>' />
 
 <script type="text/javascript" src="scripts/jquery.ui.js?ver=<%= Versioning.getBuildNumber() %>"></script>
 <script type="text/javascript" src="scripts/jquery.asmselect.js?ver=<%= Versioning.getBuildNumber() %>"></script>
@@ -412,12 +413,30 @@ function /*void*/ savePage(){
 
   window.onbeforeunload = null; // Added to flag that formWarning alert isn't needed.
 	var form = window.document.forms[0];
-	form.action = '<%=formName%>'.sub('Form','') + "Update.do";
+	form.action = '<%=formName%>'.sub('Form','') + "Update.do" + window.location.search;
 	form.submit();
 }
+
+function searchTestsByPatient() {
+    window.location =  "ReferredOutTests.do?patientSTNumber=" + $("patientSTNumber").value;
+}
+
+function showAllTests() {
+    window.location = "ReferredOutTests.do";
+}
+
 </script>
 
+<div>
+    <bean:message key="patient.ST.number"/>
+    <input id="patientSTNumber"></input>
+    <button type="button" onclick="searchTestsByPatient()"><bean:message key="referral.search.patient"/></button>
+    <button type="button" onclick="showAllTests()"><bean:message key="referral.all"/></button>
+</div>
 
+<logic:notEmpty name="patientSTNumber">
+    <h2><bean:message key="referral.search.patient.success"/> : <%=patientSTNumber%></h2>
+</logic:notEmpty>
 
 <logic:notEmpty name="<%=formName%>"  property="referralItems" >
 

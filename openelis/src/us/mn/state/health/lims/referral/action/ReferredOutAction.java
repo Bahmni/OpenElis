@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.GenericValidator;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
@@ -38,6 +39,7 @@ import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.IdValuePair;
+import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
 import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
 import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
@@ -96,10 +98,11 @@ public class ReferredOutAction extends BaseAction {
             throws Exception {
 
         DynaActionForm dynaForm = (DynaActionForm) form;
+        String patientSTNumber = request.getParameter("patientSTNumber");
 
         request.getSession().setAttribute(SAVE_DISABLED, TRUE);
 
-        List<ReferralItem> referralItems = getReferralItems();
+        List<ReferralItem> referralItems = getReferralItems(patientSTNumber);
         PropertyUtils.setProperty(dynaForm, "referralItems", referralItems);
         PropertyUtils.setProperty(dynaForm, "referralReasons", ReferralUtil.getReferralReasons());
 
@@ -146,11 +149,16 @@ public class ReferredOutAction extends BaseAction {
         return pairs;
     }
 
-    private List<ReferralItem> getReferralItems() {
+    private List<ReferralItem> getReferralItems(String patientSTNumber) {
         List<ReferralItem> referralItems = new ArrayList<>();
         ReferralDAO referralDAO = new ReferralDAOImpl();
 
-        List<Referral> referralList = referralDAO.getAllUncanceledOpenReferrals();
+        List<Referral> referralList;
+        if(StringUtils.isNotBlank(patientSTNumber)){
+            referralList = referralDAO.getAllUncanceledOpenReferralsByPatientSTNumber(patientSTNumber);
+        } else {
+            referralList = referralDAO.getAllUncanceledOpenReferrals();
+        }
 
         for (Referral referral : referralList) {
             ReferralItem referralItem = getReferralItem(referral);

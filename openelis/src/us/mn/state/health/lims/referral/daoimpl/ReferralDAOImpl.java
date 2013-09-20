@@ -30,6 +30,7 @@ import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.daoimpl.BaseDAOImpl;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
+import us.mn.state.health.lims.patientidentitytype.util.PatientIdentityTypeMap;
 import us.mn.state.health.lims.referral.dao.ReferralDAO;
 import us.mn.state.health.lims.referral.valueholder.Referral;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
@@ -98,6 +99,25 @@ public class ReferralDAOImpl extends BaseDAOImpl implements ReferralDAO {
             return referrals;
         } catch (HibernateException e) {
             handleException(e, "getAllUncanceledOpenReferrals");
+        }
+        return null;
+    }
+
+    public List<Referral> getAllUncanceledOpenReferralsByPatientSTNumber(String patientSTNumber) throws LIMSRuntimeException {
+        String sql = "select r From Referral r, SampleHuman sh, PatientIdentity pi"+
+                " where r.analysis.sampleItem.sample.id = sh.sampleId" +
+                " and r.analysis.statusId in (" + StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.ReferedOut) + "," + StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.BiologistRejectedRO) + ")" +
+                " and sh.patientId = pi.patientId and pi.identityTypeId = "+ PatientIdentityTypeMap.getInstance().getIDForType("ST") +
+                " and pi.identityData = :patientSTNumber" +
+                " and r.canceled = 'false' order by r.id";
+        try {
+            Query query = HibernateUtil.getSession().createQuery(sql);
+            query.setParameter("patientSTNumber", patientSTNumber);
+            List<Referral> referrals = query.list();
+            closeSession();
+            return referrals;
+        } catch (HibernateException e) {
+            handleException(e, "getAllUncanceledOpenReferralsByPatientSTNumber");
         }
         return null;
     }

@@ -33,7 +33,9 @@ public interface ReferralDAO{
 
 	public List<Referral> getAllUncanceledOpenReferrals() throws LIMSRuntimeException;
 
-	public void updateData(Referral referral) throws LIMSRuntimeException;
+    public List<Referral> getAllUncanceledOpenReferralsByPatientSTNumber(String patientSTNumber) throws LIMSRuntimeException;
+
+    public void updateData(Referral referral) throws LIMSRuntimeException;
 
 	public List<Referral> getAllReferralsBySampleId(String id) throws LIMSRuntimeException;
 
