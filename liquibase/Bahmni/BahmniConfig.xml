@@ -853,4 +853,13 @@
             <column name="tool_tip_key" value="tooltip.banner.menu.results.logbook" />
         </insert>
     </changeSet>    
+    <changeSet id="56" author="tw" context="bahmni">
+        <comment>Increase the column size for result and notes column</comment>
+        <sql endDelimiter=";\n" splitStatements="true" stripComments="true">
+            ALTER TABLE "result" ALTER COLUMN "value" type text;
+        </sql>
+        <sql endDelimiter=";\n" splitStatements="true" stripComments="true">
+            ALTER TABLE "note" ALTER COLUMN "text" type text;
+        </sql>
+    </changeSet>
 </databaseChangeLog>
