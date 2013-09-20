@@ -122,8 +122,7 @@ function displayHelp(){
     		<div id="appVersion">
     		<bean:message key="ellis.version" />:&nbsp;
 		    <%= ConfigurationProperties.getInstance().getPropertyValue(Property.releaseNumber)%> (<%= ConfigurationProperties.getInstance().getPropertyValue(Property.buildNumber) %>)&nbsp;&nbsp;&nbsp;
-		    <bean:message key="ellis.configuration" />:&nbsp;
-		    <%=ConfigurationProperties.getInstance().getPropertyValue(Property.configurationName)%></div>
+	        </div>
     
 		    <% if("true".equals(ConfigurationProperties.getInstance().getPropertyValueLowerCase(Property.TrainingInstallation))){ %>
 		      <div id="training-alert"><span title="<bean:message key="training.note"/>"><bean:message key="training.note"/></span></div>
