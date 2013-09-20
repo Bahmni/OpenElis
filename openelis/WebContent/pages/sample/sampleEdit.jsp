@@ -238,7 +238,6 @@ function processAccessionFailure(xhr)
 		<input type="text"
 		       value='<%= ((String)newAccessionNumber).length() == maxAccessionLength ? ((String)newAccessionNumber).substring(nonEditableAccession, maxAccessionLength) : "" %>'
 		       maxlength="<%= editableAccession%>"
-		       size="<%= editableAccession%>"
 		       onchange="checkAccessionNumber(this);"
 		       id="accessionEdit">
 		       

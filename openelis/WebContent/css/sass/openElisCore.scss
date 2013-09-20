@@ -180,7 +180,7 @@ input[type="button"],input[type="file"],input[type="submit"],button{
         background: #8eb82a;
         border-color: #779b23;
       }
-      &[disabled=disabled]{
+      &[disabled]{
         @include text-shadow(none);
         border-color:#cecece;
         &:hover{
@@ -189,7 +189,7 @@ input[type="button"],input[type="file"],input[type="submit"],button{
         }
     }
   }
-  &[disabled=disabled],button[disabled=disabled]{
+  &[disabled],button[disabled]{
     background:#ffffff;
     color:#a1a1a1;
     cursor:auto !important;

@@ -161,7 +161,7 @@ public class DateNumAccessionValidator implements IAccessionNumberValidator {
 
     @Override
     public int getChangeableLength() {
-        return 11;
+        return 12;
     }
 
 
