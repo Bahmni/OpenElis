@@ -320,6 +320,7 @@ jQuery(function(){
 			       onkeyup="setSearch(); "
 			       onblur="makeExclusive(this)"
 			       onchange="toUppercase(this)"
+			       autofocus="autofocus"
 			       >
 		</td>
 <!-- 		<td headers="receptionDate">
