@@ -1304,3 +1304,8 @@ table.administration{
     }
   }
 }
+
+//  TODO: Remove this hacky fix for release 2. Once case insensitive search for patient id is implemented
+input[name=patientNumberDirect] {
+  text-transform:uppercase;
+}
