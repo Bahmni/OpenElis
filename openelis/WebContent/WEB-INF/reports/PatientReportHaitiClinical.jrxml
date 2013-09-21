@@ -563,7 +563,7 @@
 				<textElement verticalAlignment="Middle" markup="none">
 				     <font size="8"/>
                  </textElement>
-				<text><![CDATA[ R = Returned        A = Referred Out        B = Below Normal        E =  Above Normal]]></text>
+				<text><![CDATA[ R = Referred Out        A = Above Normal        B = Below Normal        E =  Returned]]></text>
 			</staticText>
 		</band>
 	</columnFooter>

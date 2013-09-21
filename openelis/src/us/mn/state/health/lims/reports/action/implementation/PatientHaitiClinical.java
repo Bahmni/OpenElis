@@ -174,8 +174,8 @@ public class PatientHaitiClinical extends HaitiPatientReport implements IReportC
 
 	@Override
 	protected void setReferredResult(HaitiClinicalPatientData data, Result result) {
-		data.setResult(data.getResult() + (augmentResultWithFlag() ? getResultFlag(result, "R") : ""));
-		data.setAlerts(getResultFlag(result, "R"));
+		data.setResult(data.getResult() + (augmentResultWithFlag() ? getResultFlag(result, "E") : ""));
+		data.setAlerts(getResultFlag(result, "E"));
 	}
 
 	@Override

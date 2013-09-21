@@ -509,7 +509,7 @@ public abstract class HaitiPatientReport extends Report {
             data.setFinishDate(reportAnalysis.getCompletedDateForDisplay());
             data.setNote(getResultNote(result));
             Referral referral = referralDao.getReferralByAnalysisId(reportAnalysis.getId());
-            String imbed = referral == null? null : "A";
+            String imbed = referral == null? null : "R";
             data.setAlerts(getResultFlag(result, imbed));
         }
 
@@ -590,7 +590,7 @@ public abstract class HaitiPatientReport extends Report {
                     if (Double.valueOf(result.getValue()) < result.getMinNormal()) {
                         flag = "B";
                     } else if (Double.valueOf(result.getValue()) > result.getMaxNormal()) {
-                        flag = "E";
+                        flag = "A";
                     }
 
                     if (!GenericValidator.isBlankOrNull(flag)) {
