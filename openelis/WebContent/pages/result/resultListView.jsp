@@ -730,7 +730,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 						  title='<%= (testResult.isValid() ? testResult.isNormal() ? "" : StringUtil.getMessageForKey("result.value.abnormal") : StringUtil.getMessageForKey("result.value.invalid")) %>'
 						  styleId='<%="results_" + index %>'
                           styleClass="testResultValue"
-						  onkeyup='<%="value = value.substr(0, 200); markUpdated(" + index + ");"  +
+						  onkeyup='<%="markUpdated(" + index + ");"  +
 						               ((noteRequired && !"".equals(testResult.getResultValue()) ) ? "showNote( " + index + ");" : "")%>'
 						  />
 			</logic:equal>

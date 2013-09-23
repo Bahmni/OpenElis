@@ -31,7 +31,7 @@
             <column name="RESULT_TYPE" length="1" />
         </property>
         <property name="value" type="java.lang.String">
-            <column name="VALUE" length="200" />
+            <column name="VALUE" />
         </property>
         <property name="minNormal" type="java.lang.Double" column="min_normal" />
         <property name="maxNormal" type="java.lang.Double" column="max_normal" />

@@ -461,7 +461,7 @@ function /*boolean*/ handleEnterEvent(){
 								  rows="2"
 								  allowEdits='<%= !resultList.isReadOnly() %>'
 								  styleId='<%="results_" + index %>'
-								  onkeyup='value = value.substr(0, 200); markUpdated();'
+								  onkeyup='markUpdated();'
 								  />
 					</logic:equal>
 					<% if(resultList.isDisplayResultAsLog()){ %>
