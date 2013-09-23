@@ -636,6 +636,7 @@ public abstract class HaitiPatientReport extends Report {
     private void setAppropriateResults(List<Result> resultList, HaitiClinicalPatientData data) {
         Result result = resultList.get(0);
         String reportResult = "";
+        data.setResultType(result.getResultType());
         if ("D".equals(result.getResultType())) {
             Dictionary dictionary = new Dictionary();
             for (Result siblingResult : resultList) {

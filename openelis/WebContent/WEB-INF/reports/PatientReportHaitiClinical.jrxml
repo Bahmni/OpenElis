@@ -57,6 +57,7 @@
 	<field name="orderDate" class="java.lang.String"/>
 	<field name="patientSiteNumber" class="java.lang.String"/>
 	<field name="primaryRelative" class="java.lang.String"/>
+	<field name="resultType" class="java.lang.String"/>
 	<group name="person" isStartNewPage="true" isResetPageNumber="true">
 		<groupExpression><![CDATA[$F{accessionNumber}]]></groupExpression>
 	</group>
@@ -494,7 +495,22 @@
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{testName}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-					<reportElement x="162" y="0" width="64" height="18"/>
+					<reportElement x="162" y="0" width="303" height="18">
+					    <printWhenExpression><![CDATA[$F{resultType}.equals("R")]]></printWhenExpression>
+					</reportElement>
+					<box rightPadding="4" leftPadding="4">
+						<topPen lineWidth="0.0" lineColor="#CCCCCC"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.2" lineColor="#CCCCCC"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{result}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="162" y="0" width="64" height="18">
+					    <printWhenExpression><![CDATA[!$F{resultType}.equals("R")]]></printWhenExpression>
+					</reportElement>
 					<box rightPadding="4">
 						<topPen lineWidth="0.0" lineColor="#CCCCCC"/>
 						<leftPen lineWidth="0.5"/>
@@ -505,7 +521,9 @@
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{result}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement stretchType="RelativeToTallestObject" x="226" y="0" width="44" height="18"/>
+					<reportElement stretchType="RelativeToTallestObject" x="226" y="0" width="44" height="18">
+					    <printWhenExpression><![CDATA[!$F{resultType}.equals("R")]]></printWhenExpression>
+					</reportElement>
 					<box>
 						<topPen lineWidth="0.0" lineColor="#CCCCCC"/>
 						<leftPen lineWidth="0.5"/>
@@ -518,7 +536,9 @@
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{alerts}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement stretchType="RelativeToTallestObject" x="270" y="0" width="126" height="18"/>
+					<reportElement stretchType="RelativeToTallestObject" x="270" y="0" width="126" height="18">
+					    <printWhenExpression><![CDATA[!$F{resultType}.equals("R")]]></printWhenExpression>
+					</reportElement>
 					<box>
 						<topPen lineWidth="0.0" lineColor="#CCCCCC"/>
 						<leftPen lineWidth="0.5"/>
@@ -529,7 +549,9 @@
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{testRefRange}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement stretchType="RelativeToTallestObject" x="396" y="0" width="69" height="18"/>
+					<reportElement stretchType="RelativeToTallestObject" x="396" y="0" width="69" height="18">
+					    <printWhenExpression><![CDATA[!$F{resultType}.equals("R")]]></printWhenExpression>
+					</reportElement>
 					<box>
 						<topPen lineWidth="0.0" lineColor="#CCCCCC"/>
 						<leftPen lineWidth="0.5"/>
