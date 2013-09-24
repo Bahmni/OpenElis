@@ -86,6 +86,9 @@
         <copy todir="${target}">
             <fileset dir="${src}" includes="**/*.properties"/>
         </copy>
+        <copy tofile="${dist}/LICENSE">
+            <fileset dir="${src}" file="for-licensing-purpose"/>
+        </copy>
         <propertyMerge
                 inputpropertyfile="${target}/MessageResources.properties"
                 mergepropertyfile="${target}/${OPENELIS_CONTEXT}MessageResources.properties"
@@ -94,6 +97,7 @@
         <war destfile="${dist}/openelis.war">
             <classes dir="${target}"/>
             <fileset dir="${web}"/>
+            <fileset file="${dist}/LICENSE"/>            
             <lib dir="${dist}/lib"/>
         </war>
     </target>
