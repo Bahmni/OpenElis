@@ -1,4 +1,4 @@
-/**
+/*
 * The contents of this file are subject to the Mozilla Public License
 * Version 1.1 (the "License"); you may not use this file except in
 * compliance with the License. You may obtain a copy of the License at
@@ -16,10 +16,10 @@
 */
 package us.mn.state.health.lims.address.dao;
 
-import java.util.List;
-
 import us.mn.state.health.lims.address.valueholder.AddressPart;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
+
+import java.util.List;
 
 public interface AddressPartDAO {
 	public List<AddressPart> getAll() throws LIMSRuntimeException;
