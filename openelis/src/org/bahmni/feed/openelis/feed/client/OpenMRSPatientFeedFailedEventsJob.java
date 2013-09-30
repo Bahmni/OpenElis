@@ -34,7 +34,7 @@ public class OpenMRSPatientFeedFailedEventsJob extends OpenMRSFeedReaderJob {
 
     @Override
     protected void doExecute(JobExecutionContext jobExecutionContext) {
-        processEvents(jobExecutionContext);
+        processFailedEvents(jobExecutionContext);
     }
 
     @Override

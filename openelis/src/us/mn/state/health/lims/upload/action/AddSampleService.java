@@ -1,6 +1,6 @@
 package us.mn.state.health.lims.upload.action;
 
-import us.mn.state.health.lims.address.dao.OrganizationAddressDAO;
+import us.mn.state.health.lims.address.daoimpl.OrganizationAddressDAOImpl;
 import us.mn.state.health.lims.address.valueholder.OrganizationAddress;
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
@@ -10,11 +10,9 @@ import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.observationhistory.dao.ObservationHistoryDAO;
 import us.mn.state.health.lims.observationhistory.daoimpl.ObservationHistoryDAOImpl;
 import us.mn.state.health.lims.observationhistory.valueholder.ObservationHistory;
-import us.mn.state.health.lims.organization.dao.OrganizationDAO;
-import us.mn.state.health.lims.organization.dao.OrganizationOrganizationTypeDAO;
+import us.mn.state.health.lims.organization.daoimpl.OrganizationDAOImpl;
+import us.mn.state.health.lims.organization.daoimpl.OrganizationOrganizationTypeDAOImpl;
 import us.mn.state.health.lims.organization.valueholder.Organization;
-import us.mn.state.health.lims.patient.action.IPatientUpdate;
-import us.mn.state.health.lims.patient.action.bean.PatientManagmentInfo;
 import us.mn.state.health.lims.project.dao.ProjectDAO;
 import us.mn.state.health.lims.project.daoimpl.ProjectDAOImpl;
 import us.mn.state.health.lims.project.valueholder.Project;
@@ -43,29 +41,16 @@ import java.util.List;
 import static org.apache.commons.validator.GenericValidator.isBlankOrNull;
 
 public class AddSampleService {
-    private final String contextPath;
-    private final OrganizationDAO orgDAO;
-    private final OrganizationOrganizationTypeDAO orgOrgTypeDAO;
-    private final OrganizationAddressDAO orgAddressDAO;
 
-    public AddSampleService(String contextPath, OrganizationDAO orgDAO, OrganizationOrganizationTypeDAO orgOrgTypeDAO, OrganizationAddressDAO orgAddressDAO) {
-        this.contextPath = contextPath;
-        this.orgDAO = orgDAO;
-        this.orgOrgTypeDAO = orgOrgTypeDAO;
-        this.orgAddressDAO = orgAddressDAO;
-    }
-
-    public void persist(AnalysisBuilder analysisBuilder, boolean useInitialSampleCondition, PatientManagmentInfo patientInfo,
-                               IPatientUpdate patientUpdate, String patientId, String contextPath, Organization newOrganization,
-                               OrganizationDAO orgDAO, OrganizationOrganizationTypeDAO orgOrgTypeDAO, SampleRequester requesterSite,
-                               List<OrganizationAddress> orgAddressExtra, OrganizationAddressDAO orgAddressDAO, boolean savePatient,
-                               Sample sample, List<SampleTestCollection> sampleItemsTests, String projectId, SampleHuman sampleHuman,
-                               String providerId, String currentUserId, List<ObservationHistory> observations, long provider_requester_type_id, String referring_org_type_id) {
-        persistOrganizationData(newOrganization, orgDAO, orgOrgTypeDAO, requesterSite, orgAddressExtra, orgAddressDAO, referring_org_type_id);
-
-        if (savePatient) {
-            patientUpdate.persistPatientData(patientInfo, contextPath);
-        }
+    public void persist(AnalysisBuilder analysisBuilder, boolean useInitialSampleCondition,
+                        Organization newOrganization, SampleRequester requesterSite,
+                        List<OrganizationAddress> orgAddressExtra,
+                        Sample sample, List<SampleTestCollection> sampleItemsTests,
+                        List<ObservationHistory> observations, SampleHuman sampleHuman,
+                        String patientId, String projectId,
+                        String providerId, String currentUserId,
+                        long provider_requester_type_id, String referring_org_type_id) {
+        persistOrganizationData(newOrganization, requesterSite, orgAddressExtra, referring_org_type_id);
 
 //			persistProviderData();
         persistSampleData(analysisBuilder, sample, projectId, sampleItemsTests, sampleHuman, patientId, providerId, currentUserId);
@@ -77,17 +62,17 @@ public class AddSampleService {
         persistObservations(observations, sample, patientId);
     }
 
-    private static void persistOrganizationData(Organization newOrganization, OrganizationDAO orgDAO, OrganizationOrganizationTypeDAO orgOrgTypeDAO, SampleRequester requesterSite, List<OrganizationAddress> orgAddressExtra, OrganizationAddressDAO orgAddressDAO, String referring_org_type_id) {
+    private void persistOrganizationData(Organization newOrganization, SampleRequester requesterSite, List<OrganizationAddress> orgAddressExtra, String referring_org_type_id) {
         if (newOrganization != null) {
-            orgDAO.insertData(newOrganization);
-            orgOrgTypeDAO.linkOrganizationAndType(newOrganization, referring_org_type_id);
+            new OrganizationDAOImpl().insertData(newOrganization);
+            new OrganizationOrganizationTypeDAOImpl().linkOrganizationAndType(newOrganization, referring_org_type_id);
             if (requesterSite != null) {
                 requesterSite.setRequesterId(newOrganization.getId());
             }
 
             for (OrganizationAddress address : orgAddressExtra) {
                 address.setOrganizationId(newOrganization.getId());
-                orgAddressDAO.insert(address);
+                new OrganizationAddressDAOImpl().insert(address);
             }
         }
     }

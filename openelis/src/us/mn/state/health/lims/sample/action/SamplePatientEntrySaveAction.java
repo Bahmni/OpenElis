@@ -25,14 +25,9 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.hibernate.StaleObjectStateException;
 import org.hibernate.Transaction;
-import us.mn.state.health.lims.address.dao.OrganizationAddressDAO;
 import us.mn.state.health.lims.address.daoimpl.AddressPartDAOImpl;
-import us.mn.state.health.lims.address.daoimpl.OrganizationAddressDAOImpl;
 import us.mn.state.health.lims.address.valueholder.AddressPart;
 import us.mn.state.health.lims.address.valueholder.OrganizationAddress;
-import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
-import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
-import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
@@ -52,58 +47,37 @@ import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.laborder.dao.LabOrderTypeDAO;
 import us.mn.state.health.lims.laborder.daoimpl.LabOrderTypeDAOImpl;
 import us.mn.state.health.lims.laborder.valueholder.LabOrderType;
-import us.mn.state.health.lims.observationhistory.dao.ObservationHistoryDAO;
-import us.mn.state.health.lims.observationhistory.daoimpl.ObservationHistoryDAOImpl;
 import us.mn.state.health.lims.observationhistory.valueholder.ObservationHistory;
 import us.mn.state.health.lims.observationhistory.valueholder.ObservationHistory.ValueType;
 import us.mn.state.health.lims.observationhistorytype.dao.ObservationHistoryTypeDAO;
 import us.mn.state.health.lims.observationhistorytype.daoImpl.ObservationHistoryTypeDAOImpl;
 import us.mn.state.health.lims.observationhistorytype.valueholder.ObservationHistoryType;
-import us.mn.state.health.lims.organization.dao.OrganizationDAO;
-import us.mn.state.health.lims.organization.dao.OrganizationOrganizationTypeDAO;
-import us.mn.state.health.lims.organization.daoimpl.OrganizationDAOImpl;
-import us.mn.state.health.lims.organization.daoimpl.OrganizationOrganizationTypeDAOImpl;
 import us.mn.state.health.lims.organization.daoimpl.OrganizationTypeDAOImpl;
 import us.mn.state.health.lims.organization.valueholder.Organization;
 import us.mn.state.health.lims.organization.valueholder.OrganizationType;
 import us.mn.state.health.lims.patient.action.IPatientUpdate;
 import us.mn.state.health.lims.patient.action.PatientManagementUpdateAction;
 import us.mn.state.health.lims.patient.action.bean.PatientManagmentInfo;
-import us.mn.state.health.lims.project.dao.ProjectDAO;
-import us.mn.state.health.lims.project.daoimpl.ProjectDAOImpl;
-import us.mn.state.health.lims.project.valueholder.Project;
 import us.mn.state.health.lims.requester.dao.RequesterTypeDAO;
-import us.mn.state.health.lims.requester.dao.SampleRequesterDAO;
 import us.mn.state.health.lims.requester.daoimpl.RequesterTypeDAOImpl;
-import us.mn.state.health.lims.requester.daoimpl.SampleRequesterDAOImpl;
 import us.mn.state.health.lims.requester.valueholder.RequesterType;
 import us.mn.state.health.lims.requester.valueholder.SampleRequester;
 import us.mn.state.health.lims.sample.bean.SampleTestCollection;
-import us.mn.state.health.lims.sample.dao.SampleDAO;
-import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
 import us.mn.state.health.lims.sample.util.AccessionNumberUtil;
 import us.mn.state.health.lims.sample.util.AnalysisBuilder;
 import us.mn.state.health.lims.sample.valueholder.Sample;
-import us.mn.state.health.lims.samplehuman.dao.SampleHumanDAO;
-import us.mn.state.health.lims.samplehuman.daoimpl.SampleHumanDAOImpl;
 import us.mn.state.health.lims.samplehuman.valueholder.SampleHuman;
-import us.mn.state.health.lims.sampleitem.dao.SampleItemDAO;
-import us.mn.state.health.lims.sampleitem.daoimpl.SampleItemDAOImpl;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
-import us.mn.state.health.lims.sampleproject.dao.SampleProjectDAO;
-import us.mn.state.health.lims.sampleproject.daoimpl.SampleProjectDAOImpl;
-import us.mn.state.health.lims.sampleproject.valueholder.SampleProject;
 import us.mn.state.health.lims.samplesource.dao.SampleSourceDAO;
 import us.mn.state.health.lims.samplesource.daoimpl.SampleSourceDAOImpl;
 import us.mn.state.health.lims.samplesource.valueholder.SampleSource;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.OrderStatus;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.SampleStatus;
-import us.mn.state.health.lims.test.dao.TestDAO;
-import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleDAO;
 import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleDAOImpl;
+import us.mn.state.health.lims.upload.action.AddSampleService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -140,10 +114,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 	private String collectionDateFromRecieveDate = null;
 	private TypeOfSampleDAO typeOfSampleDAO = new TypeOfSampleDAOImpl();
 	private LabOrderTypeDAO labOrderTypeDAO = new LabOrderTypeDAOImpl();
-	private OrganizationDAO orgDAO = new OrganizationDAOImpl();
-	private OrganizationAddressDAO orgAddressDAO = new OrganizationAddressDAOImpl();
-	private OrganizationOrganizationTypeDAO orgOrgTypeDAO = new OrganizationOrganizationTypeDAOImpl();
-    private ObservationHistoryDAO observationDAO;
+
 	private List<ObservationHistory> observations;
 	private List<OrganizationAddress> orgAddressExtra;
     private SampleSourceDAO sampleSourceDAO = new SampleSourceDAOImpl();
@@ -269,22 +240,16 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 		Transaction tx = HibernateUtil.getSession().beginTransaction();
 
 		try {
-			persistOrganizationData();
-			
-			if (savePatient) {
-				patientUpdate.persistPatientData(patientInfo, request.getContextPath());
-			}
+            patientId = patientUpdate.getPatientId(dynaForm);
+            if (savePatient) {
+                patientUpdate.persistPatientData(patientInfo, request.getContextPath());
+            }
 
-			patientId = patientUpdate.getPatientId(dynaForm);
-
-//			persistProviderData();
-			persistSampleData(analysisBuilder);
-			persistRequesterData();
-			if (useInitialSampleCondition) {
-				persistInitialSampleConditions();
-			}
-
-			persistObservations();
+            AddSampleService addSampleService = new AddSampleService();
+            addSampleService.persist(analysisBuilder, useInitialSampleCondition, newOrganization, requesterSite,
+                    orgAddressExtra, sample, sampleItemsTests, observations, sampleHuman, patientId,
+                    projectId, providerId, currentUserId,
+                    PROVIDER_REQUESTER_TYPE_ID, REFERRING_ORG_TYPE_ID);
 
 			tx.commit();
 
@@ -313,6 +278,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 		return mapping.findForward(forward);
 	}
 
+
     private ActionForward addErrorMessageAndForward(ActionMapping mapping, HttpServletRequest request, ActionError error) {
         ActionMessages errors = new ActionMessages();
         errors.add(ActionMessages.GLOBAL_MESSAGE, error);
@@ -321,16 +287,6 @@ public class SamplePatientEntrySaveAction extends BaseAction {
         request.setAttribute(ALLOW_EDITS_KEY, "false");
         return mapping.findForward(FWD_FAIL);
     }
-
-    private void persistObservations() {
-
-		observationDAO = new ObservationHistoryDAOImpl();
-		for (ObservationHistory observation : observations) {
-			observation.setSampleId(sample.getId());
-			observation.setPatientId(patientId);
-			observationDAO.insertData(observation);
-		}
-	}
 
 	private SampleRequester initSampleRequester(BaseActionForm dynaForm) {
 		SampleRequester requester = null;
@@ -443,8 +399,8 @@ public class SamplePatientEntrySaveAction extends BaseAction {
             sampleSource = sampleSourceDAO.get(sampleSourceId);
         }
         providerId = dynaForm.getString("providerId");
-        createPopulatedSample(recievedDate, useReceiveTimestamp);
-		addObservations(dynaForm, trackPayments);
+        sample = createPopulatedSample(recievedDate, useReceiveTimestamp);
+        addObservations(dynaForm, trackPayments);
 
 		try {
 			Document sampleDom = DocumentHelper.parseText(dynaForm.getString("sampleXML"));
@@ -456,11 +412,6 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 
 				Element sampleItem = (Element) i.next();
 
-				String testIDs = sampleItem.attributeValue("tests");
-				String panelIDs = sampleItem.attributeValue("panels");
-				String collectionDateTime = sampleItem.attributeValue("date").trim() + " " + sampleItem.attributeValue("time").trim();
-
-				analysisBuilder.augmentPanelIdToPanelMap(panelIDs);
 				List<ObservationHistory> initialConditionList = null;
 
 				if (useInitialSampleCondition) {
@@ -475,10 +426,14 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 				item.setStatusId(StatusOfSampleUtil.getStatusID(SampleStatus.Entered));
 				item.setCollector(sampleItem.attributeValue("collector"));
 
-				List<Test> tests = new ArrayList<>();
+                // panel
+                String panelIDs = sampleItem.attributeValue("panels");
+                analysisBuilder.augmentPanelIdToPanelMap(panelIDs);
 
-				addTests(testIDs, tests);
-
+                //test
+                String collectionDateTime = sampleItem.attributeValue("date").trim() + " " + sampleItem.attributeValue("time").trim();
+                String testIDs = sampleItem.attributeValue("tests");
+				List<Test> tests = addTests(testIDs);
 				sampleItemsTests.add(new SampleTestCollection(item, tests, useReceiveDateForCollectionDate ? collectionDateFromRecieveDate
 						: collectionDateTime, initialConditionList));
 				
@@ -489,7 +444,8 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 		}
 	}
 
-	private void addTests(String testIDs, List<Test> tests) {
+	private List<Test> addTests(String testIDs) {
+        List<Test> tests = new ArrayList<>();
 		StringTokenizer tokenizer = new StringTokenizer(testIDs, ",");
 
 		while (tokenizer.hasMoreTokens()) {
@@ -497,6 +453,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 			test.setId(tokenizer.nextToken().trim());
 			tests.add(test);
 		}
+        return tests;
 	}
 
 	private void addObservations(BaseActionForm dynaForm, boolean trackPayments) {
@@ -557,8 +514,8 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 		}
 	}
 
-	private void createPopulatedSample(String receivedDate, boolean useReceiveTimestamp) {
-		sample = new Sample();
+	private Sample createPopulatedSample(String receivedDate, boolean useReceiveTimestamp) {
+		Sample sample = new Sample();
 		sample.setSysUserId(currentUserId);
 		sample.setAccessionNumber(accessionNumber);
         sample.setSampleSource(sampleSource);
@@ -575,6 +532,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 
 		sample.setDomain(SystemConfiguration.getInstance().getHumanDomain());
 		sample.setStatusId(StatusOfSampleUtil.getStatusID(OrderStatus.Entered));
+        return sample;
 	}
 
 	private void initSampleHumanData() {
@@ -631,24 +589,6 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 //				&& isBlankOrNull(requesterFax) && isBlankOrNull(requesterEmail));
 //	}
 
-	private void persistOrganizationData() {
-
-
-		
-		if (newOrganization != null) {
-			orgDAO.insertData(newOrganization);
-			orgOrgTypeDAO.linkOrganizationAndType(newOrganization, REFERRING_ORG_TYPE_ID);
-			if (requesterSite != null) {
-				requesterSite.setRequesterId(newOrganization.getId());
-			}
-
-			for (OrganizationAddress address : orgAddressExtra) {
-				address.setOrganizationId(newOrganization.getId());
-				orgAddressDAO.insert(address);
-			}
-		}
-
-	}
 
 //	private void persistProviderData() {
 //		if (providerPerson != null && provider != null) {
@@ -662,95 +602,6 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 //		}
 //	}
 
-	private void persistSampleData(AnalysisBuilder analysisBuilder) {
-		SampleDAO sampleDAO = new SampleDAOImpl();
-		SampleHumanDAO sampleHumanDAO = new SampleHumanDAOImpl();
-		SampleItemDAO sampleItemDAO = new SampleItemDAOImpl();
-		AnalysisDAO analysisDAO = new AnalysisDAOImpl();
-		TestDAO testDAO = new TestDAOImpl();
-		String analysisRevision = SystemConfiguration.getInstance().getAnalysisDefaultRevision();
-
-		sampleDAO.insertDataWithAccessionNumber(sample);
-
-		if (!isBlankOrNull(projectId)) {
-			persistSampleProject();
-		}
-
-		for (SampleTestCollection sampleTestPair : sampleItemsTests) {
-
-			sampleItemDAO.insertData(sampleTestPair.item);
-
-			for (Test test : sampleTestPair.tests) {
-				testDAO.getData(test);
-
-				Analysis analysis = analysisBuilder.populateAnalysis(analysisRevision, sampleTestPair, test);
-				analysisDAO.insertData(analysis, false); // false--do not check
-				// for duplicates
-			}
-
-		}
-
-		sampleHuman.setSampleId(sample.getId());
-		sampleHuman.setPatientId(patientId);
-        sampleHuman.setProviderId(providerId);
-//		if (provider != null) {
-//			sampleHuman.setProviderId(provider.getId());
-//		}
-		sampleHumanDAO.insertData(sampleHuman);
-
-	}
-
-	private void persistSampleProject() throws LIMSRuntimeException {
-		SampleProjectDAO sampleProjectDAO = new SampleProjectDAOImpl();
-		ProjectDAO projectDAO = new ProjectDAOImpl();
-		Project project = new Project();
-		project.setId(projectId);
-		projectDAO.getData(project);
-
-		SampleProject sampleProject = new SampleProject();
-		sampleProject.setProject(project);
-		sampleProject.setSample(sample);
-		sampleProject.setSysUserId(currentUserId);
-		sampleProjectDAO.insertData(sampleProject);
-	}
-
-	private void persistRequesterData() {
-		SampleRequesterDAO sampleRequesterDAO = new SampleRequesterDAOImpl();
-		if (providerId != null && !isBlankOrNull(providerId)) {
-			SampleRequester sampleRequester = new SampleRequester();
-			sampleRequester.setRequesterId(providerId);
-			sampleRequester.setRequesterTypeId(PROVIDER_REQUESTER_TYPE_ID);
-			sampleRequester.setSampleId(sample.getId());
-			sampleRequester.setSysUserId(currentUserId);
-			sampleRequesterDAO.insertData(sampleRequester);
-		}
-
-		if (requesterSite != null) {
-			requesterSite.setSampleId(sample.getId());
-			if( newOrganization != null){
-				requesterSite.setRequesterId(newOrganization.getId());
-			}
-			sampleRequesterDAO.insertData(requesterSite);
-		}
-	}
-
-	private void persistInitialSampleConditions() {
-		ObservationHistoryDAO ohDAO = new ObservationHistoryDAOImpl();
-
-		for (SampleTestCollection sampleTestCollection : sampleItemsTests) {
-			List<ObservationHistory> initialConditions = sampleTestCollection.initialSampleConditionIdList;
-
-			if (initialConditions != null) {
-				for (ObservationHistory observation : initialConditions) {
-					observation.setSampleId(sampleTestCollection.item.getSample().getId());
-					observation.setSampleItemId(sampleTestCollection.item.getId());
-					observation.setPatientId(patientId);
-					observation.setSysUserId(currentUserId);
-					ohDAO.insertData(observation);
-				}
-			}
-		}
-	}
 
     @Override
 	protected String getPageTitleKey() {
@@ -761,4 +612,6 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 	protected String getPageSubtitleKey() {
 		return "sample.entry.title";
 	}
+
+
 }

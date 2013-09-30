@@ -17,10 +17,7 @@
 package us.mn.state.health.lims.scheduler;
 
 import org.apache.log4j.Logger;
-import org.bahmni.feed.openelis.feed.client.OpenERPLabTestFailedEventsJob;
-import org.bahmni.feed.openelis.feed.client.OpenERPLabTestFeedJob;
-import org.bahmni.feed.openelis.feed.client.OpenMRSPatientFeedFailedEventsJob;
-import org.bahmni.feed.openelis.feed.client.OpenMRSPatientFeedReaderJob;
+import org.bahmni.feed.openelis.feed.client.*;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
@@ -56,8 +53,9 @@ public class LateStartScheduler {
         scheduleJobMap.put("atom-feed-openmrs-patient", OpenMRSPatientFeedReaderJob.class);
         scheduleJobMap.put("atom-feed-openmrs-patient-failed", OpenMRSPatientFeedFailedEventsJob.class);
 
-//        scheduleJobMap.put("atom-feed-openmrs-encounter", OpenMRSPatientFeedReaderJob.class);
-//        scheduleJobMap.put("atom-feed-openmrs-encounter-failed", OpenMRSPatientFeedFailedEventsJob.class);
+        // TODO : Mujir - uncomment the scheduler when story is done. Commenting it, so it doesn't affect others.
+//        scheduleJobMap.put("atom-feed-openmrs-encounter", OpenMRSEncounterFeedReaderJob.class);
+//        scheduleJobMap.put("atom-feed-openmrs-encounter-failed", OpenMRSEncounterFeedFailedEventsJob.class);
     }
 
     public void restartSchedules() {

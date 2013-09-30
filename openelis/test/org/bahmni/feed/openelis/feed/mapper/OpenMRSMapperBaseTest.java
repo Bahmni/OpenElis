@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 
+
 public abstract class OpenMRSMapperBaseTest {
     protected String deserialize(String fileName) throws IOException {
         InputStream inputStream = this.getClass().getResourceAsStream(fileName);

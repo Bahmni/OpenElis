@@ -14,20 +14,23 @@
 * Copyright (C) The Minnesota Department of Health.  All Rights Reserved.
 */
 
-package org.bahmni.feed.openelis.feed.mapper;
+package org.bahmni.feed.openelis.feed.contract.openmrs.encounter;
 
-import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPatient;
-import org.junit.Assert;
-import org.junit.Test;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class OpenMRSPatientMapperTest extends OpenMRSMapperBaseTest {
-    @Test
-    public void map() throws IOException {
-        String json = deserialize("sampleOpenMRSPatient.json");
-        OpenMRSPatientMapper openMRSPatientMapper = new OpenMRSPatientMapper(ObjectMapperForTest.MAPPER);
-        OpenMRSPatient openMRSPatient = openMRSPatientMapper.map(json);
-        Assert.assertNotNull(openMRSPatient);
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class OpenMRSEncounter {
+    private String uuid;
+    private List<OpenMRSOrder> orders = new ArrayList<>();
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public List<OpenMRSOrder> getOrders() {
+        return orders;
     }
 }

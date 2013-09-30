@@ -17,32 +17,33 @@
 package org.bahmni.feed.openelis.feed.client;
 
 import org.apache.log4j.Logger;
-import org.bahmni.feed.openelis.feed.event.PatientFeedWorker;
+import org.bahmni.feed.openelis.feed.event.EncounterFeedWorker;
 import org.bahmni.webclients.WebClient;
 import org.ict4h.atomfeed.client.service.EventWorker;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 
 @DisallowConcurrentExecution
-public class OpenMRSPatientFeedReaderJob extends OpenMRSFeedReaderJob {
-    private static Logger logger = Logger.getLogger(OpenMRSPatientFeedReaderJob.class);
+public class OpenMRSEncounterFeedFailedEventsJob extends OpenMRSFeedReaderJob {
+    private static Logger logger = Logger.getLogger(OpenMRSEncounterFeedFailedEventsJob.class);
 
-    public OpenMRSPatientFeedReaderJob() {
+    public OpenMRSEncounterFeedFailedEventsJob() throws JobExecutionException {
         super(logger);
     }
 
     @Override
     protected void doExecute(JobExecutionContext jobExecutionContext) {
-        processEvents(jobExecutionContext);
+        processFailedEvents(jobExecutionContext);
     }
 
     @Override
     protected EventWorker createWorker(WebClient authenticatedWebClient, String urlPrefix) {
-        return new PatientFeedWorker(authenticatedWebClient, urlPrefix);
+        return new EncounterFeedWorker(authenticatedWebClient, urlPrefix);
     }
 
     @Override
     protected String getFeedName() {
-        return FeedNames.OPENMRS_PATIENT_FEED_NAME;
+        return FeedNames.OPENMRS_ENCOUNTER_FEED_NAME;
     }
 }

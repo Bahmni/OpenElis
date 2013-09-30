@@ -1,0 +1,141 @@
+// url -> https://192.168.33.10/openmrs/ws/rest/v1/encounter/7a4ea494-01f3-4e28-bc96-f42960065bc4?v=custom:(uuid,orders:(uuid,orderType,concept))
+{
+    "uuid": "7a4ea494-01f3-4e28-bc96-f42960065bc4",
+    "orders": [
+        {
+            "uuid": "b6d0590a-8a18-4255-8dd6-5be84b3f9c34",
+            "orderType": {
+                "uuid": "1a61ef2a-250c-11e3-b832-0800271c1b75",
+                "display": "Lab Order",
+                "name": "Lab Order",
+                "description": "An order for laboratory tests",
+                "retired": false,
+                "links": [
+                    {
+                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/ordertype/1a61ef2a-250c-11e3-b832-0800271c1b75",
+                        "rel": "self"
+                    },
+                    {
+                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/ordertype/1a61ef2a-250c-11e3-b832-0800271c1b75?v=full",
+                        "rel": "full"
+                    }
+                ],
+                "resourceVersion": "1.8"
+            },
+            "concept": {
+                "uuid": "0f609895-7d45-4b22-a91b-755d75e470ec",
+                "display": "Routine Urine",
+                "name": {
+                    "display": "Routine Urine",
+                    "uuid": "f726af16-fc6b-47fa-9956-58cb2ed8105e",
+                    "name": "Routine Urine",
+                    "locale": "en",
+                    "localePreferred": true,
+                    "conceptNameType": "FULLY_SPECIFIED",
+                    "links": [
+                        {
+                            "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/0f609895-7d45-4b22-a91b-755d75e470ec/name/f726af16-fc6b-47fa-9956-58cb2ed8105e",
+                            "rel": "self"
+                        },
+                        {
+                            "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/0f609895-7d45-4b22-a91b-755d75e470ec/name/f726af16-fc6b-47fa-9956-58cb2ed8105e?v=full",
+                            "rel": "full"
+                        }
+                    ],
+                    "resourceVersion": "1.9"
+                },
+                "datatype": {
+                    "uuid": "8d4a4c94-c2cc-11de-8d13-0010c6dffd0f",
+                    "display": "N/A",
+                    "links": [
+                        {
+                            "uri": "NEED-TO-CONFIGURE/ws/rest/v1/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f",
+                            "rel": "self"
+                        }
+                    ]
+                },
+                "conceptClass": {
+                    "uuid": "8d492026-c2cc-11de-8d13-0010c6dffd0f",
+                    "display": "LabSet",
+                    "links": [
+                        {
+                            "uri": "NEED-TO-CONFIGURE/ws/rest/v1/conceptclass/8d492026-c2cc-11de-8d13-0010c6dffd0f",
+                            "rel": "self"
+                        }
+                    ]
+                },
+                "set": true,
+                "version": null,
+                "retired": false,
+                "names": [
+                    {
+                        "uuid": "f726af16-fc6b-47fa-9956-58cb2ed8105e",
+                        "display": "Routine Urine",
+                        "links": [
+                            {
+                                "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/0f609895-7d45-4b22-a91b-755d75e470ec/name/f726af16-fc6b-47fa-9956-58cb2ed8105e",
+                                "rel": "self"
+                            }
+                        ]
+                    }
+                ],
+                "descriptions": [],
+                "mappings": [],
+                "answers": [],
+                "setMembers": [
+                    {
+                        "uuid": "009a1bde-0503-45c3-af37-b3881e82fa93",
+                        "display": "Albumin",
+                        "links": [
+                            {
+                                "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/009a1bde-0503-45c3-af37-b3881e82fa93",
+                                "rel": "self"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "6e0cf697-b43a-40fa-a9ec-f857930eaf6c",
+                        "display": "Sugar",
+                        "links": [
+                            {
+                                "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/6e0cf697-b43a-40fa-a9ec-f857930eaf6c",
+                                "rel": "self"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "5c6a0bac-144d-4ac8-97de-02580a14c772",
+                        "display": "pH",
+                        "links": [
+                            {
+                                "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/5c6a0bac-144d-4ac8-97de-02580a14c772",
+                                "rel": "self"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "0bcd08cc-50da-49fe-8edf-e345ac5ac44c",
+                        "display": "Specific Gravity",
+                        "links": [
+                            {
+                                "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/0bcd08cc-50da-49fe-8edf-e345ac5ac44c",
+                                "rel": "self"
+                            }
+                        ]
+                    }
+                ],
+                "links": [
+                    {
+                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/0f609895-7d45-4b22-a91b-755d75e470ec",
+                        "rel": "self"
+                    },
+                    {
+                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/0f609895-7d45-4b22-a91b-755d75e470ec?v=full",
+                        "rel": "full"
+                    }
+                ],
+                "resourceVersion": "1.9"
+            }
+        }
+    ]
+}
