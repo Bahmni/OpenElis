@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-public class OpenMRSEncounterTest extends OpenMRSMapperBaseTest {
+public class OpenMRSEncounterMapperTest extends OpenMRSMapperBaseTest {
     @Test
     public void map() throws IOException {
         String json = deserialize("sampleOpenMRSEncounter.json");
