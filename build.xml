@@ -186,6 +186,7 @@
                 <fileset dir="${test.src}">
                     <include name="**/*Test*.java"/>
                     <include name="**/*IT.java"/>
+                    <exclude name="**/*BaseTest.java"/>
                     <exclude name="**/All*Tests.java"/>
                 </fileset>
             </batchtest>

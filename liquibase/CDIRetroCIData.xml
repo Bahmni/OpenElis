@@ -2064,7 +2064,7 @@
              <column name="description" value="Able to edit already entered patients and sample primary IDs"/>
              <column name="is_grouping_role" value="FALSE"/>
              <column name="grouping_parent" value="NULL"/>
-             <column name="display_key" value="role.edit.identifiers"/>	
+             <column name="display_key" value="role.edit.orders"/>
 	    </insert>
 	    <insert tableName="system_role_module" schemaName="clinlims">
 	    	 <column name="id" valueNumeric=" nextval( 'system_user_module_seq' ) "/>

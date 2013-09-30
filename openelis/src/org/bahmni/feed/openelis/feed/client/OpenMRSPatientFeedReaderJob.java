@@ -17,34 +17,32 @@
 package org.bahmni.feed.openelis.feed.client;
 
 import org.apache.log4j.Logger;
-import org.bahmni.feed.openelis.AtomFeedProperties;
-import org.ict4h.atomfeed.client.service.AtomFeedClient;
+import org.bahmni.feed.openelis.feed.event.PatientFeedWorker;
+import org.bahmni.webclients.WebClient;
+import org.ict4h.atomfeed.client.service.EventWorker;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 
 @DisallowConcurrentExecution
 public class OpenMRSPatientFeedReaderJob extends OpenMRSFeedReaderJob {
     private static Logger logger = Logger.getLogger(OpenMRSPatientFeedReaderJob.class);
-    protected static AtomFeedClient atomFeedClient;
 
     public OpenMRSPatientFeedReaderJob() {
         super(logger);
     }
 
-    public OpenMRSPatientFeedReaderJob(AtomFeedClient atomFeedClient) {
-        super(logger);
-        OpenMRSPatientFeedReaderJob.atomFeedClient = atomFeedClient;
-    }
-
     @Override
     protected void doExecute(JobExecutionContext jobExecutionContext) {
-        if (atomFeedClient == null)
-            atomFeedClient = createAtomFeedClient(AtomFeedProperties.getInstance(), new AtomFeedClientFactory());
-        atomFeedClient.processEvents();
+        processEvents(jobExecutionContext);
     }
 
     @Override
-    protected void reInitializeAtomFeedClient() {
-        atomFeedClient = createAtomFeedClient(AtomFeedProperties.getInstance(), new AtomFeedClientFactory());
+    protected String getFeedName() {
+        return FeedNames.OPENMRS_PATIENT_FEED_NAME;
+    }
+
+    @Override
+    protected EventWorker createWorker(WebClient authenticatedWebClient, String urlPrefix) {
+        return new PatientFeedWorker(authenticatedWebClient, urlPrefix);
     }
 }

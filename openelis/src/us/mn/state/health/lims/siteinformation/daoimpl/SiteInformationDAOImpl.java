@@ -131,10 +131,7 @@ public class SiteInformationDAOImpl extends BaseDAOImpl implements SiteInformati
 			String sql = "from SiteInformation";
 			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
 			list = query.list();
-//			HibernateUtil.getSession().flush();
-//			HibernateUtil.getSession().clear();
 		} catch (Exception e) {
-			LogEvent.logError("SiteInformationsDAOImpl","getAllSiteInformation()",e.toString());
 			throw new LIMSRuntimeException("Error in SiteInformation getAllSiteInformation()", e);
 		}
 

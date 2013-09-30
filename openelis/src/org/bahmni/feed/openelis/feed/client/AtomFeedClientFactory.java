@@ -48,9 +48,8 @@ public class AtomFeedClientFactory {
         }
     }
 
-    public AtomFeedClient getMRSPatientFeedClient(AtomFeedProperties atomFeedProperties, String feedName,
-                                                  String authenticationURI, WebClient authenticatedWebClient) {
-        PatientFeedWorker patientFeedWorker = new PatientFeedWorker(authenticatedWebClient, getURLPrefix(atomFeedProperties, authenticationURI));
+    public AtomFeedClient getMRSFeedClient(AtomFeedProperties atomFeedProperties, String feedName,
+                                           EventWorker patientFeedWorker, WebClient authenticatedWebClient) {
         String uri = atomFeedProperties.getProperty(feedName);
         try {
             org.ict4h.atomfeed.client.factory.AtomFeedProperties feedProperties = createAtomFeedClientProperties(atomFeedProperties);

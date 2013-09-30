@@ -55,6 +55,9 @@ public class LateStartScheduler {
 
         scheduleJobMap.put("atom-feed-openmrs-patient", OpenMRSPatientFeedReaderJob.class);
         scheduleJobMap.put("atom-feed-openmrs-patient-failed", OpenMRSPatientFeedFailedEventsJob.class);
+
+//        scheduleJobMap.put("atom-feed-openmrs-encounter", OpenMRSPatientFeedReaderJob.class);
+//        scheduleJobMap.put("atom-feed-openmrs-encounter-failed", OpenMRSPatientFeedFailedEventsJob.class);
     }
 
     public void restartSchedules() {

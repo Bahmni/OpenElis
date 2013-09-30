@@ -21,16 +21,22 @@ import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.webclients.WebClient;
 import org.ict4h.atomfeed.client.service.AtomFeedClient;
+import org.ict4h.atomfeed.client.service.EventWorker;
+import org.quartz.JobExecutionContext;
 
-import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class OpenMRSFeedReaderJob extends OpenELISFeedReaderJob {
-    private static final String FEED_NAME = "openmrs.patient.feed.uri";
     private static final String AUTH_URI = "openmrs.auth.uri";
     private static final String OPENMRS_USER = "openmrs.user";
     private static final String OPENMRS_PASSWORD = "openmrs.password";
     private static final String OPENMRS_WEBCLIENT_CONNECT_TIMEOUT = "openmrs.connectionTimeoutInMilliseconds";
     private static final String OPENMRS_WEBCLIENT_READ_TIMEOUT = "openmrs.replyTimeoutInMilliseconds";
+
+    private static Map<Class, AtomFeedClient> atomFeedClients = new HashMap<>();
 
     protected OpenMRSFeedReaderJob(Logger logger) {
         super(logger);
@@ -38,9 +44,15 @@ public abstract class OpenMRSFeedReaderJob extends OpenELISFeedReaderJob {
 
     protected AtomFeedClient createAtomFeedClient(AtomFeedProperties atomFeedProperties, AtomFeedClientFactory atomFeedClientFactory) {
         WebClient authenticatedWebClient = getWebClient(atomFeedProperties, atomFeedClientFactory);
-        return atomFeedClientFactory.getMRSPatientFeedClient(atomFeedProperties,
-                FEED_NAME, AUTH_URI, authenticatedWebClient);
+        String feedName = getFeedName();
+        EventWorker eventWorker = createWorker(authenticatedWebClient, getURLPrefix(atomFeedProperties, AUTH_URI));
+        return atomFeedClientFactory.getMRSFeedClient(atomFeedProperties,
+                feedName, eventWorker, authenticatedWebClient);
     }
+
+    protected abstract EventWorker createWorker(WebClient authenticatedWebClient, String urlPrefix);
+
+    protected abstract String getFeedName();
 
     private WebClient getWebClient(AtomFeedProperties atomFeedProperties, AtomFeedClientFactory atomFeedClientFactory) {
         return atomFeedClientFactory.getAuthenticatedOpenMRSWebClient(
@@ -55,9 +67,36 @@ public abstract class OpenMRSFeedReaderJob extends OpenELISFeedReaderJob {
     @Override
     protected void handleException(Throwable e) {
         if (e != null && ExceptionUtils.getStackTrace(e).contains("HTTP response code: 401")) {
-            reInitializeAtomFeedClient();
+            initializeAtomFeedClient();
         }
     }
 
-    protected abstract void reInitializeAtomFeedClient();
+    private void initializeAtomFeedClient() {
+        atomFeedClients.put(this.getClass(), createAtomFeedClient(AtomFeedProperties.getInstance(), new AtomFeedClientFactory()));
+    }
+
+    protected void processEvents(JobExecutionContext jobExecutionContext) {
+        if (atomFeedClients.get(this.getClass()) == null)
+            initializeAtomFeedClient();
+        AtomFeedClient atomFeedClient = atomFeedClients.get(this.getClass());
+        atomFeedClient.processEvents();
+    }
+
+    protected void processFailedEvents(JobExecutionContext jobExecutionContext) {
+        if (atomFeedClients.get(this.getClass()) == null)
+            initializeAtomFeedClient();
+        AtomFeedClient atomFeedClient = atomFeedClients.get(this.getClass());
+        atomFeedClient.processFailedEvents();
+    }
+
+    private static String getURLPrefix(AtomFeedProperties atomFeedProperties, String authenticationURI) {
+        String openMRSAuthURI = atomFeedProperties.getProperty(authenticationURI);
+        URL openMRSAuthURL;
+        try {
+            openMRSAuthURL = new URL(openMRSAuthURI);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Is not a valid URI - " + openMRSAuthURI);
+        }
+        return String.format("%s://%s", openMRSAuthURL.getProtocol(), openMRSAuthURL.getAuthority());
+    }
 }

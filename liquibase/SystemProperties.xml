@@ -159,7 +159,7 @@
          </insert>
 </changeSet>
 <changeSet author="paulsc" id="7" >
-	<comment>Adds another site information entry setting for configuration identifiers</comment>
+	<comment>Adds another site information entry setting for configuration orders</comment>
 	 <insert schemaName="clinlims" tableName="site_information_domain">
             <column name="id" valueNumeric=" nextval( 'site_information_domain_seq' ) "/>
             <column name="name" value="configIdentity"/>
@@ -167,7 +167,7 @@
     </insert>
 </changeSet>
 <changeSet author="paulsc" id="8" >
-	<comment>Adds another site information entry setting for configuration identifiers</comment>
+	<comment>Adds another site information entry setting for configuration orders</comment>
 	 <insert schemaName="clinlims" tableName="site_information_domain">
             <column name="id" valueNumeric=" nextval( 'site_information_domain_seq' ) "/>
             <column name="name" value="resultReporting"/>
