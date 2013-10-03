@@ -35,4 +35,32 @@ public class OpenMRSOrder {
     public OpenMRSConcept getConcept() {
         return concept;
     }
+
+    public void setOrderType(OpenMRSOrderType orderType) {
+        this.orderType = orderType;
+    }
+
+    public void setConcept(OpenMRSConcept concept) {
+        this.concept = concept;
+    }
+
+    public boolean isLabOrder() {
+        return orderType.isLabOrder();
+    }
+
+    public boolean isLabOrderForPanel() {
+        return concept != null && concept.isSet();
+    }
+
+    public String getLabTestName() {
+        if (!isLabOrder())
+            return null;
+        return concept.getName().getName();
+    }
+
+    public String getTestOrPanelUUID() {
+        if (!isLabOrder())
+            return null;
+        return concept.getUuid();
+    }
 }

@@ -20,6 +20,8 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OpenMRSOrderType {
+    public static final String LAB_ORDER_TYPE = "Lab Order";
+
     private String uuid;
     private String name;
     private boolean isRetired;
@@ -30,5 +32,13 @@ public class OpenMRSOrderType {
 
     public boolean isRetired() {
         return isRetired;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public boolean isLabOrder() {
+        return name.equals(LAB_ORDER_TYPE);
     }
 }

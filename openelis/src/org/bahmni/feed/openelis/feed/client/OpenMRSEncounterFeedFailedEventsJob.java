@@ -17,12 +17,16 @@
 package org.bahmni.feed.openelis.feed.client;
 
 import org.apache.log4j.Logger;
+import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoImpl;
 import org.bahmni.feed.openelis.feed.event.EncounterFeedWorker;
+import org.bahmni.feed.openelis.utils.AuditingService;
 import org.bahmni.webclients.WebClient;
 import org.ict4h.atomfeed.client.service.EventWorker;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
+import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 
 @DisallowConcurrentExecution
 public class OpenMRSEncounterFeedFailedEventsJob extends OpenMRSFeedReaderJob {

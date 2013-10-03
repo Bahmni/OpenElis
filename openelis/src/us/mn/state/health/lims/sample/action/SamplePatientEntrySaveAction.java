@@ -245,7 +245,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
                 patientUpdate.persistPatientData(patientInfo, request.getContextPath());
             }
 
-            AddSampleService addSampleService = new AddSampleService();
+            AddSampleService addSampleService = new AddSampleService(true);
             addSampleService.persist(analysisBuilder, useInitialSampleCondition, newOrganization, requesterSite,
                     orgAddressExtra, sample, sampleItemsTests, observations, sampleHuman, patientId,
                     projectId, providerId, currentUserId,
@@ -333,7 +333,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 	private SampleRequester createSiteRequester(String orgId) {
 		SampleRequester requester;
 		requester = new SampleRequester();
-		requester.setRequesterId(orgId);
+		 requester.setRequesterId(orgId);
 		requester.setRequesterTypeId(ORGANIZATION_REQUESTER_TYPE_ID);
 		requester.setSysUserId(currentUserId);
 		return requester;

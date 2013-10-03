@@ -59,6 +59,8 @@ public class Sample extends EnumValueItemImpl {
 	private String transmissionDateForDisplay;
 	private ValueHolderInterface systemUser;
 
+    private String uuid;
+
 	// testing one-to-many
 	//this is for HSE I  and II - ability to enter up to two projects
 	private List sampleProjects;
@@ -372,6 +374,12 @@ public class Sample extends EnumValueItemImpl {
     public void setReceivedTimeForDisplay(String receivedTimeForDisplay) {
         this.receivedTimeForDisplay = receivedTimeForDisplay;
     }
-	
 
+    public String getUUID() {
+        return uuid;
+    }
+
+    public void setUUID(String uuid) {
+        this.uuid = uuid;
+    }
 }

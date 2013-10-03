@@ -24,12 +24,20 @@ public class OpenMRSConcept {
     private OpenMRSConceptName name;
     private boolean set;
 
+    public void setSet(boolean set) {
+        this.set = set;
+    }
+
     public String getUuid() {
         return uuid;
     }
 
     public OpenMRSConceptName getName() {
         return name;
+    }
+
+    public void setName(OpenMRSConceptName name) {
+        this.name = name;
     }
 
     public boolean isSet() {

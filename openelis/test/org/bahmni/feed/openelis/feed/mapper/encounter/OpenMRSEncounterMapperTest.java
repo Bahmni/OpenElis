@@ -37,21 +37,33 @@ public class OpenMRSEncounterMapperTest extends OpenMRSMapperBaseTest {
         OpenMRSEncounter openMRSEncounter = openMRSEncounterMapper.map(json);
         Assert.assertNotNull(openMRSEncounter);
 
-        Assert.assertEquals("7a4ea494-01f3-4e28-bc96-f42960065bc4", openMRSEncounter.getUuid());
-        Assert.assertEquals(1, openMRSEncounter.getOrders().size());
+        Assert.assertEquals("7820b07d-50e9-4fed-b991-c38692b3d4ec", openMRSEncounter.getUuid());
+        Assert.assertEquals(3, openMRSEncounter.getOrders().size());
 
-        OpenMRSOrder openMRSOrder = openMRSEncounter.getOrders().get(0);
+        Assert.assertNotNull("Patient should be present in the order", openMRSEncounter.getPatient());
+        Assert.assertEquals("105059a8-5226-4b1f-b512-0d3ae685287d", openMRSEncounter.getPatient().getUuid());
 
-        Assert.assertEquals("b6d0590a-8a18-4255-8dd6-5be84b3f9c34", openMRSOrder.getUuid());
+        checkOrder(openMRSEncounter.getOrders().get(0), "ac0819a9-11c1-4310-8f0a-feee71e5086b", "4e167df9-80f5-4caa-9a82-ec97908cbd59", "Anaemia Panel", true);
+        checkOrder(openMRSEncounter.getOrders().get(1), "ce3eeba1-2176-48d0-9ff4-53b731121274", "8c47a469-1b8f-47d9-9363-b97b45e3e740", "Routine Blood", true);
+        checkOrder(openMRSEncounter.getOrders().get(2), "3508dbea-6844-4174-8787-40ab809f2522", "15a9d9e5-edcb-4e64-85ad-551693aeed5c", "ESR", false);
+    }
+
+    private void checkOrder(OpenMRSOrder openMRSOrder, String expectedOrderUUID, String expectedTestOrPanelUUID, String testOrPanelName, boolean isPanel) {
+        Assert.assertEquals(expectedOrderUUID, openMRSOrder.getUuid());
         Assert.assertEquals("Lab Order", openMRSOrder.getOrderType().getName());
         Assert.assertFalse(openMRSOrder.getOrderType().isRetired());
 
         OpenMRSConcept concept = openMRSOrder.getConcept();
-        Assert.assertEquals("0f609895-7d45-4b22-a91b-755d75e470ec", concept.getUuid());
-        Assert.assertTrue("This is a set. Panel.", concept.isSet());
+        Assert.assertEquals(expectedTestOrPanelUUID, concept.getUuid());
+        if (isPanel)
+            Assert.assertTrue("This is a set. Panel.", concept.isSet());
+        else
+            Assert.assertFalse("This is not a set. Test.", concept.isSet());
+
+        Assert.assertEquals(expectedTestOrPanelUUID, openMRSOrder.getTestOrPanelUUID());
 
         OpenMRSConceptName conceptName = concept.getName();
-        Assert.assertEquals("Routine Urine", conceptName.getName());
+        Assert.assertEquals(testOrPanelName, conceptName.getName());
     }
 
     private ObjectMapper getObjectMapperThatAllowsComments() {

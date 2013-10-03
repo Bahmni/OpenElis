@@ -57,6 +57,11 @@ import java.util.List;
 import static org.apache.commons.validator.GenericValidator.isBlankOrNull;
 
 public class AddSampleService {
+    private static boolean shouldLoadTests;
+
+    public AddSampleService(boolean shouldLoadTests) {
+        this.shouldLoadTests = shouldLoadTests;
+    }
 
     public void persist(AnalysisBuilder analysisBuilder, boolean useInitialSampleCondition,
                         Organization newOrganization, SampleRequester requesterSite,
@@ -114,7 +119,8 @@ public class AddSampleService {
             sampleItemDAO.insertData(sampleTestPair.item);
 
             for (Test test : sampleTestPair.tests) {
-                testDAO.getData(test);
+                if (shouldLoadTests)
+                    testDAO.getData(test);
 
                 Analysis analysis = analysisBuilder.populateAnalysis(analysisRevision, sampleTestPair, test);
                 analysisDAO.insertData(analysis, false); // false--do not check

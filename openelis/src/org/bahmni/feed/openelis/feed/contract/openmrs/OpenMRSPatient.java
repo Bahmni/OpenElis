@@ -23,6 +23,7 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OpenMRSPatient {
+    private String uuid;
     private OpenMRSPerson person;
     private List<OpenMRSPatientIdentifier> identifiers;
 
@@ -54,5 +55,9 @@ public class OpenMRSPatient {
 
     public void setIdentifiers(List<OpenMRSPatientIdentifier> identifiers) {
         this.identifiers = identifiers;
+    }
+
+    public String getUuid() {
+        return uuid;
     }
 }

@@ -862,4 +862,34 @@
             ALTER TABLE "note" ALTER COLUMN "text" type text;
         </sql>
     </changeSet>
+
+    <changeSet id="57" author="tw" runOnChange="true" context="bahmni">
+        <insert schemaName="clinlims" tableName="quartz_cron_scheduler">
+            <column name="id" valueNumeric=" nextval( 'quartz_cron_scheduler_seq' ) "/>
+            <column name="active" type="boolean" valueBoolean="true"/>
+            <column name="name" value="atom-feed-openmrs-encounter"/>
+            <column name="job_name" value="atom-feed-openmrs-encounter"/>
+            <column name="display_key" value="schedule.name.atomFeedOpenMRSEncounter"/>
+            <column name="description_key" value="schedule.name.atomFeedOpenMRSEncounter"/>
+            <column name="cron_statement" value="0/15 * * * * ?"/>
+        </insert>
+        <insert schemaName="clinlims" tableName="quartz_cron_scheduler">
+            <column name="id" valueNumeric=" nextval( 'quartz_cron_scheduler_seq' ) "/>
+            <column name="active" type="boolean" valueBoolean="true"/>
+            <column name="name" value="atom-feed-openmrs-encounter-failed"/>
+            <column name="job_name" value="atom-feed-openmrs-encounter-failed"/>
+            <column name="display_key" value="schedule.name.atomFeedOpenMRSEncounter.failed"/>
+            <column name="description_key" value="schedule.name.atomFeedOpenMRSEncounter.failed"/>
+            <column name="cron_statement" value="0/15 * * * * ?"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="58" author="tw" context="bahmni">
+        <comment>Adds uuid for the sample</comment>
+        <addColumn tableName="sample" schemaName="clinlims">
+            <column name="uuid" type="varchar(100)"></column>
+        </addColumn>
+    </changeSet>
+
+
 </databaseChangeLog>
