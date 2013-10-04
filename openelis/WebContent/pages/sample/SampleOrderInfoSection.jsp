@@ -99,7 +99,6 @@
     </td>
     <td>
         <html:select styleId="sampleSourceID" name="<%=formName%>" property="sampleSourceId" onchange=" makeDirty();setSave();">
-            <html:option value=""/>
             <html:optionsCollection name="<%=formName%>" property="sampleSourceList" label="name" value="id" />
         </html:select>
     </td>
