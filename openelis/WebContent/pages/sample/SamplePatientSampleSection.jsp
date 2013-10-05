@@ -5,10 +5,9 @@
 
 <!-- <html:button styleId="samplesDisplayButton" property="showHide" value="-" onclick="showHideSection(this, 'samplesDisplay');" />
  -->
- <h2><%= StringUtil.getContextualMessageForKey("sample.entry.sampleList.label") %><span class="requiredlabel">*</span>
-</h2>
 
 <div id="samplesDisplay" class="colorFill" style="display:block;" >
+    <h2><%= StringUtil.getContextualMessageForKey("sample.entry.sampleList.label") %><span class="requiredlabel">*</span></h2>
     <tiles:insert attribute="addSample"/>
 </div>
 

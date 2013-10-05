@@ -63,7 +63,6 @@ function /*void*/ notifyChangeListeners(){
 }
 
 function addNewSamples(){
-
 	$("samplesAdded").show();
 
 	var addTable = $("samplesAddedTable");
@@ -78,6 +77,7 @@ function addNewSamples(){
 	notifyChangeListeners();
 	
 	testAndSetSave();
+	$jq("html, body").animate({ scrollTop: $jq("#samplesDisplay").offset().top }, 500);
 }
 
 function testAndSetSave(){
