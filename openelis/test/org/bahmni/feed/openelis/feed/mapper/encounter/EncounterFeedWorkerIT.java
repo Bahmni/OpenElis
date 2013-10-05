@@ -1,6 +1,5 @@
 package org.bahmni.feed.openelis.feed.mapper.encounter;
 
-import junit.framework.Assert;
 import org.apache.commons.io.IOUtils;
 import org.bahmni.feed.openelis.IT;
 import org.bahmni.feed.openelis.feed.event.EncounterFeedWorker;
@@ -27,9 +26,7 @@ public class EncounterFeedWorkerIT extends IT {
         String json = deserialize("sampleOpenMRSEncounter.json");
 
         EncounterFeedWorker encounterFeedWorker = new EncounterFeedWorker(null, null);
-        boolean hasProcessed = encounterFeedWorker.process(json);
-
-        Assert.assertFalse(hasProcessed);
+        encounterFeedWorker.process(json);
     }
 
     private String deserialize(String fileName) throws IOException {

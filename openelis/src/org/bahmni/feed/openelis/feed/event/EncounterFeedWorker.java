@@ -22,6 +22,7 @@ import org.bahmni.feed.openelis.ObjectMapperRepository;
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoImpl;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
+import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPatient;
 import org.bahmni.feed.openelis.feed.contract.openmrs.encounter.OpenMRSEncounter;
 import org.bahmni.feed.openelis.feed.contract.openmrs.encounter.OpenMRSOrder;
 import org.bahmni.feed.openelis.feed.mapper.encounter.OpenMRSEncounterMapper;
@@ -38,7 +39,6 @@ import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
 import us.mn.state.health.lims.observationhistory.valueholder.ObservationHistory;
 import us.mn.state.health.lims.organization.dao.OrganizationTypeDAO;
 import us.mn.state.health.lims.organization.daoimpl.OrganizationTypeDAOImpl;
-import us.mn.state.health.lims.organization.valueholder.Organization;
 import us.mn.state.health.lims.organization.valueholder.OrganizationType;
 import us.mn.state.health.lims.panelitem.dao.PanelItemDAO;
 import us.mn.state.health.lims.panelitem.daoimpl.PanelItemDAOImpl;
@@ -136,7 +136,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
             String content = event.getContent();
             String encounterJSON = webClient.get(URI.create(urlPrefix + content), new HashMap<String, String>(0));
 
-            if (process(encounterJSON)) return;
+            process(encounterJSON);
 
         } catch (IOException e) {
             throw new LIMSRuntimeException(e);
@@ -146,36 +146,68 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         }
     }
 
-    public boolean process(String encounterJSON) throws IOException {
+    public void process(String encounterJSON) throws IOException {
         OpenMRSEncounterMapper openMRSEncounterMapper = new OpenMRSEncounterMapper(ObjectMapperRepository.objectMapper);
         OpenMRSEncounter openMRSEncounter = openMRSEncounterMapper.map(encounterJSON);
         logInfo(openMRSEncounter);
 
         if (!openMRSEncounter.hasLabOrder())
-            return true;
+            return;
 
-        List<OpenMRSOrder> labOrders = openMRSEncounter.getLabOrders();
-        if (labOrders.isEmpty())
-            return true;
+        Patient patient = getPatient(openMRSEncounter.getPatient());
 
         String sysUserId = auditingService.getSysUserId();
-        String accessionNumber = AccessionNumberUtil.getNextAccessionNumber("");
-
         Date nowAsSqlDate = DateUtil.getNowAsSqlDate();
-        Sample sample = getSample(sysUserId, accessionNumber, nowAsSqlDate, openMRSEncounter);
 
+        Sample sample = getSample(sysUserId, nowAsSqlDate, openMRSEncounter.getUuid());
+        List<SampleTestCollection> sampleTestCollections = getSampleTestCollections(openMRSEncounter, sysUserId, nowAsSqlDate, sample);
+        SampleHuman sampleHuman = getSampleHuman(sysUserId);
+
+        RequesterType providerRequesterType = requesterTypeDAO.getRequesterTypeByName("provider");
+        if (providerRequesterType != null) {
+            provider_requester_type_id = Long.parseLong(providerRequesterType.getId());
+        }
+        OrganizationType orgType = organizationTypeDAO.getOrganizationTypeByName("referring clinic");
+        if (orgType != null) {
+            referring_org_type_id = orgType.getId();
+        }
+
+        AnalysisBuilder analysisBuilder = getAnalysisBuilder();
+
+        String providerId = null;
+        String projectId = null;
+        AddSampleService addSampleService = new AddSampleService(false);
+        addSampleService.persist(analysisBuilder, false, null, null,
+                new ArrayList<OrganizationAddress>(), sample,
+                sampleTestCollections, new ArrayList<ObservationHistory>(), sampleHuman,
+                patient.getId(), projectId, providerId, sysUserId,
+                provider_requester_type_id,  referring_org_type_id);
+    }
+
+    private SampleHuman getSampleHuman(String sysUserId) {
+        SampleHuman sampleHuman = new SampleHuman();
+        sampleHuman.setSysUserId(sysUserId);
+        return sampleHuman;
+    }
+
+    private Patient getPatient(OpenMRSPatient openMRSPatient) {
+        String patientUUID = openMRSPatient.getUuid();
+        Patient patient = patientDAO.getPatientByUUID(patientUUID);
+        if (patient == null) {
+            throw new RuntimeException(String.format("Patient with uuid '%s' not found in ELIS",patientUUID));
+        }
+        return patient;
+    }
+
+    private List<SampleTestCollection> getSampleTestCollections(OpenMRSEncounter openMRSEncounter, String sysUserId, Date nowAsSqlDate, Sample sample) {
         List<SampleTestCollection> sampleTestCollections = new ArrayList<>();
         int sampleItemIdIndex = 0;
-
-        String patientUUID = openMRSEncounter.getPatient().getUuid();
-        Patient patient = patientDAO.getPatientByUUID(patientUUID);
-
+        List<OpenMRSOrder> labOrders = openMRSEncounter.getLabOrders();
         for (OpenMRSOrder labOrder : labOrders) {
             sampleItemIdIndex++;
 
             List<Test> tests = getTests(labOrder);
 
-            // TODO : Mujir - is this ok? Does this work for panels?????? HIGH PRIORITY
             String anyTestId = tests.get(0).getId();
             TypeOfSampleTest typeOfSampleTestForTest = typeOfSampleTestDAO.getTypeOfSampleTestForTest(anyTestId);
 
@@ -190,59 +222,31 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
             item.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.SampleStatus.Entered));
             item.setCollector(collector);
 
-            // TODO : Mujir - is empty ObservationHistory, initialConditionList ok?
-            List<ObservationHistory> initialConditionList = new ArrayList<>();
-
             // TODO : Mujir - is DateUtil.convertSqlDateToStringDate(nowAsSqlDate) ok?
             SampleTestCollection sampleTestCollection = new SampleTestCollection(item, tests,
-                    DateUtil.formatDateTimeAsText(nowAsSqlDate), initialConditionList);
+                    DateUtil.formatDateTimeAsText(nowAsSqlDate), new ArrayList<ObservationHistory>());
             sampleTestCollections.add(sampleTestCollection);
         }
-
-        // TODO : Mujir - is empty observations ok?
-        List<ObservationHistory> observations = new ArrayList<>();
-
-        SampleHuman sampleHuman = new SampleHuman();
-        sampleHuman.setSysUserId(sysUserId);
-
-        String projectId = null;
-
-        RequesterType providerRequesterType = requesterTypeDAO.getRequesterTypeByName("provider");
-        if (providerRequesterType != null) {
-            provider_requester_type_id = Long.parseLong(providerRequesterType.getId());
-        }
-
-        OrganizationType orgType = organizationTypeDAO.getOrganizationTypeByName("referring clinic");
-        if (orgType != null) {
-            referring_org_type_id = orgType.getId();
-        }
-
-        // TODO :Mujir - providerId?
-        String providerId = null;
-
-        AnalysisBuilder analysisBuilder = getAnalysisBuilder();
-
-        AddSampleService addSampleService = new AddSampleService(false);
-        addSampleService.persist(analysisBuilder, false, null, null,
-                new ArrayList<OrganizationAddress>(), sample,
-                sampleTestCollections, observations, sampleHuman, patient.getId(), projectId, providerId, sysUserId,
-                provider_requester_type_id,  referring_org_type_id);
-
-        return false;
+        return sampleTestCollections;
     }
 
     private List<Test> getTests(OpenMRSOrder labOrder) {
         String externalReferenceTestOrPanelUUID = labOrder.getTestOrPanelUUID();
         if (labOrder.isLabOrderForPanel()) {
-            return getTestsForPanel(externalReferenceTestOrPanelUUID);
+            return getTestsForPanel(labOrder.getLabTestName(), externalReferenceTestOrPanelUUID);
         }
 
-        return getTest(externalReferenceTestOrPanelUUID);
+        return getTest(labOrder.getLabTestName(), externalReferenceTestOrPanelUUID);
     }
 
-    private List<Test> getTest(String externalReferenceTestOrPanelUUID) {
+    private List<Test> getTest(String labTestName, String externalReferenceTestOrPanelUUID) {
         String productTypeTest = AtomFeedProperties.getInstance().getProductTypeLabTest();
         ExternalReference data = externalReferenceDao.getData(externalReferenceTestOrPanelUUID, productTypeTest);
+        if (data == null) {
+            throw new RuntimeException(
+                    String.format("Test '%s' was not setup properly. No external reference for Test with uuid '%s' found in external_reference table ",
+                            labTestName, externalReferenceTestOrPanelUUID));
+        }
         long testId = data.getItemId();
         Test test = testDAO.getTestById(String.valueOf(testId));
 
@@ -251,10 +255,16 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         return tests;
     }
 
-    private List<Test> getTestsForPanel(String externalReferencePanelUUID) {
+    private List<Test> getTestsForPanel(String panelName, String externalReferencePanelUUID) {
         List<Test> tests = new ArrayList<>();
         String productTypePanel = AtomFeedProperties.getInstance().getProductTypePanel();
         ExternalReference data = externalReferenceDao.getData(externalReferencePanelUUID, productTypePanel);
+        if (data == null) {
+            throw new RuntimeException(
+                    String.format("Panel '%s' was not setup properly. No external reference for Panel with uuid '%s' found in external_reference table ",
+                            panelName, externalReferencePanelUUID));
+        }
+
         long panelId = data.getItemId();
         List panelItemsForPanel = panelItemDAO.getPanelItemsForPanel(String.valueOf(panelId));
         for (Object obj : panelItemsForPanel) {
@@ -266,7 +276,9 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         return tests;
     }
 
-    private Sample getSample(String sysUserId, String accessionNumber, Date nowAsSqlDate, OpenMRSEncounter openMRSEncounter) {
+    private Sample getSample(String sysUserId, Date nowAsSqlDate, String openMRSEncounterUuid) {
+        String accessionNumber = AccessionNumberUtil.getNextAccessionNumber("");
+
         Sample sample = new Sample();
         sample.setSysUserId(sysUserId);
         sample.setAccessionNumber(accessionNumber);
@@ -285,23 +297,9 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         sample.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.OrderStatus.Entered));
 
         // Mujir - create an external reference to order id in openelis.. this can go in Sample against the accession number
-        sample.setUUID(openMRSEncounter.getUuid());
+        sample.setUUID(openMRSEncounterUuid);
 
         return sample;
-    }
-
-    private Organization getOrganization(String sysUserId) {
-        Organization organization = new Organization();
-
-        organization.setOrganizationName("");
-        organization.setShortName("");
-        // this was left as a warning for copy and paste -- it causes a null
-        // pointer exception in session.flush()
-        // newOrganization.setOrganizationTypes(ORG_TYPE_SET);
-        organization.setSysUserId(sysUserId);
-        organization.setMlsSentinelLabFlag("N");
-
-        return organization;
     }
 
     private AnalysisBuilder getAnalysisBuilder() {
@@ -311,6 +309,6 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
     }
 
     private void logInfo(OpenMRSEncounter openMRSEncounter) {
-        logger.info(String.format("Processing encounter with ID=%s", openMRSEncounter.getUuid()));
+        logger.info(String.format("Processing encounter with ID='%s'", openMRSEncounter.getUuid()));
     }
 }
