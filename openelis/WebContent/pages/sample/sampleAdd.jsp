@@ -92,7 +92,7 @@ function testAndSetSave(){
 
 function addTypeToTable(table, sampleDescription, sampleType, currentTime, currentDate ) {
 		var rowLength = table.rows.length;
-		var selectRow = rowLength == 1;
+		var selectRow = true;
 		var rowLabel = rowLength == 1 ? 1 : parseInt(table.rows[rowLength - 1].id.substr(1)) + 1;
 		var newRow = table.insertRow(rowLength);
 
