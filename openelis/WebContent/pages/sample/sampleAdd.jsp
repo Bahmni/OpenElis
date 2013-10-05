@@ -381,7 +381,7 @@ function insertPanelIntoPanelTable( panel, panelTable ){
 	var nameCell = newRow.insertCell(1);
 
 	selectionCell.innerHTML = getPanelCheckBoxesHtml(testMap, nominalRow, id );
-	nameCell.innerHTML = name;
+	nameCell.innerHTML = "<label for='panel_" + nominalRow + "'> " + name + "</label>";
 }
 
 function getCheckBoxesHtml( row, userBench){
