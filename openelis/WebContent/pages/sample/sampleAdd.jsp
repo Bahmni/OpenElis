@@ -333,7 +333,7 @@ function insertTestIntoTestTable( test, testTable ){
 	//var nominalRow = row - 1;
 	var nominalRow =row;
 	var newRow=$jq("<li></li>");
-	$jq("#addsample-list").append(newRow);console.log(newRow);
+	$jq("#addsample-list").append(newRow);
 	//var newRow = testTable.insertRow(row);
 	//var selectionCell = newRow.insertCell(0);
 	//var nameCell = newRow.insertCell(1);
@@ -394,7 +394,7 @@ function getPanelCheckBoxesHtml(map, row, id ){
 }
 
 function getTestDisplayRowHtml( name, id, row ){
-	return "<input name='testName' value='" + id + "' id='testName_" + row  + "' type='hidden' >" + name;
+	return "<label for='test_" + row + "'>" + name + "</label>" + "<input name='testName' value='" + id + "' id='testName_" + row  + "' type='hidden' style='display:none'>" + name;
 }
 
 
@@ -457,7 +457,7 @@ function assignTestsToSelected(checkbox, panelId){
 	for( i = 0; i < inputs.length; i = i + 2 ){
 		if( inputs[i].checked ){
 			//this is fragile.  It depends on the code in getTestDisplayRowHtml()
-			choosenTests.push( inputs[i+1].parentNode.lastChild.nodeValue );
+			choosenTests.push( inputs[i+1].parentNode.firstChild.firstChild.wholeText );
 			choosenIds.push( inputs[i+1].value );
 		}
 	}
