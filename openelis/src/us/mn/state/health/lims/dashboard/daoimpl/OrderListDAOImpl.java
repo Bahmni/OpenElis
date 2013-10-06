@@ -244,6 +244,7 @@ public class OrderListDAOImpl implements OrderListDAO {
         inProgressAnalysisStatus.add(parseInt(getStatusID(FinalizedRO)));
         inProgressAnalysisStatus.add(parseInt(getStatusID(ReferedOut)));
         inProgressAnalysisStatus.add(parseInt(getStatusID(ReferredIn)));
+        inProgressAnalysisStatus.add(parseInt(getStatusID(Canceled)));
         return StringUtils.join(inProgressAnalysisStatus.iterator(), ',');
     }
 
