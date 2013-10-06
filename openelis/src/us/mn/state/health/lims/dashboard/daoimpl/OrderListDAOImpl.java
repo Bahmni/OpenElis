@@ -127,7 +127,8 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "WHERE age(sample.lastupdated) <= '1 day' " +
                 "AND analysis.status_id NOT IN ("+ getAllReferredAnalysisStatus() +") " +
                 "GROUP BY sample.accession_number, sample.lastupdated, person.first_name, person.last_name, sample_source.name, patient_identity.identity_data " +
-                "HAVING COUNT(analysis.id) = SUM(CASE WHEN  analysis.status_id IN (" +getCompletedStatus()+ " ) THEN 1 ELSE 0 END);";
+                "HAVING COUNT(analysis.id) = SUM(CASE WHEN  analysis.status_id IN (" +getCompletedStatus()+ " ) THEN 1 ELSE 0 END) " +
+                "ORDER by sample.lastupdated desc;";
 
         try {
             Connection connection = HibernateUtil.getSession().connection();
