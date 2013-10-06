@@ -89,6 +89,7 @@ public class DefaultConfigurationProperties extends ConfigurationProperties {
 		setDBPropertyMappingAndDefault(Property.QA_SORT_EVENT_LIST, "sortQaEvents", "true");
 		setDBPropertyMappingAndDefault(Property.ALWAYS_VALIDATE_RESULTS, "validate all results", "true");
 		setDBPropertyMappingAndDefault(Property.ADDITIONAL_SITE_INFO, "additional site info", "");
+		setDBPropertyMappingAndDefault(Property.RESULTS_PAGE_SIZE, "resultsPageSize", "10");
 	}
 
 	private void setDBPropertyMappingAndDefault(Property property, String dbName, String defaultValue) {

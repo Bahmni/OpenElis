@@ -295,8 +295,6 @@ public interface IActionConstants {
 	public static final String TEST_RESULTS_PAGE_MAPPING_SESSION_CACHE = "TestResultsPageMappingSessionCache";
 	public static final String ANALYSIS_RESULTS_SESSION_CACHE = "AnalysisResultsSessionCache";
 	public static final String ANALYSIS_RESULTS_PAGE_MAPPING_SESSION_CACHE = "AnalysisResultsPageMappingSessionCache";
-	public static final int PAGING_SIZE = 3;
-
 	public static final String ACCESSION_SEARCH_WITH_PATIENT = "UseAccessionInSearch";
 	
 	/**

@@ -20,6 +20,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts.action.DynaActionForm;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.paging.*;
+import us.mn.state.health.lims.common.util.ConfigurationProperties;
 import us.mn.state.health.lims.common.util.IdValuePair;
 import us.mn.state.health.lims.test.beanItems.TestResultItem;
 
@@ -81,6 +82,7 @@ public class ResultsPaging {
 
 		public void createPages(List<TestResultItem> tests, List<List<TestResultItem>> pagedResults) {
 			List<TestResultItem> page = new ArrayList<>();
+            int pagingSize = Integer.parseInt(ConfigurationProperties.getInstance().getPropertyValue(ConfigurationProperties.Property.RESULTS_PAGE_SIZE));
 
 			String accessionSequenceNumber = null;
 			int resultCount = 0;
@@ -92,7 +94,7 @@ public class ResultsPaging {
 					pagedResults.add(page);
 					page = new ArrayList<>();
 				}
-				if (resultCount >= IActionConstants.PAGING_SIZE) {
+                if (resultCount >= pagingSize) {
 					accessionSequenceNumber = item.getSequenceAccessionNumber();
 				}
 

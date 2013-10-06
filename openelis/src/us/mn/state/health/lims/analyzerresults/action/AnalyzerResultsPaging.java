@@ -21,6 +21,7 @@ import org.apache.struts.action.DynaActionForm;
 import us.mn.state.health.lims.analyzerresults.action.beanitems.AnalyzerResultItem;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.paging.*;
+import us.mn.state.health.lims.common.util.ConfigurationProperties;
 import us.mn.state.health.lims.common.util.IdValuePair;
 
 import javax.servlet.http.HttpServletRequest;
@@ -85,6 +86,7 @@ public class AnalyzerResultsPaging {
 
 		public void createPages(List<AnalyzerResultItem> tests, List<List<AnalyzerResultItem>> pagedResults) {
 			List<AnalyzerResultItem> page = new ArrayList<>();
+            int pagingSize = Integer.parseInt(ConfigurationProperties.getInstance().getPropertyValue(ConfigurationProperties.Property.RESULTS_PAGE_SIZE));
 
 			int sampleGroupingNumber = -1;
 			int resultCount = 0;
@@ -96,7 +98,7 @@ public class AnalyzerResultsPaging {
 					pagedResults.add(page);
 					page = new ArrayList<>();
 				}
-				if (resultCount >= IActionConstants.PAGING_SIZE) {
+				if (resultCount >= pagingSize) {
 					sampleGroupingNumber = item.getSampleGroupingNumber();
 				}
 

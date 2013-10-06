@@ -68,7 +68,7 @@ import us.mn.state.health.lims.test.valueholder.Test;
 public class StatusResultsAction extends BaseAction implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private static final boolean REVERSE_SORT_ORDER = false;
+	private static final boolean FORWARD_SORT_ORDER = true;
 	private final AnalysisDAO analysisDAO = new AnalysisDAOImpl();
 	private final TestDAO testDAO = new TestDAOImpl();
 	private final SampleDAO sampleDAO = new SampleDAOImpl();
@@ -351,7 +351,7 @@ public class StatusResultsAction extends BaseAction implements Serializable {
 	}
 
 	private List<TestResultItem> buildTestItems(List<Analysis> filteredAnalysisList) {
-		return resultsUtility.getGroupedTestsForAnalysisList(filteredAnalysisList, REVERSE_SORT_ORDER);
+		return resultsUtility.getGroupedTestsForAnalysisList(filteredAnalysisList, FORWARD_SORT_ORDER);
 	}
 
 	private List<DropPair> getAnalysisStatusTypes() {

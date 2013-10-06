@@ -862,4 +862,15 @@
             ALTER TABLE "note" ALTER COLUMN "text" type text;
         </sql>
     </changeSet>
+    <changeSet id="57" author="tw" context="bahmni">
+        <insert schemaName="clinlims" tableName="site_information">
+            <column name="id" valueNumeric=" nextVal( 'site_information_seq' ) "/>
+            <column name="name" value="resultsPageSize"/>
+            <column name="description"
+                    value="Configures the number tests per page for result entry"/>
+            <column name="value" value="10"/>
+            <column name="value_type" value="int"/>
+            <column name="lastupdated" valueDate=" now() "/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>
