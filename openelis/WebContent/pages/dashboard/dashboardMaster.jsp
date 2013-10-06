@@ -138,7 +138,7 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
         gridForInProgressOrder = new Slick.Grid(inProgressObject.div, dataViewForInProgressTab, inProgressObject.columns,options);
         createGrid(gridForInProgressOrder, dataViewForInProgressTab, inProgressObject, onRowSelection);
 
-        completedOrderObject = new order("#completedListContainer-slick-grid", "<%= completedOrderListJson %>", generateLinkForCompletedOrder, getColumnsForCompletedOrder);
+        completedOrderObject = new order("#completedListContainer-slick-grid", "<%= completedOrderListJson %>", generateLinkForPrint, getColumnsForCompletedOrder);
         dataViewForCompletedTab = new Slick.Data.DataView();
         gridForCompletedOrder = new Slick.Grid(completedOrderObject.div, dataViewForCompletedTab, completedOrderObject.columns, options);
         createGrid(gridForCompletedOrder, dataViewForCompletedTab, completedOrderObject, onRowSelection);

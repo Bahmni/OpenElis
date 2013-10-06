@@ -34,15 +34,15 @@ function order(div, orderJson, generateLink, getColumns) {
          };
 }
 
-function generateLinkForCompletedOrder(order){
-    return "<a target='_blank' href='ReportPrint.do?type=patient&report=patientHaitiClinical&accessionDirect="+ order.accessionNumber +"&patientNumberDirect=" + order.stNumber + "'>Print Report</a>";
+function generateLinkForPrint(order){
+    return "<a target='_blank' href='ReportPrint.do?type=patient&report=patientHaitiClinical&accessionDirect="+ order.accessionNumber +"&patientNumberDirect=" + order.stNumber + "'>Print</a>";
 }
 
 function generateLinkForInProgressOrder(order){
     var enterResultLink = "<a href='AccessionResults.do?accessionNumber=" + order.accessionNumber + "&referer=LabDashboard'>Result</a>";
     //TODO: &type= is required in the url because of a bug I can't find the source of. The bug causes people without
     var validationLink = "<a href='ResultValidationForAccessionNumber.do?accessionNumber=" + order.accessionNumber + "&patientId=" + order.stNumber + "&referer=LabDashboard&type=&test='>Validate</a>";
-    return enterResultLink + " | " + validationLink;
+    return enterResultLink + " | " + validationLink + " | " + generateLinkForPrint(order);
 }
 
 function getColumnsForInProgressOrder() {
@@ -54,7 +54,7 @@ function getColumnsForInProgressOrder() {
                 {id: "pendingValidationCount", name: "Pending Validation", field: "pendingValidationCount", sortable: true, editor: Slick.Editors.Text,  index:4, searchable: false, minWidth:140},
                 {id: "totalTestCount", name: "Total Tests", field: "totalTestCount", sortable: true, editor: Slick.Editors.Text,  index:5, searchable: false, minWidth:90},
                 {id: "source", name: "Source", field: "source", sortable: true,  index:6, editor: Slick.Editors.Text, minWidth:90},
-                {id: "link", name: "Action", field: "link",  cssClass: "cell-title", formatter: formatter, index:7,editor: Slick.Editors.Text, searchable: false, minWidth:130}
+                {id: "link", name: "Action", field: "link",  cssClass: "cell-title", formatter: formatter, index:7,editor: Slick.Editors.Text, searchable: false, minWidth:180}
          ];
 }
 
