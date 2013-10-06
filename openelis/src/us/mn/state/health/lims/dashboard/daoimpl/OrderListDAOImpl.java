@@ -114,7 +114,8 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "patient_identity.identity_data AS st_number, " +
                 "sample_source.name AS sample_source, " +
                 "COUNT(analysis.id) AS total_test_count, " +
-                "SUM(CASE WHEN  analysis.status_id IN (" + getCompletedStatus() + ") THEN 1 ELSE 0 END) AS completed_test_count " +
+                "SUM(CASE WHEN  analysis.status_id IN (" + getCompletedStatus() + ") THEN 1 ELSE 0 END) AS completed_test_count, " +
+                "CASE when max(document_track.report_generation_time) is null then false else true end as already_printed  " +
                 "FROM Sample AS sample " +
                 "INNER JOIN sample_item AS sample_item ON sample_item.samp_id = sample.id " +
                 "INNER JOIN analysis AS analysis ON analysis.sampitem_id = sample_item.id " +
@@ -124,7 +125,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "INNER JOIN Person AS person ON patient.person_id = person.id " +
                 "INNER JOIN patient_identity ON patient_identity.patient_id = patient.id " +
                 "INNER JOIN patient_identity_type ON patient_identity.identity_type_id = patient_identity_type.id AND patient_identity_type.identity_type='ST' " +
-                "WHERE age(sample.lastupdated) <= '1 day' " +
+                "LEFT OUTER JOIN document_track as document_track ON sample.id = document_track.row_id AND document_track.name = 'patientHaitiClinical' " +                "WHERE age(sample.lastupdated) <= '1 day' " +
                 "AND analysis.status_id NOT IN ("+ getAllReferredAnalysisStatus() +") " +
                 "GROUP BY sample.accession_number, sample.lastupdated, person.first_name, person.last_name, sample_source.name, patient_identity.identity_data " +
                 "HAVING COUNT(analysis.id) = SUM(CASE WHEN  analysis.status_id IN (" +getCompletedStatus()+ " ) THEN 1 ELSE 0 END) " +
@@ -142,7 +143,8 @@ public class OrderListDAOImpl implements OrderListDAO {
                         completedAccessions.getString("first_name"),
                         completedAccessions.getString("last_name"),
                         completedAccessions.getString("sample_source"),
-                        completedAccessions.getTimestamp("completed_date")));
+                        completedAccessions.getTimestamp("completed_date"),
+                        completedAccessions.getBoolean("already_printed")));
             }
             return orderList;
         } catch (SQLException e) {

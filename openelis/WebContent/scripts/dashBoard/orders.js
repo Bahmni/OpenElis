@@ -70,7 +70,8 @@ function getColumnsForCompletedOrder(){
         {id: "name", name: "PatientName", field: "name", sortable: true,  index:2,  editor: Slick.Editors.Text, minWidth:150},
         {id: "source", name: "Source", field: "source", sortable: true,  index:3, editor: Slick.Editors.Text,minWidth:150 },
         {id: "completedDate", name: "Completed Date", sortable: true, field: "completedDate",  formatter: dateFormatter, cssClass: "cell-title", index:4, editor: Slick.Editors.Text, searchable: false,minWidth:180},
-        {id: "link", name: "PrintReport", field: "link",  cssClass: "cell-title", formatter: formatter, index:5, editor: Slick.Editors.Text, searchable: false,minWidth:150}
+        {id: "link", name: "PrintReport", field: "link",  cssClass: "cell-title", formatter: formatter, index:5, editor: Slick.Editors.Text, searchable: false,minWidth:150},
+        {id: "printed", name: "Printed", field: "alreadyPrinted",  sortable: true,  cssClass: "cell-title", index:6, editor: Slick.Editors.Text, searchable: false,minWidth:50}
     ];
 }
 

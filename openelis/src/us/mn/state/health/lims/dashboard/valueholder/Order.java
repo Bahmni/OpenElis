@@ -17,6 +17,8 @@ public class Order {
     private Integer pendingTestCount;
     private Integer pendingValidationCount;
     private Integer totalTestCount;
+    private boolean alreadyPrinted;
+
     public Order() {
     }
     public Order(String accessionNumber, String stNumber, String firstName, String lastName, String source, Integer pendingTestCount, Integer pendingValidationCount, Integer totalTestCount) {
@@ -30,13 +32,14 @@ public class Order {
         this.totalTestCount = totalTestCount;
     }
 
-    public Order(String accessionNumber, String stNumber, String firstName, String lastName, String source, Date completedDate) {
+    public Order(String accessionNumber, String stNumber, String firstName, String lastName, String source, Date completedDate, boolean printedDate) {
         this.accessionNumber = accessionNumber;
         this.stNumber = stNumber;
         this.firstName = firstName;
         this.lastName = lastName;
         this.source = source;
         this.completedDate = completedDate;
+        this.alreadyPrinted = printedDate;
     }
 
     public String getAccessionNumber() {
@@ -106,6 +109,10 @@ public class Order {
 
     public Integer getPendingValidationCount() {
         return pendingValidationCount;
+    }
+
+    public boolean getAlreadyPrinted() {
+        return alreadyPrinted;
     }
 
     @Override
