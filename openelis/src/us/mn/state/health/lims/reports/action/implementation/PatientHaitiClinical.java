@@ -46,7 +46,7 @@ public class PatientHaitiClinical extends HaitiPatientReport implements IReportC
 		analysisStatusIds.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.ReferedOut)));
 		analysisStatusIds.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.ReferredIn)));
 		analysisStatusIds.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.TechnicalAcceptance)));
-		analysisStatusIds.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.Canceled)));
+//		analysisStatusIds.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.Canceled)));
 		analysisStatusIds.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.TechnicalAcceptanceRO)));
 		analysisStatusIds.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.FinalizedRO)));
 		analysisStatusIds.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.BiologistRejectedRO)));
