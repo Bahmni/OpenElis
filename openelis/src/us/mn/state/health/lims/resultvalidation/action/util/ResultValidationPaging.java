@@ -18,15 +18,19 @@ package us.mn.state.health.lims.resultvalidation.action.util;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts.action.DynaActionForm;
+import org.hibernate.mapping.Collection;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.paging.*;
 import us.mn.state.health.lims.common.util.ConfigurationProperties;
 import us.mn.state.health.lims.common.util.IdValuePair;
 import us.mn.state.health.lims.resultvalidation.bean.AnalysisItem;
+import us.mn.state.health.lims.sample.valueholder.SampleComparator;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -86,6 +90,13 @@ public class ResultValidationPaging {
 
 			String currentAccessionNumber = null;
 			int resultCount = 0;
+
+            Collections.sort(analysisList, new Comparator<AnalysisItem>() {
+                @Override
+                public int compare(AnalysisItem o1, AnalysisItem o2) {
+                    return o1.getAccessionNumber().compareTo(o2.getAccessionNumber());
+                }
+            });
 
 			for (AnalysisItem item : analysisList) {
 				if (currentAccessionNumber != null && !currentAccessionNumber.equals(item.getAccessionNumber())) {
