@@ -394,7 +394,7 @@ function getPanelCheckBoxesHtml(map, row, id ){
 }
 
 function getTestDisplayRowHtml( name, id, row ){
-	return "<label for='test_" + row + "'>" + name + "</label>" + "<input name='testName' value='" + id + "' id='testName_" + row  + "' type='hidden' style='display:none'>" + name;
+	return "<label for='test_" + row + "'>" + name + "</label>" + "<input name='testName' value='" + id + "' id='testName_" + row  + "' type='hidden' style='display:none'>";
 }
 
 
