@@ -81,6 +81,7 @@ public abstract class ConfigurationProperties {
 							 QA_SORT_EVENT_LIST,
 							 ALWAYS_VALIDATE_RESULTS,
 							 ADDITIONAL_SITE_INFO,
+                             RESULTS_VALIDATION_PAGE_SIZE,
                              RESULTS_PAGE_SIZE};
 
 	

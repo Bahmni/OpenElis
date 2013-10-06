@@ -868,7 +868,18 @@
             <column name="name" value="resultsPageSize"/>
             <column name="description"
                     value="Configures the number tests per page for result entry"/>
-            <column name="value" value="10"/>
+            <column name="value" value="30"/>
+            <column name="value_type" value="int"/>
+            <column name="lastupdated" valueDate=" now() "/>
+        </insert>
+    </changeSet>
+    <changeSet id="58" author="tw" context="bahmni">
+        <insert schemaName="clinlims" tableName="site_information">
+            <column name="id" valueNumeric=" nextVal( 'site_information_seq' ) "/>
+            <column name="name" value="resultsValidationPageSize"/>
+            <column name="description"
+                    value="Configures the number tests per page for result validation"/>
+            <column name="value" value="30"/>
             <column name="value_type" value="int"/>
             <column name="lastupdated" valueDate=" now() "/>
         </insert>
