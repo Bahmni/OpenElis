@@ -60,6 +60,7 @@ function /*void*/ dirtySearchInfo(e){
 		</td>
 		<td >
 			<bean:message key="sample.receivedDate"/>
+            <font size="1"><bean:message key="sample.date.format"/></font>
 		</td>
 		<td >
 			<bean:message key="test.testName"/>
