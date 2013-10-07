@@ -14,13 +14,11 @@
     <property name="hibernate.connection.username">clinlims</property>
     <property name="hibernate.connection.password">clinlims</property>
     <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/clinlims</property>
-
-    <property name="hibernate.c3p0.acquire_increment">1</property>
-    <property name="hibernate.c3p0.min_size">3</property>
-    <property name="hibernate.c3p0.max_size">10</property>
-    <property name="hibernate.c3p0.timeout">600</property>
-    <property name="hibernate.c3p0.max_statements">100</property>
-    <property name="hibernate.c3p0.idle_test_period">300</property>
+    <!--<property name="hibernate.c3p0.min_size">2</property>-->
+    <!--<property name="hibernate.c3p0.max_size">10</property>-->
+    <!--<property name="hibernate.c3p0.timeout">30</property>-->
+    <!--<property name="hibernate.c3p0.max_statements">100</property>-->
+    <!--<property name="hibernate.c3p0.idle_test_period">300</property>-->
 
     <!--<property name="transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>-->
 
