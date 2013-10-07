@@ -146,7 +146,6 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
         var activeTab = <%= request.getParameter("activeTab") %>;
 
         var tabOptions = {
-            collapsible: true,
             select: function(event, ui) {
                 jQuery("#patientDetails").hide();
             }
