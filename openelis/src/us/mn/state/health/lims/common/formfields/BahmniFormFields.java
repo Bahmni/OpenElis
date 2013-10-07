@@ -31,7 +31,7 @@ public class BahmniFormFields implements IFormFieldsForImplementation {
 		settings.put(Field.OrganizationCLIA, Boolean.FALSE);
 		settings.put(Field.OrganizationParent, Boolean.FALSE);
 		settings.put(Field.InlineOrganizationTypes, Boolean.TRUE);
-		settings.put(Field.DepersonalizedResults, Boolean.TRUE);
+		settings.put(Field.DepersonalizedResults, Boolean.FALSE);
 		settings.put(Field.OrgLocalAbrev, Boolean.FALSE);
 		settings.put(Field.OrganizationShortName, Boolean.TRUE);
 		settings.put(Field.OrganizationMultiUnit, Boolean.FALSE);

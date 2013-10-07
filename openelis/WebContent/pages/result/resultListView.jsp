@@ -356,7 +356,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 </logic:equal>
 
         <logic:equal  name='<%=formName%>' property="singlePatient" value="true">
-<% if(!depersonalize){ %>        
+<% if(!depersonalize){ %>
 <table width="100%" >
 	<tr>
 		
@@ -469,7 +469,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 		</th>
 		<logic:equal name="<%=formName %>" property="singlePatient" value="false">
 			<th style="text-align: left">
-				<bean:message key="result.sample.patient.summary"/>
+                <bean:message key="result.sample.patient.summary"/>
 			</th>
 		</logic:equal>
 		<% } %>
@@ -539,27 +539,30 @@ function /*void*/ processTestReflexCD4Success(xhr)
    <logic:equal  name="testResult" property="showSampleDetails" value="true">
 		<tr class='<%= rowColor %>Head <%= accessionNumber%>' >
 			<td colspan="8" class='InterstitialHead' >
-			    <%=StringUtil.getContextualMessageForKey("result.sample.id")%> : &nbsp;
+                <%=StringUtil.getContextualMessageForKey("result.sample.id")%> : &nbsp;
 				<b><bean:write name="testResult" property="accessionNumber"/> -
 				<bean:write name="testResult" property="sequenceNumber"/></b>
 				<% if(useInitialCondition){ %>
 					&nbsp;&nbsp;&nbsp;&nbsp;<bean:message key="sample.entry.sample.condition" />:
 					<b><bean:write name="testResult" property="initialSampleCondition" /></b>
 				<% } %>
-				&nbsp;&nbsp;&nbsp;&nbsp;<bean:message  key="sample.entry.sample.type"/>:
-				<b><bean:write  name="testResult" property="sampleType"/></b>
-		<logic:equal  name="<%=formName %>" property="singlePatient" value="false">
-		    <% if( !depersonalize){ %>
-				<logic:equal  name="testResult" property="showSampleDetails" value="true">
-					<br/>
-					<bean:message key="result.sample.patient.summary"/> : &nbsp;
-					<b><bean:write name="testResult" property="patientName"/> &nbsp;
-					<bean:write name="testResult" property="patientInfo"/></b>
-				</logic:equal>
-			<% } %>	
-		</logic:equal>
-		</td>
-		</tr>
+				&nbsp;&nbsp;&nbsp;&nbsp;
+                <bean:message  key="sample.entry.sample.type"/>:
+                <bean:write name="testResult" property="sampleType"/> &nbsp;
+				<logic:equal name="<%=formName %>" property="singlePatient" value="false">
+                    <% if (!depersonalize) { %>
+                    <logic:equal name="testResult" property="showSampleDetails" value="true">
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <bean:message key="result.sample.patient.summary"/> : &nbsp;
+                        <b>
+                            <bean:write name="testResult" property="patientIdentity"/> &nbsp;,
+                            <bean:write name="testResult" property="patientName"/> &nbsp;
+                        </b>
+                    </logic:equal>
+                    <% } %>
+                </logic:equal>
+            </td>
+        </tr>
 	</logic:equal>
     <% } %>
 	<tr class='<%= rowColor %> testResult'  >

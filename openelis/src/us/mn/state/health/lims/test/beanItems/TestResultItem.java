@@ -17,13 +17,13 @@
 */
 package us.mn.state.health.lims.test.beanItems;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import us.mn.state.health.lims.common.util.IdValuePair;
 import us.mn.state.health.lims.result.action.util.ResultItem;
 import us.mn.state.health.lims.result.valueholder.Result;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TestResultItem implements ResultItem, Serializable{
 
@@ -73,6 +73,7 @@ public class TestResultItem implements ResultItem, Serializable{
 	private boolean reportable;
 	private String patientName;
 	private String patientInfo;
+	private String patientIdentity;
 	private String unitsOfMeasure = "";
 
 //	private String testSortNumber;
@@ -265,7 +266,14 @@ public class TestResultItem implements ResultItem, Serializable{
 	public void setPatientInfo(String patientInfo) {
 		this.patientInfo = patientInfo;
 	}
-	public void setTestMethod(String testMethod) {
+    public String getPatientIdentity() {
+        return patientIdentity;
+    }
+    public void setPatientIdentity(String patientIdentity) {
+        this.patientIdentity = patientIdentity;
+    }
+
+    public void setTestMethod(String testMethod) {
 		this.testMethod = testMethod;
 	}
 
