@@ -21,10 +21,10 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OpenMRSPersonAttribute {
     private String display;
-    private String value;
+    private OpenMRSPersonAttributeTypeValue value;
     private OpenMRSPersonAttributeType attributeType;
 
-    public OpenMRSPersonAttribute(String value, OpenMRSPersonAttributeType attributeType, String dispaly) {
+    public OpenMRSPersonAttribute(OpenMRSPersonAttributeTypeValue value, OpenMRSPersonAttributeType attributeType, String dispaly) {
         this.value = value;
         this.attributeType = attributeType;
         this.display = dispaly;
@@ -42,10 +42,10 @@ public class OpenMRSPersonAttribute {
     }
 
     public String getValue() {
-        return value;
+        return value.getDisplay();
     }
 
-    public void setValue(String value) {
+    public void setValue(OpenMRSPersonAttributeTypeValue value) {
         this.value = value;
     }
 

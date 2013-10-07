@@ -42,9 +42,9 @@ public class BahmniPatientServiceIT extends IT {
 
         OpenMRSPersonAddress address = new OpenMRSPersonAddress("line1", "line2", "line3", "village1", "district1", "state1");
         OpenMRSPerson person = new OpenMRSPerson(new OpenMRSName("random", "lastName1"), UUID.randomUUID().toString(), "F", new LocalDate(2001, 11, 26).toDate(), false, address);
-        OpenMRSPersonAttribute attribute1 = new OpenMRSPersonAttribute("value1", new OpenMRSPersonAttributeType(OpenMRSPersonAttributeType.PRIMARY_RELATIVE), "dispaly");
-        OpenMRSPersonAttribute attribute2 = new OpenMRSPersonAttribute("value2", new OpenMRSPersonAttributeType(OpenMRSPersonAttributeType.OCCUPATION), "dispaly");
-        OpenMRSPersonAttribute attribute3 = new OpenMRSPersonAttribute("2", new OpenMRSPersonAttributeType(OpenMRSPersonAttributeType.HEALTH_CENTER), "dispaly");
+        OpenMRSPersonAttribute attribute1 = new OpenMRSPersonAttribute(createPersonAttributeTypeValue("value1"), new OpenMRSPersonAttributeType(OpenMRSPersonAttributeType.PRIMARY_RELATIVE), "dispaly");
+        OpenMRSPersonAttribute attribute2 = new OpenMRSPersonAttribute(createPersonAttributeTypeValue("value2"), new OpenMRSPersonAttributeType(OpenMRSPersonAttributeType.OCCUPATION), "dispaly");
+        OpenMRSPersonAttribute attribute3 = new OpenMRSPersonAttribute(createPersonAttributeTypeValue("2"), new OpenMRSPersonAttributeType(OpenMRSPersonAttributeType.HEALTH_CENTER), "dispaly");
         OpenMRSPatient openMRSPatient = new OpenMRSPatient(person.addAttribute(attribute1).addAttribute(attribute2).addAttribute(attribute3));
         openMRSPatient.addIdentifier(new OpenMRSPatientIdentifier("id1"));
 
@@ -53,5 +53,11 @@ public class BahmniPatientServiceIT extends IT {
         //this would result in call to update
         bahmniPatientService.createOrUpdate(openMRSPatient);
         HibernateUtil.getSession().flush();
+    }
+
+    private OpenMRSPersonAttributeTypeValue createPersonAttributeTypeValue(String value){
+        OpenMRSPersonAttributeTypeValue openMRSPersonAttributeTypeValue = new OpenMRSPersonAttributeTypeValue();
+        openMRSPersonAttributeTypeValue.setDisplay(value);
+        return openMRSPersonAttributeTypeValue;
     }
 }

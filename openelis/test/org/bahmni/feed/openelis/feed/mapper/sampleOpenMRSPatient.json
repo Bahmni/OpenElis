@@ -154,7 +154,16 @@
             {
                 "display": "Health Center = 2",
                 "uuid": "cf1a3220-c325-40b3-94f5-3e7b524537d7",
-                "value": "2",
+                "value":{
+                    "uuid":"285e8574-9d21-11e2-8137-0800271c1b75",
+                    "display":"2",
+                    "links":[
+                        {
+                            "rel":"self",
+                            "uri":"NEED-TO-CONFIGURE/ws/rest/v1/location/285e8574-9d21-11e2-8137-0800271c1b75"
+                        }
+                    ]
+                },
                 "attributeType": {
                     "uuid": "b458b0a6-c79a-11e2-b0c0-8e397087571c",
                     "display": "Health Center",
@@ -181,7 +190,16 @@
             {
                 "display": "primaryRelative = Chidi Ram",
                 "uuid": "c551ca0e-86fe-4d63-ad6b-5f5d85df8e63",
-                "value": "Chidi Ram",
+                "value":{
+                    "uuid":"285e8574-9d21-11e2-8137-0800271c1b80",
+                    "display":"Chidi Ram",
+                    "links":[
+                        {
+                            "rel":"self",
+                            "uri":"NEED-TO-CONFIGURE/ws/rest/v1/location/285e8574-9d21-11e2-8137-0800271c1b80"
+                        }
+                    ]
+                },
                 "attributeType": {
                     "uuid": "b45b608a-c79a-11e2-b0c0-8e397087571c",
                     "display": "primaryRelative",
