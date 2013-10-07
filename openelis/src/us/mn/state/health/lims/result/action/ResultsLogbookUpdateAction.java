@@ -424,7 +424,9 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
         Note note = NoteUtil.createSavableNote(null, testResultItem.getNote(), testResultItem.getResultId(),
                 ResultsLoadUtility.getResultReferenceTableId(), RESULT_SUBJECT, currentUserId);
 
-        analysis.setStatusId(getStatusForTestResult(testResultItem));
+        if (ResultUtil.areResults(testResultItem)) {
+            analysis.setStatusId(getStatusForTestResult(testResultItem));
+        }
         analysis.setEnteredDate(DateUtil.getNowAsTimestamp());
 
         if (newResult) {
@@ -579,7 +581,9 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
 
                 setTestResultsForDictionaryResult(testResultItem.getTestId(), multiResults[i], result);
                 setNewResultValues(testResultItem, analysis, result);
+
                 setStandardResultValues(multiResults[i], result);
+
                 result.setSortOrder(getResultSortOrder(analysis, result.getValue()));
 
                 results.add(result);

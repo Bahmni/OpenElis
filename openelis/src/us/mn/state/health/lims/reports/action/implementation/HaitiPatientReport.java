@@ -491,6 +491,7 @@ public abstract class HaitiPatientReport extends Report {
             data.setResult(StringUtil.getMessageForKey("report.test.status.canceled"));
         } else if (REFERRAL_STATUS_ID.equals(reportAnalysis.getStatusId())) {
             if (noResults(resultList)) {
+                setNote(data, resultList);
                 data.setResult(StringUtil.getMessageForKey("report.test.status.referredOut"));
             } else {
                 setAppropriateResults(resultList, data);
@@ -499,6 +500,7 @@ public abstract class HaitiPatientReport extends Report {
             }
         } else if (noResults(resultList) || !(StatusOfSampleUtil.getStatusID(AnalysisStatus.Finalized).equals(reportAnalysis.getStatusId()) || StatusOfSampleUtil.getStatusID(AnalysisStatus.FinalizedRO).equals(reportAnalysis.getStatusId()))) {
             sampleCompleteMap.put(reportSample.getAccessionNumber(), Boolean.FALSE);
+            setNote(data, resultList);
             data.setResult(StringUtil.getMessageForKey("report.test.status.inProgress"));
         } else {
             setAppropriateResults(resultList, data);
@@ -514,6 +516,11 @@ public abstract class HaitiPatientReport extends Report {
         }
 
         data.setConclusion(currentConclusion);
+    }
+
+    private void setNote(HaitiClinicalPatientData data, List<Result> resultList) {
+        if (resultList.size() > 0)
+            data.setNote(getResultNote(resultList.get(0)));
     }
 
     private boolean noResults(List<Result> resultList) {
