@@ -424,9 +424,8 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
         Note note = NoteUtil.createSavableNote(null, testResultItem.getNote(), testResultItem.getResultId(),
                 ResultsLoadUtility.getResultReferenceTableId(), RESULT_SUBJECT, currentUserId);
 
-        if (ResultUtil.areResults(testResultItem)) {
-            analysis.setStatusId(getStatusForTestResult(testResultItem));
-        }
+        setAnalysisStatus(testResultItem, analysis);
+
         analysis.setEnteredDate(DateUtil.getNowAsTimestamp());
 
         if (newResult) {
@@ -490,10 +489,17 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
         previousAnalysis = analysis;
     }
 
+    private void setAnalysisStatus(TestResultItem testResultItem, Analysis analysis) {
+        if (supportReferrals && testResultItem.isReferredOut()) {
+            analysis.setStatusId(StatusOfSampleUtil.getStatusID(AnalysisStatus.ReferedOut));
+        }
+        if (ResultUtil.areResults(testResultItem)) {
+            analysis.setStatusId(getStatusForTestResult(testResultItem));
+        }
+    }
+
     private String getStatusForTestResult(TestResultItem testResult) {
-        if (supportReferrals && testResult.isReferredOut()) {
-            return StatusOfSampleUtil.getStatusID(AnalysisStatus.ReferedOut);
-        } else if (alwaysValidate || !testResult.isValid()) {
+        if (alwaysValidate || !testResult.isValid()) {
             return StatusOfSampleUtil.getStatusID(AnalysisStatus.TechnicalAcceptance);
         } else {
             ResultLimit resultLimit = resultLimitDAO.getResultLimitById(testResult.getResultLimitId());
