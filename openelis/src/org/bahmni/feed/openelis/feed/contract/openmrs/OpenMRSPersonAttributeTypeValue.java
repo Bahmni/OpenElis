@@ -1,6 +1,7 @@
 package org.bahmni.feed.openelis.feed.contract.openmrs;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 /*
 * The contents of this file are subject to the Mozilla Public License
@@ -19,6 +20,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 */
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonDeserialize(using = OpenMRSPersonAttributeTypeValueDeserializer.class)
 public class OpenMRSPersonAttributeTypeValue {
     private String uuid;
     private String display;
