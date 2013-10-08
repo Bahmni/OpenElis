@@ -35,19 +35,19 @@ public class OpenElisUrlPublisher {
         this.category = category;
     }
 
-    public void publish(String uuid, String contextPath) {
-        String contentUrl = getContentUrlFor(uuid, contextPath);
+    public void publish(String resourcePath, String contextPath) {
+        String contentUrl = getContentUrlFor(resourcePath, contextPath);
         eventService.notify(new Event(UUID.randomUUID().toString(), FEED_TITLE, DateTime.now(), (URI) null, contentUrl, category));
     }
 
-    public void publish(Collection<String> uuids, String contextPath) {
-        for (String uuid : uuids) {
-            String contentUrl = getContentUrlFor(uuid, contextPath);
+    public void publish(Collection<String> resourcePaths, String contextPath) {
+        for (String resourcePath : resourcePaths) {
+            String contentUrl = getContentUrlFor(resourcePath, contextPath);
             eventService.notify(new Event(UUID.randomUUID().toString(), FEED_TITLE, DateTime.now(), (URI) null, contentUrl, category));
         }
     }
 
-    private String getContentUrlFor(String uuid, String contextPath) {
-        return contextPath + URL_PREFIX + category + "/" + uuid;
+    private String getContentUrlFor(String resourcePath, String contextPath) {
+        return contextPath + URL_PREFIX + category + "/" + resourcePath;
     }
 }

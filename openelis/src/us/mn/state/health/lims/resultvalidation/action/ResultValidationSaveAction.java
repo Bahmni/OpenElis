@@ -75,15 +75,13 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 
     // Update Lists
 	private List<Analysis> analysisUpdateList;
-	private ArrayList<Sample> sampleUpdateList;
-	private ArrayList<Note> noteUpdateList;
+    private ArrayList<Note> noteUpdateList;
 	private ArrayList<Result> resultUpdateList;
 
 	private SystemUser systemUser;
 
 	private static final String RESULT_TYPE = "I";
 	private static final String RESULT_SUBJECT = "Result Note";
-    private Set<String> editedSamples;
 
     @Override
 	protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
@@ -118,7 +116,6 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 		Transaction tx = HibernateUtil.getSession().beginTransaction();
 
 		try {
-			// update analysis
 			for (Analysis analysis : analysisUpdateList) {
 				analysisDAO.updateData(analysis);
 			}
@@ -127,28 +124,10 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 				resultDAO.updateData(result);
 			}
 
-			checkIfSamplesFinished(resultItemList);
-
-			// update finished samples
-			for (Sample sample : sampleUpdateList) {
-				sampleDAO.updateData(sample);
-			}
-
-			// create or update notes
-			for (Note note : noteUpdateList) {
-				if (note != null) {
-					if (note.getId() == null) {
-						noteDAO.insertData(note);
-					} else {
-						noteDAO.updateData(note);
-					}
-				}
-			}
-
-            resultPublisher.publish(editedSamples, request.getContextPath());
-
+			checkAndUpdateStatusOfFinishedSamples(resultItemList);
+            createOrUpdateNotes(noteUpdateList);
+            publishValidatedTestResults(resultItemList, request);
             tx.commit();
-
 		} catch (LIMSRuntimeException lre) {
 			tx.rollback();
             throw lre;
@@ -188,7 +167,29 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 
 	}
 
-	private void createUpdateList(List<AnalysisItem> analysisItems) {
+    private void createOrUpdateNotes(ArrayList<Note> noteUpdateList) {
+        for (Note note : noteUpdateList) {
+            if (note != null) {
+                if (note.getId() == null) {
+                    noteDAO.insertData(note);
+                } else {
+                    noteDAO.updateData(note);
+                }
+            }
+        }
+    }
+
+    private void publishValidatedTestResults(List<AnalysisItem> resultItemList, HttpServletRequest request) {
+        Set<String> editedSamples = new HashSet<>();
+        for (AnalysisItem analysisItem : resultItemList) {
+            if (analysisItem.getIsAccepted()) {
+                editedSamples.add(analysisItem.getResultId());
+            }
+        }
+        resultPublisher.publish(editedSamples, request.getContextPath());
+    }
+
+    private void createUpdateList(List<AnalysisItem> analysisItems) {
 
 		List<String> analysisIdList = new ArrayList<>();
 
@@ -308,21 +309,15 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 		return analysisList;
 	}
 
-	private void checkIfSamplesFinished(List<AnalysisItem> resultItemList) {
-		sampleUpdateList = new ArrayList<>();
-
+	private void checkAndUpdateStatusOfFinishedSamples(List<AnalysisItem> resultItemList) {
 		String currentSampleId = "";
 		boolean sampleFinished = true;
 		List<Analysis> analysisList;
-        editedSamples = new HashSet<>();
 
 		for (AnalysisItem analysisItem : resultItemList) {
-
 			String analysisSampleId = sampleDAO.getSampleByAccessionNumber(analysisItem.getAccessionNumber()).getId();
 			if (!analysisSampleId.equals(currentSampleId)) {
-
 				currentSampleId = analysisSampleId;
-
 				analysisList = analysisDAO.getAnalysesBySampleId(currentSampleId);
 
 				for (Analysis analysis : analysisList) {
@@ -335,20 +330,14 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
                 Sample sample = new Sample();
                 sample.setId(currentSampleId);
                 sampleDAO.getData(sample);
-                if (analysisItem.getIsAccepted()) {
-                    editedSamples.add(sample.getAccessionNumber());
-                }
                 if (sampleFinished) {
                     sample.setStatusId(StatusOfSampleUtil.getStatusID(OrderStatus.Finished));
-                    sampleUpdateList.add(sample);
+                    sampleDAO.updateData(sample);
                 }
-
                 sampleFinished = true;
-
 			}
-
-		}
-	}
+        }
+    }
 
 	private Analysis getAnalysisFromId(String id) {
 		Analysis analysis = new Analysis();
@@ -381,7 +370,6 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 			note.setSystemUserId(currentUserId);
 			noteUpdateList.add(note);
 		}
-
 	}
 
 	private Result createResultFromAnalysisItem(AnalysisItem analysisItem, Analysis analysis) {
