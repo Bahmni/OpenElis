@@ -492,8 +492,7 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
     private void setAnalysisStatus(TestResultItem testResultItem, Analysis analysis) {
         if (supportReferrals && testResultItem.isReferredOut()) {
             analysis.setStatusId(StatusOfSampleUtil.getStatusID(AnalysisStatus.ReferedOut));
-        }
-        if (ResultUtil.areResults(testResultItem)) {
+        } else {
             analysis.setStatusId(getStatusForTestResult(testResultItem));
         }
     }
@@ -587,9 +586,7 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
 
                 setTestResultsForDictionaryResult(testResultItem.getTestId(), multiResults[i], result);
                 setNewResultValues(testResultItem, analysis, result);
-
                 setStandardResultValues(multiResults[i], result);
-
                 result.setSortOrder(getResultSortOrder(analysis, result.getValue()));
 
                 results.add(result);
