@@ -230,6 +230,14 @@ public class StatusOfSampleUtil {
         return buildStatusSet(sample);
     }
 
+    public static List<Integer> analysisFinishedStatusIds() {
+        List<Integer> sampleFinishedStatus = new ArrayList<>();
+        sampleFinishedStatus.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.Finalized)));
+        sampleFinishedStatus.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.FinalizedRO)));
+        sampleFinishedStatus.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.Canceled)));
+        sampleFinishedStatus.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.NonConforming_depricated)));
+        return sampleFinishedStatus;
+    }
 
     private static StatusSet buildStatusSet(Sample sample) {
         StatusSet statusSet = new StatusSet();

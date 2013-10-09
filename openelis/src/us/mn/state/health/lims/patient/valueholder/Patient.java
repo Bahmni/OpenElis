@@ -293,6 +293,10 @@ public class Patient extends BaseObject {
         this.uuid = uuid;
     }
 
+    public String getUuid() {
+        return uuid;
+    }
+
     public double getAge() {
         double currPatientAge = 0;
         if (getBirthDate() != null) {

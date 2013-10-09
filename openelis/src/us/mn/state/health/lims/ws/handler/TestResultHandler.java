@@ -16,9 +16,20 @@
 
 package us.mn.state.health.lims.ws.handler;
 
-public class TestResultHandler  implements Handler {
+import org.bahmni.feed.openelis.feed.service.impl.TestResultService;
+import org.bahmni.openelis.domain.TestResultDetails;
 
+public class TestResultHandler implements Handler {
     private final String RESULT = "RESULT";
+    private TestResultService testResultService;
+
+    public TestResultHandler() {
+        this(new TestResultService());
+    }
+
+    public TestResultHandler(TestResultService testResultService) {
+        this.testResultService = testResultService;
+    }
 
     @Override
     public boolean canHandle(String resourceName) {
@@ -26,7 +37,7 @@ public class TestResultHandler  implements Handler {
     }
 
     @Override
-    public Object handle(String uuid) {
-        return "NOT IMPLEMENTED";
+    public TestResultDetails handle(String resultId) {
+        return this.testResultService.detailsFor(resultId);
     }
 }

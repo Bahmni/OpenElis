@@ -490,13 +490,7 @@ public class Analysis extends BaseObject {
     }
 
     public boolean isFinished() {
-        List<Integer> sampleFinishedStatus = new ArrayList<>();
-        sampleFinishedStatus.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(Finalized)));
-        sampleFinishedStatus.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(FinalizedRO)));
-        sampleFinishedStatus.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(Canceled)));
-        sampleFinishedStatus.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(NonConforming_depricated)));
-
-        return sampleFinishedStatus.contains(Integer.parseInt(getStatusId()));
+        return StatusOfSampleUtil.analysisFinishedStatusIds().contains(Integer.parseInt(getStatusId()));
     }
 
     public void readyForTechnicalAcceptance() {
