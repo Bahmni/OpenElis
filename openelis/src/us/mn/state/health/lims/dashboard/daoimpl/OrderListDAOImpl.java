@@ -53,7 +53,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "LEFT OUTER JOIN document_track as document_track ON sample.id = document_track.row_id AND document_track.name = 'patientHaitiClinical' \n" +
                 "WHERE date(sample.lastupdated) = current_date and analysis.status_id IN (" + getAllNonReferredAnalysisStatus() + ") \n" +
                 "GROUP BY sample.accession_number, sample.collection_date, sample.lastupdated, person.first_name, person.last_name, sample_source.name, patient_identity.identity_data\n" +
-                "ORDER BY sample.accession_number asc\n" +
+                "ORDER BY sample.accession_number DESC\n" +
                 "LIMIT 1000;";
         try {
             ResultSet todayAccessions = getResultSet(sqlForAllTestsToday);
@@ -99,7 +99,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "WHERE sample.lastupdated < current_date and analysis.status_id IN (" + getAllNonReferredAnalysisStatus() + ") \n" +
                 "GROUP BY sample.accession_number, sample.collection_date, person.first_name, person.last_name, sample_source.name, patient_identity.identity_data\n" +
                 "HAVING COUNT(analysis.id) > SUM(CASE WHEN  analysis.status_id IN (" +getCompletedStatus()+ ") THEN 1 ELSE 0 END)\n" +
-                "ORDER BY sample.accession_number asc\n" +
+                "ORDER BY sample.accession_number DESC\n" +
                 "LIMIT 1000;";
         try {
             ResultSet pendingAccessions = getResultSet(sqlForAllTestsToday);
