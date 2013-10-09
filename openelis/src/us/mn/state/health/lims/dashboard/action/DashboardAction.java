@@ -9,12 +9,10 @@ import org.json.simple.JSONObject;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.dashboard.dao.OrderListDAO;
 import us.mn.state.health.lims.dashboard.daoimpl.OrderListDAOImpl;
-import us.mn.state.health.lims.dashboard.valueholder.TodayStat;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
 
 public class DashboardAction extends BaseAction {
     private OrderListDAO orderListDAO = new OrderListDAOImpl();
@@ -31,15 +29,8 @@ public class DashboardAction extends BaseAction {
 
         dynaForm.set("todayOrderList", escapedTodayOrderListJson);
         dynaForm.set("backlogOrderList", escapedBacklogOrderListJson);
-        dynaForm.set("todayStats", getTodaysStats());
 
         return mapping.findForward("success");
-    }
-
-    private String getTodaysStats() throws IOException {
-        TodayStat todayStats = orderListDAO.getTodayStats();
-        String statsAsJson = ObjectMapperRepository.objectMapper.writeValueAsString(todayStats);
-        return JSONObject.escape(statsAsJson);
     }
 
     @Override
@@ -52,8 +43,8 @@ public class DashboardAction extends BaseAction {
         return "Dashboard";
     }
 
-    private String asJson(List objects) throws IOException {
-        String listJson = ObjectMapperRepository.objectMapper.writeValueAsString(objects);
+    private String asJson(Object o) throws IOException {
+        String listJson = ObjectMapperRepository.objectMapper.writeValueAsString(o);
         return JSONObject.escape(listJson);
     }
 }

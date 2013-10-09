@@ -1,7 +1,7 @@
 
-function order(div, orderJson, generateLink, getColumns) {
+function order(div, orderArray, generateLink, getColumns) {
      this.div = div;
-     this.orderArray = JSON.parse(orderJson);
+     this.orderArray = orderArray;
      this.columns = getColumns();
          this.indexesOfNonSearchableColumns = function(){
                 var indexes = [];

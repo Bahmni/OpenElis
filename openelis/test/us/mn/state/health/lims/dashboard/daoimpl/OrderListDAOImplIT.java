@@ -9,7 +9,6 @@ import us.mn.state.health.lims.analyte.valueholder.Analyte;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.dashboard.valueholder.Order;
-import us.mn.state.health.lims.dashboard.valueholder.TodayStat;
 import us.mn.state.health.lims.patient.daoimpl.PatientDAOImpl;
 import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.patientidentity.daoimpl.PatientIdentityDAOImpl;
@@ -34,18 +33,17 @@ import us.mn.state.health.lims.test.valueholder.TestSection;
 import us.mn.state.health.lims.testanalyte.daoimpl.TestAnalyteDAOImpl;
 import us.mn.state.health.lims.testanalyte.valueholder.TestAnalyte;
 
-import java.text.ParseException;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static junit.framework.Assert.*;
-import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class OrderListDAOImplIT extends IT {
-
-    private String accessionNumber;
+    private String accessionNumber1;
     private String accessionNumber2;
     private String accessionNumber3;
     private String patientIdentityData;
@@ -53,10 +51,12 @@ public class OrderListDAOImplIT extends IT {
     private String lastName;
     private Patient patient;
     private List<Test> allTests;
+    private Date today;
+    private Date dateInThePast;
 
     @Before
     public void setUp() throws Exception {
-        accessionNumber = "05082013-001";
+        accessionNumber1 = "05082013-001";
         accessionNumber2 = "05082013-002";
         accessionNumber3 = "05082013-003";
         patientIdentityData = "TEST1234567";
@@ -65,33 +65,92 @@ public class OrderListDAOImplIT extends IT {
         patient = createPatient(firstName, lastName, patientIdentityData);
         TestDAOImpl testDAO = createTests("SampleTest1", "SampleTest2", "SampleTest3", "SampleTest4");
         allTests = testDAO.getAllTests(true);
+        today = new Date();
+        dateInThePast = new Date(today.getTime() - 10 * 24 * 60 * 60 * 1000);
     }
 
     @org.junit.Test
-    public void shouldShowTodaysStat() {
-        Sample sample1 = createSample(accessionNumber, true);
+    public void shouldGetAllTestsToday() {
+    Sample sample1 = createSample(accessionNumber1, today);
         createSampleHuman(sample1, patient);
         SampleItem sampleItem1 = createSampleItem(sample1);
 
-        Sample sample2 = createSample(accessionNumber2, true);
+        Sample sample2 = createSample(accessionNumber2, today);
         createSampleHuman(sample2, patient);
         SampleItem sampleItem2 = createSampleItem(sample2);
 
-        Sample sample3 = createSample(accessionNumber3, false);
+        Sample sample3 = createSample(accessionNumber3, dateInThePast);
         createSampleHuman(sample3, patient);
         SampleItem sampleItem3 = createSampleItem(sample3);
 
         createAnalysis(sampleItem1,StatusOfSampleUtil.AnalysisStatus.NotTested,"Hematology",allTests.get(0));
-        createAnalysis(sampleItem2,StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance,"Hematology",allTests.get(1));
+        createAnalysis(sampleItem1,StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance,"Hematology",allTests.get(1));
         createAnalysis(sampleItem2,StatusOfSampleUtil.AnalysisStatus.Finalized,"Hematology",allTests.get(2));
         createAnalysis(sampleItem3,StatusOfSampleUtil.AnalysisStatus.Finalized,"Hematology",allTests.get(3));
 
-        TodayStat todayStats = new OrderListDAOImpl().getTodayStats();
+        List<Order> allToday = new OrderListDAOImpl().getAllToday();
 
-        assertEquals(1,todayStats.getAwaitingTestCount());
-        assertEquals(1,todayStats.getAwaitingValidationCount());
-        assertEquals(0,todayStats.getCompletedTestCount());
-        assertEquals(2,todayStats.getTotalSamplesCount());
+        assertEquals(2, allToday.size());
+
+        assertTrue(hasAccessionNumber(allToday, accessionNumber1));
+        assertTrue(hasAccessionNumber(allToday, accessionNumber2));
+        assertFalse(hasAccessionNumber(allToday, accessionNumber3));
+
+        assertEquals( 1, getByAccessionNumber(allToday, accessionNumber1).getPendingTestCount());
+        assertEquals( 1, getByAccessionNumber(allToday, accessionNumber1).getPendingValidationCount());
+        assertEquals( 2, getByAccessionNumber(allToday, accessionNumber1).getTotalTestCount());
+        assertEquals( false, getByAccessionNumber(allToday, accessionNumber1).getIsCompleted());
+
+        assertEquals( 0, getByAccessionNumber(allToday, accessionNumber2).getPendingTestCount());
+        assertEquals( 0, getByAccessionNumber(allToday, accessionNumber2).getPendingValidationCount());
+        assertEquals( 1, getByAccessionNumber(allToday, accessionNumber2).getTotalTestCount());
+        assertEquals( true, getByAccessionNumber(allToday, accessionNumber2).getIsCompleted());
+    }
+
+    @org.junit.Test
+    public void shouldGetAllPendingTestsBeforeToday() {
+    Sample sample1 = createSample(accessionNumber1, dateInThePast);
+        createSampleHuman(sample1, patient);
+        SampleItem sampleItem1 = createSampleItem(sample1);
+
+        Sample sample2 = createSample(accessionNumber2, today);
+        createSampleHuman(sample2, patient);
+        SampleItem sampleItem2 = createSampleItem(sample2);
+
+        Sample sample3 = createSample(accessionNumber3, dateInThePast);
+        createSampleHuman(sample3, patient);
+        SampleItem sampleItem3 = createSampleItem(sample3);
+
+        createAnalysis(sampleItem1, StatusOfSampleUtil.AnalysisStatus.NotTested, "Hematology", allTests.get(0));
+        createAnalysis(sampleItem1, StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance, "Hematology", allTests.get(1));
+        createAnalysis(sampleItem2, StatusOfSampleUtil.AnalysisStatus.Finalized, "Hematology", allTests.get(2));
+        createAnalysis(sampleItem3, StatusOfSampleUtil.AnalysisStatus.Finalized, "Hematology", allTests.get(3));
+
+        List<Order> allPendingBeforeToday = new OrderListDAOImpl().getAllPendingBeforeToday();
+
+        assertEquals(1, allPendingBeforeToday.size());
+
+        assertTrue(hasAccessionNumber(allPendingBeforeToday, accessionNumber1));
+        assertFalse(hasAccessionNumber(allPendingBeforeToday, accessionNumber2));
+        assertFalse(hasAccessionNumber(allPendingBeforeToday, accessionNumber3));
+
+        assertEquals( 1, getByAccessionNumber(allPendingBeforeToday, accessionNumber1).getPendingTestCount());
+        assertEquals( 1, getByAccessionNumber(allPendingBeforeToday, accessionNumber1).getPendingValidationCount());
+        assertEquals( 2, getByAccessionNumber(allPendingBeforeToday, accessionNumber1).getTotalTestCount());
+        assertEquals(false, getByAccessionNumber(allPendingBeforeToday, accessionNumber1).getIsCompleted());
+    }
+
+    private Order getByAccessionNumber(List<Order> orders, String accessionNumber) {
+        for (Order order: orders) {
+            if(order.getAccessionNumber().equals(accessionNumber)){
+                return order;
+            }
+        }
+        return null;
+    }
+
+    private boolean hasAccessionNumber(List<Order> orders, String accessionNumber) {
+        return getByAccessionNumber(orders, accessionNumber) != null;
     }
 
     private TestDAOImpl createTests(String... samples) {
@@ -189,7 +248,7 @@ public class OrderListDAOImplIT extends IT {
         return enteredSampleItem;
     }
 
-    private Sample createSample(String accessionNumber, boolean forToday) {
+    private Sample createSample(String accessionNumber, Date date) {
         List<SampleSource> sampleSources = new SampleSourceDAOImpl().getAll();
         Sample sample = new Sample();
         sample.setAccessionNumber(accessionNumber);
@@ -198,9 +257,7 @@ public class OrderListDAOImplIT extends IT {
         sample.setReceivedTimestamp(DateUtil.convertStringDateToTimestamp("01/01/2001 00:00"));
         sample.setSampleSource(sampleSources.get(0));
         sample.setSysUserId("1");
-        if(!forToday){
-            sample.setLastupdated(DateUtil.convertStringDateToTimestamp("08/08/2013 00:00:00"));
-        }
+        sample.setLastupdated(new Timestamp(date.getTime()));
         new SampleDAOImpl().insertDataWithAccessionNumber(sample);
         return sample;
     }

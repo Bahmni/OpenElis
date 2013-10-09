@@ -675,7 +675,6 @@
         <form-bean name="LabDashboardForm" type="us.mn.state.health.lims.common.action.BaseActionForm">
             <form-property name="todayOrderList" type="java.lang.String"/>
             <form-property name="backlogOrderList" type="java.lang.String"/>
-            <form-property name="todayStats" type="java.lang.String"/>
         </form-bean>
 
         <form-bean name="UploadForm" type="us.mn.state.health.lims.common.action.BaseActionForm">

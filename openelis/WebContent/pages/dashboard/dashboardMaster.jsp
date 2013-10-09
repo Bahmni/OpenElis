@@ -11,7 +11,6 @@
 <bean:define id="formName" value='<%= (String)request.getAttribute(IActionConstants.FORM_NAME) %>' />
 <bean:define id="todayOrderListJson" name="<%=formName%>" property="todayOrderList" />
 <bean:define id="backlogOrderListJson" name="<%=formName%>" property="backlogOrderList" />
-<bean:define id="todayStats" name="<%=formName%>" property="todayStats" />
 
 <%!
 String path = "";
@@ -76,8 +75,12 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
                     <span id="completedTestCount"></span>
                 </td>
                 <td>
-                    <span>Total Samples Collected: </span>
+                    <span>Total : </span>
                     <span id="totalSamplesCount"></span>
+                </td>
+                <td>
+                    <span class="stats-header"> Total Patients Today</span><span> : </span>
+                    <span id="totalCollectedTodayCount"></span>
                 </td>
             </tr>
         </table>
@@ -116,24 +119,40 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
         explicitInitialization: true
     };
 
-    var showStats = function(){
-        var stats = JSON.parse('<%=todayStats%>');
+    var showStats = function(stats){
         jQuery("#todayStat").show();
         jQuery("#awaitingTestCount").text(stats.awaitingTestCount);
         jQuery("#awaitingValidationCount").text(stats.awaitingValidationCount);
         jQuery("#completedTestCount").text(stats.completedTestCount);
         jQuery("#totalSamplesCount").text(stats.totalSamplesCount);
+        jQuery("#totalCollectedTodayCount").text(stats.totalCollectedTodayCount);
     }
 
     jQuery(document).ready(function() {
-        showStats()
+        var todayOrderList = JSON.parse('<%=todayOrderListJson%>');
+        var backlogOrderList = JSON.parse('<%=backlogOrderListJson%>');
 
-        var todayOrdersObject = new order("#todayListContainer-slick-grid", "<%= todayOrderListJson %>", generateAllLinksForOrder, getColumnsForTodayOrder);
+        var isToday = function(date) {
+            var now = new Date();
+            return now.getDate() === date.getDate() && now.getMonth() == date.getMonth() && now.getFullYear() === date.getFullYear();
+        };
+
+        var todayStats = {
+            awaitingTestCount: todayOrderList.filter(function(order){ return order.pendingTestCount > 0 }).length,
+            awaitingValidationCount: todayOrderList.filter(function(order){ return order.pendingTestCount == 0 && order.pendingValidationCount > 0 }).length,
+            completedTestCount: todayOrderList.filter(function(order){ return order.isCompleted }).length,
+            totalSamplesCount: todayOrderList.length,
+            totalCollectedTodayCount: todayOrderList.filter(function(order){ return isToday(new Date(order.collectionDate)) }).length,
+        }
+
+        showStats(todayStats)
+
+        var todayOrdersObject = new order("#todayListContainer-slick-grid", todayOrderList, generateAllLinksForOrder, getColumnsForTodayOrder);
         var dataViewForTodayTab = new Slick.Data.DataView({ inlineFilters: true });
         var gridForTodayOrder = new Slick.Grid(todayOrdersObject.div, dataViewForTodayTab, todayOrdersObject.columns,options);
         createGrid(gridForTodayOrder, dataViewForTodayTab, todayOrdersObject, onRowSelection);
 
-        var backlogOrdersObject = new order("#backlogListContainer-slick-grid", "<%= backlogOrderListJson %>", generateAllLinksForOrder, getColumnsForBacklogOrder);
+        var backlogOrdersObject = new order("#backlogListContainer-slick-grid", backlogOrderList, generateAllLinksForOrder, getColumnsForBacklogOrder);
         var dataViewForBacklogTab = new Slick.Data.DataView({ inlineFilters: true });
         var gridForBacklogOrder = new Slick.Grid(backlogOrdersObject.div, dataViewForBacklogTab, backlogOrdersObject.columns,options);
         createGrid(gridForBacklogOrder, dataViewForBacklogTab, backlogOrdersObject, onRowSelection);
