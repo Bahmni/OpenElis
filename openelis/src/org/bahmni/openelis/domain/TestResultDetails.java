@@ -17,7 +17,7 @@ public class TestResultDetails {
     private String resultId;
     private String result;
     private String alerts;
-    private List<String> notes;
+    private List<String> notes = new ArrayList<>();
     private String resultType;
 
     public String getOrderId() {
@@ -113,13 +113,12 @@ public class TestResultDetails {
     }
 
     public void setNotes(List<String> notes) {
-        this.notes = notes;
+        if(notes != null) {
+            this.notes = notes;
+        }
     }
 
     public void addNotes(String note) {
-        if(this.notes == null) {
-            this.notes = new ArrayList<>();
-        }
         this.notes.add(note);
     }
 

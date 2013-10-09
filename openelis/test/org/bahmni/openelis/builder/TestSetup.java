@@ -6,6 +6,8 @@ import us.mn.state.health.lims.analyte.daoimpl.AnalyteDAOImpl;
 import us.mn.state.health.lims.analyte.valueholder.Analyte;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.util.DateUtil;
+import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
+import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
 import us.mn.state.health.lims.note.daoimpl.NoteDAOImpl;
 import us.mn.state.health.lims.note.util.NoteUtil;
 import us.mn.state.health.lims.note.valueholder.Note;
@@ -126,9 +128,26 @@ public class TestSetup {
         testResult.setTest(test);
         testResult.setTestResultType(testResultType);
         testResult.setValue(value);
+        if(testResultType.equals("D")) {
+            testResult.setValue(getDictionaryObject(value).getId());
+        }
         testResult.setSysUserId("1");
         new TestResultDAOImpl().insertData(testResult);
         return testResult;
+    }
+
+    public static Dictionary getDictionaryObject(String dictEntry) {
+        DictionaryDAOImpl dictionaryDAO = new DictionaryDAOImpl();
+        Dictionary dictionaryByDictEntry = dictionaryDAO.getDictionaryByDictEntry(dictEntry);
+        if(dictionaryByDictEntry != null) {
+            return dictionaryByDictEntry;
+        }
+        Dictionary dictionary = new Dictionary();
+        dictionary.setDictEntry(dictEntry);
+        dictionary.setSysUserId("1");
+        dictionary.setIsActive("Y");
+        dictionaryDAO.insertData(dictionary);
+        return dictionary;
     }
 
     public static Result createResult(Analysis analysis, String value) {
@@ -136,6 +155,20 @@ public class TestSetup {
         result.setAnalysis(analysis);
         result.setValue(value);
         result.setSysUserId("1");
+        result.setResultType("N");
+        new ResultDAOImpl().insertData(result);
+        return result;
+    }
+
+    public static Result createResult(Analysis analysis, TestResult testResult, String value) {
+        Result result = new Result();
+        result.setAnalysis(analysis);
+        result.setValue(value);
+        result.setSysUserId("1");
+        result.setResultType(testResult.getTestResultType());
+        if(testResult.getTestResultType().equals("D")) {
+            result.setValue(testResult.getValue());
+        }
         new ResultDAOImpl().insertData(result);
         return result;
     }

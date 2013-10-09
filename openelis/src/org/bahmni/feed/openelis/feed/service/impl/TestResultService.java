@@ -2,6 +2,8 @@ package org.bahmni.feed.openelis.feed.service.impl;
 
 import org.bahmni.openelis.domain.TestResultDetails;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
+import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
+import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.note.daoimpl.NoteDAOImpl;
 import us.mn.state.health.lims.note.valueholder.Note;
@@ -16,44 +18,56 @@ import java.util.List;
 public class TestResultService {
 
     public TestResultDetails detailsFor(String resultId) {
-        String sqlForResult = "select \n" +
-                "    sample.uuid as orderId,\n" +
-                "    sample.accession_number as accessionNumber,\n" +
-                "    patient.uuid as patientExternalId,\n" +
-                "    person.first_name as patientFirstName,\n" +
-                "    person.last_name as patientLastName,\n" +
-                "    test.name as testName,\n" +
-                "    unit_of_measure.name as testUnitOfMeasurement,\n" +
-                "    external_reference.external_id as testExternalId, \n" +
-                "    result.id as resultId,\n" +
-                "    result.value as result,\n" +
-                "    result.result_type as resultType\n" +
-                "from result\n" +
-                "left join analysis on analysis.id = result.analysis_id\n" +
-                "left join sample_item on sample_item.id = analysis.sampitem_id\n" +
-                "left join test on test.id = analysis.test_id\n" +
-                "left join sample on sample.id = sample_item.samp_id\n" +
-                "left join unit_of_measure on unit_of_measure.id = test.uom_id\n" +
-                "left join sample_human on sample_human.samp_id = sample.id\n" +
-                "left join patient on patient.id = sample_human.patient_id\n" +
-                "left join person on person.id = patient.person_id\n" +
-                "left join external_reference on external_reference.item_id = test.id and external_reference.type='Test'" +
-                "where result.id = " + resultId + ";\n";
-
         try {
             Connection connection = HibernateUtil.getSession().connection();
-            PreparedStatement query = connection.prepareStatement(sqlForResult);
+            PreparedStatement query = connection.prepareStatement(getSqlForResultDetails(resultId));
             ResultSet resultSet = query.executeQuery();
             TestResultDetails testResultDetails = mapDetailsFromResultSet(resultSet);
-
-            List<Note> notes = new NoteDAOImpl().getNoteByRefIAndRefTableAndSubject(resultId, ResultsLoadUtility.getResultReferenceTableId(), "Result Note");
-            for (Note note : notes) {
-                testResultDetails.addNotes(note.getText());
-            }
-
+            addDictionaryValueIfRequired(testResultDetails);
+            addNotes(resultId, testResultDetails);
             return testResultDetails;
         } catch (Exception e) {
             throw new LIMSRuntimeException("Failed in querying details about result: " + resultId, e);
+        }
+    }
+
+    private String getSqlForResultDetails(String resultId) {
+        return "select \n" +
+                    "    sample.uuid as orderId,\n" +
+                    "    sample.accession_number as accessionNumber,\n" +
+                    "    patient.uuid as patientExternalId,\n" +
+                    "    person.first_name as patientFirstName,\n" +
+                    "    person.last_name as patientLastName,\n" +
+                    "    test.name as testName,\n" +
+                    "    unit_of_measure.name as testUnitOfMeasurement,\n" +
+                    "    external_reference.external_id as testExternalId, \n" +
+                    "    result.id as resultId,\n" +
+                    "    result.value as result,\n" +
+                    "    result.result_type as resultType\n" +
+                    "from result\n" +
+                    "left join analysis on analysis.id = result.analysis_id\n" +
+                    "left join sample_item on sample_item.id = analysis.sampitem_id\n" +
+                    "left join test on test.id = analysis.test_id\n" +
+                    "left join sample on sample.id = sample_item.samp_id\n" +
+                    "left join unit_of_measure on unit_of_measure.id = test.uom_id\n" +
+                    "left join sample_human on sample_human.samp_id = sample.id\n" +
+                    "left join patient on patient.id = sample_human.patient_id\n" +
+                    "left join person on person.id = patient.person_id\n" +
+                    "left join external_reference on external_reference.item_id = test.id and external_reference.type='Test'" +
+                    "where result.id = " + resultId + ";\n";
+    }
+
+    private void addNotes(String resultId, TestResultDetails testResultDetails) {
+        List<Note> notes = new NoteDAOImpl().getNoteByRefIAndRefTableAndSubject(resultId, ResultsLoadUtility.getResultReferenceTableId(), "Result Note");
+        for (Note note : notes) {
+            testResultDetails.addNotes(note.getText());
+        }
+    }
+
+    private void addDictionaryValueIfRequired(TestResultDetails testResultDetails) {
+        if(testResultDetails.getResultType() != null && testResultDetails.getResultType().equals("D")) {
+            Dictionary dictionary = new DictionaryDAOImpl().getDataForId(testResultDetails.getResult());
+            testResultDetails.setResult(dictionary.getDictEntry());
         }
     }
 
