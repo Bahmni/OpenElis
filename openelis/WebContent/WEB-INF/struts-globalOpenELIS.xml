@@ -673,8 +673,8 @@
         </form-bean>
 
         <form-bean name="LabDashboardForm" type="us.mn.state.health.lims.common.action.BaseActionForm">
-            <form-property name="inProgressOrderList" type="java.lang.String"/>
-            <form-property name="completedOrderList" type="java.lang.String"/>
+            <form-property name="todayOrderList" type="java.lang.String"/>
+            <form-property name="backlogOrderList" type="java.lang.String"/>
             <form-property name="todayStats" type="java.lang.String"/>
         </form-bean>
 

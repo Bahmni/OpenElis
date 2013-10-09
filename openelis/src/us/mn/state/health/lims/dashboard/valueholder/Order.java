@@ -6,40 +6,32 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import java.util.Date;
 
 public class Order {
-    private static final long serialVersionUID = 1L;
-
     private String accessionNumber;
     private String stNumber;
     private String firstName;
     private String lastName;
     private String source;
-    private Date completedDate;
     private Integer pendingTestCount;
     private Integer pendingValidationCount;
     private Integer totalTestCount;
-    private boolean alreadyPrinted;
+    private boolean isPrinted;
+    private boolean isCompleted;
 
     public Order() {
     }
-    public Order(String accessionNumber, String stNumber, String firstName, String lastName, String source, Integer pendingTestCount, Integer pendingValidationCount, Integer totalTestCount) {
+
+    public Order(String accessionNumber, String stNumber, String firstName, String lastName, String source, boolean isCompleted, boolean isPrinted,
+                 int pendingTestCount, int pendingValidationCount, int totalTestCount) {
         this.accessionNumber = accessionNumber;
         this.stNumber = stNumber;
         this.firstName = firstName;
         this.lastName = lastName;
         this.source = source;
+        this.isCompleted = isCompleted;
+        this.isPrinted = isPrinted;
         this.pendingTestCount = pendingTestCount;
         this.pendingValidationCount = pendingValidationCount;
         this.totalTestCount = totalTestCount;
-    }
-
-    public Order(String accessionNumber, String stNumber, String firstName, String lastName, String source, Date completedDate, boolean printedDate) {
-        this.accessionNumber = accessionNumber;
-        this.stNumber = stNumber;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.source = source;
-        this.completedDate = completedDate;
-        this.alreadyPrinted = printedDate;
     }
 
     public String getAccessionNumber() {
@@ -98,21 +90,16 @@ public class Order {
         this.totalTestCount = totalTestCount;
     }
 
-    @JsonSerialize(using=JsonTimeSerializer.class)
-    public Date getCompletedDate() {
-        return completedDate;
-    }
-
-    public void setCompletedDate(Date completedDate) {
-        this.completedDate = completedDate;
-    }
-
     public Integer getPendingValidationCount() {
         return pendingValidationCount;
     }
 
-    public boolean getAlreadyPrinted() {
-        return alreadyPrinted;
+    public boolean getIsPrinted() {
+        return isPrinted;
+    }
+
+    public boolean getIsCompleted() {
+        return isCompleted;
     }
 
     @Override
@@ -122,9 +109,9 @@ public class Order {
 
         Order order = (Order) o;
 
+        if (isCompleted != order.isCompleted) return false;
+        if (isPrinted != order.isPrinted) return false;
         if (accessionNumber != null ? !accessionNumber.equals(order.accessionNumber) : order.accessionNumber != null)
-            return false;
-        if (completedDate != null ? !completedDate.equals(order.completedDate) : order.completedDate != null)
             return false;
         if (firstName != null ? !firstName.equals(order.firstName) : order.firstName != null) return false;
         if (lastName != null ? !lastName.equals(order.lastName) : order.lastName != null) return false;
@@ -147,10 +134,11 @@ public class Order {
         result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
         result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
         result = 31 * result + (source != null ? source.hashCode() : 0);
-        result = 31 * result + (completedDate != null ? completedDate.hashCode() : 0);
         result = 31 * result + (pendingTestCount != null ? pendingTestCount.hashCode() : 0);
         result = 31 * result + (pendingValidationCount != null ? pendingValidationCount.hashCode() : 0);
         result = 31 * result + (totalTestCount != null ? totalTestCount.hashCode() : 0);
+        result = 31 * result + (isPrinted ? 1 : 0);
+        result = 31 * result + (isCompleted ? 1 : 0);
         return result;
     }
 }

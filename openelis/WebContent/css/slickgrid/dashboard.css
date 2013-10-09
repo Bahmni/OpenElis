@@ -10,7 +10,7 @@ table td{
     margin:0px auto;
     margin-bottom: 40px;
 }
-#inProgressListContainer-slick-grid,#completedListContainer-slick-grid,#importStatusGrid{
+#todayListContainer-slick-grid,#backlogListContainer-slick-grid,#importStatusGrid{
     border:1px solid #cecece;
 }
 .details {
@@ -49,12 +49,14 @@ table td{
     font-size:18px;
     color:#ffffff;
 }
-#inProgressListContainer,#completedListContainer{
-    width:1010px;
+#todayListContainer,#backlogListContainer{
 	padding-bottom: 25px;
 }
-#completedListContainer{
-    width:1000px;
+#todayListContainer{
+    width:1091px;
+}
+#backlogListContainer{
+    width:991px;
 }
 .details.hide{
     display:none;

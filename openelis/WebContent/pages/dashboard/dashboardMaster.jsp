@@ -9,8 +9,8 @@
 <%@ taglib uri="/tags/struts-logic" prefix="logic" %>
 <%@ taglib uri="/tags/labdev-view" prefix="app" %>
 <bean:define id="formName" value='<%= (String)request.getAttribute(IActionConstants.FORM_NAME) %>' />
-<bean:define id="inProgressOrderListJson" name="<%=formName%>" property="inProgressOrderList" />
-<bean:define id="completedOrderListJson" name="<%=formName%>" property="completedOrderList" />
+<bean:define id="todayOrderListJson" name="<%=formName%>" property="todayOrderList" />
+<bean:define id="backlogOrderListJson" name="<%=formName%>" property="backlogOrderList" />
 <bean:define id="todayStats" name="<%=formName%>" property="todayStats" />
 
 <%!
@@ -85,11 +85,11 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
 
     <div id="tabs">
         <ul>
-            <li><a href="#inProgressListContainer">In Progress</a></li>
-            <li><a href="#completedListContainer">Completed</a></li>
+            <li><a href="#todayListContainer">Today</a></li>
+            <li><a href="#backlogListContainer">Backlog</a></li>
          </ul>
-        <div id="inProgressListContainer"><div id="inProgressListContainer-slick-grid"></div></div>
-        <div id="completedListContainer"><div id="completedListContainer-slick-grid"></div></div>
+        <div id="todayListContainer"><div id="todayListContainer-slick-grid"></div></div>
+        <div id="backlogListContainer"><div id="backlogListContainer-slick-grid"></div></div>
     </div>
 
     <div id="patientDetails" class="hide details">
@@ -105,13 +105,7 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
 
 <script type="text/javascript">
 
-    var gridForInProgressOrder;
-    var gridForCompletedOrder;
-    var dataViewForInProgressTab;
-    var dataViewForCompletedTab;
     var columnFilters = {};
-    var inProgressObject;
-    var completedOrderObject;
 
     var options = {
         enableColumnReorder: false,
@@ -133,15 +127,16 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
 
     jQuery(document).ready(function() {
         showStats()
-        inProgressObject = new order("#inProgressListContainer-slick-grid", "<%= inProgressOrderListJson %>", generateLinkForInProgressOrder, getColumnsForInProgressOrder);
-        dataViewForInProgressTab = new Slick.Data.DataView({ inlineFilters: true });
-        gridForInProgressOrder = new Slick.Grid(inProgressObject.div, dataViewForInProgressTab, inProgressObject.columns,options);
-        createGrid(gridForInProgressOrder, dataViewForInProgressTab, inProgressObject, onRowSelection);
 
-        completedOrderObject = new order("#completedListContainer-slick-grid", "<%= completedOrderListJson %>", generateLinkForPrint, getColumnsForCompletedOrder);
-        dataViewForCompletedTab = new Slick.Data.DataView();
-        gridForCompletedOrder = new Slick.Grid(completedOrderObject.div, dataViewForCompletedTab, completedOrderObject.columns, options);
-        createGrid(gridForCompletedOrder, dataViewForCompletedTab, completedOrderObject, onRowSelection);
+        var todayOrdersObject = new order("#todayListContainer-slick-grid", "<%= todayOrderListJson %>", generateAllLinksForOrder, getColumnsForTodayOrder);
+        var dataViewForTodayTab = new Slick.Data.DataView({ inlineFilters: true });
+        var gridForTodayOrder = new Slick.Grid(todayOrdersObject.div, dataViewForTodayTab, todayOrdersObject.columns,options);
+        createGrid(gridForTodayOrder, dataViewForTodayTab, todayOrdersObject, onRowSelection);
+
+        var backlogOrdersObject = new order("#backlogListContainer-slick-grid", "<%= backlogOrderListJson %>", generateAllLinksForOrder, getColumnsForBacklogOrder);
+        var dataViewForBacklogTab = new Slick.Data.DataView({ inlineFilters: true });
+        var gridForBacklogOrder = new Slick.Grid(backlogOrdersObject.div, dataViewForBacklogTab, backlogOrdersObject.columns,options);
+        createGrid(gridForBacklogOrder, dataViewForBacklogTab, backlogOrdersObject, onRowSelection);
 
         var activeTab = <%= request.getParameter("activeTab") %>;
 

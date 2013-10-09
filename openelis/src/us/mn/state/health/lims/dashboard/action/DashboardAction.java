@@ -26,11 +26,11 @@ public class DashboardAction extends BaseAction {
     protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         DynaActionForm dynaForm = (DynaActionForm) form;
 
-        String escapedPendingOrderListJson = asJson(orderListDAO.getAllInProgress());
-        String escapedCompletedOrderListJson = asJson(orderListDAO.getAllCompletedBefore24Hours());
+        String escapedTodayOrderListJson = asJson(orderListDAO.getAllToday());
+        String escapedBacklogOrderListJson = asJson(orderListDAO.getAllPendingBeforeToday());
 
-        dynaForm.set("inProgressOrderList", escapedPendingOrderListJson);
-        dynaForm.set("completedOrderList", escapedCompletedOrderListJson);
+        dynaForm.set("todayOrderList", escapedTodayOrderListJson);
+        dynaForm.set("backlogOrderList", escapedBacklogOrderListJson);
         dynaForm.set("todayStats", getTodaysStats());
 
         return mapping.findForward("success");
