@@ -289,7 +289,19 @@
                 <text><![CDATA[Result]]></text>
             </staticText>
             <staticText>
-                <reportElement mode="Opaque" x="226" y="116" width="44" height="14" backcolor="#CCCCCC"/>
+                    <reportElement mode="Opaque" x="226" y="116" width="67" height="14" backcolor="#CCCCCC"/>
+                    <box leftPadding="0">
+                        <pen lineWidth="0.5"/>
+                        <topPen lineWidth="0.5"/>
+                        <leftPen lineWidth="0.5"/>
+                        <bottomPen lineWidth="0.5"/>
+                        <rightPen lineWidth="0.5"/>
+                    </box>
+                    <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                    <text><![CDATA[Unit]]></text>
+                </staticText>
+            <staticText>
+                <reportElement mode="Opaque" x="293" y="116" width="44" height="14" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -301,7 +313,7 @@
                 <text><![CDATA[Alert]]></text>
             </staticText>
             <staticText>
-                <reportElement mode="Opaque" x="270" y="116" width="128" height="14" backcolor="#CCCCCC"/>
+                <reportElement mode="Opaque" x="337" y="116" width="128" height="14" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -311,18 +323,6 @@
 				</box>
                 <textElement textAlignment="Center" verticalAlignment="Middle"/>
                 <text><![CDATA[Valid Range]]></text>
-            </staticText>
-            <staticText>
-                <reportElement mode="Opaque" x="398" y="116" width="67" height="14" backcolor="#CCCCCC"/>
-				<box leftPadding="0">
-					<pen lineWidth="0.5"/>
-					<topPen lineWidth="0.5"/>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.5"/>
-					<rightPen lineWidth="0.5"/>
-				</box>
-                <textElement textAlignment="Center" verticalAlignment="Middle"/>
-                <text><![CDATA[Unit]]></text>
             </staticText>
 			</band>
 		</groupHeader>
@@ -403,6 +403,18 @@
                 <text><![CDATA[Test]]></text>
             </staticText>
             <staticText>
+                    <reportElement mode="Opaque" x="226" y="19" width="67" height="14" backcolor="#CCCCCC"/>
+                    <box leftPadding="0">
+                        <pen lineWidth="0.5"/>
+                        <topPen lineWidth="0.5"/>
+                        <leftPen lineWidth="0.5"/>
+                        <bottomPen lineWidth="0.5"/>
+                        <rightPen lineWidth="0.5"/>
+                    </box>
+                    <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                    <text><![CDATA[Unit]]></text>
+                </staticText>
+            <staticText>
                 <reportElement mode="Opaque" x="163" y="19" width="63" height="14" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<pen lineWidth="0.5"/>
@@ -415,7 +427,7 @@
                 <text><![CDATA[Result]]></text>
             </staticText>
             <staticText>
-                <reportElement mode="Opaque" x="226" y="19" width="44" height="14" backcolor="#CCCCCC"/>
+                <reportElement mode="Opaque" x="293" y="19" width="44" height="14" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -427,7 +439,7 @@
                 <text><![CDATA[Alert]]></text>
             </staticText>
             <staticText>
-                <reportElement mode="Opaque" x="270" y="19" width="128" height="14" backcolor="#CCCCCC"/>
+                <reportElement mode="Opaque" x="337" y="19" width="128" height="14" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -437,18 +449,6 @@
 				</box>
                 <textElement textAlignment="Center" verticalAlignment="Middle"/>
                 <text><![CDATA[Valid Range]]></text>
-            </staticText>
-            <staticText>
-                <reportElement mode="Opaque" x="398" y="19" width="67" height="14" backcolor="#CCCCCC"/>
-				<box leftPadding="0">
-					<pen lineWidth="0.5"/>
-					<topPen lineWidth="0.5"/>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.5"/>
-					<rightPen lineWidth="0.5"/>
-				</box>
-                <textElement textAlignment="Center" verticalAlignment="Middle"/>
-                <text><![CDATA[Unit]]></text>
             </staticText>
 			</band>
 	</pageHeader>
@@ -520,8 +520,21 @@
 					<textElement textAlignment="Right" verticalAlignment="Middle"/>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{result}]]></textFieldExpression>
 				</textField>
+                <textField isBlankWhenNull="true">
+                    <reportElement stretchType="RelativeToTallestObject" x="226" y="0" width="69" height="18">
+                        <printWhenExpression><![CDATA[!$F{resultType}.equals("R")]]></printWhenExpression>
+                    </reportElement>
+                    <box>
+                        <topPen lineWidth="0.0" lineColor="#CCCCCC"/>
+                        <leftPen lineWidth="0.5"/>
+                        <bottomPen lineWidth="0.2" lineColor="#CCCCCC"/>
+                        <rightPen lineWidth="0.5"/>
+                    </box>
+                    <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                    <textFieldExpression class="java.lang.String"><![CDATA[$F{uom}]]></textFieldExpression>
+                </textField>
 				<textField isBlankWhenNull="true">
-					<reportElement stretchType="RelativeToTallestObject" x="226" y="0" width="44" height="18">
+					<reportElement stretchType="RelativeToTallestObject" x="295" y="0" width="44" height="18">
 					    <printWhenExpression><![CDATA[!$F{resultType}.equals("R")]]></printWhenExpression>
 					</reportElement>
 					<box>
@@ -536,7 +549,7 @@
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{alerts}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement stretchType="RelativeToTallestObject" x="270" y="0" width="126" height="18">
+					<reportElement stretchType="RelativeToTallestObject" x="339" y="0" width="126" height="18">
 					    <printWhenExpression><![CDATA[!$F{resultType}.equals("R")]]></printWhenExpression>
 					</reportElement>
 					<box>
@@ -547,19 +560,6 @@
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle"/>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{testRefRange}]]></textFieldExpression>
-				</textField>
-				<textField isBlankWhenNull="true">
-					<reportElement stretchType="RelativeToTallestObject" x="396" y="0" width="69" height="18">
-					    <printWhenExpression><![CDATA[!$F{resultType}.equals("R")]]></printWhenExpression>
-					</reportElement>
-					<box>
-						<topPen lineWidth="0.0" lineColor="#CCCCCC"/>
-						<leftPen lineWidth="0.5"/>
-						<bottomPen lineWidth="0.2" lineColor="#CCCCCC"/>
-						<rightPen lineWidth="0.5"/>
-					</box>
-					<textElement textAlignment="Center" verticalAlignment="Middle"/>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{uom}]]></textFieldExpression>
 				</textField>
 			</frame>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
