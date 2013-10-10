@@ -1,7 +1,8 @@
 package us.mn.state.health.lims.dashboard.daoimpl;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.components.Date;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.dashboard.dao.OrderListDAO;
@@ -16,14 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Integer.parseInt;
-import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.BiologistRejected;
-import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.Finalized;
-import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.NotTested;
-import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance;
-import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.TechnicalRejected;
+import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.*;
 import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.getStatusID;
 
 public class OrderListDAOImpl implements OrderListDAO {
+
+    private Logger logger = LogManager.getLogger(OrderListDAOImpl.class);
 
     public OrderListDAOImpl() {
     }
@@ -42,7 +41,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "SUM(CASE WHEN  analysis.status_id IN ("+ getPendingValidationAnalysisStatus() + ") THEN 1 ELSE 0 END) as pending_validation_count,\n" +
                 "COUNT(test.id) AS total_test_count,\n" +
                 "CASE WHEN COUNT(analysis.id) = SUM(CASE WHEN  analysis.status_id IN (" +getCompletedStatus()+ ") THEN 1 ELSE 0 END) THEN true ELSE false END as is_completed,\n" +
-                "CASE WHEN MAX(document_track.report_generation_time) is null THEN false ELSE true END as is_printed\n" +
+                "CASE WHEN document_track.report_generation_time is null THEN false ELSE true END as is_printed\n" +
                 "FROM Sample AS sample\n" +
                 "LEFT OUTER JOIN Sample_Human AS sampleHuman ON sampleHuman.samp_Id = sample.id \n" +
                 "LEFT  JOIN sample_source ON sample_source.id = sample.sample_source_id \n" +
@@ -53,23 +52,29 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "INNER JOIN sample_item ON sample_item.samp_id = sample.id \n" +
                 "INNER JOIN analysis ON analysis.sampitem_id = sample_item.id \n" +
                 "INNER JOIN test ON test.id = analysis.test_id\n" +
-                "LEFT OUTER JOIN document_track as document_track ON sample.id = document_track.row_id AND document_track.name = 'patientHaitiClinical' \n" +
-                "WHERE date(sample.lastupdated) = ? and analysis.status_id IN (" + getAllNonReferredAnalysisStatus() + ") \n" +
-                "GROUP BY sample.accession_number, sample.collection_date, sample.lastupdated, person.first_name, person.last_name, sample_source.name, patient_identity.identity_data\n" +
+                "LEFT OUTER JOIN document_track as document_track ON sample.id = document_track.row_id AND document_track.name = 'patientHaitiClinical' and document_track.parent_id is null \n" +
+                "WHERE analysis.status_id IN (" + getAllNonReferredAnalysisStatus() + ") \n" +
+                "GROUP BY sample.accession_number, sample.collection_date, sample.lastupdated, person.first_name, person.last_name, sample_source.name, patient_identity.identity_data, document_track.report_generation_time \n" +
+                "having max(date(analysis.lastupdated)) = ? \n" +
                 "ORDER BY sample.accession_number DESC\n" +
                 "LIMIT 1000;";
+        PreparedStatement preparedStatement = null;
+        ResultSet todayAccessions = null;
         try {
-            PreparedStatement preparedStatement = getPreparedStatement(sqlForAllTestsToday);
+            preparedStatement = getPreparedStatement(sqlForAllTestsToday);
             //Dont'use current_date in prepared_statement. I know its weird, but
             //The session fires query with current_date = date_on_which_session_was_created and gives wron result on next daypreparedStatement.setTimestamp(1, DateUtil.getTodayAsTimestamp());
             preparedStatement.setTimestamp(1, DateUtil.getTodayAsTimestamp());
-            ResultSet todayAccessions = preparedStatement.executeQuery();
+            todayAccessions = preparedStatement.executeQuery();
             while (todayAccessions.next()) {
                 orderList.add(createOrder(todayAccessions, todayAccessions.getBoolean("is_completed")));
             }
             return orderList;
         } catch (SQLException e) {
             throw new LIMSRuntimeException(e);
+        } finally {
+            closeResultSet(todayAccessions);
+            closePreparedStatement(preparedStatement);
         }
     }
 
@@ -86,7 +91,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "SUM(CASE WHEN  analysis.status_id IN (" + getPendingAnalysisStatus() + ") THEN 1 ELSE 0 END) as pending_tests_count,\n" +
                 "SUM(CASE WHEN  analysis.status_id IN ("+ getPendingValidationAnalysisStatus() + ") THEN 1 ELSE 0 END) as pending_validation_count,\n" +
                 "COUNT(test.id) AS total_test_count,\n" +
-                "CASE WHEN MAX(document_track.report_generation_time) is null THEN false ELSE true END as is_printed\n" +
+                "CASE WHEN document_track.report_generation_time is null THEN false ELSE true END as is_printed\n" +
                 "FROM Sample AS sample\n" +
                 "LEFT OUTER JOIN Sample_Human AS sampleHuman ON sampleHuman.samp_Id = sample.id \n" +
                 "LEFT  JOIN sample_source ON sample_source.id = sample.sample_source_id \n" +
@@ -97,25 +102,52 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "INNER JOIN sample_item ON sample_item.samp_id = sample.id \n" +
                 "INNER JOIN analysis ON analysis.sampitem_id = sample_item.id \n" +
                 "INNER JOIN test ON test.id = analysis.test_id\n" +
-                "LEFT OUTER JOIN document_track as document_track ON sample.id = document_track.row_id AND document_track.name = 'patientHaitiClinical' \n" +
-                "WHERE sample.lastupdated < ? and analysis.status_id IN (" + getAllNonReferredAnalysisStatus() + ") \n" +
-                "GROUP BY sample.accession_number, sample.collection_date, person.first_name, person.last_name, sample_source.name, patient_identity.identity_data\n" +
-                "HAVING COUNT(analysis.id) > SUM(CASE WHEN  analysis.status_id IN (" +getCompletedStatus()+ ") THEN 1 ELSE 0 END)\n" +
+                "LEFT OUTER JOIN document_track as document_track ON sample.id = document_track.row_id AND document_track.name = 'patientHaitiClinical' and document_track.parent_id is null\n" +
+                "WHERE analysis.status_id IN (" + getAllNonReferredAnalysisStatus() + ") \n" +
+                "GROUP BY sample.accession_number, sample.collection_date, person.first_name, person.last_name, sample_source.name, patient_identity.identity_data, document_track.report_generation_time\n" +
+                "HAVING COUNT(analysis.id) > SUM(CASE WHEN  analysis.status_id IN (" +getCompletedStatus()+ ") THEN 1 ELSE 0 END) and max(analysis.lastupdated) = ?\n" +
                 "ORDER BY sample.accession_number DESC\n" +
                 "LIMIT 1000;";
+
+        ResultSet pendingAccessions = null;
+        PreparedStatement preparedStatement = null;
         try {
-            PreparedStatement preparedStatement = getPreparedStatement(sqlForAllTestsToday);
             //Dont'use current_date in prepared_statement. I know its weird, but
             //The session fires query with current_date = date_on_which_session_was_created and gives wron result on next daypreparedStatement.setTimestamp(1, DateUtil.getTodayAsTimestamp());
+            preparedStatement = getPreparedStatement(sqlForAllTestsToday);
             preparedStatement.setTimestamp(1, DateUtil.getTodayAsTimestamp());
-            ResultSet pendingAccessions = preparedStatement.executeQuery();
+            pendingAccessions = preparedStatement.executeQuery();
             while (pendingAccessions.next()) {
                 Order order = createOrder(pendingAccessions, false);
                 orderList.add(order);
             }
             return orderList;
         } catch (SQLException e) {
+            logger.error("Error closing resultSet", e);
             throw new LIMSRuntimeException(e);
+        } finally {
+            closeResultSet(pendingAccessions);
+            closePreparedStatement(preparedStatement);
+        }
+    }
+
+    private void closePreparedStatement(PreparedStatement preparedStatement) {
+        if (preparedStatement != null) {
+            try {
+                preparedStatement.close();
+            } catch (SQLException e) {
+                logger.error("Error closing statement", e);
+            }
+        }
+    }
+
+    private void closeResultSet(ResultSet pendingAccessions) {
+        if (pendingAccessions != null) {
+            try {
+                pendingAccessions.close();
+            } catch (SQLException e) {
+                logger.error("Error closing resultSet", e);
+            }
         }
     }
 
