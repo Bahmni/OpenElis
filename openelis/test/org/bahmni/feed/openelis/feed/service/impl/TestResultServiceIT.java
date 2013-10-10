@@ -35,9 +35,8 @@ public class TestResultServiceIT extends IT {
         String testName = "Test Platelet Count";
         String firstName = "First";
         String lastName = "Last";
-        String unitOfMeasureName = "cumm";
+        String unitOfMeasureName = "some unit";
         String resultValue = "10000";
-
 
         Patient patient = createPatient(firstName, lastName, "GAN123");
         Sample sample = createSample(accessionNumber, true);

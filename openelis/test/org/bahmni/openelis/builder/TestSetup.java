@@ -235,6 +235,7 @@ public class TestSetup {
         UnitOfMeasureDAOImpl unitOfMeasureDAO = new UnitOfMeasureDAOImpl();
         unitOfMeasure.setUnitOfMeasureName(unitOfMeasureName);
         unitOfMeasure.setDescription(unitOfMeasureName);
+        unitOfMeasure.setSysUserId("1");
         UnitOfMeasure unitOfMeasureByName = unitOfMeasureDAO.getUnitOfMeasureByName(unitOfMeasure);
         if (unitOfMeasureByName == null) {
             unitOfMeasureDAO.insertData(unitOfMeasure);

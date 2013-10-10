@@ -21,6 +21,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts.Globals;
 import org.apache.struts.action.*;
+import org.bahmni.feed.openelis.feed.service.EventPublishers;
+import org.bahmni.feed.openelis.feed.service.impl.OpenElisUrlPublisher;
 import org.hibernate.StaleObjectStateException;
 import org.hibernate.Transaction;
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
@@ -120,6 +122,7 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
     private String statusRuleSet = ConfigurationProperties.getInstance().getPropertyValueUpperCase(Property.StatusRules);
     private Analysis previousAnalysis;
     private ResultsValidation resultValidation = new ResultsValidation();
+    private OpenElisUrlPublisher resultPublisher = new EventPublishers().testResultPublisher();
 
     static {
         ReferralTypeDAO referralTypeDAO = new ReferralTypeDAOImpl();
@@ -184,6 +187,8 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
                 if (resultSet.newReferral != null) {
                     insertNewReferralAndReferralResult(resultSet);
                 }
+
+                publishFinalizedResult(resultSet, request);
             }
 
             for (ResultSet resultSet : modifiedResults) {
@@ -226,6 +231,8 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
                 if (resultSet.existingReferral != null) {
                     referralDAO.updateData(resultSet.existingReferral);
                 }
+
+                publishFinalizedResult(resultSet, request);
             }
 
 
@@ -291,6 +298,12 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
             params.put("type", dynaForm.getString("logbookType"));
             params.put("forward", forward);
             return getForwardWithParameters(mapping.findForward(forward), params);
+        }
+    }
+
+    private void publishFinalizedResult(ResultSet resultSet, HttpServletRequest request) {
+        if(resultSet.result.getAnalysis().getStatusId().equals(StatusOfSampleUtil.getStatusID(AnalysisStatus.Finalized))) {
+            resultPublisher.publish(resultSet.result.getId(), request.getContextPath());
         }
     }
 
