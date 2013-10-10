@@ -1,6 +1,7 @@
 package org.bahmni.feed.openelis.feed.service.impl;
 
 import org.bahmni.openelis.domain.TestResultDetails;
+import org.postgresql.jdbc4.Jdbc4ResultSet;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
 import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
@@ -23,12 +24,13 @@ import java.util.Map;
 
 public class TestResultService {
 
-    public TestResultDetails detailsFor(String resultId) {
+    public TestResultDetails detailsFor(String resultId) throws SQLException {
         TestResultDetails testResultDetails = new TestResultDetails();
         Map<String, Object> extraDetails = new HashMap<>();
+        PreparedStatement query = null;
         try {
             Connection connection = HibernateUtil.getSession().connection();
-            PreparedStatement query = connection.prepareStatement(getSqlForResultDetails(resultId));
+            query = connection.prepareStatement(getSqlForResultDetails(resultId));
             ResultSet resultSet = query.executeQuery();
             mapDetailsFromResultSet(resultSet, testResultDetails, extraDetails);
 
@@ -39,9 +41,14 @@ public class TestResultService {
                 addResultLimitsAlert(testResultDetails, extraDetails);
             }
 
+            query.close();
             return testResultDetails;
         } catch (Exception e) {
             throw new LIMSRuntimeException("Failed in querying details about result: " + resultId, e);
+        } finally {
+            if (query != null) {
+                query.close();
+            }
         }
     }
 

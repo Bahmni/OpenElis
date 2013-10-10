@@ -188,6 +188,7 @@
                     <include name="**/*IT.java"/>
                     <exclude name="**/*BaseTest.java"/>
                     <exclude name="**/All*Tests.java"/>
+                    <exclude name="**/openelis/builder/*.java"/>
                 </fileset>
             </batchtest>
         </junit>

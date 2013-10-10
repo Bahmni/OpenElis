@@ -18,6 +18,9 @@ package us.mn.state.health.lims.ws.handler;
 
 import org.bahmni.feed.openelis.feed.service.impl.TestResultService;
 import org.bahmni.openelis.domain.TestResultDetails;
+import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
+
+import java.sql.SQLException;
 
 public class TestResultHandler implements Handler {
     private final String RESULT = "RESULT";
@@ -38,6 +41,10 @@ public class TestResultHandler implements Handler {
 
     @Override
     public TestResultDetails handle(String resultId) {
-        return this.testResultService.detailsFor(resultId);
+        try {
+            return this.testResultService.detailsFor(resultId);
+        } catch (SQLException e) {
+            throw new LIMSRuntimeException("Exception getting details for result: ", e);
+        }
     }
 }
