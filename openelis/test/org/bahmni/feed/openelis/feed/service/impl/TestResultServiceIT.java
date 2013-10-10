@@ -6,6 +6,7 @@ import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.note.valueholder.Note;
 import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.result.valueholder.Result;
+import us.mn.state.health.lims.resultlimits.valueholder.ResultLimit;
 import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.samplehuman.valueholder.SampleHuman;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
@@ -16,6 +17,7 @@ import us.mn.state.health.lims.testresult.valueholder.TestResult;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.bahmni.openelis.builder.TestSetup.createResult;
+import static org.bahmni.openelis.builder.TestSetup.createResultLimit;
 import static org.bahmni.openelis.builder.TestSetup.createResultNote;
 import static org.bahmni.openelis.builder.TestSetup.createTest;
 import static org.bahmni.openelis.builder.TestSetup.createAnalysis;
@@ -42,6 +44,7 @@ public class TestResultServiceIT extends IT {
         SampleHuman sampleHuman = createSampleHuman(sample, patient);
         SampleItem sampleItem = createSampleItem(sample);
         Test test = createTest(testName, unitOfMeasureName);
+        ResultLimit resultLimit = createResultLimit(test, 100.0, 200.0, 10.0, 1000.0, null, null, null);
         Analysis analysis = createAnalysis(sampleItem, StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance, "New", test);
         Result result = createResult(analysis, resultValue);
         createResultNote(result, "Some note 1");
@@ -59,6 +62,7 @@ public class TestResultServiceIT extends IT {
         assertEquals(lastName, testResultDetails.getPatientLastName());
         assertEquals(unitOfMeasureName, testResultDetails.getTestUnitOfMeasurement());
         assertEquals(result.getId(), testResultDetails.getResultId());
+        assertEquals("A", testResultDetails.getAlerts());
 
         assertTrue(testResultDetails.getNotes().contains("Some note 1"));
         assertTrue(testResultDetails.getNotes().contains("Some note 2"));

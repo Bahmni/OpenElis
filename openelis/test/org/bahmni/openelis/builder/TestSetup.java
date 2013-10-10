@@ -22,6 +22,8 @@ import us.mn.state.health.lims.result.action.ResultsLogbookUpdateAction;
 import us.mn.state.health.lims.result.action.util.ResultsLoadUtility;
 import us.mn.state.health.lims.result.daoimpl.ResultDAOImpl;
 import us.mn.state.health.lims.result.valueholder.Result;
+import us.mn.state.health.lims.resultlimits.daoimpl.ResultLimitDAOImpl;
+import us.mn.state.health.lims.resultlimits.valueholder.ResultLimit;
 import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
 import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.samplehuman.daoimpl.SampleHumanDAOImpl;
@@ -43,6 +45,9 @@ import us.mn.state.health.lims.testresult.valueholder.TestResult;
 import us.mn.state.health.lims.unitofmeasure.daoimpl.UnitOfMeasureDAOImpl;
 import us.mn.state.health.lims.unitofmeasure.valueholder.UnitOfMeasure;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -94,7 +99,7 @@ public class TestSetup {
         sample.setSampleSource(sampleSources.get(0));
         sample.setUUID(UUID.randomUUID().toString());
         sample.setSysUserId("1");
-        if(!forToday){
+        if (!forToday) {
             sample.setLastupdated(DateUtil.convertStringDateToTimestamp("08/08/2013 00:00:00"));
         }
         new SampleDAOImpl().insertDataWithAccessionNumber(sample);
@@ -123,12 +128,28 @@ public class TestSetup {
         return test;
     }
 
+    public static ResultLimit createResultLimit(Test test, Double lowNormal, Double highNormal, Double lowValid, Double highValid, String gender, Double minAge, Double maxAge) {
+        ResultLimit resultLimit = new ResultLimit();
+        resultLimit.setTestId(test.getId());
+        resultLimit.setResultTypeId("4"); //Numeric type
+        resultLimit.setGender(gender);
+        resultLimit.setSysUserId("1");
+        if (minAge != null) resultLimit.setMinAge(minAge);
+        if (maxAge != null) resultLimit.setMaxAge(maxAge);
+        if (lowNormal != null) resultLimit.setLowNormal(lowNormal);
+        if (highNormal != null) resultLimit.setHighNormal(highNormal);
+        if (lowValid != null) resultLimit.setLowValid(lowValid);
+        if (highValid != null) resultLimit.setHighValid(highValid);
+        new ResultLimitDAOImpl().insertData(resultLimit);
+        return resultLimit;
+    }
+
     public static TestResult createTestResult(Test test, String testResultType, String value) {
         TestResult testResult = new TestResult();
         testResult.setTest(test);
         testResult.setTestResultType(testResultType);
         testResult.setValue(value);
-        if(testResultType.equals("D")) {
+        if (testResultType.equals("D")) {
             testResult.setValue(getDictionaryObject(value).getId());
         }
         testResult.setSysUserId("1");
@@ -139,7 +160,7 @@ public class TestSetup {
     public static Dictionary getDictionaryObject(String dictEntry) {
         DictionaryDAOImpl dictionaryDAO = new DictionaryDAOImpl();
         Dictionary dictionaryByDictEntry = dictionaryDAO.getDictionaryByDictEntry(dictEntry);
-        if(dictionaryByDictEntry != null) {
+        if (dictionaryByDictEntry != null) {
             return dictionaryByDictEntry;
         }
         Dictionary dictionary = new Dictionary();
@@ -166,7 +187,7 @@ public class TestSetup {
         result.setValue(value);
         result.setSysUserId("1");
         result.setResultType(testResult.getTestResultType());
-        if(testResult.getTestResultType().equals("D")) {
+        if (testResult.getTestResultType().equals("D")) {
             result.setValue(testResult.getValue());
         }
         new ResultDAOImpl().insertData(result);
@@ -206,7 +227,7 @@ public class TestSetup {
     }
 
     public static UnitOfMeasure getUnitOfMeasure(String unitOfMeasureName) {
-        if(unitOfMeasureName == null) {
+        if (unitOfMeasureName == null) {
             return null;
         }
 
@@ -215,7 +236,7 @@ public class TestSetup {
         unitOfMeasure.setUnitOfMeasureName(unitOfMeasureName);
         unitOfMeasure.setDescription(unitOfMeasureName);
         UnitOfMeasure unitOfMeasureByName = unitOfMeasureDAO.getUnitOfMeasureByName(unitOfMeasure);
-        if(unitOfMeasureByName == null) {
+        if (unitOfMeasureByName == null) {
             unitOfMeasureDAO.insertData(unitOfMeasure);
         } else {
             unitOfMeasure = unitOfMeasureByName;
