@@ -26,7 +26,11 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 public class DateUtil {
@@ -595,7 +599,20 @@ public class DateUtil {
 		return new GregorianCalendar().get(Calendar.MINUTE);
 	}
 
-	public static Timestamp getNowAsTimestamp() {
+	public static Timestamp getTodayAsTimestamp() {
+        return new Timestamp(getToday().getTime());
+	}
+
+    public static Date getToday() {
+        Calendar date = new GregorianCalendar();
+        date.set(Calendar.HOUR_OF_DAY, 0);
+        date.set(Calendar.MINUTE, 0);
+        date.set(Calendar.SECOND, 0);
+        date.set(Calendar.MILLISECOND, 0);
+        return date.getTime();
+    }
+
+    public static Timestamp getNowAsTimestamp() {
 		return new Timestamp(new Date().getTime());
 	}
 
