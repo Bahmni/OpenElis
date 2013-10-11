@@ -1,44 +1,37 @@
 package org.bahmni.feed.openelis.feed.service.impl;
 
 import org.bahmni.openelis.domain.TestResultDetails;
-import org.postgresql.jdbc4.Jdbc4ResultSet;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
 import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.note.daoimpl.NoteDAOImpl;
 import us.mn.state.health.lims.note.valueholder.Note;
-import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.result.action.util.ResultsLoadUtility;
-import us.mn.state.health.lims.resultlimits.valueholder.ResultLimit;
-import us.mn.state.health.lims.test.valueholder.Test;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class TestResultService {
 
     public TestResultDetails detailsFor(String resultId) throws SQLException {
         TestResultDetails testResultDetails = new TestResultDetails();
-        Map<String, Object> extraDetails = new HashMap<>();
         PreparedStatement query = null;
+        ResultSet resultSet = null;
         try {
             Connection connection = HibernateUtil.getSession().connection();
             query = connection.prepareStatement(getSqlForResultDetails(resultId));
-            ResultSet resultSet = query.executeQuery();
-            mapDetailsFromResultSet(resultSet, testResultDetails, extraDetails);
+            resultSet = query.executeQuery();
+            mapDetailsFromResultSet(resultSet, testResultDetails);
 
             addDictionaryValueIfRequired(testResultDetails);
             addNotes(resultId, testResultDetails);
 
             if (testResultDetails.getResultType().equals("N")) {
-                addResultLimitsAlert(testResultDetails, extraDetails);
+                addResultLimitsAlert(testResultDetails);
             }
 
             query.close();
@@ -46,27 +39,29 @@ public class TestResultService {
         } catch (Exception e) {
             throw new LIMSRuntimeException("Failed in querying details about result: " + resultId, e);
         } finally {
+            if(resultSet != null) {
+                resultSet.close();
+            }
             if (query != null) {
                 query.close();
             }
         }
     }
 
-    private void addResultLimitsAlert(TestResultDetails testResultDetails, Map<String, Object> extraDetails) {
-        Test test = new Test();
-        test.setId((String) extraDetails.get("testId"));
-
-        Patient patient = new Patient();
-        patient.setBirthDate((Timestamp) extraDetails.get("patientBirthDate"));
-        patient.setGender((String) extraDetails.get("patientGender"));
-        ResultLimit resultLimit = new ResultsLoadUtility().getResultLimitForTestAndPatient(test, patient);
-
+    private void addResultLimitsAlert(TestResultDetails testResultDetails) {
         double result = Double.parseDouble(testResultDetails.getResult());
-        if (result > resultLimit.getHighNormal()) {
+        if(hasNoResultLimits(testResultDetails)) {
+            return;
+        }
+        if (result > testResultDetails.getMaxNormal()) {
             testResultDetails.setAlerts("A");
-        } else if(result < resultLimit.getLowNormal()) {
+        } else if(result < testResultDetails.getMinNormal()) {
             testResultDetails.setAlerts("B");
         }
+    }
+
+    private boolean hasNoResultLimits(TestResultDetails testResultDetails) {
+        return testResultDetails.getMinNormal() == 0 && testResultDetails.getMaxNormal() == 0;
     }
 
     private String getSqlForResultDetails(String resultId) {
@@ -82,6 +77,8 @@ public class TestResultService {
                 "    result.id as resultId,\n" +
                 "    result.value as result,\n" +
                 "    result.result_type as resultType,\n" +
+                "    result.min_normal as minNormal,\n" +
+                "    result.max_normal as maxNormal,\n" +
                 "    test.id as testId,\n" +
                 "    patient.gender as patientGender,\n" +
                 "    patient.birth_date as patientBirthDate " +
@@ -112,7 +109,7 @@ public class TestResultService {
         }
     }
 
-    private void mapDetailsFromResultSet(ResultSet resultSet, TestResultDetails testResultDetails, Map<String, Object> extraDetails) throws SQLException {
+    private void mapDetailsFromResultSet(ResultSet resultSet, TestResultDetails testResultDetails) throws SQLException {
         while (resultSet.next()) {
             testResultDetails.setAccessionNumber(resultSet.getString("accessionNumber"));
             testResultDetails.setOrderId(resultSet.getString("orderId"));
@@ -125,10 +122,8 @@ public class TestResultService {
             testResultDetails.setTestExternalId(resultSet.getString("testExternalId"));
             testResultDetails.setResultId(resultSet.getString("resultId"));
             testResultDetails.setResultType(resultSet.getString("resultType"));
-
-            extraDetails.put("testId", resultSet.getString("testId"));
-            extraDetails.put("patientGender", resultSet.getString("patientGender"));
-            extraDetails.put("patientBirthDate", resultSet.getTimestamp("patientBirthDate"));
+            testResultDetails.setMinNormal(resultSet.getDouble("minNormal"));
+            testResultDetails.setMaxNormal(resultSet.getDouble("maxNormal"));
         }
     }
 }

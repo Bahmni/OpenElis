@@ -18,7 +18,6 @@ import us.mn.state.health.lims.patientidentity.valueholder.PatientIdentity;
 import us.mn.state.health.lims.patientidentitytype.util.PatientIdentityTypeMap;
 import us.mn.state.health.lims.person.daoimpl.PersonDAOImpl;
 import us.mn.state.health.lims.person.valueholder.Person;
-import us.mn.state.health.lims.result.action.ResultsLogbookUpdateAction;
 import us.mn.state.health.lims.result.action.util.ResultsLoadUtility;
 import us.mn.state.health.lims.result.daoimpl.ResultDAOImpl;
 import us.mn.state.health.lims.result.valueholder.Result;
@@ -45,9 +44,6 @@ import us.mn.state.health.lims.testresult.valueholder.TestResult;
 import us.mn.state.health.lims.unitofmeasure.daoimpl.UnitOfMeasureDAOImpl;
 import us.mn.state.health.lims.unitofmeasure.valueholder.UnitOfMeasure;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -171,12 +167,14 @@ public class TestSetup {
         return dictionary;
     }
 
-    public static Result createResult(Analysis analysis, String value) {
+    public static Result createResult(Analysis analysis, String value, ResultLimit resultLimit) {
         Result result = new Result();
         result.setAnalysis(analysis);
         result.setValue(value);
         result.setSysUserId("1");
         result.setResultType("N");
+        result.setMinNormal(resultLimit.getLowNormal());
+        result.setMaxNormal(resultLimit.getHighNormal());
         new ResultDAOImpl().insertData(result);
         return result;
     }

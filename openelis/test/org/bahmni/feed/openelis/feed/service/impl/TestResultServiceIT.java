@@ -45,7 +45,7 @@ public class TestResultServiceIT extends IT {
         Test test = createTest(testName, unitOfMeasureName);
         ResultLimit resultLimit = createResultLimit(test, 100.0, 200.0, 10.0, 1000.0, null, null, null);
         Analysis analysis = createAnalysis(sampleItem, StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance, "New", test);
-        Result result = createResult(analysis, resultValue);
+        Result result = createResult(analysis, resultValue, resultLimit);
         createResultNote(result, "Some note 1");
         createResultNote(result, "Some note 2");
 

@@ -15,6 +15,8 @@ public class TestResultDetails {
     private String testUnitOfMeasurement;
     private String testExternalId;
     private String resultId;
+    private Double minNormal;
+    private Double maxNormal;
     private String result;
     private String alerts;
     private List<String> notes = new ArrayList<>();
@@ -128,5 +130,21 @@ public class TestResultDetails {
 
     public String getResultType() {
         return resultType;
+    }
+
+    public Double getMinNormal() {
+        return minNormal;
+    }
+
+    public void setMinNormal(Double minNormal) {
+        this.minNormal = minNormal;
+    }
+
+    public Double getMaxNormal() {
+        return maxNormal;
+    }
+
+    public void setMaxNormal(Double maxNormal) {
+        this.maxNormal = maxNormal;
     }
 }
