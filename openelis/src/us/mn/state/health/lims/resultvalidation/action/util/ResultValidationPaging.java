@@ -18,20 +18,24 @@ package us.mn.state.health.lims.resultvalidation.action.util;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts.action.DynaActionForm;
+import org.hibernate.mapping.Collection;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.paging.*;
+import us.mn.state.health.lims.common.util.ConfigurationProperties;
 import us.mn.state.health.lims.common.util.IdValuePair;
 import us.mn.state.health.lims.resultvalidation.bean.AnalysisItem;
+import us.mn.state.health.lims.sample.valueholder.SampleComparator;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
 public class ResultValidationPaging {
-	public static final int VALIDATION_PAGING_SIZE = 2;
-	private PagingUtility<List<AnalysisItem>> paging = new PagingUtility<>(
+    private PagingUtility<List<AnalysisItem>> paging = new PagingUtility<>(
             IActionConstants.ANALYSIS_RESULTS_SESSION_CACHE, IActionConstants.ANALYSIS_RESULTS_PAGE_MAPPING_SESSION_CACHE);
 	private static AnalysisItemPageHelper pagingHelper = new AnalysisItemPageHelper();
 
@@ -81,10 +85,18 @@ public class ResultValidationPaging {
 			IPageFlattener<List<AnalysisItem>> {
 
 		public void createPages(List<AnalysisItem> analysisList, List<List<AnalysisItem>> pagedResults) {
+            int validationPagingSize = Integer.parseInt(ConfigurationProperties.getInstance().getPropertyValue(ConfigurationProperties.Property.RESULTS_VALIDATION_PAGE_SIZE));
 			List<AnalysisItem> page = new ArrayList<>();
 
 			String currentAccessionNumber = null;
 			int resultCount = 0;
+
+            Collections.sort(analysisList, new Comparator<AnalysisItem>() {
+                @Override
+                public int compare(AnalysisItem o1, AnalysisItem o2) {
+                    return o1.getAccessionNumber().compareTo(o2.getAccessionNumber());
+                }
+            });
 
 			for (AnalysisItem item : analysisList) {
 				if (currentAccessionNumber != null && !currentAccessionNumber.equals(item.getAccessionNumber())) {
@@ -93,7 +105,7 @@ public class ResultValidationPaging {
 					pagedResults.add(page);
 					page = new ArrayList<>();
 				}
-				if (resultCount >= VALIDATION_PAGING_SIZE) {
+                if (resultCount >= validationPagingSize) {
 					currentAccessionNumber = item.getAccessionNumber();
 				}
 				

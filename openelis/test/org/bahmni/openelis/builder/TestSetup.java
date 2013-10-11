@@ -44,6 +44,7 @@ import us.mn.state.health.lims.testresult.valueholder.TestResult;
 import us.mn.state.health.lims.unitofmeasure.daoimpl.UnitOfMeasureDAOImpl;
 import us.mn.state.health.lims.unitofmeasure.valueholder.UnitOfMeasure;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -71,6 +72,7 @@ public class TestSetup {
         analysis.setTest(test);
         analysis.setSysUserId("1");
         analysis.setTestSection(testSection);
+        analysis.setLastupdated(sampleItem.getSample().getLastupdated());
         new AnalysisDAOImpl().insertData(analysis, false);
         return analysis;
     }
@@ -85,7 +87,7 @@ public class TestSetup {
         return enteredSampleItem;
     }
 
-    public static Sample createSample(String accessionNumber, boolean forToday) {
+    public static Sample createSample(String accessionNumber, Date date) {
         List<SampleSource> sampleSources = new SampleSourceDAOImpl().getAll();
         Sample sample = new Sample();
         sample.setAccessionNumber(accessionNumber);
@@ -93,11 +95,8 @@ public class TestSetup {
         sample.setEnteredDate(DateUtil.convertStringDateToSqlDate(new SimpleDateFormat("dd/MM/yyyy").format(new Date())));
         sample.setReceivedTimestamp(DateUtil.convertStringDateToTimestamp("01/01/2001 00:00"));
         sample.setSampleSource(sampleSources.get(0));
-        sample.setUUID(UUID.randomUUID().toString());
         sample.setSysUserId("1");
-        if (!forToday) {
-            sample.setLastupdated(DateUtil.convertStringDateToTimestamp("08/08/2013 00:00:00"));
-        }
+        sample.setLastupdated(new Timestamp(date.getTime()));
         new SampleDAOImpl().insertDataWithAccessionNumber(sample);
         return sample;
     }

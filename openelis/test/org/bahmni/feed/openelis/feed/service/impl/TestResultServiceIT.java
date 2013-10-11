@@ -14,6 +14,8 @@ import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
 
+import java.util.Date;
+
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.bahmni.openelis.builder.TestSetup.createResult;
@@ -37,9 +39,10 @@ public class TestResultServiceIT extends IT {
         String lastName = "Last";
         String unitOfMeasureName = "some unit";
         String resultValue = "10000";
+        Date today = new Date();
 
         Patient patient = createPatient(firstName, lastName, "GAN123");
-        Sample sample = createSample(accessionNumber, true);
+        Sample sample = createSample(accessionNumber, today);
         SampleHuman sampleHuman = createSampleHuman(sample, patient);
         SampleItem sampleItem = createSampleItem(sample);
         Test test = createTest(testName, unitOfMeasureName);
@@ -74,9 +77,10 @@ public class TestResultServiceIT extends IT {
         String firstName = "First";
         String lastName = "Last";
         String unitOfMeasureName = "cumm";
+        Date today = new Date();
 
         Patient patient = createPatient(firstName, lastName, "GAN123");
-        Sample sample = createSample(accessionNumber, true);
+        Sample sample = createSample(accessionNumber, today);
         SampleHuman sampleHuman = createSampleHuman(sample, patient);
         SampleItem sampleItem = createSampleItem(sample);
         Test test = createTest(testName, unitOfMeasureName);

@@ -145,6 +145,8 @@ $jq(document).ready( function() {
          pageSearch.highlightSearch( searchTerm, false );
     }
 
+    $jq("html, body").animate({ scrollTop: $jq("#resultsDisplayBlock").offset().top }, 500);
+
 });
 
 function handleMultiSelectChange( e, data ){
@@ -355,16 +357,22 @@ function /*void*/ processTestReflexCD4Success(xhr)
 	</div>
 </logic:equal>
 
+<div id="resultsDisplayBlock">
         <logic:equal  name='<%=formName%>' property="singlePatient" value="true">
-<% if(!depersonalize){ %>        
+<% if(!depersonalize){ %>
 <table width="100%" >
 	<tr>
 		
-		<th width="20%">
-			<bean:message key="person.lastName" />
+		<% if(useSTNumber){ %>
+		<th width="15%">
+			<bean:message key="patient.ST.number" />
 		</th>
+		<% } %>
 		<th width="20%">
 			<bean:message key="person.firstName" />
+		</th>
+		<th width="20%">
+			<bean:message key="person.lastName" />
 		</th>
 		<th width="10%">
 			<bean:message key="patient.gender" />
@@ -372,11 +380,6 @@ function /*void*/ processTestReflexCD4Success(xhr)
 		<th width="15%">
 			<bean:message key="patient.birthDate" />
 		</th>
-		<% if(useSTNumber){ %>
-		<th width="15%">
-			<bean:message key="patient.ST.number" />
-		</th>
-		<% } %>
 		<% if(useNationalID){ %>
 		<th width="20%">
 			<%= StringUtil.getContextualMessageForKey("patient.NationalID") %>
@@ -389,30 +392,30 @@ function /*void*/ processTestReflexCD4Success(xhr)
 		<% } %>
 	</tr>
 	<tr>
-		<td align="center">
-			<bean:write name="<%=formName%>" property="lastName" />
-		</td>
-		<td align="center">
-			<bean:write name="<%=formName%>" property="firstName" />
-		</td>
-		<td align="center">
-			<bean:write name="<%=formName%>" property="gender" />
-		</td>
-		<td align="center">
-			<bean:write name="<%=formName%>" property="dob" />
-		</td>
 		<% if(useSTNumber){ %>
-		<td align="center">
+		<td>
 			<bean:write name="<%=formName%>" property="st" />
 		</td>
 		<% } %>
+		<td>
+			<bean:write name="<%=formName%>" property="firstName" />
+		</td>
+		<td>
+			<bean:write name="<%=formName%>" property="lastName" />
+		</td>
+		<td>
+			<bean:write name="<%=formName%>" property="gender" />
+		</td>
+		<td>
+			<bean:write name="<%=formName%>" property="dob" />
+		</td>
 		<% if(useNationalID){ %>
-		<td align="center">
+		<td>
 			<bean:write name="<%=formName%>" property="nationalId" />
 		</td>
 		<% } %>
 		<% if(useSubjectNumber){ %>
-		<td align="center">
+		<td>
 			<bean:write name="<%=formName%>" property="subjectNumber" />
 		</td>
 		<% } %>
@@ -469,7 +472,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 		</th>
 		<logic:equal name="<%=formName %>" property="singlePatient" value="false">
 			<th style="text-align: left">
-				<bean:message key="result.sample.patient.summary"/>
+                <bean:message key="result.sample.patient.summary"/>
 			</th>
 		</logic:equal>
 		<% } %>
@@ -539,27 +542,30 @@ function /*void*/ processTestReflexCD4Success(xhr)
    <logic:equal  name="testResult" property="showSampleDetails" value="true">
 		<tr class='<%= rowColor %>Head <%= accessionNumber%>' >
 			<td colspan="8" class='InterstitialHead' >
-			    <%=StringUtil.getContextualMessageForKey("result.sample.id")%> : &nbsp;
+                <%=StringUtil.getContextualMessageForKey("result.sample.id")%> : &nbsp;
 				<b><bean:write name="testResult" property="accessionNumber"/> -
 				<bean:write name="testResult" property="sequenceNumber"/></b>
 				<% if(useInitialCondition){ %>
 					&nbsp;&nbsp;&nbsp;&nbsp;<bean:message key="sample.entry.sample.condition" />:
 					<b><bean:write name="testResult" property="initialSampleCondition" /></b>
 				<% } %>
-				&nbsp;&nbsp;&nbsp;&nbsp;<bean:message  key="sample.entry.sample.type"/>:
-				<b><bean:write  name="testResult" property="sampleType"/></b>
-		<logic:equal  name="<%=formName %>" property="singlePatient" value="false">
-		    <% if( !depersonalize){ %>
-				<logic:equal  name="testResult" property="showSampleDetails" value="true">
-					<br/>
-					<bean:message key="result.sample.patient.summary"/> : &nbsp;
-					<b><bean:write name="testResult" property="patientName"/> &nbsp;
-					<bean:write name="testResult" property="patientInfo"/></b>
-				</logic:equal>
-			<% } %>	
-		</logic:equal>
-		</td>
-		</tr>
+				&nbsp;&nbsp;&nbsp;&nbsp;
+                <bean:message  key="sample.entry.sample.type"/>:
+                <bean:write name="testResult" property="sampleType"/> &nbsp;
+				<logic:equal name="<%=formName %>" property="singlePatient" value="false">
+                    <% if (!depersonalize) { %>
+                    <logic:equal name="testResult" property="showSampleDetails" value="true">
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <bean:message key="result.sample.patient.summary"/> : &nbsp;
+                        <b>
+                            <bean:write name="testResult" property="patientIdentity"/> &nbsp;,
+                            <bean:write name="testResult" property="patientName"/> &nbsp;
+                        </b>
+                    </logic:equal>
+                    <% } %>
+                </logic:equal>
+            </td>
+        </tr>
 	</logic:equal>
     <% } %>
 	<tr class='<%= rowColor %> testResult'  >
@@ -904,6 +910,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 	</logic:equal>
 	</logic:iterate>
 </Table>
+
 <div class="results-page-block">
 <logic:notEqual name="<%=formName%>" property="paging.totalPages" value="0">
 	<html:hidden styleId="currentPageID" name="<%=formName%>" property="paging.currentPage"/>

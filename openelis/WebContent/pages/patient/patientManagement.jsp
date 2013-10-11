@@ -824,6 +824,8 @@ jQuery(function(){
 	<nested:hidden name='<%=formName%>' property="patientProperties.patientProcessingStatus" styleId="processingStatus" value="add" />
 	<nested:hidden name='<%=formName%>' property="patientProperties.patientPK" styleId="patientPK_ID" />
 	<br/>
+
+	<div id="addEditPatient">
 	<div class="form-item">
 	<html:button property="newPatient"  onclick="addPatient()" >
 		<bean:message key="patient.new" />
@@ -1326,6 +1328,7 @@ jQuery(function(){
 			</tr>	
 	<% } %>
 	</table>
+	</div>
 	</div>
 </div>
 

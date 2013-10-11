@@ -673,14 +673,15 @@
         </form-bean>
 
         <form-bean name="LabDashboardForm" type="us.mn.state.health.lims.common.action.BaseActionForm">
-            <form-property name="inProgressOrderList" type="java.lang.String"/>
-            <form-property name="completedOrderList" type="java.lang.String"/>
-            <form-property name="todayStats" type="java.lang.String"/>
+            <form-property name="todayOrderList" type="java.lang.String"/>
+            <form-property name="backlogOrderList" type="java.lang.String"/>
         </form-bean>
 
         <form-bean name="UploadForm" type="us.mn.state.health.lims.common.action.BaseActionForm">
             <form-property name="importType" type="java.lang.String"/>
             <form-property name="file" type="org.apache.struts.upload.FormFile"/>
+        </form-bean>
+        <form-bean name="HealthCenterListForm" type="us.mn.state.health.lims.common.action.BaseActionForm">
         </form-bean>
 
     </form-beans>
@@ -1547,7 +1548,7 @@
         </action>
 
 
-        <action path="/HealthCenterList" type="us.mn.state.health.lims.healthcenter.action.HealthCenterListAction">
+        <action path="/HealthCenterList" type="us.mn.state.health.lims.healthcenter.action.HealthCenterListAction" name="HealthCenterForm">
         </action>
 
         <action path="/HealthCenterMenu" name="HealthCenterForm"

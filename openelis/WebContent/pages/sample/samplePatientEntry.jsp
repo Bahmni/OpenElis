@@ -119,6 +119,8 @@ $jq(function() {
 
 
         $('<%= fieldsetOrder.get(0) +"Display" %>').show();
+
+        $('addEditPatient').hide();
 });
 
 function isFieldValid(fieldname)

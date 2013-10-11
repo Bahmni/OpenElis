@@ -9,9 +9,8 @@
 <%@ taglib uri="/tags/struts-logic" prefix="logic" %>
 <%@ taglib uri="/tags/labdev-view" prefix="app" %>
 <bean:define id="formName" value='<%= (String)request.getAttribute(IActionConstants.FORM_NAME) %>' />
-<bean:define id="inProgressOrderListJson" name="<%=formName%>" property="inProgressOrderList" />
-<bean:define id="completedOrderListJson" name="<%=formName%>" property="completedOrderList" />
-<bean:define id="todayStats" name="<%=formName%>" property="todayStats" />
+<bean:define id="todayOrderListJson" name="<%=formName%>" property="todayOrderList" />
+<bean:define id="backlogOrderListJson" name="<%=formName%>" property="backlogOrderList" />
 
 <%!
 String path = "";
@@ -76,8 +75,12 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
                     <span id="completedTestCount"></span>
                 </td>
                 <td>
-                    <span>Total Samples Collected: </span>
+                    <span>Total : </span>
                     <span id="totalSamplesCount"></span>
+                </td>
+                <td>
+                    <span class="stats-header"> Total Patients Today</span><span> : </span>
+                    <span id="totalCollectedTodayCount"></span>
                 </td>
             </tr>
         </table>
@@ -85,11 +88,11 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
 
     <div id="tabs">
         <ul>
-            <li><a href="#inProgressListContainer">In Progress</a></li>
-            <li><a href="#completedListContainer">Completed</a></li>
+            <li><a href="#todayListContainer">Today</a></li>
+            <li><a href="#backlogListContainer">Backlog</a></li>
          </ul>
-        <div id="inProgressListContainer"><div id="inProgressListContainer-slick-grid"></div></div>
-        <div id="completedListContainer"><div id="completedListContainer-slick-grid"></div></div>
+        <div id="todayListContainer"><div id="todayListContainer-slick-grid"></div></div>
+        <div id="backlogListContainer"><div id="backlogListContainer-slick-grid"></div></div>
     </div>
 
     <div id="patientDetails" class="hide details">
@@ -105,13 +108,7 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
 
 <script type="text/javascript">
 
-    var gridForInProgressOrder;
-    var gridForCompletedOrder;
-    var dataViewForInProgressTab;
-    var dataViewForCompletedTab;
     var columnFilters = {};
-    var inProgressObject;
-    var completedOrderObject;
 
     var options = {
         enableColumnReorder: false,
@@ -122,31 +119,47 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
         explicitInitialization: true
     };
 
-    var showStats = function(){
-        var stats = JSON.parse('<%=todayStats%>');
+    var showStats = function(stats){
         jQuery("#todayStat").show();
         jQuery("#awaitingTestCount").text(stats.awaitingTestCount);
         jQuery("#awaitingValidationCount").text(stats.awaitingValidationCount);
         jQuery("#completedTestCount").text(stats.completedTestCount);
         jQuery("#totalSamplesCount").text(stats.totalSamplesCount);
+        jQuery("#totalCollectedTodayCount").text(stats.totalCollectedTodayCount);
     }
 
     jQuery(document).ready(function() {
-        showStats()
-        inProgressObject = new order("#inProgressListContainer-slick-grid", "<%= inProgressOrderListJson %>", generateLinkForInProgressOrder, getColumnsForInProgressOrder);
-        dataViewForInProgressTab = new Slick.Data.DataView({ inlineFilters: true });
-        gridForInProgressOrder = new Slick.Grid(inProgressObject.div, dataViewForInProgressTab, inProgressObject.columns,options);
-        createGrid(gridForInProgressOrder, dataViewForInProgressTab, inProgressObject, onRowSelection);
+        var todayOrderList = JSON.parse('<%=todayOrderListJson%>');
+        var backlogOrderList = JSON.parse('<%=backlogOrderListJson%>');
 
-        completedOrderObject = new order("#completedListContainer-slick-grid", "<%= completedOrderListJson %>", generateLinkForCompletedOrder, getColumnsForCompletedOrder);
-        dataViewForCompletedTab = new Slick.Data.DataView();
-        gridForCompletedOrder = new Slick.Grid(completedOrderObject.div, dataViewForCompletedTab, completedOrderObject.columns, options);
-        createGrid(gridForCompletedOrder, dataViewForCompletedTab, completedOrderObject, onRowSelection);
+        var isToday = function(date) {
+            var now = new Date();
+            return now.getDate() === date.getDate() && now.getMonth() == date.getMonth() && now.getFullYear() === date.getFullYear();
+        };
+
+        var todayStats = {
+            awaitingTestCount: todayOrderList.filter(function(order){ return order.pendingTestCount > 0 }).length,
+            awaitingValidationCount: todayOrderList.filter(function(order){ return order.pendingTestCount == 0 && order.pendingValidationCount > 0 }).length,
+            completedTestCount: todayOrderList.filter(function(order){ return order.isCompleted }).length,
+            totalSamplesCount: todayOrderList.length,
+            totalCollectedTodayCount: todayOrderList.filter(function(order){ return isToday(new Date(order.collectionDate)) }).length,
+        }
+
+        showStats(todayStats)
+
+        var todayOrdersObject = new order("#todayListContainer-slick-grid", todayOrderList, generateAllLinksForOrder, getColumnsForTodayOrder);
+        var dataViewForTodayTab = new Slick.Data.DataView({ inlineFilters: true });
+        var gridForTodayOrder = new Slick.Grid(todayOrdersObject.div, dataViewForTodayTab, todayOrdersObject.columns,options);
+        createGrid(gridForTodayOrder, dataViewForTodayTab, todayOrdersObject, onRowSelection);
+
+        var backlogOrdersObject = new order("#backlogListContainer-slick-grid", backlogOrderList, generateAllLinksForOrder, getColumnsForBacklogOrder);
+        var dataViewForBacklogTab = new Slick.Data.DataView({ inlineFilters: true });
+        var gridForBacklogOrder = new Slick.Grid(backlogOrdersObject.div, dataViewForBacklogTab, backlogOrdersObject.columns,options);
+        createGrid(gridForBacklogOrder, dataViewForBacklogTab, backlogOrdersObject, onRowSelection);
 
         var activeTab = <%= request.getParameter("activeTab") %>;
 
         var tabOptions = {
-            collapsible: true,
             select: function(event, ui) {
                 jQuery("#patientDetails").hide();
             }

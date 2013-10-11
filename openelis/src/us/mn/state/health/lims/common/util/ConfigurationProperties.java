@@ -80,7 +80,9 @@ public abstract class ConfigurationProperties {
 							 USE_PAGE_NUMBERS_ON_REPORTS,
 							 QA_SORT_EVENT_LIST,
 							 ALWAYS_VALIDATE_RESULTS,
-							 ADDITIONAL_SITE_INFO};
+							 ADDITIONAL_SITE_INFO,
+                             RESULTS_VALIDATION_PAGE_SIZE,
+                             RESULTS_PAGE_SIZE};
 
 	
 

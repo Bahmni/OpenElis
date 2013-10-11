@@ -89,11 +89,11 @@ public class BahmniPatientService {
 
     public void createOrUpdate(OpenMRSPatient openMRSPatient) {
         String sysUserId = auditingService.getSysUserId();
-        Patient patient = patientDAO.getPatientByUUID(openMRSPatient.getPerson().getUuid());
-        if (patient == null) {
+        List<PatientIdentity> patientIdentities = patientIdentityDAO.getPatientIdentitiesByValueAndType(openMRSPatient.getIdentifiers().get(0).getIdentifier(), primaryIdentityType().getId());
+        if (patientIdentities.isEmpty()) {
             create(openMRSPatient, sysUserId);
         } else {
-            update(patient, openMRSPatient, sysUserId);
+            update(patientDAO.getPatientById(patientIdentities.get(0).getPatientId()), openMRSPatient, sysUserId);
         }
     }
 

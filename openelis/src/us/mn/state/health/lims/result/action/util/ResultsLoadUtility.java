@@ -48,8 +48,11 @@ import us.mn.state.health.lims.observationhistory.daoimpl.ObservationHistoryDAOI
 import us.mn.state.health.lims.observationhistory.valueholder.ObservationHistory;
 import us.mn.state.health.lims.patient.util.PatientUtil;
 import us.mn.state.health.lims.patient.valueholder.Patient;
+import us.mn.state.health.lims.patientidentity.daoimpl.PatientIdentityDAOImpl;
 import us.mn.state.health.lims.patientidentity.valueholder.PatientIdentity;
+import us.mn.state.health.lims.patientidentitytype.daoimpl.PatientIdentityTypeDAOImpl;
 import us.mn.state.health.lims.patientidentitytype.util.PatientIdentityTypeMap;
+import us.mn.state.health.lims.patientidentitytype.valueholder.PatientIdentityType;
 import us.mn.state.health.lims.referencetables.dao.ReferenceTablesDAO;
 import us.mn.state.health.lims.referencetables.valueholder.ReferenceTables;
 import us.mn.state.health.lims.referral.dao.ReferralDAO;
@@ -102,6 +105,7 @@ public class ResultsLoadUtility {
 
     private static final String NO_PATIENT_NAME = " ";
     private static final String NO_PATIENT_INFO = " ";
+    private static final String NO_ST_NUMBER= " ";
 
     public static final String HIV_TYPE = "HIV_TEST_KIT";
     public static final String SYPHILIS_TYPE = "SYPHILIS_TEST_KIT";
@@ -243,16 +247,18 @@ public class ResultsLoadUtility {
             Patient patient = getPatientForSampleItem(analysis.getSampleItem());
             String patientName = "";
             String patientInfo;
+            String patientId = "";
             if (depersonalize) {
                 patientInfo = GenericValidator.isBlankOrNull(patient.getNationalId()) ? patient.getExternalId() : patient
                         .getNationalId();
             } else {
-                patientName = getDisplayNameForCurrentPatient(null);
+                patientName = getDisplayNameForCurrentPatient(patient);
                 patientInfo = patient.getNationalId() + ", " + patient.getGender() + ", " + patient.getBirthDateForDisplay();
+                patientId = getSTNumber(patient);
             }
 
             currSample = analysis.getSampleItem().getSample();
-            List<TestResultItem> testResultItemList = getTestResultItemFromAnalysis(analysis, patientName, patientInfo);
+            List<TestResultItem> testResultItemList = getTestResultItemFromAnalysis(analysis, patientName, patientInfo, patientId);
 
             for (TestResultItem selectionItem : testResultItemList) {
                 selectedTestList.add(selectionItem);
@@ -271,18 +277,26 @@ public class ResultsLoadUtility {
         return selectedTestList;
     }
 
+    private String getSTNumber(Patient patient) {
+        PatientIdentityDAOImpl patientIdentityDAO = new PatientIdentityDAOImpl();
+        PatientIdentityTypeDAOImpl patientIdentityTypeDAO = new PatientIdentityTypeDAOImpl();
+        PatientIdentityType identityType = patientIdentityTypeDAO.getNamedIdentityType("ST");
+        PatientIdentity stIdentitiy = patientIdentityDAO.getPatitentIdentityForPatientAndType(patient.getId(), identityType.getId());
+        return stIdentitiy.getIdentityData();
+    }
+
     private String getDisplayNameForCurrentPatient(Patient patient) {
         StringBuilder nameBuilder = new StringBuilder();
-        if (!GenericValidator.isBlankOrNull(patient.getPerson().getLastName())) {
-            nameBuilder.append(patient.getPerson().getLastName());
+        if (!GenericValidator.isBlankOrNull(patient.getPerson().getFirstName())) {
+            nameBuilder.append(patient.getPerson().getFirstName());
         }
 
-        if (!GenericValidator.isBlankOrNull(patient.getPerson().getFirstName())) {
+        if (!GenericValidator.isBlankOrNull(patient.getPerson().getLastName())) {
             if (nameBuilder.length() > 0) {
-                nameBuilder.append(", ");
+                nameBuilder.append(" ");
             }
 
-            nameBuilder.append(patient.getPerson().getFirstName());
+            nameBuilder.append(patient.getPerson().getLastName());
         }
 
         return nameBuilder.toString();
@@ -361,7 +375,7 @@ public class ResultsLoadUtility {
     }
 
     @SuppressWarnings("unchecked")
-    private List<TestResultItem> getTestResultItemFromAnalysis(Analysis analysis, String patientName, String patientInfo)
+    private List<TestResultItem> getTestResultItemFromAnalysis(Analysis analysis, String patientName, String patientInfo, String patientSTNumber)
             throws LIMSRuntimeException {
         List<TestResultItem> testResultList = new ArrayList<>();
 
@@ -427,7 +441,7 @@ public class ResultsLoadUtility {
 
             TestResultItem resultItem = createTestResultItem(resultLimit, analysis, test, testKit, notes, sampleItem.getSortOrder(), result,
                     sampleItem.getSample().getAccessionNumber(), patientName, patientInfo, techSignature, techSignatureId,
-                    supervisorSignatureId, multiSelectionResult, initialConditions, TypeOfSampleUtil.getTypeOfSampleNameForId(sampleItem.getTypeOfSampleId()));
+                    supervisorSignatureId, multiSelectionResult, initialConditions, TypeOfSampleUtil.getTypeOfSampleNameForId(sampleItem.getTypeOfSampleId()), patientSTNumber);
 
             testResultList.add(resultItem);
 
@@ -522,7 +536,7 @@ public class ResultsLoadUtility {
 
                 for (Analysis analysis : analysisList) {
 
-                    List<TestResultItem> selectedItemList = getTestResultItemFromAnalysis(analysis, NO_PATIENT_NAME, NO_PATIENT_INFO);
+                    List<TestResultItem> selectedItemList = getTestResultItemFromAnalysis(analysis, NO_PATIENT_NAME, NO_PATIENT_INFO, NO_ST_NUMBER);
 
                     for (TestResultItem selectedItem : selectedItemList) {
                         testList.add(selectedItem);
@@ -715,7 +729,8 @@ public class ResultsLoadUtility {
 
     private TestResultItem createTestResultItem(ResultLimit resultLimit, Analysis analysis, Test test, ResultInventory testKit, List<Note> notes,
                                                 String sequenceNumber, Result result, String accessionNumber, String patientName, String patientInfo, String techSignature,
-                                                String techSignatureId, String supervisorSignatureId, boolean multiSelectionResult, String initialSampleConditions, String sampleType) {
+                                                String techSignatureId, String supervisorSignatureId, boolean multiSelectionResult,
+                                                String initialSampleConditions, String sampleType, String patientIdentity) {
 
         String receivedDate = currSample == null ? getCurrentDateAsText() : currSample.getReceivedDateForDisplay();
         String testMethodName = test.getMethod() != null ? test.getMethod().getMethodName() : null;
@@ -795,6 +810,7 @@ public class ResultsLoadUtility {
         testItem.setLowerAbnormalRange(resultLimit.getLowValid() == Double.NEGATIVE_INFINITY ? 0 : resultLimit.getLowValid());
         testItem.setUpperAbnormalRange(resultLimit.getHighValid() == Double.POSITIVE_INFINITY ? 0 : resultLimit.getHighValid());
         testItem.setPatientName(patientName);
+        testItem.setPatientIdentity(patientIdentity);
         testItem.setPatientInfo(patientInfo);
         testItem.setReportable("Y".equals(test.getIsReportable()));
         testItem.setUnitsOfMeasure(uom);
