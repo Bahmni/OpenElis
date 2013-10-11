@@ -105,7 +105,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "LEFT OUTER JOIN document_track as document_track ON sample.id = document_track.row_id AND document_track.name = 'patientHaitiClinical' and document_track.parent_id is null\n" +
                 "WHERE analysis.status_id IN (" + getAllNonReferredAnalysisStatus() + ") \n" +
                 "GROUP BY sample.accession_number, sample.collection_date, person.first_name, person.last_name, sample_source.name, patient_identity.identity_data, document_track.report_generation_time\n" +
-                "HAVING COUNT(analysis.id) > SUM(CASE WHEN  analysis.status_id IN (" +getCompletedStatus()+ ") THEN 1 ELSE 0 END) and max(analysis.lastupdated) = ?\n" +
+                "HAVING COUNT(analysis.id) > SUM(CASE WHEN  analysis.status_id IN (" +getCompletedStatus()+ ") THEN 1 ELSE 0 END) and max(analysis.lastupdated) < ?\n" +
                 "ORDER BY sample.accession_number DESC\n" +
                 "LIMIT 1000;";
 
