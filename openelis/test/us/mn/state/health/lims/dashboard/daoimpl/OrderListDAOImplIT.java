@@ -86,7 +86,7 @@ public class OrderListDAOImplIT extends IT {
         createAnalysis(sampleItem1,StatusOfSampleUtil.AnalysisStatus.NotTested,"Hematology",allTests.get(0));
         createAnalysis(sampleItem1,StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance,"Hematology",allTests.get(1));
         createAnalysis(sampleItem2,StatusOfSampleUtil.AnalysisStatus.Finalized,"Hematology",allTests.get(2));
-        createAnalysis(sampleItem3, StatusOfSampleUtil.AnalysisStatus.Finalized, "Hematology", allTests.get(3), new Timestamp(dateInThePast.getTime()));
+        createAnalysis(sampleItem3,StatusOfSampleUtil.AnalysisStatus.Finalized,"Hematology",allTests.get(3));
 
         List<Order> allToday = new OrderListDAOImpl().getAllToday();
 
@@ -121,10 +121,10 @@ public class OrderListDAOImplIT extends IT {
         createSampleHuman(sample3, patient);
         SampleItem sampleItem3 = createSampleItem(sample3);
 
-        createAnalysis(sampleItem1, StatusOfSampleUtil.AnalysisStatus.NotTested, "Hematology", allTests.get(0), new Timestamp(dateInThePast.getTime()));
-        createAnalysis(sampleItem1, StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance, "Hematology", allTests.get(1), new Timestamp(dateInThePast.getTime()));
+        createAnalysis(sampleItem1, StatusOfSampleUtil.AnalysisStatus.NotTested, "Hematology", allTests.get(0));
+        createAnalysis(sampleItem1, StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance, "Hematology", allTests.get(1));
         createAnalysis(sampleItem2, StatusOfSampleUtil.AnalysisStatus.Finalized, "Hematology", allTests.get(2));
-        createAnalysis(sampleItem3, StatusOfSampleUtil.AnalysisStatus.Finalized, "Hematology", allTests.get(3), new Timestamp(dateInThePast.getTime()));
+        createAnalysis(sampleItem3, StatusOfSampleUtil.AnalysisStatus.Finalized, "Hematology", allTests.get(3));
 
         List<Order> allPendingBeforeToday = new OrderListDAOImpl().getAllPendingBeforeToday();
 
@@ -225,10 +225,6 @@ public class OrderListDAOImplIT extends IT {
     }
 
     private Analysis createAnalysis(SampleItem sampleItem, StatusOfSampleUtil.AnalysisStatus analysisStatus, String testSectionName, Test test) {
-        return createAnalysis(sampleItem, analysisStatus, testSectionName, test, new Timestamp(new Date().getTime()));
-    }
-
-    private Analysis createAnalysis(SampleItem sampleItem, StatusOfSampleUtil.AnalysisStatus analysisStatus, String testSectionName, Test test, Timestamp lastUpdatedDate) {
         TestSectionDAO testSectionDAO = new TestSectionDAOImpl();
         TestSection testSection = testSectionDAO.getTestSectionByName(testSectionName);
         Analysis analysis = new Analysis();
@@ -238,11 +234,9 @@ public class OrderListDAOImplIT extends IT {
         analysis.setTest(test);
         analysis.setSysUserId("1");
         analysis.setTestSection(testSection);
-        analysis.setLastupdated(lastUpdatedDate);
         new AnalysisDAOImpl().insertData(analysis, false);
         return analysis;
     }
-
 
     private SampleItem createSampleItem(Sample startedSample) {
         SampleItem enteredSampleItem = new SampleItem();
