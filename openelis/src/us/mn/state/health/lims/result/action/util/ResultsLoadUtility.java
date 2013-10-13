@@ -22,6 +22,7 @@ import org.apache.commons.validator.GenericValidator;
 import org.apache.struts.action.DynaActionForm;
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
+import us.mn.state.health.lims.analysis.dto.PatientAnalysis;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.analyte.dao.AnalyteDAO;
 import us.mn.state.health.lims.analyte.daoimpl.AnalyteDAOImpl;
@@ -31,11 +32,8 @@ import us.mn.state.health.lims.common.formfields.FormFields;
 import us.mn.state.health.lims.common.formfields.FormFields.Field;
 import us.mn.state.health.lims.common.services.QAService;
 import us.mn.state.health.lims.common.services.TestIdentityService;
-import us.mn.state.health.lims.common.util.ConfigurationProperties;
+import us.mn.state.health.lims.common.util.*;
 import us.mn.state.health.lims.common.util.ConfigurationProperties.Property;
-import us.mn.state.health.lims.common.util.DAOImplFactory;
-import us.mn.state.health.lims.common.util.IdValuePair;
-import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
 import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
 import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
@@ -93,6 +91,7 @@ import us.mn.state.health.lims.testresult.valueholder.TestResult;
 import us.mn.state.health.lims.typeofsample.util.TypeOfSampleUtil;
 
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Timestamp;
 import java.util.*;
 
 import static us.mn.state.health.lims.common.util.DateUtil.getCurrentDateAsText;
@@ -229,9 +228,9 @@ public class ResultsLoadUtility {
 
     public List<TestResultItem> getUnfinishedTestResultItemsInTestSection(String testSectionId) {
 
-        List<Analysis> analysisList = analysisDAO.getAllAnalysisByTestSectionAndStatus(testSectionId, analysisStatusList, sampleStatusList);
+        List<PatientAnalysis> analysisList = analysisDAO.getAllPatientAnalysisByTestSectionAndStatus(testSectionId, analysisStatusList, sampleStatusList);
 
-        return getGroupedTestsForAnalysisList(analysisList, SORT_FORWARD);
+        return getGroupedTestsForAnalysis(analysisList, SORT_FORWARD);
     }
 
     public List<TestResultItem> getGroupedTestsForAnalysisList(List<Analysis> filteredAnalysisList, boolean forwardSort)
@@ -247,14 +246,64 @@ public class ResultsLoadUtility {
             Patient patient = getPatientForSampleItem(analysis.getSampleItem());
             String patientName = "";
             String patientInfo;
-            String patientId = "";
             if (depersonalize) {
                 patientInfo = GenericValidator.isBlankOrNull(patient.getNationalId()) ? patient.getExternalId() : patient
                         .getNationalId();
             } else {
-                patientName = getDisplayNameForCurrentPatient(patient);
+                patientName = getDisplayNameForCurrentPatient(patient.getEpiFirstName(),patient.getEpiLastName());
                 patientInfo = patient.getNationalId() + ", " + patient.getGender() + ", " + patient.getBirthDateForDisplay();
-                patientId = getSTNumber(patient);
+            }
+
+            currSample = analysis.getSampleItem().getSample();
+            List<TestResultItem> testResultItemList = getTestResultItemFromAnalysis(analysis, patientName, patientInfo,getSTNumber(patient));
+
+            for (TestResultItem selectionItem : testResultItemList) {
+                selectedTestList.add(selectionItem);
+            }
+        }
+
+        if (forwardSort) {
+            sortByAccessionAndSequence(selectedTestList);
+        } else {
+            reverseSortByAccessionAndSequence(selectedTestList);
+        }
+
+        setSampleGroupingNumbers(selectedTestList);
+        addUserSelectionReflexes(selectedTestList);
+
+        return selectedTestList;
+    }
+
+    public List<TestResultItem> getGroupedTestsForAnalysis(List<PatientAnalysis> filteredAnalysisList, boolean forwardSort)
+            throws LIMSRuntimeException {
+
+        activeKits = null;
+        inventoryNeeded = false;
+        reflexGroup = 1;
+
+        List<TestResultItem> selectedTestList = new ArrayList<>();
+
+        for(PatientAnalysis patientAnalysis : filteredAnalysisList){
+            String nationalId = patientAnalysis.getNational_id();
+            String externalId = patientAnalysis.getExternal_id();
+            String gender = patientAnalysis.getGender();
+            Timestamp birthDate = patientAnalysis.getBirth_date();
+            String firstName = patientAnalysis.getFirst_name();
+            String lastName = patientAnalysis.getLast_name();
+            String stNo = patientAnalysis.getIdentity_data();
+
+
+            Analysis analysis = patientAnalysis.getAnalysis();
+            analysisDAO.getData(analysis);
+            String patientName = "";
+            String patientInfo;
+            String patientId = "";
+            if (depersonalize) {
+                patientInfo = GenericValidator.isBlankOrNull(nationalId) ? externalId : nationalId;
+            } else {
+                patientName = getDisplayNameForCurrentPatient(firstName,lastName);
+                patientInfo = nationalId + ", " + gender + ", " + DateUtil.convertTimestampToStringDate(birthDate);;
+                patientId = stNo;
             }
 
             currSample = analysis.getSampleItem().getSample();
@@ -285,18 +334,19 @@ public class ResultsLoadUtility {
         return stIdentitiy.getIdentityData();
     }
 
-    private String getDisplayNameForCurrentPatient(Patient patient) {
+
+    private String getDisplayNameForCurrentPatient(String firstName ,String lastName) {
         StringBuilder nameBuilder = new StringBuilder();
-        if (!GenericValidator.isBlankOrNull(patient.getPerson().getFirstName())) {
-            nameBuilder.append(patient.getPerson().getFirstName());
+        if (!GenericValidator.isBlankOrNull(firstName)) {
+            nameBuilder.append(firstName);
         }
 
-        if (!GenericValidator.isBlankOrNull(patient.getPerson().getLastName())) {
+        if (!GenericValidator.isBlankOrNull(lastName)) {
             if (nameBuilder.length() > 0) {
                 nameBuilder.append(" ");
             }
 
-            nameBuilder.append(patient.getPerson().getLastName());
+            nameBuilder.append(lastName);
         }
 
         return nameBuilder.toString();

@@ -17,6 +17,7 @@
 */
 package us.mn.state.health.lims.analysis.dao;
 
+import us.mn.state.health.lims.analysis.dto.PatientAnalysis;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.common.dao.BaseDAO;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
@@ -79,9 +80,12 @@ public interface AnalysisDAO extends BaseDAO {
 	public List getAllAnalysisByTestAndExcludedStatus(String testId, List<Integer> statusIdList) throws LIMSRuntimeException;
 
 	@SuppressWarnings("rawtypes")
-	public List getAllAnalysisByTestSectionAndStatus(String testSectionId, List<Integer> statusIdList, boolean sortedByDateAndAccession) throws LIMSRuntimeException;
+	public List<Analysis> getAllAnalysisByTestSectionAndStatus(String testSectionId, List<Integer> statusIdList, boolean sortedByDateAndAccession) throws LIMSRuntimeException;
 
-	@SuppressWarnings("rawtypes")
+    @SuppressWarnings("rawtypes")
+    public List<PatientAnalysis> getAllPatientAnalysisByTestSectionAndStatus(String testSectionId, List<Integer> analysisStatusList,
+                                                                             List<Integer> sampleStatusList) throws LIMSRuntimeException ;
+    @SuppressWarnings("rawtypes")
 	public List getAllAnalysisByTestSectionAndExcludedStatus(String testSectionId, List<Integer> statusIdList) throws LIMSRuntimeException;
 
 	public List<Analysis> getAnalysesBySampleItem(SampleItem sampleItem) throws LIMSRuntimeException;
