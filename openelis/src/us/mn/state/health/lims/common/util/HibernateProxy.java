@@ -17,6 +17,19 @@
 */
 package us.mn.state.health.lims.common.util;
 
+import org.hibernate.CacheMode;
+import org.hibernate.FlushMode;
+import org.hibernate.HibernateException;
+import org.hibernate.LockMode;
+import org.hibernate.Query;
+import org.hibernate.ScrollMode;
+import org.hibernate.ScrollableResults;
+import org.hibernate.Transaction;
+import org.hibernate.transform.ResultTransformer;
+import org.hibernate.type.Type;
+import us.mn.state.health.lims.hibernate.HibernateUtil;
+
+import javax.transaction.Synchronization;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -27,20 +40,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
-import javax.transaction.Synchronization;
-
-import org.hibernate.CacheMode;
-import org.hibernate.FlushMode;
-import org.hibernate.HibernateException;
-import org.hibernate.LockMode;
-import org.hibernate.Query;
-import org.hibernate.ScrollMode;
-import org.hibernate.ScrollableResults;
-import org.hibernate.Transaction;
-import org.hibernate.type.Type;
-
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 
 /*
  * The intent of this class is to make testing of classes which access the db easier.
@@ -327,7 +328,12 @@ public class HibernateProxy {
 			return null;
 		}
 
-		public Query setFetchSize(int arg0) {
+        @Override
+        public Query setResultTransformer(ResultTransformer resultTransformer) {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public Query setFetchSize(int arg0) {
 			
 			return null;
 		}
@@ -444,7 +450,12 @@ public class HibernateProxy {
 			return null;
 		}
 
-		public Query setReadOnly(boolean arg0) {
+        @Override
+        public Query setProperties(Map map) throws HibernateException {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public Query setReadOnly(boolean arg0) {
 			
 			return null;
 		}

@@ -21,7 +21,9 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.validator.GenericValidator;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
+import org.hibernate.transform.Transformers;
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
+import us.mn.state.health.lims.analysis.dto.PatientAnalysis;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
 import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
@@ -39,12 +41,10 @@ import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.test.valueholder.Test;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * @author diane benz
@@ -1214,26 +1214,66 @@ public class AnalysisDAOImpl extends BaseDAOImpl implements AnalysisDAO {
 		return list;
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<Analysis> getAllAnalysisByTestSectionAndStatus(String testSectionId, List<Integer> analysisStatusList,
+    @SuppressWarnings("unchecked")
+    public List<Analysis> getAllAnalysisByTestSectionAndStatus(String testSectionId, List<Integer> analysisStatusList,
+                                                               List<Integer> sampleStatusList) throws LIMSRuntimeException {
+
+        String sql = "From Analysis a WHERE a.test.testSection.id = :testSectionId AND a.statusId IN (:analysisStatusList) AND a.sampleItem.sample.statusId IN (:sampleStatusList)";
+
+        try {
+            Query query = HibernateUtil.getSession().createQuery(sql);
+            query.setInteger("testSectionId", Integer.parseInt(testSectionId));
+            query.setParameterList("analysisStatusList", analysisStatusList);
+            query.setParameterList("sampleStatusList", sampleStatusList);
+
+            List<Analysis> analysisList = query.list();
+
+            closeSession();
+
+            return analysisList;
+
+        } catch (HibernateException e) {
+            handleException(e, "getAllAnalysisByTestSectionAndStatus");
+        }
+
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+	public List<PatientAnalysis> getAllPatientAnalysisByTestSectionAndStatus(String testSectionId, List<Integer> analysisStatusList,
 			List<Integer> sampleStatusList) throws LIMSRuntimeException {
 
-		String sql = "From Analysis a WHERE a.test.testSection.id = :testSectionId AND a.statusId IN (:analysisStatusList) AND a.sampleItem.sample.statusId IN (:sampleStatusList)";
+        StringBuilder sqlBuilder = new StringBuilder();
+        sqlBuilder.append("select  a.ID ,  ");
+        sqlBuilder.append(" pat.id as pat_id,pat.national_id,pat.external_id,pat.gender,pat.birth_date,p.first_name,p.last_name,pi.identity_data from clinlims.analysis a ");
+        sqlBuilder.append(" join clinlims.test t on t.id = a.test_id ");
+        sqlBuilder.append(" join clinlims.sample_item si on si.id = a.sampitem_id ");
+        sqlBuilder.append(" join clinlims.sample s on s.id = si.samp_id ");
+        sqlBuilder.append(" join clinlims.sample_human sh on sh.samp_id = s.id ");
+        sqlBuilder.append(" join clinlims.patient pat on pat.id = sh.patient_id  ");
+        sqlBuilder.append(" join clinlims.person p on pat.person_id = p.id  ");
+        sqlBuilder.append(" join clinlims.patient_identity pi on pi.patient_id = pat.id  ");
+        sqlBuilder.append(" join clinlims.patient_identity_type pit on pit.id = pi.identity_type_id  ");
+        sqlBuilder.append(" where a.status_id IN (:analysisStatusList) AND t.test_section_id = :testSectionId AND s.status_id IN (:sampleStatusList) AND pit.identity_type ='ST'" );
 
-		try {
-			Query query = HibernateUtil.getSession().createQuery(sql);
-			query.setInteger("testSectionId", Integer.parseInt(testSectionId));
-			query.setParameterList("analysisStatusList", analysisStatusList);
-			query.setParameterList("sampleStatusList", sampleStatusList);
 
-			List<Analysis> analysisList = query.list();
 
-			closeSession();
+        try{
+            Query query = HibernateUtil.getSession().createSQLQuery(sqlBuilder.toString()) ;
 
-			return analysisList;
+            query.setResultTransformer(Transformers.aliasToBean(PatientAnalysis.class));
+
+            query.setInteger("testSectionId", Integer.parseInt(testSectionId));
+            query.setParameterList("analysisStatusList", analysisStatusList);
+            query.setParameterList("sampleStatusList", sampleStatusList);
+
+            List<PatientAnalysis> analysisList = query.list();
+
+            closeSession();
+            return analysisList;
 
 		} catch (HibernateException e) {
-			handleException(e, "getAllAnalysisByTestSectionAndStatus");
+			handleException(e, "getAllPatientAnalysisByTestSectionAndStatus");
 		}
 
 		return null;
