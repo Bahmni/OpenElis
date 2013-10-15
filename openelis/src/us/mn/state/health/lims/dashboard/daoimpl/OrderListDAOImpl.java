@@ -43,6 +43,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "CASE WHEN COUNT(analysis.id) = SUM(CASE WHEN  analysis.status_id IN (" +getCompletedStatus()+ ") THEN 1 ELSE 0 END) THEN true ELSE false END as is_completed,\n" +
                 "CASE WHEN document_track.report_generation_time is null THEN false ELSE true END as is_printed\n" +
                 "FROM Sample AS sample\n" +
+                "INNER JOIN (select distinct s.id from analysis a inner join sample_item si on a.sampitem_id = si.id inner join sample s on si.samp_id = s.id where a.lastupdated >= ?) list on list.id = sample.id\n" +
                 "LEFT OUTER JOIN Sample_Human AS sampleHuman ON sampleHuman.samp_Id = sample.id \n" +
                 "LEFT  JOIN sample_source ON sample_source.id = sample.sample_source_id \n" +
                 "INNER JOIN Patient AS patient ON sampleHuman.patient_id = patient.id \n" +
@@ -55,7 +56,6 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "LEFT OUTER JOIN document_track as document_track ON sample.id = document_track.row_id AND document_track.name = 'patientHaitiClinical' and document_track.parent_id is null \n" +
                 "WHERE analysis.status_id IN (" + getAllNonReferredAnalysisStatus() + ") \n" +
                 "GROUP BY sample.accession_number, sample.collection_date, sample.lastupdated, person.first_name, person.last_name, sample_source.name, patient_identity.identity_data, document_track.report_generation_time \n" +
-                "having max(date(analysis.lastupdated)) = ? \n" +
                 "ORDER BY sample.accession_number DESC\n" +
                 "LIMIT 1000;";
         PreparedStatement preparedStatement = null;
@@ -93,6 +93,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "COUNT(test.id) AS total_test_count,\n" +
                 "CASE WHEN document_track.report_generation_time is null THEN false ELSE true END as is_printed\n" +
                 "FROM Sample AS sample\n" +
+                "inner join (select distinct s.id from analysis a inner join sample_item si on a.sampitem_id = si.id inner join sample s on si.samp_id = s.id where a.status_id not in (" +  analysesReferredOrInFinalStatus() + ") and s.lastupdated < ?) x on x.id = sample.id \n" +
                 "LEFT OUTER JOIN Sample_Human AS sampleHuman ON sampleHuman.samp_Id = sample.id \n" +
                 "LEFT  JOIN sample_source ON sample_source.id = sample.sample_source_id \n" +
                 "INNER JOIN Patient AS patient ON sampleHuman.patient_id = patient.id \n" +
@@ -105,7 +106,6 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "LEFT OUTER JOIN document_track as document_track ON sample.id = document_track.row_id AND document_track.name = 'patientHaitiClinical' and document_track.parent_id is null\n" +
                 "WHERE analysis.status_id IN (" + getAllNonReferredAnalysisStatus() + ") \n" +
                 "GROUP BY sample.accession_number, sample.collection_date, person.first_name, person.last_name, sample_source.name, patient_identity.identity_data, document_track.report_generation_time\n" +
-                "HAVING COUNT(analysis.id) > SUM(CASE WHEN  analysis.status_id IN (" +getCompletedStatus()+ ") THEN 1 ELSE 0 END) and max(analysis.lastupdated) < ?\n" +
                 "ORDER BY sample.accession_number DESC\n" +
                 "LIMIT 1000;";
 
@@ -195,5 +195,16 @@ public class OrderListDAOImpl implements OrderListDAO {
         inProgressAnalysisStatus.add(parseInt(getStatusID(NotTested)));//4
         inProgressAnalysisStatus.add(parseInt(getStatusID(BiologistRejected)));//7
         return StringUtils.join(inProgressAnalysisStatus.iterator(), ',');
+    }
+
+    private String analysesReferredOrInFinalStatus() {
+        List<Object> analysisStatuses = new ArrayList<>();
+        analysisStatuses.add(parseInt(getStatusID(ReferedOut)));
+        analysisStatuses.add(parseInt(getStatusID(Canceled)));
+        analysisStatuses.add(parseInt(getStatusID(ReferedOut)));
+        analysisStatuses.add(parseInt(getStatusID(ReferredIn)));
+        analysisStatuses.add(parseInt(getStatusID(Finalized)));
+        analysisStatuses.add(parseInt(getStatusID(FinalizedRO)));
+        return StringUtils.join(analysisStatuses.iterator(), ',');
     }
 }
