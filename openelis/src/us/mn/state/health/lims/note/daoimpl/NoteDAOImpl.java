@@ -24,17 +24,14 @@ import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
 import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.daoimpl.BaseDAOImpl;
-import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
-import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.note.dao.NoteDAO;
 import us.mn.state.health.lims.note.valueholder.Note;
 
 import java.util.List;
-import java.util.Vector;
 
 /**
 * @author diane benz
@@ -48,7 +45,7 @@ public class NoteDAOImpl extends BaseDAOImpl implements NoteDAO {
 			for (int i = 0; i < notes.size(); i++) {
 				Note data = (Note)notes.get(i);
 
-				Note oldData = (Note)readNote(data.getId());
+				Note oldData = readNote(data.getId());
 				Note newData = new Note();
 
 				String sysUserId = data.getSysUserId();
@@ -66,7 +63,7 @@ public class NoteDAOImpl extends BaseDAOImpl implements NoteDAO {
 			for (int i = 0; i < notes.size(); i++) {
 				Note data = (Note) notes.get(i);
 				//bugzilla 2206
-				data = (Note)readNote(data.getId());
+				data = readNote(data.getId());
 				HibernateUtil.getSession().delete(data);
 				HibernateUtil.getSession().flush();
 				HibernateUtil.getSession().clear();
@@ -79,17 +76,9 @@ public class NoteDAOImpl extends BaseDAOImpl implements NoteDAO {
 	}
 
 	public boolean insertData(Note note) throws LIMSRuntimeException {
-
 		try {
-			// bugzilla 1482 throw Exception if active record already exists
-			if (duplicateNoteExists(note)) {
-				throw new LIMSDuplicateRecordException(
-						"Duplicate record exists for " + note.getNoteType() + " " + note.getSubject());
-			}
-
 			String id = (String) HibernateUtil.getSession().save(note);
 			note.setId(id);
-
 
 			AuditTrailDAO auditDAO = new AuditTrailDAOImpl();
 			String sysUserId = note.getSysUserId();
@@ -109,19 +98,7 @@ public class NoteDAOImpl extends BaseDAOImpl implements NoteDAO {
 	}
 
 	public void updateData(Note note) throws LIMSRuntimeException {
-		// bugzilla 1482 throw Exception if active record already exists
-		try {
-			if (duplicateNoteExists(note)) {
-				throw new LIMSDuplicateRecordException(
-						"Duplicate record exists for " + note.getNoteType() + " " + note.getSubject());
-			}
-		} catch (Exception e) {
-    		//bugzilla 2154
-			LogEvent.logError("NoteDAOImpl","updateData()",e.toString());
-			throw new LIMSRuntimeException("Error in Note updateData()", e);
-		}
-
-		Note oldData = (Note)readNote(note.getId());
+		Note oldData = readNote(note.getId());
 		Note newData = note;
 
 		//add to audit trail
@@ -152,13 +129,11 @@ public class NoteDAOImpl extends BaseDAOImpl implements NoteDAO {
 
 	public void getData(Note note) throws LIMSRuntimeException {
 		try {
-			Note nt = (Note) HibernateUtil.getSession().get(Note.class,
-					note.getId());
+			Note nt = (Note) HibernateUtil.getSession().get(Note.class, note.getId());
 			HibernateUtil.getSession().flush();
 			HibernateUtil.getSession().clear();
 			if (nt != null) {
 				PropertyUtils.copyProperties(note, nt);
-
 			} else {
 				note.setId(null);
 			}
@@ -178,105 +153,89 @@ public class NoteDAOImpl extends BaseDAOImpl implements NoteDAO {
 		} catch (Exception e) {
 			handleException(e, "getData");
 		}
-		
 		return null;
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<Note> getAllNotes() throws LIMSRuntimeException {
-		List<Note> list;
 		try {
 			String sql = "from Note";
 			Query query = HibernateUtil.getSession().createQuery(sql);
-			list = query.list();
+            List<Note> list = query.list();
 			HibernateUtil.getSession().flush();
 			HibernateUtil.getSession().clear();
+
+            return list;
 
 		} catch (Exception e) {
 			LogEvent.logError("NoteDAOImpl","getAllNotes()",e.toString());
 			throw new LIMSRuntimeException("Error in Note getAllNotes()", e);
 		}
-
-		return list;
 	}
 
 	public List getPageOfNotes(int startingRecNo) throws LIMSRuntimeException {
-		List list = new Vector();
 		try {
 			// calculate maxRow to be one more than the page size
-			int endingRecNo = startingRecNo
-					+ (SystemConfiguration.getInstance().getDefaultPageSize() + 1);
+			int endingRecNo = startingRecNo + (SystemConfiguration.getInstance().getDefaultPageSize() + 1);
     		//bugzilla 2571 go through ReferenceTablesDAO to get reference tables info
 			String sql = "from Note nt order by nt.referenceTableId, nt.referenceId,nt.noteType";
-			org.hibernate.Query query = HibernateUtil.getSession().createQuery(
-					sql);
+			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
 			query.setFirstResult(startingRecNo - 1);
 			query.setMaxResults(endingRecNo - 1);
 
-			list = query.list();
+            List list = query.list();
 			HibernateUtil.getSession().flush();
 			HibernateUtil.getSession().clear();
 
+            return list;
 		} catch (Exception e) {
 			//bugzilla 2154
 			LogEvent.logError("NoteDAOImpl","getPageOfNotes()",e.toString());
 			throw new LIMSRuntimeException(
 					"Error in Note getPageOfNotes()", e);
 		}
-
-		return list;
 	}
 
 	public Note readNote(String idString) {
-		Note note = null;
 		try {
-			note = (Note) HibernateUtil.getSession().get(Note.class,
-					idString);
+			Note note = (Note) HibernateUtil.getSession().get(Note.class, idString);
 			HibernateUtil.getSession().flush();
 			HibernateUtil.getSession().clear();
+            return note;
 		} catch (Exception e) {
 			//bugzilla 2154
 			LogEvent.logError("NoteDAOImpl","readNote()",e.toString());
 			throw new LIMSRuntimeException("Error in Note readNote()", e);
 		}
 
-		return note;
 	}
 
 	public List getNextNoteRecord(String id) throws LIMSRuntimeException {
-
 		return null;//getNextRecord(id, "Note", Note.class);
 
 	}
 
 	public List getPreviousNoteRecord(String id) throws LIMSRuntimeException {
-
 		return null;//getPreviousRecord(id, "Note", Note.class);
 	}
 
 
 	public List getAllNotesByRefIdRefTable(Note note) throws LIMSRuntimeException {
 		try {
-		
 			String sql = "from Note n where n.referenceId = :refId and n.referenceTableId = :refTableId order by n.noteType desc, n.lastupdated desc";
-			org.hibernate.Query query = HibernateUtil.getSession().createQuery(
-					sql);
+			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
 			query.setInteger("refId", Integer.parseInt(note.getReferenceId()));
-		
 			query.setInteger("refTableId", Integer.parseInt(note.getReferenceTableId()));
 
 			List list = query.list();
 			HibernateUtil.getSession().flush();
 			HibernateUtil.getSession().clear();
             return list;
-
 		} catch (Exception e) {
 			LogEvent.logError("NoteDAOImpl","getAllNotesByRefIdRefTable()",e.toString());
-			throw new LIMSRuntimeException("Error in Note getAllNotesByRefIdRefTable()",
-					e);
+			throw new LIMSRuntimeException("Error in Note getAllNotesByRefIdRefTable()", e);
 		}
 	}
-
 
 	@SuppressWarnings("unchecked")
 	public List<Note> getNotesByNoteTypeRefIdRefTable(Note note) throws LIMSRuntimeException {
@@ -305,14 +264,8 @@ public class NoteDAOImpl extends BaseDAOImpl implements NoteDAO {
 		return getTotalCount("Note", Note.class);
 	}
 
-	public List getNextRecord(String id, String table, Class clazz)
-			throws LIMSRuntimeException {
-		int currentId = (Integer.valueOf(id)).intValue();
-		String tablePrefix = getTablePrefix(table);
-
-		List list = new Vector();
-		//bugzilla 1908
-		int rrn = 0;
+	public List getNextRecord(String id, String table, Class clazz) throws LIMSRuntimeException {
+        //bugzilla 1908
 		try {
 			//bugzilla 1908 cannot use named query for postgres because of oracle ROWNUM
 			//instead get the list in this sortorder and determine the index of record with id = currentId
@@ -321,34 +274,28 @@ public class NoteDAOImpl extends BaseDAOImpl implements NoteDAO {
 					" order by n.referenceTableId, n.referenceId, n.noteType";
 
  			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
-			list = query.list();
+			List list = query.list();
 			HibernateUtil.getSession().flush();
 			HibernateUtil.getSession().clear();
-			rrn = list.indexOf(String.valueOf(currentId));
+            int rrn = list.indexOf(id);
 
-			list = HibernateUtil.getSession().getNamedQuery(tablePrefix + "getNext")
-			.setFirstResult(rrn + 1)
-			.setMaxResults(2)
-			.list();
-
-
+			list = HibernateUtil.getSession().getNamedQuery(getTablePrefix(table) + "getNext")
+                        .setFirstResult(rrn + 1)
+                        .setMaxResults(2)
+                        .list();
+            return list;
 		} catch (Exception e) {
 			//bugzilla 2154
 			LogEvent.logError("NoteDAOImpl","getNextRecord()",e.toString());
 			throw new LIMSRuntimeException("Error in getNextRecord() for " + table, e);
 		}
-
-
-		return list;
 	}
 
 
-	public List getPreviousRecord(String id, String table, Class clazz)
-			throws LIMSRuntimeException {
+	public List getPreviousRecord(String id, String table, Class clazz) throws LIMSRuntimeException {
 		int currentId = (Integer.valueOf(id)).intValue();
 		String tablePrefix = getTablePrefix(table);
 
-		List list = new Vector();
 		//bugzilla 1908
 		int rrn = 0;
 		try {
@@ -359,7 +306,7 @@ public class NoteDAOImpl extends BaseDAOImpl implements NoteDAO {
 					" order by n.referenceTableId desc, n.referenceId desc, n.noteType desc";
 
  			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
-			list = query.list();
+            List list = query.list();
 			HibernateUtil.getSession().flush();
 			HibernateUtil.getSession().clear();
 			rrn = list.indexOf(String.valueOf(currentId));
@@ -368,49 +315,15 @@ public class NoteDAOImpl extends BaseDAOImpl implements NoteDAO {
 					tablePrefix + "getPrevious").setFirstResult(
 					rrn + 1).setMaxResults(2).list();
 
+            return list;
 		} catch (Exception e) {
 			//bugzilla 2154
 			LogEvent.logError("NoteDAOImpl","getPreviousRecord()",e.toString());
-			throw new LIMSRuntimeException("Error in getPreviousRecord() for "
-					+ table, e);
-		}
-
-    	return list;
-	}
-
-
-	@SuppressWarnings("unchecked")
-	private boolean duplicateNoteExists(Note note) throws LIMSRuntimeException
-{
-		try {
-
-			List<Note> list = null;
-
-			String sql = "from Note t where trim(lower(t.noteType)) = :noteType and t.referenceId = :referenceId and t.referenceTableId = :referenceTableId and trim(lower(t.text)) = :param4 and trim(lower(t.subject)) = :param5 and t.id != :noteId";
-			org.hibernate.Query query = HibernateUtil.getSession().createQuery(
-					sql);
-			query.setParameter("noteType", note.getNoteType().toLowerCase().trim());
-			query.setInteger("referenceId", Integer.parseInt(note.getReferenceId()));
-
-			query.setInteger("referenceTableId", Integer.parseInt(note.getReferenceTableId()));
-			query.setParameter("param4", note.getText().toLowerCase().trim());
-			query.setParameter("param5", note.getSubject().toLowerCase().trim());
-
-			int noteId = !StringUtil.isNullorNill(note.getId()) ?Integer.parseInt(note.getId()) : 0;
-
-			query.setInteger("noteId", noteId);
-
-			list = query.list();
-
-			return list.size() > 0;
-
-		} catch (Exception e) {
-			LogEvent.logErrorStack("NoteDAOImpl","duplicateNoteExists()",e);
-			throw new LIMSRuntimeException("Error in duplicateNoteExists()", e);
+			throw new LIMSRuntimeException("Error in getPreviousRecord() for " + table, e);
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
 	@Override
 	public List<Note> getNoteByRefIAndRefTableAndSubject(String refId, String table_id, String subject) throws LIMSRuntimeException {
 		String sql = "FROM Note n where n.referenceId = :refId and n.referenceTableId = :tableId and  n.subject = :subject";
@@ -422,16 +335,11 @@ public class NoteDAOImpl extends BaseDAOImpl implements NoteDAO {
 			query.setString("subject", subject);
 			
 			List<Note> noteList = query.list();
-			
 			closeSession();
-			
 			return noteList;
 		}catch(HibernateException e){
 			handleException(e, "getNoteByRefIAndRefTableAndSubject");
 		}
 		return null;
 	}
-
-	
 }
-
