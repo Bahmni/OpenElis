@@ -1,6 +1,7 @@
 <%@ page language="java"
 	contentType="text/html; charset=utf-8"
 	import="java.util.Date,
+	java.text.SimpleDateFormat,
 	us.mn.state.health.lims.common.util.SystemConfiguration,
 	us.mn.state.health.lims.common.action.IActionConstants" %>
 
@@ -15,6 +16,7 @@
 <%!
 String path = "";
 String basePath = "";
+String serverNow = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
 %>
 
 <%
@@ -133,8 +135,9 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
         var backlogOrderList = JSON.parse('<%=backlogOrderListJson%>');
 
         var isToday = function(date) {
-            var now = new Date();
-            return now.getDate() === date.getDate() && now.getMonth() == date.getMonth() && now.getFullYear() === date.getFullYear();
+            // ISO date format
+            var clientNow = new Date('<%= serverNow %>');
+            return clientNow.getDate() === date.getDate() && clientNow.getMonth() == date.getMonth() && clientNow.getFullYear() === date.getFullYear();
         };
 
         var todayStats = {
