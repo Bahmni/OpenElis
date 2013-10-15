@@ -108,9 +108,9 @@ function processSearchSuccess(xhr)
 		for( var i = 0; i < resultNodes.length; i++ )
 		{
 			addPatientToSearch( table, resultNodes.item(i) );
-		    if (resultNodes.length === 1) {
-		        doSelectPatient();
-		    }
+//		    if (resultNodes.length === 1) {
+//		        doSelectPatient();
+//		    }
 		}
 	}else
 	{
