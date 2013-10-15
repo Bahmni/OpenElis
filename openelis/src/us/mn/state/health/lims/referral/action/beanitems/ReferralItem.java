@@ -16,10 +16,10 @@
  */
 package us.mn.state.health.lims.referral.action.beanitems;
 
+import us.mn.state.health.lims.common.util.IdValuePair;
+
 import java.io.Serializable;
 import java.util.List;
-
-import us.mn.state.health.lims.common.util.IdValuePair;
 
 public class ReferralItem implements IReferralResultTest, Serializable {
 
@@ -52,6 +52,7 @@ public class ReferralItem implements IReferralResultTest, Serializable {
     private List<ReferredTest> additionalTests;
     private String casualResultId;
     private boolean failedValidation = false;
+    private String patientNumber;
 
     public String getReferralId() {
         return referralId;
@@ -267,5 +268,13 @@ public class ReferralItem implements IReferralResultTest, Serializable {
 
     public boolean isFailedValidation() {
         return failedValidation;
+    }
+
+    public String getPatientNumber() {
+        return patientNumber;
+    }
+
+    public void setPatientNumber(String patientNumber) {
+        this.patientNumber = patientNumber;
     }
 }

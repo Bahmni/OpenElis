@@ -470,7 +470,10 @@ function showAllTests() {
 	<bean:define id="rowColor" value='<%=(index % 2 == 0) ? "oddRow" : "evenRow" %>' />
 
 	<tr class='<%=rowColor%>Head' id='<%="referralRow_" + index%>'  >
-		<td colspan="2" class="HeadSeperator" >
+		<td colspan="1" class="HeadSeperator" >
+		 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= StringUtil.getContextualMessageForKey("patient.ST.number") %>: <b><bean:write name="referralItems" property="patientNumber"/></b>
+    	</td>
+		<td colspan="1" class="HeadSeperator" >
 		 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= StringUtil.getContextualMessageForKey("resultsentry.accessionNumber") %>: <b><bean:write name="referralItems" property="accessionNumber"/></b>
     	</td>
     	<td colspan="8" class="HeadSeperator" >

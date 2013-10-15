@@ -16,16 +16,6 @@
  */
 package us.mn.state.health.lims.referral.action;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.GenericValidator;
@@ -33,13 +23,11 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.DynaActionForm;
-
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.IdValuePair;
-import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
 import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
 import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
@@ -48,6 +36,10 @@ import us.mn.state.health.lims.note.valueholder.Note;
 import us.mn.state.health.lims.organization.dao.OrganizationDAO;
 import us.mn.state.health.lims.organization.daoimpl.OrganizationDAOImpl;
 import us.mn.state.health.lims.organization.valueholder.Organization;
+import us.mn.state.health.lims.patient.util.PatientUtil;
+import us.mn.state.health.lims.patient.valueholder.Patient;
+import us.mn.state.health.lims.patientidentity.valueholder.PatientIdentity;
+import us.mn.state.health.lims.patientidentitytype.util.PatientIdentityTypeMap;
 import us.mn.state.health.lims.referral.action.beanitems.IReferralResultTest;
 import us.mn.state.health.lims.referral.action.beanitems.ReferralItem;
 import us.mn.state.health.lims.referral.action.beanitems.ReferredTest;
@@ -62,6 +54,8 @@ import us.mn.state.health.lims.result.dao.ResultDAO;
 import us.mn.state.health.lims.result.daoimpl.ResultDAOImpl;
 import us.mn.state.health.lims.result.valueholder.Result;
 import us.mn.state.health.lims.result.valueholder.ResultType;
+import us.mn.state.health.lims.samplehuman.dao.SampleHumanDAO;
+import us.mn.state.health.lims.samplehuman.daoimpl.SampleHumanDAOImpl;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
 import us.mn.state.health.lims.statusofsample.util.StatusRules;
 import us.mn.state.health.lims.test.valueholder.Test;
@@ -73,12 +67,17 @@ import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleDAOImpl;
 import us.mn.state.health.lims.typeofsample.util.TypeOfSampleUtil;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSample;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
+
 public class ReferredOutAction extends BaseAction {
 
     private static final String REFERRAL_LAB = "referralLab";
     private static ReferralResultDAO referralResultDAO = new ReferralResultDAOImpl();
     private static TypeOfSampleDAO typeOfSampleDAO = new TypeOfSampleDAOImpl();
     private static ResultDAO resultDAO = new ResultDAOImpl();
+    private static SampleHumanDAO sampleHumanDAO = new SampleHumanDAOImpl();
     private static DictionaryDAO dictionaryDAO = new DictionaryDAOImpl();
     private List<NonNumericTests> nonNumericTests;
     private static String RESULT_REFERENCE_TABLE_ID = NoteUtil.getTableReferenceId("RESULT");
@@ -132,7 +131,6 @@ public class ReferredOutAction extends BaseAction {
                 }
             }
         }
-
     }
 
     private List<IdValuePair> getReferralOrganizations() {
@@ -154,7 +152,7 @@ public class ReferredOutAction extends BaseAction {
         ReferralDAO referralDAO = new ReferralDAOImpl();
 
         List<Referral> referralList;
-        if(StringUtils.isNotBlank(patientSTNumber)){
+        if (StringUtils.isNotBlank(patientSTNumber)) {
             referralList = referralDAO.getAllUncanceledOpenReferralsByPatientSTNumber(patientSTNumber);
         } else {
             referralList = referralDAO.getAllUncanceledOpenReferrals();
@@ -166,9 +164,7 @@ public class ReferredOutAction extends BaseAction {
                 referralItems.add(referralItem);
             }
         }
-
         Collections.sort(referralItems, new ReferralComparator());
-
         return referralItems;
     }
 
@@ -222,15 +218,12 @@ public class ReferredOutAction extends BaseAction {
                 });
 
                 StringBuilder noteBuilder = new StringBuilder();
-
                 for (Note note : notes) {
                     noteBuilder.append(note.getText());
                     noteBuilder.append("<br/>");
                 }
-
                 noteBuilder.setLength(noteBuilder.lastIndexOf("<br/>"));
                 referralItem.setPastNotes(noteBuilder.toString());
-
             }
         }
 
@@ -252,8 +245,17 @@ public class ReferredOutAction extends BaseAction {
             referralItem.setReferredInstituteId(referral.getOrganization().getId());
         }
         referralItem.setFailedValidation(new StatusRules().hasFailedValidation(analysis.getStatusId()));
-
+        referralItem.setPatientNumber(getPatientNumber(sampleItem));
         return referralItem;
+    }
+
+    private String getPatientNumber(SampleItem sampleItem) {
+        if (!"H".equals(sampleItem.getSample().getDomain()))
+            return null;
+
+        Patient patientForSample = sampleHumanDAO.getPatientForSample(sampleItem.getSample());
+        List<PatientIdentity> identityList = PatientUtil.getIdentityListForPatient(patientForSample.getId());
+        return PatientIdentityTypeMap.getInstance().getIdentityValue(identityList, "ST");
     }
 
     private String getSendDateOrDefault(Referral referral) {
@@ -362,10 +364,8 @@ public class ReferredOutAction extends BaseAction {
                     result.getAnalysis().getTest().getUnitOfMeasure() != null) {
                 resultValue += " " + result.getAnalysis().getTest().getUnitOfMeasure().getName();
             }
-
             return resultValue;
         }
-
         return "";
     }
 
@@ -373,11 +373,9 @@ public class ReferredOutAction extends BaseAction {
         List<Test> testList = TypeOfSampleUtil.getTestListBySampleTypeId(typeOfSample.getId(), null, false);
 
         List<IdValuePair> valueList = new ArrayList<>();
-
         for (Test test : testList) {
             valueList.add(new IdValuePair(test.getId(), test.getLocalizedName()));
         }
-
         return valueList;
     }
 
