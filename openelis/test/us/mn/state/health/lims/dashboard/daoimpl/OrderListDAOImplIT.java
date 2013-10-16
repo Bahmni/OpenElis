@@ -233,6 +233,7 @@ public class OrderListDAOImplIT extends IT {
         analysis.setStatusId(StatusOfSampleUtil.getStatusID(analysisStatus));
         analysis.setTest(test);
         analysis.setSysUserId("1");
+        analysis.setLastupdated(sampleItem.getSample().getLastupdated());
         analysis.setTestSection(testSection);
         new AnalysisDAOImpl().insertData(analysis, false);
         return analysis;
