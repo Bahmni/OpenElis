@@ -15,10 +15,8 @@
 */
 package us.mn.state.health.lims.hibernate;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Interceptor;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import org.apache.log4j.Logger;
+import org.hibernate.*;
 import org.hibernate.cfg.Configuration;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
@@ -40,6 +38,7 @@ public class HibernateUtil {
     private static final ThreadLocal threadSession = new ThreadLocal();
     private static final ThreadLocal threadInterceptor = new ThreadLocal();
     private static String CONFIG_FILE_LOCATION = "/us/mn/state/health/lims/hibernate/hibernate.cfg.xml";
+    private static Logger logger = Logger.getLogger(HibernateUtil.class);
     
     private static String configFile = CONFIG_FILE_LOCATION;
     
@@ -177,13 +176,20 @@ public class HibernateUtil {
             Session s = (Session) threadSession.get();
             if (s != null && s.isOpen()) {
                 //bugzilla 2154
+                try {
+                    Transaction transaction = s.getTransaction();
+                    if (transaction != null && transaction.isActive()) {
+                        transaction.rollback();
+                    }
+                } catch (HibernateException e) {
+                    logger.error(e, e);
+                }
                 LogEvent.logDebug("HibernateUtil","closeSession()","Closing Session of this thread.");
                 s.close();
             }
             threadSession.remove();
         } catch (HibernateException ex) {
             //bugzilla 2154
-			LogEvent.logError("HibernateUtil","closeSession()",ex.toString());
         	throw new LIMSRuntimeException("Error in closeSession()", ex);
         }
     }

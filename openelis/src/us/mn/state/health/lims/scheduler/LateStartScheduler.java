@@ -26,6 +26,7 @@ import org.quartz.impl.StdSchedulerFactory;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.dataexchange.MalariaSurveilance.MalariaSurveilanceJob;
 import us.mn.state.health.lims.dataexchange.aggregatereporting.AggregateReportJob;
+import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.scheduler.daoimpl.CronSchedulerDAOImpl;
 import us.mn.state.health.lims.scheduler.valueholder.CronScheduler;
 
@@ -83,6 +84,8 @@ public class LateStartScheduler {
             scheduler.startDelayed(120);
         } catch (SchedulerException | ParseException e) {
             throw new LIMSRuntimeException(e);
+        } finally {
+            HibernateUtil.getSession().close();
         }
     }
 
