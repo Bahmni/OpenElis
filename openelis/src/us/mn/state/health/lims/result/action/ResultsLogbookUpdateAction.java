@@ -131,6 +131,7 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
 
     protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
             throws Exception {
+        Transaction tx = HibernateUtil.getSession().beginTransaction();
 
         String forward = FWD_SUCCESS;
         String referer = request.getParameter("referer");
@@ -159,7 +160,6 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
         initializeLists();
         createResultsFromItems();
 
-        Transaction tx = HibernateUtil.getSession().beginTransaction();
 
         try {
             for (ResultSet resultSet : newResults) {
