@@ -21,16 +21,16 @@ import java.sql.Timestamp;
 
 public class DatabaseChangeLog {
 
-	private int id;
+	private String id;
 	private String author;
 	private Timestamp executed;
 	private String fileName;
 	private String comment;
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 	public String getAuthor() {
