@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -53,9 +54,11 @@ public class TestResultPersisterServiceTest {
         final String sampleSource = "source";
         String testName1 = "test1";
         String testName2 = "test2";
+        String testName3 = "test3";
         String result1 = "someValueForValue1";
         String result2 = "someValueForTest2";
-        List<CSVTestResult> testResults = Arrays.asList(new CSVTestResult(testName1, result1), new CSVTestResult(testName2, result2));
+        String result3 = "";
+        List<CSVTestResult> testResults = Arrays.asList(new CSVTestResult(testName1, result1), new CSVTestResult(testName2, result2), new CSVTestResult(testName3, result3));
         String accessionNumber = "123";
         Sample sample = new Sample();
         sample.setId("1");
@@ -70,10 +73,14 @@ public class TestResultPersisterServiceTest {
         test1.setTestName(testName1);
         Test test2 = new Test();
         test2.setTestName(testName2);
+        Test test3 = new Test();
+        test3.setTestName(testName3);
         SampleItem sampleItem1 = new SampleItem();
         SampleItem sampleItem2 = new SampleItem();
+        SampleItem sampleItem3 = new SampleItem();
         Analysis analysis1 = new Analysis();
         Analysis analysis2 = new Analysis();
+        Analysis analysis3 = new Analysis();
         CSVSample csvSample = new CSVSample(healthCenter, patientRegistrationNumber, accessionNumber, sampleDate, sampleSource, testResults);
         patientRegistrationNumber = healthCenter + patientRegistrationNumber;
 
@@ -84,10 +91,13 @@ public class TestResultPersisterServiceTest {
         when(patientDAO.getPatientById(patientId)).thenReturn(patient);
         when(testDAO.getTestByName(testName1)).thenReturn(test1);
         when(testDAO.getTestByName(testName2)).thenReturn(test2);
+        when(testDAO.getTestByName(testName3)).thenReturn(test3);
         when(sampleItemPersisterService.save(sample, test1, sysUserId)).thenReturn(sampleItem1);
         when(sampleItemPersisterService.save(sample, test2, sysUserId)).thenReturn(sampleItem2);
+        when(sampleItemPersisterService.save(sample, test3, sysUserId)).thenReturn(sampleItem3);
         when(analysisPersisterService.save(test1, sampleDate, sampleItem1, sysUserId)).thenReturn(analysis1);
         when(analysisPersisterService.save(test2, sampleDate, sampleItem2, sysUserId)).thenReturn(analysis2);
+        when(analysisPersisterService.save(test3, sampleDate, sampleItem3, sysUserId)).thenReturn(analysis3);
 
         testResultPersisterService.persist(csvSample);
 
@@ -95,9 +105,12 @@ public class TestResultPersisterServiceTest {
         verify(sampleHumanPersisterService).save(sample.getId(), patientRegistrationNumber, sysUserId);
         verify(sampleItemPersisterService).save(sample, test1, sysUserId);
         verify(sampleItemPersisterService).save(sample, test2, sysUserId);
+        verify(sampleItemPersisterService).save(sample, test3, sysUserId);
         verify(analysisPersisterService).save(test1, sampleDate, sampleItem1, sysUserId);
         verify(analysisPersisterService).save(test2, sampleDate, sampleItem2, sysUserId);
+        verify(analysisPersisterService).save(test3, sampleDate, sampleItem3, sysUserId);
         verify(resultPersisterService).save(analysis1, test1, result1, patient, sysUserId);
         verify(resultPersisterService).save(analysis2, test2, result2, patient, sysUserId);
+        verifyNoMoreInteractions(resultPersisterService);
     }
 }

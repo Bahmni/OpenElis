@@ -20,4 +20,8 @@ public class CSVTestResult {
         boolean bothTestAndResultHasSomeValue = !test.isEmpty() && !result.isEmpty();
         return isEmpty() || bothTestAndResultHasSomeValue;
     }
+
+    public boolean hasResult() {
+        return result != null && !result.trim().isEmpty();
+    }
 }

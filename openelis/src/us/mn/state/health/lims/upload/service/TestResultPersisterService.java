@@ -72,7 +72,9 @@ public class TestResultPersisterService {
                     Test test = getTest(testResult.test);
                     SampleItem sampleItem = sampleItemPersisterService.save(sample, test, sysUserId);
                     Analysis analysis = analysisPersisterService.save(test, csvSample.sampleDate, sampleItem, sysUserId);
-                    resultPersisterService.save(analysis, test, testResult.result, patient, sysUserId);
+                    if (testResult.hasResult()) {
+                        resultPersisterService.save(analysis, test, testResult.result, patient, sysUserId);
+                    }
                 } catch (LIMSRuntimeException e) {
                     hasFailed = true;
                     if (errorMessageBuilder.length() > 0) {

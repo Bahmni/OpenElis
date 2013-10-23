@@ -919,4 +919,12 @@
             <where>name='testUsageReporting'</where>
         </update>
     </changeSet>
+    <changeSet id="61" author="tw" context="bahmni">
+        <modifyColumn tableName="import_status">
+            <column name="original_file_name" type="text" />
+            <column name="saved_file_name" type="text" />
+            <column name="error_file_name" type="text" />
+        </modifyColumn>
+    </changeSet>
+
 </databaseChangeLog>

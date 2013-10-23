@@ -66,8 +66,8 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
         }
 
         errorMessage.append(validateTestNames(csvSample.testResults));
-        errorMessage.append(validateAtLeastOneTestIsNonEmpty(csvSample.testResults));
-        errorMessage.append(validateAllTestResultsAreValid(csvSample.testResults));
+//        errorMessage.append(validateAtLeastOneTestIsNonEmpty(csvSample.testResults));
+//        errorMessage.append(validateAllTestResultsAreValid(csvSample.testResults));
 
         if (isEmpty(csvSample.accessionNumber)) {
             errorMessage.append("AccessionNumber should not be blank.\n");
