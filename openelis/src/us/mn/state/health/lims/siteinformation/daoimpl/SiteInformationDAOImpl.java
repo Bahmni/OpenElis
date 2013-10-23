@@ -213,7 +213,7 @@ public class SiteInformationDAOImpl extends BaseDAOImpl implements SiteInformati
 		try {
 			Query query = HibernateUtil.getSession().createQuery(sql);
 			query.setString("domainName", domainName);
-			Integer count = (Integer)query.uniqueResult();
+			Integer count = ((Long)query.uniqueResult()).intValue();
 			closeSession();
 			return count;
 		} catch (HibernateException e) {

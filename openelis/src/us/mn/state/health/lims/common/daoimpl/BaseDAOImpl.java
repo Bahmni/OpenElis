@@ -15,15 +15,15 @@
 */
 package us.mn.state.health.lims.common.daoimpl;
 
-import java.util.List;
-import java.util.Vector;
-
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.dao.BaseDAO;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
+
+import java.util.List;
+import java.util.Vector;
 
 public class BaseDAOImpl implements BaseDAO, IActionConstants{
 
@@ -95,7 +95,7 @@ public class BaseDAOImpl implements BaseDAO, IActionConstants{
 
 			if (results != null && results.get(0) != null) {
 				if (results.get(0) != null) {
-					count = (Integer)results.get(0);
+					count = ((Long)results.get(0)).intValue();
 				}
 			}
 
