@@ -904,4 +904,19 @@
                     m.name = 'HealthCenter'
         </sql>
     </changeSet>
+    <changeSet id="60" author="tw" context="bahmni" runOnChange="true">
+        <comment>Remove all report senders</comment>
+        <update schemaName="clinlims" tableName="site_information">
+            <column name="value" value="false"/>
+            <where>name='resultReporting'</where>
+        </update>
+        <update schemaName="clinlims" tableName="site_information">
+            <column name="value" value="false"/>
+            <where>name='malariaCaseReport'</where>
+        </update>
+        <update schemaName="clinlims" tableName="site_information">
+            <column name="value" value="false"/>
+            <where>name='testUsageReporting'</where>
+        </update>
+    </changeSet>
 </databaseChangeLog>
