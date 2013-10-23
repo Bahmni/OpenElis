@@ -15,28 +15,20 @@
 */
 package us.mn.state.health.lims.codeelementxref.action;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.struts.Globals;
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
-import org.apache.struts.action.ActionMessages;
-import org.apache.struts.action.DynaActionForm;
-
+import org.apache.struts.action.*;
 import us.mn.state.health.lims.codeelementtype.dao.CodeElementTypeDAO;
 import us.mn.state.health.lims.codeelementtype.daoimpl.CodeElementTypeDAOImpl;
 import us.mn.state.health.lims.codeelementtype.valueholder.CodeElementType;
 import us.mn.state.health.lims.codeelementxref.dao.CodeElementXrefDAO;
 import us.mn.state.health.lims.codeelementxref.daoimpl.CodeElementXrefDAOImpl;
 import us.mn.state.health.lims.codeelementxref.valueholder.CodeElementXref;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
 import us.mn.state.health.lims.messageorganization.dao.MessageOrganizationDAO;
 import us.mn.state.health.lims.messageorganization.daoimpl.MessageOrganizationDAOImpl;
@@ -44,6 +36,9 @@ import us.mn.state.health.lims.messageorganization.valueholder.MessageOrganizati
 import us.mn.state.health.lims.receivercodeelement.dao.ReceiverCodeElementDAO;
 import us.mn.state.health.lims.receivercodeelement.daoimpl.ReceiverCodeElementDAOImpl;
 import us.mn.state.health.lims.receivercodeelement.valueholder.ReceiverCodeElement;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author diane benz
@@ -113,18 +108,15 @@ public class CodeElementXrefLinkAction extends CodeElementXrefBaseAction {
 		UserSessionData usd = (UserSessionData)request.getSession().getAttribute(USER_SESSION_DATA);
 		String sysUserId = String.valueOf(usd.getSystemUserId());	
 		codeElementXref.setSysUserId(sysUserId);
-		
-		org.hibernate.Transaction tx = HibernateUtil.getSession()
-		.beginTransaction();
+
 		try {
 				// INSERT
 
 			codeElementXrefDAO.insertData(codeElementXref);
-			tx.commit();
 		} catch (LIMSRuntimeException lre) {
 			//bugzilla 2154
 			LogEvent.logError("CodeElementXrefLinkAction","performAction()",lre.toString());
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			errors = new ActionMessages();
 			java.util.Locale locale = (java.util.Locale) request.getSession()
 					.getAttribute("org.apache.struts.action.LOCALE");
@@ -161,9 +153,6 @@ public class CodeElementXrefLinkAction extends CodeElementXrefBaseAction {
 			request.setAttribute(PREVIOUS_DISABLED, "true");
 			request.setAttribute(NEXT_DISABLED, "true");
 			forward = FWD_FAIL;
-
-		} finally {
-			HibernateUtil.closeSession();
 		}
 		return getForward(mapping.findForward(forward), selectedMessageOrganizationId, selectedCodeElementTypeId);
 

@@ -17,27 +17,21 @@
  */
 package us.mn.state.health.lims.role.action;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.validator.GenericValidator;
 import org.apache.struts.Globals;
-import org.apache.struts.action.ActionErrors;
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
-import org.apache.struts.action.ActionMessages;
-
+import org.apache.struts.action.*;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.role.dao.RoleDAO;
 import us.mn.state.health.lims.role.daoimpl.RoleDAOImpl;
 import us.mn.state.health.lims.role.valueholder.Role;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 public class RoleUpdateAction extends BaseAction {
 
@@ -92,8 +86,6 @@ public class RoleUpdateAction extends BaseAction {
 		role.setGroupingParent(dynaForm.getString("parentRole"));
 		role.setGroupingRole(checkedBoxes.length > 0 && "isChecked".equals(checkedBoxes[0]));
 
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
-
 		try {
 			RoleDAO roleDAO = new RoleDAOImpl();
 
@@ -107,11 +99,9 @@ public class RoleUpdateAction extends BaseAction {
 				}
 			}
 
-			tx.commit();
-
 			forward = FWD_SUCCESS_INSERT;
 		} catch (LIMSRuntimeException lre) {
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			errors = new ActionMessages();
 			ActionError error = null;
 			if (lre.getException() instanceof org.hibernate.StaleObjectStateException) {
@@ -130,9 +120,6 @@ public class RoleUpdateAction extends BaseAction {
 			request.setAttribute(PREVIOUS_DISABLED, TRUE);
 			request.setAttribute(NEXT_DISABLED, TRUE);
 			forward = FWD_FAIL;
-
-		} finally {
-			HibernateUtil.closeSession();
 		}
 		return forward;
 	}

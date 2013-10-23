@@ -27,7 +27,6 @@ import org.apache.struts.action.ActionMessages;
 import org.bahmni.feed.openelis.feed.service.EventPublishers;
 import org.bahmni.feed.openelis.feed.service.impl.OpenElisUrlPublisher;
 import org.hibernate.StaleObjectStateException;
-import org.hibernate.Transaction;
 import us.mn.state.health.lims.address.dao.AddressPartDAO;
 import us.mn.state.health.lims.address.dao.PersonAddressDAO;
 import us.mn.state.health.lims.address.daoimpl.AddressPartDAOImpl;
@@ -36,6 +35,7 @@ import us.mn.state.health.lims.address.valueholder.AddressPart;
 import us.mn.state.health.lims.address.valueholder.PersonAddress;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSInvalidSTNumberException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
@@ -128,29 +128,25 @@ public class PatientManagementUpdateAction extends BaseAction implements IPatien
 				return mapping.findForward(FWD_FAIL);
 			}
 
-			Transaction tx = HibernateUtil.getSession().beginTransaction();
 
 			try {
                 persistPatientData(patientInfo, request.getContextPath());
-				tx.commit();
 			} catch (LIMSInvalidSTNumberException e) {
-                tx.rollback();
+                request.setAttribute(IActionConstants.REQUEST_FAILED, true);
                 return addErrorMessageAndForward(mapping, request, new ActionError("errors.InvalidStNumber", null, null));
             } catch (LIMSValidationException e) {
-                tx.rollback();
+                request.setAttribute(IActionConstants.REQUEST_FAILED, true);
                 return addErrorMessageAndForward(mapping, request, new ActionError(e.getMessage(), null, null));
             } catch (LIMSDuplicateRecordException e){
-                tx.rollback();
+                request.setAttribute(IActionConstants.REQUEST_FAILED, true);
                 return addErrorMessageAndForward(mapping, request, new ActionError("errors.duplicate.STNumber", null, null));
             }catch (LIMSRuntimeException lre) {
-				tx.rollback();
+                request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 				if (lre.getException() instanceof StaleObjectStateException) {
 					return addErrorMessageAndForward(mapping, request, new ActionError("errors.OptimisticLockException", null, null));
 				} else {
                     return addErrorMessageAndForward(mapping, request, new ActionError("errors.UpdateException", null, null));
                 }
-			} finally {
-				HibernateUtil.closeSession();
 			}
 
 			if (initializeFormOnSave) {

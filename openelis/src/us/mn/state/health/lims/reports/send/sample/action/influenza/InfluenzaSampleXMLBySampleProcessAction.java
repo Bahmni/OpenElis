@@ -45,6 +45,7 @@ import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSCannotCreateXMLException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
@@ -414,9 +415,6 @@ public class InfluenzaSampleXMLBySampleProcessAction extends BaseAction {
 		UserSessionData usd = (UserSessionData)request.getSession().getAttribute(USER_SESSION_DATA);
 		String sysUserId = String.valueOf(usd.getSystemUserId());
 		
-		org.hibernate.Transaction tx = HibernateUtil.getSession()
-		.beginTransaction();
-		
 		try {
 			
 			
@@ -506,11 +504,10 @@ public class InfluenzaSampleXMLBySampleProcessAction extends BaseAction {
 			os.close();
 			
 			xmlString = "";
-			
-			tx.commit();
+
 		} catch (LIMSRuntimeException lre) {
 			LogEvent.logError("InfluenzaSampleXMLBySampleProcessAction","performAction()",lre.toString());
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			
 			errors = new ActionMessages();
 			ActionError error = null;
@@ -532,7 +529,7 @@ public class InfluenzaSampleXMLBySampleProcessAction extends BaseAction {
 			
 		} catch (Exception e) {
 			LogEvent.logError("InfluenzaSampleXMLBySampleProcessAction","performAction()",e.toString());
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			
 			errors = new ActionMessages();
 			ActionError error = null;
@@ -543,9 +540,7 @@ public class InfluenzaSampleXMLBySampleProcessAction extends BaseAction {
 			saveErrors(request, errors);
 			request.setAttribute(Globals.ERROR_KEY, errors);
 			request.setAttribute(ALLOW_EDITS_KEY, "false");
-			return mapping.findForward(FWD_FAIL);	
-		} finally {
-			HibernateUtil.closeSession();
+			return mapping.findForward(FWD_FAIL);
 		}
 		
 		PropertyUtils.setProperty(dynaForm, "fromAccessionNumber", fromAccessionNumber);

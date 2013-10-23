@@ -15,23 +15,12 @@
 */
 package us.mn.state.health.lims.testmanagement.action;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts.Globals;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
-import org.hibernate.Transaction;
-
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
@@ -41,12 +30,12 @@ import us.mn.state.health.lims.analysisqaeventaction.dao.AnalysisQaEventActionDA
 import us.mn.state.health.lims.analysisqaeventaction.daoimpl.AnalysisQaEventActionDAOImpl;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
 import us.mn.state.health.lims.note.dao.NoteDAO;
 import us.mn.state.health.lims.note.daoimpl.NoteDAOImpl;
@@ -61,6 +50,10 @@ import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
 import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 import us.mn.state.health.lims.test.valueholder.Test;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
 public class TestManagementNewbornCancelTestsAction extends BaseAction {
 	
@@ -87,8 +80,6 @@ public class TestManagementNewbornCancelTestsAction extends BaseAction {
 		errorMap.put(HAS_AMENDED_TEST, new ArrayList());
 		errorMap.put(INVALID_STATUS_RESULTS_COMPLETE, new ArrayList());
 		errorMap.put(INVALID_STATUS_RESULTS_VERIFIED, new ArrayList());
-		
-		Transaction tx = HibernateUtil.getSession().beginTransaction();
 		try {
 
 			SampleDAO sampleDAO = new SampleDAOImpl();
@@ -163,7 +154,6 @@ public class TestManagementNewbornCancelTestsAction extends BaseAction {
 
 			PropertyUtils.setProperty(dynaForm, ACCESSION_NUMBER,
 					accessionNumber);
-			tx.commit();
 			
 			if (errorMap != null && errorMap.size() > 0) { 
 			  List amendedTests = (ArrayList)errorMap.get(HAS_AMENDED_TEST);
@@ -237,7 +227,7 @@ public class TestManagementNewbornCancelTestsAction extends BaseAction {
 
 		} catch (LIMSRuntimeException lre) {
 			LogEvent.logError("TestManagementNewbornCancelTests","performAction()",lre.toString());
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			errors = new ActionMessages();
 			ActionError error = null;
 
@@ -255,9 +245,6 @@ public class TestManagementNewbornCancelTestsAction extends BaseAction {
 			request.setAttribute(Globals.ERROR_KEY, errors);
 			request.setAttribute(ALLOW_EDITS_KEY, "false");
 			return mapping.findForward(FWD_FAIL);
-
-		} finally {
-			HibernateUtil.closeSession();
 		}
 		return mapping.findForward(forward);
 	}

@@ -24,6 +24,7 @@ import org.apache.struts.action.ActionMessages;
 import org.hibernate.StaleObjectStateException;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSFrozenRecordException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
@@ -38,7 +39,6 @@ import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
 import us.mn.state.health.lims.dictionarycategory.dao.DictionaryCategoryDAO;
 import us.mn.state.health.lims.dictionarycategory.daoimpl.DictionaryCategoryDAOImpl;
 import us.mn.state.health.lims.dictionarycategory.valueholder.DictionaryCategory;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
 
 import javax.servlet.http.HttpServletRequest;
@@ -102,8 +102,7 @@ public class DictionaryUpdateAction extends BaseAction {
 		//get sysUserId from login module
 		UserSessionData usd = (UserSessionData)request.getSession().getAttribute(USER_SESSION_DATA);
 		String sysUserId = String.valueOf(usd.getSystemUserId());	
-		dictionary.setSysUserId(sysUserId);				
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
+		dictionary.setSysUserId(sysUserId);
 		
 	
 		// populate valueholder from form
@@ -186,11 +185,10 @@ public class DictionaryUpdateAction extends BaseAction {
 
 				dictionaryDAO.insertData(dictionary);
 			}
-			tx.commit();
 		} catch (LIMSRuntimeException lre) {
             //bugzilla 2154
-            LogEvent.logError("DictionaryUpdateAction","performAction()",lre.toString());    		
-			tx.rollback();
+            LogEvent.logError("DictionaryUpdateAction","performAction()",lre.toString());
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			errors = new ActionMessages();
 			//1482
 			Locale locale = (java.util.Locale) request.getSession().getAttribute("org.apache.struts.action.LOCALE");
@@ -224,10 +222,6 @@ public class DictionaryUpdateAction extends BaseAction {
 			}
 
             forward = addErrors(request, errors, error);
-		
-			
-		} finally {
-            HibernateUtil.closeSession();
         }
 		if (forward.equals(FWD_FAIL))
 			return mapping.findForward(forward);

@@ -15,24 +15,12 @@
 */
 package us.mn.state.health.lims.result.action;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts.Globals;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
-
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
@@ -45,7 +33,6 @@ import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
 import us.mn.state.health.lims.result.valueholder.Sample_TestAnalyte;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
@@ -56,6 +43,11 @@ import us.mn.state.health.lims.sampleitem.daoimpl.SampleItemDAOImpl;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
 import us.mn.state.health.lims.test.valueholder.TestComparator;
 import us.mn.state.health.lims.test.valueholder.TestSectionComparator;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.*;
 
 /**
  * @author diane benz
@@ -131,8 +123,6 @@ public class BatchResultsVerificationUpdateAction extends BaseAction {
 		UserSessionData usd = (UserSessionData)request.getSession().getAttribute(USER_SESSION_DATA);
 		String sysUserId = String.valueOf(usd.getSystemUserId());
 
-		org.hibernate.Transaction tx = HibernateUtil.getSession()
-				.beginTransaction();
 
 		Sample sample = null;
 		Analysis analysis = null;
@@ -227,12 +217,10 @@ public class BatchResultsVerificationUpdateAction extends BaseAction {
 					}
 				}
 
-				tx.commit();
-
 			} catch (LIMSRuntimeException lre) {
     			//bugzilla 2154
 			    LogEvent.logError("BatchResultsVerificationUpdateAction","performAction()",lre.toString());
-			    tx.rollback();
+                request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 				errors = new ActionMessages();
 				ActionError error = null;
 				if (lre.getException() instanceof org.hibernate.StaleObjectStateException) {
@@ -255,9 +243,6 @@ public class BatchResultsVerificationUpdateAction extends BaseAction {
 				} else {
 					forward = FWD_FAIL;
 				}
-
-			} finally {
-				HibernateUtil.closeSession();
 			}
 
 		} else {

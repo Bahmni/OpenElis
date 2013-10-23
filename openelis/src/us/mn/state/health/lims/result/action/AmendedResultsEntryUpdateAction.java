@@ -15,20 +15,9 @@
 */
 package us.mn.state.health.lims.result.action;
 
-import java.sql.Timestamp;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts.Globals;
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
-import org.apache.struts.action.ActionMessages;
-import org.apache.struts.action.ActionRedirect;
-
+import org.apache.struts.action.*;
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
@@ -39,12 +28,12 @@ import us.mn.state.health.lims.analysisqaeventaction.dao.AnalysisQaEventActionDA
 import us.mn.state.health.lims.analysisqaeventaction.daoimpl.AnalysisQaEventActionDAOImpl;
 import us.mn.state.health.lims.analysisqaeventaction.valueholder.AnalysisQaEventAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
 import us.mn.state.health.lims.note.dao.NoteDAO;
 import us.mn.state.health.lims.note.daoimpl.NoteDAOImpl;
@@ -57,6 +46,11 @@ import us.mn.state.health.lims.result.valueholder.Test_TestAnalyte;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
 import us.mn.state.health.lims.sample.valueholder.Sample;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.sql.Timestamp;
+import java.util.List;
 
 /**
  * @author diane benz 
@@ -100,9 +94,6 @@ public class AmendedResultsEntryUpdateAction extends ResultsEntryBaseAction {
 		// 1926 get sysUserId from login module
 		UserSessionData usd = (UserSessionData)request.getSession().getAttribute(USER_SESSION_DATA);
 		String sysUserId = String.valueOf(usd.getSystemUserId());
-		
-		org.hibernate.Transaction tx = HibernateUtil.getSession()
-				.beginTransaction();
 
 		if (!StringUtil.isNullorNill(amendedAnalysisId)) {
 
@@ -252,13 +243,10 @@ public class AmendedResultsEntryUpdateAction extends ResultsEntryBaseAction {
 				sample.setSysUserId(sysUserId);
 				sample.setStatus(SystemConfiguration.getInstance().getSampleStatusEntry2Complete());
 				sampleDAO.updateData(sample);
-
-
-				tx.commit();
 			} catch (LIMSRuntimeException lre) {
     			//bugzilla 2154
-                LogEvent.logError("AmendedResultsEntryUpdateAction","performAction()",lre.toString());	            
-				tx.rollback();
+                LogEvent.logError("AmendedResultsEntryUpdateAction","performAction()",lre.toString());
+                request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 
 				errors = new ActionMessages();
 				ActionError error = null;
@@ -275,9 +263,6 @@ public class AmendedResultsEntryUpdateAction extends ResultsEntryBaseAction {
 				request.setAttribute(Globals.ERROR_KEY, errors);
 
 				forward = FWD_FAIL;
-
-			} finally {
-				HibernateUtil.closeSession();
 			}
 
 		} else {

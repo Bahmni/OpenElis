@@ -38,6 +38,7 @@ import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.analyte.valueholder.Analyte;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSCannotDeleteDependentRecordExistsException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
@@ -210,9 +211,6 @@ public class ResultsEntryUpdateAction extends ResultsEntryBaseAction {
 				"org.apache.struts.action.LOCALE");
 
 		String dateAsText = DateUtil.formatDateAsText(today, locale);
-
-		org.hibernate.Transaction tx = HibernateUtil.getSession()
-				.beginTransaction();
 
 		if (!StringUtil.isNullorNill(accessionNumber)) {
 
@@ -635,8 +633,6 @@ public class ResultsEntryUpdateAction extends ResultsEntryBaseAction {
 					}
 				}
 
-				tx.commit();
-
 				// bugzilla 1703: introducing a confirmation message after
 				// updates and inserts have succeeded!
 				errors = new ActionMessages();
@@ -651,7 +647,7 @@ public class ResultsEntryUpdateAction extends ResultsEntryBaseAction {
 			} catch (LIMSRuntimeException lre) {
     			//bugzilla 2154
 			    LogEvent.logError("ResultsEntryUpdateAction","performAction()",lre.toString());
-				tx.rollback();
+                request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 
 				errors = new ActionMessages();
 				ActionError error = null;
@@ -679,9 +675,6 @@ public class ResultsEntryUpdateAction extends ResultsEntryBaseAction {
 				} else {
 					forward = FWD_FAIL;
 				}
-
-			} finally {
-				HibernateUtil.closeSession();
 			}
 
 		} 

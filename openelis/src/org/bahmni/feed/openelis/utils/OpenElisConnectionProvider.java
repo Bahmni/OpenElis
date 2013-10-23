@@ -14,6 +14,6 @@ public class OpenElisConnectionProvider implements JdbcConnectionProvider {
 
     @Override
     public void closeConnection(Connection connection) throws SQLException {
-        HibernateUtil.getSession().connection().close();
+        HibernateUtil.closeSession();
     }
 }

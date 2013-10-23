@@ -23,14 +23,13 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.bahmni.feed.openelis.feed.service.EventPublishers;
 import org.bahmni.feed.openelis.feed.service.impl.OpenElisUrlPublisher;
-import org.hibernate.Transaction;
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.util.DateUtil;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.note.dao.NoteDAO;
 import us.mn.state.health.lims.note.daoimpl.NoteDAOImpl;
 import us.mn.state.health.lims.note.valueholder.Note;
@@ -115,8 +114,6 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 			createUpdateList(resultItemList);
 		}
 
-		Transaction tx = HibernateUtil.getSession().beginTransaction();
-
 		try {
 			// update analysis
 			for (Analysis analysis : analysisUpdateList) {
@@ -147,10 +144,8 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 
             resultPublisher.publish(editedSamples, request.getContextPath());
 
-            tx.commit();
-
 		} catch (LIMSRuntimeException lre) {
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
             throw lre;
 		}
 

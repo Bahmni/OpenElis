@@ -23,6 +23,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
@@ -32,7 +33,6 @@ import us.mn.state.health.lims.common.util.validator.ActionError;
 import us.mn.state.health.lims.gender.dao.GenderDAO;
 import us.mn.state.health.lims.gender.daoimpl.GenderDAOImpl;
 import us.mn.state.health.lims.gender.valueholder.Gender;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
 
 import javax.servlet.http.HttpServletRequest;
@@ -90,7 +90,6 @@ public class GenderUpdateAction extends BaseAction {
 
 		Gender gender = new Gender();
 		gender.setSysUserId(sysUserId);
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();	
 		
 		// populate valueholder from form
 		PropertyUtils.copyProperties(gender, dynaForm);
@@ -105,11 +104,10 @@ public class GenderUpdateAction extends BaseAction {
 				// INSERT
 				genderDAO.insertData(gender);
 			}
-			tx.commit();
 		} catch (LIMSRuntimeException lre) {
             //bugzilla 2154
 			LogEvent.logError("GenderUpdateAction","performAction()",lre.toString());
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			errors = new ActionMessages();
 			//bugzilla 1482
 			java.util.Locale locale = (java.util.Locale) request.getSession()
@@ -144,9 +142,6 @@ public class GenderUpdateAction extends BaseAction {
 			request.setAttribute(PREVIOUS_DISABLED, "true");
 			request.setAttribute(NEXT_DISABLED, "true");
 			forward = FWD_FAIL;
-	
-		} finally {
-            HibernateUtil.closeSession();
         }
 		if (forward.equals(FWD_FAIL))
 			return mapping.findForward(forward);

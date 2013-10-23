@@ -1,18 +1,14 @@
 package us.mn.state.health.lims.healthcenter.action;
 
-import org.apache.struts.Globals;
 import org.apache.struts.action.*;
-import org.hibernate.StaleObjectStateException;
-import org.hibernate.Transaction;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
-import us.mn.state.health.lims.common.exception.LIMSInvalidSTNumberException;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.util.validator.ActionError;
 import us.mn.state.health.lims.healthcenter.dao.HealthCenterDAO;
 import us.mn.state.health.lims.healthcenter.daoimpl.HealthCenterDAOImpl;
 import us.mn.state.health.lims.healthcenter.valueholder.HealthCenter;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,15 +29,13 @@ public class HealthCenterCreateAction extends BaseAction {
     }
 
     private ActionForward performPost(ActionMapping mapping, BaseActionForm form, HttpServletRequest request) {
-        Transaction tx = HibernateUtil.getSession().beginTransaction();
         try {
             if(form.getString("name") == null || form.getString("name").isEmpty()){
                 return returnError("errors.emptyField"," health center name",mapping,request);
             }
             createHealthCenter(form.getString("name"), form.getString("description"));
-            tx.commit();
         }catch(LIMSRuntimeException ex){
-            tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
             return returnError("errors.HealthCenter.DuplicateRecord","Health Center",mapping,request);
         }
         return mapping.findForward("list");
@@ -53,7 +47,6 @@ public class HealthCenterCreateAction extends BaseAction {
         errorMessages.add(ActionMessages.GLOBAL_MESSAGE, error);
         saveErrors(request, errorMessages);
         request.setAttribute("currentAction","addNew");
-        HibernateUtil.closeSession();
         return mapping.findForward("fail");
     }
 

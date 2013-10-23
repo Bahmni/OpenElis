@@ -18,11 +18,10 @@ package us.mn.state.health.lims.typeofsample.action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.hibernate.Transaction;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSamplePanelDAO;
 import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSamplePanelDAOImpl;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSamplePanel;
@@ -69,21 +68,15 @@ public class TypeOfSamplePanelUpdateAction extends BaseAction {
 		samplePanel.setPanelId(panelId);
 		samplePanel.setTypeOfSampleId(typeOfSampleId);
 		samplePanel.setSysUserId(currentUserId);
-
-        Transaction tx = HibernateUtil.getSession().beginTransaction();
 		
 		TypeOfSamplePanelDAO samplePanelDAO = new TypeOfSamplePanelDAOImpl();
 		try{
 			samplePanelDAO.insertData(samplePanel);
-            tx.commit();
             forward = FWD_SUCCESS_INSERT;
         } catch (LIMSRuntimeException lre) {
             //bugzilla 2154
-            tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
             forward = FWD_FAIL;
-        }
-        finally {
-            HibernateUtil.closeSession();
         }
 
 

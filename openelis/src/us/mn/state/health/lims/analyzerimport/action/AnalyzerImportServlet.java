@@ -16,28 +16,27 @@
 */
 package us.mn.state.health.lims.analyzerimport.action;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.validator.GenericValidator;
-
 import us.mn.state.health.lims.analyzerimport.analyzerreaders.AnalyzerReader;
 import us.mn.state.health.lims.analyzerimport.analyzerreaders.AnalyzerReaderFactory;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.login.dao.LoginDAO;
 import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
 import us.mn.state.health.lims.login.valueholder.Login;
 import us.mn.state.health.lims.systemuser.dao.SystemUserDAO;
 import us.mn.state.health.lims.systemuser.daoimpl.SystemUserDAOImpl;
 import us.mn.state.health.lims.systemuser.valueholder.SystemUser;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class AnalyzerImportServlet extends HttpServlet {
 	
@@ -119,6 +118,7 @@ public class AnalyzerImportServlet extends HttpServlet {
 				response.setStatus(HttpServletResponse.SC_OK);
 				return;
 			}else{
+                request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 				response.getWriter().print(reader.getError());
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			}

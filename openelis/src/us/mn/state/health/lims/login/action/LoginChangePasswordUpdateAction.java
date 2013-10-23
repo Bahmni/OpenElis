@@ -15,27 +15,25 @@
  */
 package us.mn.state.health.lims.login.action;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.validator.GenericValidator;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
-
-import us.mn.state.health.lims.common.util.SystemConfiguration;
-import us.mn.state.health.lims.common.util.validator.ActionError;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.provider.validation.PasswordValidationFactory;
+import us.mn.state.health.lims.common.util.SystemConfiguration;
+import us.mn.state.health.lims.common.util.validator.ActionError;
 import us.mn.state.health.lims.login.dao.LoginDAO;
 import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
 import us.mn.state.health.lims.login.valueholder.Login;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
-import us.mn.state.health.lims.common.action.IActionConstants;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author Hung Nguyen (Hung.Nguyen@health.state.mn.us)
@@ -77,7 +75,6 @@ public class LoginChangePasswordUpdateAction extends LoginBaseAction {
 		}
 
 		Login login = new Login();
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
 		// populate valueholder from form
 		PropertyUtils.copyProperties(login, dynaForm);
 		LoginDAO loginDAO = new LoginDAOImpl();
@@ -86,7 +83,6 @@ public class LoginChangePasswordUpdateAction extends LoginBaseAction {
 			// get user infomation
 			Login loginInfo = loginDAO.getValidateLogin(login);
 			if (loginInfo == null) {
-				tx.rollback();
 				errors = new ActionMessages();
 				ActionError error = new ActionError("login.error.message", null, null);
 				errors.add(ActionMessages.GLOBAL_MESSAGE, error);
@@ -151,7 +147,6 @@ public class LoginChangePasswordUpdateAction extends LoginBaseAction {
 				loginInfo.setSysUserId(String.valueOf(loginInfo.getSystemUserId())); //there is no loggedin user when you reset your password
 				isSuccess = loginDAO.updatePassword(loginInfo);
 				if (isSuccess) {
-					tx.commit();
 					// successfully changed password
 					// force user to relogin with the new password
 					errors = new ActionMessages();
@@ -159,7 +154,7 @@ public class LoginChangePasswordUpdateAction extends LoginBaseAction {
 					errors.add(ActionMessages.GLOBAL_MESSAGE, error);
 					saveErrors(request, errors);
 				} else {
-					tx.rollback();
+                    request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 					errors = new ActionMessages();
 					ActionError error = new ActionError("login.error.password.requirement", null, null);
 					errors.add(ActionMessages.GLOBAL_MESSAGE, error);
@@ -171,14 +166,12 @@ public class LoginChangePasswordUpdateAction extends LoginBaseAction {
 		} catch (LIMSRuntimeException lre) {
 			// bugzilla 2154
 			LogEvent.logError("LoginChangePasswordUpdateAction", "performAction()", lre.toString());
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			errors = new ActionMessages();
 			ActionError error = new ActionError("login.error.message", null, null);
 			errors.add(ActionMessages.GLOBAL_MESSAGE, error);
 			saveErrors(request, errors);
 			return mapping.findForward(FWD_FAIL);
-		} finally {
-			HibernateUtil.closeSession();
 		}
 
 		return mapping.findForward(forward);

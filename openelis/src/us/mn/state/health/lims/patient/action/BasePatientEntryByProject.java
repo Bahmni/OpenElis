@@ -17,20 +17,14 @@
  */
 package us.mn.state.health.lims.patient.action;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.validator.GenericValidator;
 import org.apache.struts.Globals;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMessages;
-
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.validator.ActionError;
 import us.mn.state.health.lims.dictionary.ObservationHistoryList;
@@ -39,6 +33,11 @@ import us.mn.state.health.lims.patient.saving.Accessioner;
 import us.mn.state.health.lims.patient.saving.RequestType;
 import us.mn.state.health.lims.patient.util.PatientUtil;
 import us.mn.state.health.lims.patient.valueholder.ObservationData;
+
+import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Base class to share between setup actions and update actions for both entry and edit of patient.
@@ -101,6 +100,9 @@ public abstract class BasePatientEntryByProject extends BaseAction {
             if (errors.size() != 0) {
                 saveErrors(request, errors);
                 request.setAttribute(Globals.ERROR_KEY, errors);
+            }
+            if (forward.equals(IActionConstants.FWD_FAIL)) {
+                request.setAttribute(IActionConstants.REQUEST_FAILED, true);
             }
             return forward;
         }

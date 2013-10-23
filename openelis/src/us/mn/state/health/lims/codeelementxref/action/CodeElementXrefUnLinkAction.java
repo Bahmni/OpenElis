@@ -15,27 +15,21 @@
 */
 package us.mn.state.health.lims.codeelementxref.action;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.struts.Globals;
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
-import org.apache.struts.action.ActionMessages;
-import org.apache.struts.action.DynaActionForm;
-
+import org.apache.struts.action.*;
 import us.mn.state.health.lims.codeelementxref.dao.CodeElementXrefDAO;
 import us.mn.state.health.lims.codeelementxref.daoimpl.CodeElementXrefDAOImpl;
 import us.mn.state.health.lims.codeelementxref.valueholder.CodeElementXref;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author diane benz
@@ -90,17 +84,12 @@ public class CodeElementXrefUnLinkAction extends CodeElementXrefBaseAction {
 			codeElementXrefs.add(codeElementXref);
 		}
 
-		org.hibernate.Transaction tx = HibernateUtil.getSession()
-		.beginTransaction();
 		try {
-				// DELETE
-
 			codeElementXrefDAO.deleteData(codeElementXrefs);
-			tx.commit();
 		} catch (LIMSRuntimeException lre) {
 			//bugzilla 2154
 			LogEvent.logError("CodeElementXrefUnLinkAction","performAction()",lre.toString());
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			errors = new ActionMessages();
 			java.util.Locale locale = (java.util.Locale) request.getSession()
 					.getAttribute("org.apache.struts.action.LOCALE");
@@ -127,9 +116,6 @@ public class CodeElementXrefUnLinkAction extends CodeElementXrefBaseAction {
 			request.setAttribute(PREVIOUS_DISABLED, "true");
 			request.setAttribute(NEXT_DISABLED, "true");
 			forward = FWD_FAIL;
-
-		} finally {
-			HibernateUtil.closeSession();
 		}
 		return getForward(mapping.findForward(forward), selectedMessageOrganizationId, selectedCodeElementTypeId);
 	}

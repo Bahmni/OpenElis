@@ -15,28 +15,22 @@
 */
 package us.mn.state.health.lims.method.action;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.struts.Globals;
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
-import org.apache.struts.action.ActionMessages;
-import org.apache.struts.action.DynaActionForm;
-
+import org.apache.struts.action.*;
 import us.mn.state.health.lims.common.action.BaseAction;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
-import us.mn.state.health.lims.common.util.validator.ActionError;
 import us.mn.state.health.lims.common.log.LogEvent;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
+import us.mn.state.health.lims.common.util.validator.ActionError;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
 import us.mn.state.health.lims.method.dao.MethodDAO;
 import us.mn.state.health.lims.method.daoimpl.MethodDAOImpl;
 import us.mn.state.health.lims.method.valueholder.Method;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author diane benz
@@ -77,7 +71,6 @@ public class MethodDeleteAction extends BaseAction {
 			methods.add(method);
 		}
 
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
 		ActionMessages errors = null;
 		try {
 			// selectedIDs = (List)PropertyUtils.getProperty(dynaForm,
@@ -93,11 +86,10 @@ public class MethodDeleteAction extends BaseAction {
 			// PropertyUtils.setProperty(dynaForm, "methods", methods);
 	
 			// PropertyUtils.setProperty(dynaForm, "selectedIDs", selectedIDs);
-			tx.commit();
 		} catch (LIMSRuntimeException lre) {
             //bugzilla 2154
-			LogEvent.logError("MethodDeleteAction","performAction()",lre.toString());    		
-			tx.rollback();
+			LogEvent.logError("MethodDeleteAction","performAction()",lre.toString());
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			
 			errors = new ActionMessages();
 			ActionError error = null;
@@ -110,9 +102,6 @@ public class MethodDeleteAction extends BaseAction {
 			saveErrors(request, errors);
 			request.setAttribute(Globals.ERROR_KEY, errors);
 			forward = FWD_FAIL;
-						
-		}  finally {
-            HibernateUtil.closeSession();
         }	
 		if (forward.equals(FWD_FAIL))
 			return mapping.findForward(forward);

@@ -16,25 +16,16 @@
  */
 package us.mn.state.health.lims.dataexchange.resultreporting.action;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.validator.GenericValidator;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.DynaActionForm;
 import org.hibernate.HibernateException;
-import org.hibernate.Transaction;
-
 import us.mn.state.health.lims.common.action.BaseAction;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.util.ConfigurationProperties;
-import us.mn.state.health.lims.dataexchange.MalariaSurveilance.MalariaSurveilanceJob;
 import us.mn.state.health.lims.dataexchange.resultreporting.beans.ReportingConfiguration;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.scheduler.LateStartScheduler;
 import us.mn.state.health.lims.scheduler.dao.CronSchedulerDAO;
 import us.mn.state.health.lims.scheduler.daoimpl.CronSchedulerDAOImpl;
@@ -42,6 +33,11 @@ import us.mn.state.health.lims.scheduler.valueholder.CronScheduler;
 import us.mn.state.health.lims.siteinformation.dao.SiteInformationDAO;
 import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 import us.mn.state.health.lims.siteinformation.valueholder.SiteInformation;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ResultReportingConfigurationUpdateAction extends BaseAction {
 
@@ -74,7 +70,6 @@ public class ResultReportingConfigurationUpdateAction extends BaseAction {
 			}
 		}
 
-		Transaction tx = HibernateUtil.getSession().beginTransaction();
 
 		try {
 			for (SiteInformation info : informationList) {
@@ -85,10 +80,9 @@ public class ResultReportingConfigurationUpdateAction extends BaseAction {
 				schedulerDAO.update(scheduler);
 			}
 
-			tx.commit();
 			ConfigurationProperties.forceReload();
 		} catch (HibernateException e) {
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 		}
 
 		ConfigurationProperties.forceReload();

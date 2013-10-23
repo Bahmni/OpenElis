@@ -24,13 +24,13 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
 import us.mn.state.health.lims.statusofsample.dao.StatusOfSampleDAO;
 import us.mn.state.health.lims.statusofsample.daoimpl.StatusOfSampleDAOImpl;
@@ -101,7 +101,6 @@ public class StatusOfSampleUpdateAction extends BaseAction {
 		PropertyUtils.copyProperties(statusOfSample, dynaForm);
 
 		try {
-			tx = HibernateUtil.getSession().beginTransaction();
 			
 			StatusOfSampleDAO statusOfSampleDAO = new StatusOfSampleDAOImpl();
 
@@ -113,9 +112,6 @@ public class StatusOfSampleUpdateAction extends BaseAction {
 				statusOfSampleDAO.insertData(statusOfSample);
 				
 			}
-			
-			tx.commit();
-			
 			//bugzilla 2154
 			LogEvent.logDebug("StatusOfSampleUpdateAction","performAction()","Inserting statusOfSample id: " + 
 								statusOfSample.getId() + 
@@ -125,7 +121,7 @@ public class StatusOfSampleUpdateAction extends BaseAction {
 		} catch (LIMSRuntimeException lre) {
 			//bugzilla 2154
 			LogEvent.logError("StatusOfSampleUpdateAction","performAction()",lre.toString());
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			ActionError error = null;			
 			errors = new ActionMessages();
 			Locale locale = (Locale) request.getSession()
@@ -170,9 +166,6 @@ public class StatusOfSampleUpdateAction extends BaseAction {
 			                 statusOfSample.getCode() + " Status Type: " +
 			                 statusOfSample.getStatusType() + "\nException: " +
 			                 lre.toString());
-			
-		}finally {
-			HibernateUtil.closeSession();
 		}
 		
 		if (forward.equals(FWD_FAIL))

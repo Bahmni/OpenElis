@@ -181,8 +181,6 @@ public class NonConformityUpdateWorker {
 			updateArtifacts();
 		}
 
-		Transaction tx = HibernateUtil.getSession().beginTransaction();
-
 		try {
 			if (insertPatient) {
 				patientDAO.insertData(patient);
@@ -281,9 +279,7 @@ public class NonConformityUpdateWorker {
 				}
 			}
 
-			tx.commit();
 		} catch (LIMSRuntimeException lre) {
-			tx.rollback();
 
 			ActionError error = null;
 			if (lre.getException() instanceof StaleObjectStateException) {
@@ -297,9 +293,6 @@ public class NonConformityUpdateWorker {
 			errors.add(ActionMessages.GLOBAL_MESSAGE, error);
 
 			return IActionConstants.FWD_FAIL;
-
-		} finally {
-			HibernateUtil.closeSession();
 		}
 
 		return IActionConstants.FWD_SUCCESS;

@@ -1,23 +1,20 @@
 package us.mn.state.health.lims.patienttype.action;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.struts.Globals;
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
-import org.apache.struts.action.ActionMessages;
-import org.apache.struts.action.DynaActionForm;
+import org.apache.struts.action.*;
 import us.mn.state.health.lims.common.action.BaseAction;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.util.validator.ActionError;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
 import us.mn.state.health.lims.patienttype.dao.PatientTypeDAO;
 import us.mn.state.health.lims.patienttype.daoimpl.PatientTypeDAOImpl;
 import us.mn.state.health.lims.patienttype.valueholder.PatientType;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Project : LIS<br>
@@ -57,7 +54,6 @@ public class PatientTypeDeleteAction extends BaseAction {
 			patientTypes.add(patientType);
 		}
 
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();	
 		ActionMessages errors = null;
 		try {
 			
@@ -67,9 +63,8 @@ public class PatientTypeDeleteAction extends BaseAction {
 			System.out.println("Just deleted PatientType");
 
 			dynaForm.initialize(mapping);
-			tx.commit();
 		} catch (LIMSRuntimeException lre) {
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			
 			errors = new ActionMessages();
 			ActionError error = null;
@@ -82,9 +77,6 @@ public class PatientTypeDeleteAction extends BaseAction {
 			saveErrors(request, errors);
 			request.setAttribute(Globals.ERROR_KEY, errors);
 			forward = FWD_FAIL;
-			
-		}  finally {
-            HibernateUtil.closeSession();
         }							
 		if (forward.equals(FWD_FAIL))
 			return mapping.findForward(forward);

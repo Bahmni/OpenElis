@@ -17,28 +17,21 @@
  */
 package us.mn.state.health.lims.userrole.action;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.validator.GenericValidator;
 import org.apache.struts.Globals;
-import org.apache.struts.action.ActionErrors;
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
-import org.apache.struts.action.ActionMessages;
-import org.hibernate.Transaction;
-
+import org.apache.struts.action.*;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.userrole.dao.UserRoleDAO;
 import us.mn.state.health.lims.userrole.daoimpl.UserRoleDAOImpl;
 import us.mn.state.health.lims.userrole.valueholder.UserRole;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 public class UserRoleUpdateAction extends BaseAction {
 
@@ -82,8 +75,6 @@ public class UserRoleUpdateAction extends BaseAction {
 		UserRoleDAO usrRoleDAO = new UserRoleDAOImpl();
 		List<String> currentUserRoles = usrRoleDAO.getRoleIdsForUser(userId);
 
-		Transaction tx = HibernateUtil.getSession().beginTransaction();
-
 		try {
 			for (int i = 0; i < selectedRoles.length; i++) {
 				if (notDuplicate(currentUserRoles, selectedRoles[i])) {
@@ -96,7 +87,7 @@ public class UserRoleUpdateAction extends BaseAction {
 				}
 			}
 		} catch (LIMSRuntimeException lre) {
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 
 			ActionError error = null;
 			if (lre.getException() instanceof org.hibernate.StaleObjectStateException) {
@@ -109,11 +100,6 @@ public class UserRoleUpdateAction extends BaseAction {
 
 			disableNavigationButtons(request);
 			forward = FWD_FAIL;
-		} finally {
-			if (!tx.wasRolledBack()) {
-				tx.commit();
-			}
-			HibernateUtil.closeSession();
 		}
 
 		return forward;

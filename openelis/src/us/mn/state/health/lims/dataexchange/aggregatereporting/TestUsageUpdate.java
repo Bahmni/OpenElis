@@ -16,20 +16,12 @@
  */
 package us.mn.state.health.lims.dataexchange.aggregatereporting;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.hibernate.HibernateException;
 import org.hibernate.Transaction;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ContainerFactory;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.services.IResultSaveService;
@@ -44,6 +36,13 @@ import us.mn.state.health.lims.dataexchange.aggregatereporting.valueholder.Repor
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.result.action.util.ResultSet;
 import us.mn.state.health.lims.result.valueholder.Result;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TestUsageUpdate implements IResultUpdate {
 

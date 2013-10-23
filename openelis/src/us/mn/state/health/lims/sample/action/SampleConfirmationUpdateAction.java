@@ -25,7 +25,6 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.hibernate.Transaction;
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
@@ -35,7 +34,6 @@ import us.mn.state.health.lims.common.formfields.FormFields;
 import us.mn.state.health.lims.common.formfields.FormFields.Field;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.StringUtil;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.note.dao.NoteDAO;
 import us.mn.state.health.lims.note.daoimpl.NoteDAOImpl;
 import us.mn.state.health.lims.note.util.NoteUtil;
@@ -165,8 +163,6 @@ public class SampleConfirmationUpdateAction extends BaseSampleEntryAction {
 		createSampleItemSets(dynaForm);
 		createRequesters(dynaForm);
 
-		Transaction tx = HibernateUtil.getSession().beginTransaction();
-
 		try {
 			if (savePatient) {
 				patientUpdate.persistPatientData(patientInfo, request.getContextPath());
@@ -224,10 +220,8 @@ public class SampleConfirmationUpdateAction extends BaseSampleEntryAction {
 					persistInitialSampleConditions(sampleItemSet);
 				}
 			}
-
-			tx.commit();
 		} catch (Exception e) {
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 		}
 
 		return mapping.findForward(forward);

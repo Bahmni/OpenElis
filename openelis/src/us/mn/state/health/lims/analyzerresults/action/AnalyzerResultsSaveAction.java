@@ -17,26 +17,9 @@
  */
 package us.mn.state.health.lims.analyzerresults.action;
 
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.validator.GenericValidator;
 import org.apache.struts.Globals;
-import org.apache.struts.action.ActionErrors;
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
-import org.apache.struts.action.ActionMessages;
-import org.hibernate.Transaction;
-
+import org.apache.struts.action.*;
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
@@ -51,7 +34,6 @@ import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.note.dao.NoteDAO;
 import us.mn.state.health.lims.note.daoimpl.NoteDAOImpl;
 import us.mn.state.health.lims.note.valueholder.Note;
@@ -96,6 +78,11 @@ import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleTestDAOImpl;
 import us.mn.state.health.lims.typeofsample.util.TypeOfSampleUtil;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSample;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSampleTest;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.sql.Date;
+import java.util.*;
 
 public class AnalyzerResultsSaveAction extends BaseAction {
 
@@ -162,21 +149,18 @@ public class AnalyzerResultsSaveAction extends BaseAction {
 
 		createResultsFromItems(actionableResults);
 
-		Transaction tx = HibernateUtil.getSession().beginTransaction();
 
 		try {
 			removeHandledResultsFromAnalyzerResults(deletableAnalyzerResults);
 
 			boolean saveSuccess = insertResults(request);
 
-			if (saveSuccess) {
-				tx.commit();
-			} else {
-				tx.rollback();
-				return mapping.findForward(FWD_VALIDATION_ERROR);
-			}
-		} catch (LIMSRuntimeException lre) {
-			tx.rollback();
+            if (!saveSuccess) {
+                request.setAttribute(IActionConstants.REQUEST_FAILED, true);
+                return mapping.findForward(FWD_VALIDATION_ERROR);
+            }
+        } catch (LIMSRuntimeException lre) {
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			errors = new ActionErrors();
 			ActionError accessionError = new ActionError("errors.UpdateException");
 			errors.add(ActionErrors.GLOBAL_MESSAGE, accessionError);

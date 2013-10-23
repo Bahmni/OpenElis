@@ -15,19 +15,11 @@
 */
 package us.mn.state.health.lims.qaevent.action;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.struts.Globals;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
-
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
@@ -38,7 +30,6 @@ import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
 import us.mn.state.health.lims.note.dao.NoteDAO;
 import us.mn.state.health.lims.note.daoimpl.NoteDAOImpl;
@@ -49,6 +40,12 @@ import us.mn.state.health.lims.referencetables.valueholder.ReferenceTables;
 import us.mn.state.health.lims.systemuser.dao.SystemUserDAO;
 import us.mn.state.health.lims.systemuser.daoimpl.SystemUserDAOImpl;
 import us.mn.state.health.lims.systemuser.valueholder.SystemUser;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author diane benz
@@ -100,8 +97,6 @@ public class QaEventsEntryNotesUpdateAction extends BaseAction {
 		// get sysUserId from login module
 		UserSessionData usd = (UserSessionData)request.getSession().getAttribute(USER_SESSION_DATA);
 		String sysUserId = String.valueOf(usd.getSystemUserId());
-		org.hibernate.Transaction tx = HibernateUtil.getSession()
-				.beginTransaction();
 
 		try {
 
@@ -186,16 +181,13 @@ public class QaEventsEntryNotesUpdateAction extends BaseAction {
 					noteDAO.insertData(note);
 				}
 			}
-
-			tx.commit();
             
             //bugzilla 2501
 			return mapping.findForward(forward);
 
 		} catch (LIMSRuntimeException lre) {
     		//bugzilla 2154
-			LogEvent.logError("QaEventsEntryNotesUpdateAction","performAction()",lre.toString());			
-			tx.rollback();
+			LogEvent.logError("QaEventsEntryNotesUpdateAction","performAction()",lre.toString());
 			errors = new ActionMessages();
 			ActionError error = null;
 			if (lre.getException() instanceof org.hibernate.StaleObjectStateException) {
@@ -227,9 +219,6 @@ public class QaEventsEntryNotesUpdateAction extends BaseAction {
 
 			// default forward fail
 			forward = FWD_FAIL;
-
-		} finally {
-			HibernateUtil.closeSession();
 		}
 		if (forward.equals(FWD_FAIL) || forward.equals(FWD_FAIL_HUMAN) || forward.equals(FWD_FAIL_ANIMAL))
 			return mapping.findForward(forward);

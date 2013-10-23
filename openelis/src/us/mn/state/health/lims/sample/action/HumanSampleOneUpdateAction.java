@@ -26,13 +26,13 @@ import us.mn.state.health.lims.citystatezip.daoimpl.CityStateZipDAOImpl;
 import us.mn.state.health.lims.citystatezip.valueholder.CityStateZip;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.provider.validation.*;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
 import us.mn.state.health.lims.organization.dao.OrganizationDAO;
 import us.mn.state.health.lims.organization.daoimpl.OrganizationDAOImpl;
@@ -436,8 +436,6 @@ public class HumanSampleOneUpdateAction extends BaseAction {
 		sample.setDomain(SystemConfiguration.getInstance().getHumanDomain());
 		sample.setSampleProjects(sampleProjects);
 
-		org.hibernate.Transaction tx = HibernateUtil.getSession()
-				.beginTransaction();
 
 		try {
 
@@ -525,11 +523,10 @@ public class HumanSampleOneUpdateAction extends BaseAction {
 			// humanSampleOneDAO.insertData(patient, person, provider,
 			// providerPerson, sample, sampleHuman, sampleOrganization,
 			// sampleItem, analyses);
-			tx.commit();
 		} catch (LIMSRuntimeException lre) {
 			//bugzilla 2154
 		    LogEvent.logError("HumanSampleOneUpdateAction","performAction()",lre.toString());
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			errors = new ActionMessages();
 			ActionError error = null;
 			if (lre.getException() instanceof org.hibernate.StaleObjectStateException) {
@@ -547,9 +544,6 @@ public class HumanSampleOneUpdateAction extends BaseAction {
 			request.setAttribute(Globals.ERROR_KEY, errors);
 			request.setAttribute(ALLOW_EDITS_KEY, "false");
 			forward = FWD_FAIL;
-
-		} finally {
-			HibernateUtil.closeSession();
 		}
 		if (forward.equals(FWD_FAIL))
 			return mapping.findForward(forward);

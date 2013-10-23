@@ -175,11 +175,10 @@ public class HibernateUtil {
         try {
             Session s = (Session) threadSession.get();
             if (s != null && s.isOpen()) {
-                //bugzilla 2154
                 try {
                     Transaction transaction = s.getTransaction();
                     if (transaction != null && transaction.isActive()) {
-                        transaction.rollback();
+                        transaction.commit();
                     }
                 } catch (HibernateException e) {
                     logger.error(e, e);
@@ -189,7 +188,6 @@ public class HibernateUtil {
             }
             threadSession.remove();
         } catch (HibernateException ex) {
-            //bugzilla 2154
         	throw new LIMSRuntimeException("Error in closeSession()", ex);
         }
     }

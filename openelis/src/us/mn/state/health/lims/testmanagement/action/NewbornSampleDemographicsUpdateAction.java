@@ -15,53 +15,52 @@
 */
 package us.mn.state.health.lims.testmanagement.action;
 
-import java.util.Calendar;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.struts.Globals;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
-
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
+import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
+import us.mn.state.health.lims.organization.dao.OrganizationDAO;
+import us.mn.state.health.lims.organization.daoimpl.OrganizationDAOImpl;
+import us.mn.state.health.lims.organization.valueholder.Organization;
 import us.mn.state.health.lims.patient.dao.PatientDAO;
 import us.mn.state.health.lims.patient.daoimpl.PatientDAOImpl;
 import us.mn.state.health.lims.patient.valueholder.Patient;
+import us.mn.state.health.lims.patientrelation.dao.PatientRelationDAO;
+import us.mn.state.health.lims.patientrelation.daoimpl.PatientRelationDAOImpl;
+import us.mn.state.health.lims.patientrelation.valueholder.PatientRelation;
 import us.mn.state.health.lims.person.dao.PersonDAO;
 import us.mn.state.health.lims.person.daoimpl.PersonDAOImpl;
 import us.mn.state.health.lims.person.valueholder.Person;
+import us.mn.state.health.lims.provider.dao.ProviderDAO;
+import us.mn.state.health.lims.provider.daoimpl.ProviderDAOImpl;
+import us.mn.state.health.lims.provider.valueholder.Provider;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
 import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.samplehuman.dao.SampleHumanDAO;
 import us.mn.state.health.lims.samplehuman.daoimpl.SampleHumanDAOImpl;
 import us.mn.state.health.lims.samplehuman.valueholder.SampleHuman;
-import us.mn.state.health.lims.samplenewborn.valueholder.SampleNewborn;
 import us.mn.state.health.lims.samplenewborn.dao.SampleNewbornDAO;
 import us.mn.state.health.lims.samplenewborn.daoimpl.SampleNewbornDAOImpl;
+import us.mn.state.health.lims.samplenewborn.valueholder.SampleNewborn;
 import us.mn.state.health.lims.sampleorganization.dao.SampleOrganizationDAO;
 import us.mn.state.health.lims.sampleorganization.daoimpl.SampleOrganizationDAOImpl;
 import us.mn.state.health.lims.sampleorganization.valueholder.SampleOrganization;
-import us.mn.state.health.lims.provider.dao.ProviderDAO;
-import us.mn.state.health.lims.provider.daoimpl.ProviderDAOImpl;
-import us.mn.state.health.lims.provider.valueholder.Provider;
-import us.mn.state.health.lims.patientrelation.dao.PatientRelationDAO;
-import us.mn.state.health.lims.patientrelation.daoimpl.PatientRelationDAOImpl;
-import us.mn.state.health.lims.patientrelation.valueholder.PatientRelation;
-import us.mn.state.health.lims.organization.dao.OrganizationDAO;
-import us.mn.state.health.lims.organization.daoimpl.OrganizationDAOImpl;
-import us.mn.state.health.lims.organization.valueholder.Organization;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Calendar;
 
 public class NewbornSampleDemographicsUpdateAction extends BaseAction {
 
@@ -141,8 +140,6 @@ public class NewbornSampleDemographicsUpdateAction extends BaseAction {
 			java.text.SimpleDateFormat f = new java.text.SimpleDateFormat(format) ;
 			motherBirthDate = new java.sql.Timestamp(f.parse(motherBirthDateForDisplay).getTime());
 		}
-		
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
 		try {
 			//Sample
 			Sample sample = new Sample();
@@ -322,11 +319,9 @@ public class NewbornSampleDemographicsUpdateAction extends BaseAction {
 			sampleHuman.setProviderId(provider.getId());
 			sampleHuman.setSysUserId(sysUserId);
 			sampleHumanDAO.updateData(sampleHuman);
-
-			tx.commit();
 		} catch (LIMSRuntimeException lre) {
 		    LogEvent.logError("NewbornSampleFullUpdateAction","performAction()",lre.toString());
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			errors = new ActionMessages();
 			ActionError error = null;
 			if (lre.getException() instanceof org.hibernate.StaleObjectStateException) {
@@ -339,9 +334,6 @@ public class NewbornSampleDemographicsUpdateAction extends BaseAction {
 			request.setAttribute(Globals.ERROR_KEY, errors);
 			request.setAttribute(ALLOW_EDITS_KEY, "false");
 			forward = FWD_FAIL;
-
-		} finally {
-			HibernateUtil.closeSession();
 		}
 		if (forward.equals(FWD_FAIL))
 			return mapping.findForward(forward);

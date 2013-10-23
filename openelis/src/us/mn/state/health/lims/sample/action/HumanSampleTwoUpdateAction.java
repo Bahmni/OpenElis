@@ -44,6 +44,7 @@ import us.mn.state.health.lims.citystatezip.daoimpl.CityStateZipDAOImpl;
 import us.mn.state.health.lims.citystatezip.valueholder.CityStateZip;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.provider.validation.CityStateZipComboValidationProvider;
@@ -467,9 +468,7 @@ public class HumanSampleTwoUpdateAction extends BaseAction {
 
 		//get sysUserId from login module
 		UserSessionData usd = (UserSessionData)request.getSession().getAttribute(USER_SESSION_DATA);
-		String sysUserId = String.valueOf(usd.getSystemUserId());			
-		
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
+		String sysUserId = String.valueOf(usd.getSystemUserId());
 
 		List newIds = new ArrayList();
 		List oldIds = new ArrayList();
@@ -727,8 +726,7 @@ public class HumanSampleTwoUpdateAction extends BaseAction {
 			}
             
 			sampleDAO.updateData(sample);
-			
-			tx.commit();
+
 			// done updating return to menu
 			blankscreen = "false";
 			forward = FWD_CLOSE;
@@ -736,7 +734,7 @@ public class HumanSampleTwoUpdateAction extends BaseAction {
 		} catch (LIMSRuntimeException lre) {
             //bugzilla 2154
 			LogEvent.logError("HumanSampleTwoUpdateAction","performAction()",lre.toString());
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			// if error then forward to fail and don't update to blank page
 			// = false
 			errors = new ActionMessages();
@@ -756,9 +754,6 @@ public class HumanSampleTwoUpdateAction extends BaseAction {
 			request.setAttribute(Globals.ERROR_KEY, errors);
 			request.setAttribute(ALLOW_EDITS_KEY, "false");
 			forward = FWD_FAIL;
-
-		} finally {
-			HibernateUtil.closeSession();
 		}
 		if (forward.equals(FWD_FAIL))
 			return mapping.findForward(FWD_FAIL);

@@ -23,6 +23,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.StringUtil;
@@ -93,8 +94,7 @@ public class ProviderUpdateAction extends BaseAction {
 		//get sysUserId from login module
 		UserSessionData usd = (UserSessionData)request.getSession().getAttribute(USER_SESSION_DATA);
 		String sysUserId = String.valueOf(usd.getSystemUserId());	
-		provider.setSysUserId(sysUserId);				
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();	
+		provider.setSysUserId(sysUserId);
 		
 		String selectedPersonId = (String) dynaForm.get("selectedPersonId");
 		List persons = new ArrayList();
@@ -168,11 +168,10 @@ public class ProviderUpdateAction extends BaseAction {
 
 				providerDAO.insertData(provider);
 			}
-			tx.commit();
 		} catch (LIMSRuntimeException lre) {
     		//bugzilla 2154
-			LogEvent.logError("ProviderUpdateAction","performAction()",lre.toString());  
-			tx.rollback();
+			LogEvent.logError("ProviderUpdateAction","performAction()",lre.toString());
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			errors = new ActionMessages();
 			ActionError error = null;
 			if (lre.getException() instanceof org.hibernate.StaleObjectStateException) {
@@ -192,9 +191,6 @@ public class ProviderUpdateAction extends BaseAction {
 			request.setAttribute(PREVIOUS_DISABLED, "true");
 			request.setAttribute(NEXT_DISABLED, "true");
 			forward = FWD_FAIL;
-
-		} finally {
-            HibernateUtil.closeSession();
         }
 		if (forward.equals(FWD_FAIL))
 			return mapping.findForward(forward);

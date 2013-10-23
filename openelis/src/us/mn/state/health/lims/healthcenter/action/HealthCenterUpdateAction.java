@@ -2,13 +2,11 @@ package us.mn.state.health.lims.healthcenter.action;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts.action.*;
-import org.hibernate.Transaction;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
 import us.mn.state.health.lims.healthcenter.dao.HealthCenterDAO;
 import us.mn.state.health.lims.healthcenter.daoimpl.HealthCenterDAOImpl;
 import us.mn.state.health.lims.healthcenter.valueholder.HealthCenter;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,9 +41,7 @@ public class HealthCenterUpdateAction extends BaseAction {
         HealthCenter healthCenter = healthCenterDAO.getByName(request.getParameter("name"));
         if(healthCenter != null) {
             PropertyUtils.copyProperties(healthCenter, form);
-            Transaction tx = HibernateUtil.getSession().beginTransaction();
             healthCenterDAO.update(healthCenter);
-            tx.commit();
         }
     }
 

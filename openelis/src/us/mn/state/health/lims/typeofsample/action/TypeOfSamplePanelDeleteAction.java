@@ -15,23 +15,18 @@
 */
 package us.mn.state.health.lims.typeofsample.action;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.struts.Globals;
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
-import org.apache.struts.action.ActionMessages;
-import org.apache.struts.action.DynaActionForm;
-
+import org.apache.struts.action.*;
 import us.mn.state.health.lims.common.action.BaseAction;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSamplePanelDAO;
 import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSamplePanelDAOImpl;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author diane benz
@@ -53,17 +48,14 @@ public class TypeOfSamplePanelDeleteAction extends BaseAction {
 		DynaActionForm dynaForm = (DynaActionForm) form;
 	
 		String[] selectedIDs = (String[])dynaForm.get("selectedIDs");
-				
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
 		ActionMessages errors = null;	
 		try {
 			TypeOfSamplePanelDAO typeOfSamplePanelDAO = new TypeOfSamplePanelDAOImpl();
 			typeOfSamplePanelDAO.deleteData(selectedIDs, currentUserId);
 
-			tx.commit();
 		} catch (LIMSRuntimeException lre) {
 			LogEvent.logError("TypeOfSamplePanelDeleteAction","performAction()",lre.toString());
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			
 			errors = new ActionMessages();
 			ActionError error = null;
@@ -76,9 +68,6 @@ public class TypeOfSamplePanelDeleteAction extends BaseAction {
 			saveErrors(request, errors);
 			request.setAttribute(Globals.ERROR_KEY, errors);
 			forward = FWD_FAIL;
-						
-		}  finally {
-            HibernateUtil.closeSession();
         }							
 		if (forward.equals(FWD_FAIL))
 			return mapping.findForward(forward);

@@ -45,6 +45,7 @@ import us.mn.state.health.lims.analysisqaeventaction.daoimpl.AnalysisQaEventActi
 import us.mn.state.health.lims.analysisqaeventaction.valueholder.AnalysisQaEventAction;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
@@ -95,8 +96,6 @@ public class TestVerificationNewbornUpdateAction extends BaseAction {
 		Locale locale = (Locale) request.getSession().getAttribute(
 				"org.apache.struts.action.LOCALE");
 		String dateAsText = DateUtil.formatDateAsText(today, locale);
-
-		Transaction tx = HibernateUtil.getSession().beginTransaction();
 		try {
 
 			SampleDAO sampleDAO = new SampleDAOImpl();
@@ -461,12 +460,11 @@ public class TestVerificationNewbornUpdateAction extends BaseAction {
 					
 				}
 			}
-			tx.commit();
 
 		} catch (LIMSRuntimeException lre) {
     		//bugzilla 2154
 			LogEvent.logError("TestVerificationUpdateAction","performAction()",lre.toString());
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			ActionMessages errors = new ActionMessages();
 			ActionError error = null;
 			
@@ -494,9 +492,6 @@ public class TestVerificationNewbornUpdateAction extends BaseAction {
 			request.setAttribute(Globals.ERROR_KEY, errors);
 			request.setAttribute(ALLOW_EDITS_KEY, "false");
 			return mapping.findForward(FWD_FAIL);
-
-		} finally {
-			HibernateUtil.closeSession();
 		}
 		return getForward(mapping.findForward(forward));
 

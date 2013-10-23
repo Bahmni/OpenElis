@@ -17,31 +17,25 @@
 */
 package us.mn.state.health.lims.systemusermodule.action;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.struts.Globals;
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
-import org.apache.struts.action.ActionMessages;
-import org.apache.struts.action.DynaActionForm;
-
+import org.apache.struts.action.*;
 import us.mn.state.health.lims.common.action.BaseAction;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.systemusermodule.dao.PermissionAgentModuleDAO;
 import us.mn.state.health.lims.systemusermodule.daoimpl.RoleModuleDAOImpl;
 import us.mn.state.health.lims.systemusermodule.daoimpl.SystemUserModuleDAOImpl;
 import us.mn.state.health.lims.systemusermodule.valueholder.PermissionModule;
 import us.mn.state.health.lims.systemusermodule.valueholder.RoleModule;
 import us.mn.state.health.lims.systemusermodule.valueholder.SystemUserModule;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *  @author     Hung Nguyen (Hung.Nguyen@health.state.mn.us)
@@ -70,19 +64,16 @@ public class SystemUserModuleDeleteAction extends BaseAction {
 			permissionAgentModule.setSysUserId(sysUserId);
 			permissionAgentModules.add(permissionAgentModule);
 		}
-
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
 		ActionMessages errors = null;
 		try {
 			PermissionAgentModuleDAO permissionAgentModuleDAO = permisionAgentIsUser ? new SystemUserModuleDAOImpl() : new RoleModuleDAOImpl();
 			permissionAgentModuleDAO.deleteData(permissionAgentModules);
 			// initialize the form
 			dynaForm.initialize(mapping);
-			tx.commit();
 		} catch (LIMSRuntimeException lre) {
     		//bugzilla 2154
 			LogEvent.logError("SystemUserModuleDeleteAction","performAction()",lre.toString());
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			
 			errors = new ActionMessages();
 			ActionError error = null;
@@ -95,9 +86,6 @@ public class SystemUserModuleDeleteAction extends BaseAction {
 			saveErrors(request, errors);
 			request.setAttribute(Globals.ERROR_KEY, errors);
 			forward = FWD_FAIL;
-			
-		}  finally {
-            HibernateUtil.closeSession();
         }	
 		if (forward.equals(FWD_FAIL))
 			return mapping.findForward(forward);

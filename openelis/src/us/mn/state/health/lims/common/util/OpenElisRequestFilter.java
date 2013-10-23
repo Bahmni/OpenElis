@@ -18,6 +18,8 @@
 package us.mn.state.health.lims.common.util;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Transaction;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 
 import javax.servlet.*;
@@ -32,9 +34,18 @@ public class OpenElisRequestFilter implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
 		request.setCharacterEncoding("UTF8");
+        Transaction transaction = null;
         try {
+            transaction = HibernateUtil.getSession().beginTransaction();
             chain.doFilter(request, response);
+            Boolean hasFailed = (Boolean)request.getAttribute(IActionConstants.REQUEST_FAILED);
+            if (hasFailed == null || !hasFailed) {
+                commit(transaction);
+            } else {
+                rollback(transaction);
+            }
         } catch (Throwable t) {
+            rollback(transaction);
             logger.error("Exception in request ", t);
             throw t;
         } finally {
@@ -43,6 +54,18 @@ public class OpenElisRequestFilter implements Filter {
 
 	}
 
-	public void init(FilterConfig filterConfig) throws ServletException {
+    private void rollback(Transaction transaction) {
+        if (transaction.isActive()) {
+            transaction.rollback();
+        }
+    }
+
+    private void commit(Transaction transaction) {
+        if (transaction.isActive()) {
+            transaction.commit();
+        }
+    }
+
+    public void init(FilterConfig filterConfig) throws ServletException {
 	}
 }

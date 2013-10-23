@@ -15,25 +15,19 @@
 */
 package us.mn.state.health.lims.sample.action;
 
-import java.util.Calendar;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts.Globals;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
-
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
+import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.common.log.LogEvent;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
 import us.mn.state.health.lims.patient.dao.PatientDAO;
 import us.mn.state.health.lims.patient.daoimpl.PatientDAOImpl;
@@ -47,9 +41,13 @@ import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.samplehuman.dao.SampleHumanDAO;
 import us.mn.state.health.lims.samplehuman.daoimpl.SampleHumanDAOImpl;
 import us.mn.state.health.lims.samplehuman.valueholder.SampleHuman;
-import us.mn.state.health.lims.samplenewborn.valueholder.SampleNewborn;
 import us.mn.state.health.lims.samplenewborn.dao.SampleNewbornDAO;
 import us.mn.state.health.lims.samplenewborn.daoimpl.SampleNewbornDAOImpl;
+import us.mn.state.health.lims.samplenewborn.valueholder.SampleNewborn;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Calendar;
 
 public class NewbornSampleTwoUpdateAction extends BaseAction {
 
@@ -114,8 +112,6 @@ public class NewbornSampleTwoUpdateAction extends BaseAction {
 		PatientDAO patientDAO = new PatientDAOImpl();
 		SampleHumanDAO sampleHumanDAO = new SampleHumanDAOImpl();
 		SampleNewbornDAO sampleNewbornDAO = new SampleNewbornDAOImpl();
-		
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
 		try {
 			sample.setSysUserId(sysUserId);
 			sample.setAccessionNumber(accessionNumber);
@@ -146,11 +142,10 @@ public class NewbornSampleTwoUpdateAction extends BaseAction {
 			sampleNewborn.setSysUserId(sysUserId);
 			sampleNewborn.setWeight(birthWeight);
 			sampleNewbornDAO.updateData(sampleNewborn);
-			
-			tx.commit();
+
 		} catch (LIMSRuntimeException lre) {
 		    LogEvent.logError("NewbornSampleTwoUpdateAction","performAction()",lre.toString());
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			errors = new ActionMessages();
 			ActionError error = null;
 			if (lre.getException() instanceof org.hibernate.StaleObjectStateException) {
@@ -163,9 +158,6 @@ public class NewbornSampleTwoUpdateAction extends BaseAction {
 			request.setAttribute(Globals.ERROR_KEY, errors);
 			request.setAttribute(ALLOW_EDITS_KEY, "false");
 			forward = FWD_FAIL;
-
-		} finally {
-			HibernateUtil.closeSession();
 		}
 		if (forward.equals(FWD_FAIL))
 			return mapping.findForward(forward);
