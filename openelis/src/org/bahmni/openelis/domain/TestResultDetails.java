@@ -14,6 +14,7 @@ public class TestResultDetails {
     private String testName;
     private String testUnitOfMeasurement;
     private String testExternalId;
+    private String panelExternalId;
     private String resultId;
     private Double minNormal;
     private Double maxNormal;
@@ -146,5 +147,13 @@ public class TestResultDetails {
 
     public void setMaxNormal(Double maxNormal) {
         this.maxNormal = maxNormal;
+    }
+
+    public String getPanelExternalId() {
+        return panelExternalId;
+    }
+
+    public void setPanelExternalId(String panelExternalId) {
+        this.panelExternalId = panelExternalId;
     }
 }

@@ -1,9 +1,11 @@
 package org.bahmni.feed.openelis.feed.service.impl;
 
 import org.bahmni.feed.openelis.IT;
+import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import org.bahmni.openelis.domain.TestResultDetails;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.note.valueholder.Note;
+import us.mn.state.health.lims.panel.valueholder.Panel;
 import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.result.valueholder.Result;
 import us.mn.state.health.lims.resultlimits.valueholder.ResultLimit;
@@ -17,17 +19,9 @@ import us.mn.state.health.lims.testresult.valueholder.TestResult;
 import java.util.Date;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
-import static org.bahmni.openelis.builder.TestSetup.createResult;
-import static org.bahmni.openelis.builder.TestSetup.createResultLimit;
-import static org.bahmni.openelis.builder.TestSetup.createResultNote;
-import static org.bahmni.openelis.builder.TestSetup.createTest;
-import static org.bahmni.openelis.builder.TestSetup.createAnalysis;
-import static org.bahmni.openelis.builder.TestSetup.createPatient;
-import static org.bahmni.openelis.builder.TestSetup.createSample;
-import static org.bahmni.openelis.builder.TestSetup.createSampleHuman;
-import static org.bahmni.openelis.builder.TestSetup.createSampleItem;
-import static org.bahmni.openelis.builder.TestSetup.createTestResult;
+import static org.bahmni.openelis.builder.TestSetup.*;
 
 public class TestResultServiceIT extends IT {
 
@@ -41,13 +35,16 @@ public class TestResultServiceIT extends IT {
         String resultValue = "10000";
         Date today = new Date();
 
-        Patient patient = createPatient(firstName, lastName, "GAN123");
+        Patient patient = createPatient(firstName, lastName, "GAN9897889009");
         Sample sample = createSample(accessionNumber, today);
         SampleHuman sampleHuman = createSampleHuman(sample, patient);
         SampleItem sampleItem = createSampleItem(sample);
         Test test = createTest(testName, unitOfMeasureName);
+        Panel panel = createPanel("Test Blood Panel", test);
+        ExternalReference testExternalReference = createExternalReference(test.getId(), "Test");
+        ExternalReference panelExternalReference = createExternalReference(panel.getId(), "Panel");
         ResultLimit resultLimit = createResultLimit(test, 100.0, 200.0, 10.0, 1000.0, null, null, null);
-        Analysis analysis = createAnalysis(sampleItem, StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance, "New", test);
+        Analysis analysis = createAnalysis(sampleItem, StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance, "New", test, panel);
         Result result = createResult(analysis, resultValue, resultLimit);
         createResultNote(result, "Some note 1");
         createResultNote(result, "Some note 2");
@@ -64,6 +61,8 @@ public class TestResultServiceIT extends IT {
         assertEquals(lastName, testResultDetails.getPatientLastName());
         assertEquals(unitOfMeasureName, testResultDetails.getTestUnitOfMeasurement());
         assertEquals(result.getId(), testResultDetails.getResultId());
+        assertEquals(testExternalReference.getExternalId(), testResultDetails.getTestExternalId());
+        assertEquals(panelExternalReference.getExternalId(), testResultDetails.getPanelExternalId());
         assertEquals("A", testResultDetails.getAlerts());
 
         assertTrue(testResultDetails.getNotes().contains("Some note 1"));
@@ -79,7 +78,7 @@ public class TestResultServiceIT extends IT {
         String unitOfMeasureName = "cumm";
         Date today = new Date();
 
-        Patient patient = createPatient(firstName, lastName, "GAN123");
+        Patient patient = createPatient(firstName, lastName, "GAN1290898903");
         Sample sample = createSample(accessionNumber, today);
         SampleHuman sampleHuman = createSampleHuman(sample, patient);
         SampleItem sampleItem = createSampleItem(sample);
@@ -96,5 +95,6 @@ public class TestResultServiceIT extends IT {
         assertEquals(testName, testResultDetails.getTestName());
         assertEquals(result.getId(), testResultDetails.getResultId());
         assertEquals("Value2", testResultDetails.getResult());
+        assertNull(testResultDetails.getPanelExternalId());
     }
 }

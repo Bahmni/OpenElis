@@ -1,16 +1,23 @@
 package org.bahmni.openelis.builder;
 
+import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoImpl;
+import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.analyte.daoimpl.AnalyteDAOImpl;
 import us.mn.state.health.lims.analyte.valueholder.Analyte;
 import us.mn.state.health.lims.common.action.IActionConstants;
+import us.mn.state.health.lims.common.provider.query.SampleEntryTestsForTypeProvider;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
 import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
 import us.mn.state.health.lims.note.daoimpl.NoteDAOImpl;
 import us.mn.state.health.lims.note.util.NoteUtil;
 import us.mn.state.health.lims.note.valueholder.Note;
+import us.mn.state.health.lims.panel.daoimpl.PanelDAOImpl;
+import us.mn.state.health.lims.panel.valueholder.Panel;
+import us.mn.state.health.lims.panelitem.daoimpl.PanelItemDAOImpl;
+import us.mn.state.health.lims.panelitem.valueholder.PanelItem;
 import us.mn.state.health.lims.patient.daoimpl.PatientDAOImpl;
 import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.patientidentity.daoimpl.PatientIdentityDAOImpl;
@@ -63,6 +70,10 @@ public class TestSetup {
     }
 
     public static Analysis createAnalysis(SampleItem sampleItem, StatusOfSampleUtil.AnalysisStatus analysisStatus, String testSectionName, Test test) {
+        return createAnalysis(sampleItem, analysisStatus, testSectionName, test, null);
+    }
+
+    public static Analysis createAnalysis(SampleItem sampleItem, StatusOfSampleUtil.AnalysisStatus analysisStatus, String testSectionName, Test test, Panel panel) {
         TestSectionDAO testSectionDAO = new TestSectionDAOImpl();
         TestSection testSection = testSectionDAO.getTestSectionByName(testSectionName);
         Analysis analysis = new Analysis();
@@ -73,6 +84,7 @@ public class TestSetup {
         analysis.setSysUserId("1");
         analysis.setTestSection(testSection);
         analysis.setLastupdated(sampleItem.getSample().getLastupdated());
+        analysis.setPanel(panel);
         new AnalysisDAOImpl().insertData(analysis, false);
         return analysis;
     }
@@ -121,6 +133,33 @@ public class TestSetup {
         test.setUnitOfMeasure(getUnitOfMeasure(unitOfMeasureName));
         new TestDAOImpl().insertData(test);
         return test;
+    }
+
+    public static Panel createPanel(String panelName, Test test) {
+        Panel panel = new Panel();
+        panel.setSysUserId("1");
+        panel.setPanelName(panelName);
+        panel.setDescription(panelName);
+        new PanelDAOImpl().insertData(panel);
+
+        PanelItem panelItem = new PanelItem();
+        panelItem.setPanel(panel);
+        panelItem.setPanelName(panelName);
+        panelItem.setTest(test);
+        panelItem.setTestName(test.getTestName());
+        panelItem.setSysUserId("1");
+        new PanelItemDAOImpl().insertData(panelItem);
+
+        return panel;
+    }
+
+    public static ExternalReference createExternalReference(String itemId, String type) {
+        ExternalReference externalReference = new ExternalReference();
+        externalReference.setItemId(Integer.parseInt(itemId));
+        externalReference.setExternalId(UUID.randomUUID().toString());
+        externalReference.setType(type);
+        new ExternalReferenceDaoImpl().insertData(externalReference);
+        return externalReference;
     }
 
     public static ResultLimit createResultLimit(Test test, Double lowNormal, Double highNormal, Double lowValid, Double highValid, String gender, Double minAge, Double maxAge) {

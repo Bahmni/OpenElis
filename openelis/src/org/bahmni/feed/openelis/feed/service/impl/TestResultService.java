@@ -73,7 +73,8 @@ public class TestResultService {
                 "    person.last_name as patientLastName,\n" +
                 "    test.name as testName,\n" +
                 "    unit_of_measure.name as testUnitOfMeasurement,\n" +
-                "    external_reference.external_id as testExternalId, \n" +
+                "    exref_test.external_id as testExternalId, \n" +
+                "    exref_panel.external_id as panelExternalId, \n" +
                 "    result.id as resultId,\n" +
                 "    result.value as result,\n" +
                 "    result.result_type as resultType,\n" +
@@ -86,12 +87,14 @@ public class TestResultService {
                 "left join analysis on analysis.id = result.analysis_id\n" +
                 "left join sample_item on sample_item.id = analysis.sampitem_id\n" +
                 "left join test on test.id = analysis.test_id\n" +
+                "left join panel on panel.id = analysis.panel_id\n" +
                 "left join sample on sample.id = sample_item.samp_id\n" +
                 "left join unit_of_measure on unit_of_measure.id = test.uom_id\n" +
                 "left join sample_human on sample_human.samp_id = sample.id\n" +
                 "left join patient on patient.id = sample_human.patient_id\n" +
                 "left join person on person.id = patient.person_id\n" +
-                "left join external_reference on external_reference.item_id = test.id and external_reference.type='Test'" +
+                "left join external_reference exref_test on exref_test.item_id = test.id and exref_test.type='Test'\n" +
+                "left join external_reference exref_panel on exref_panel.item_id = panel.id and exref_panel.type='Panel'\n" +
                 "where result.id = " + resultId + ";\n";
     }
 
@@ -120,6 +123,7 @@ public class TestResultService {
             testResultDetails.setPatientLastName(resultSet.getString("patientLastName"));
             testResultDetails.setTestUnitOfMeasurement(resultSet.getString("testUnitOfMeasurement"));
             testResultDetails.setTestExternalId(resultSet.getString("testExternalId"));
+            testResultDetails.setPanelExternalId(resultSet.getString("panelExternalId"));
             testResultDetails.setResultId(resultSet.getString("resultId"));
             testResultDetails.setResultType(resultSet.getString("resultType"));
             testResultDetails.setMinNormal(resultSet.getDouble("minNormal"));
