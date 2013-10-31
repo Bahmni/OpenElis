@@ -23,13 +23,13 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
 import us.mn.state.health.lims.scriptlet.dao.ScriptletDAO;
 import us.mn.state.health.lims.scriptlet.daoimpl.ScriptletDAOImpl;
@@ -88,8 +88,7 @@ public class ScriptletUpdateAction extends BaseAction {
 		//get sysUserId from login module
 		UserSessionData usd = (UserSessionData)request.getSession().getAttribute(USER_SESSION_DATA);
 		String sysUserId = String.valueOf(usd.getSystemUserId());	
-		scriptlet.setSysUserId(sysUserId);		
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
+		scriptlet.setSysUserId(sysUserId);
 		
 		// populate valueholder from form
 		PropertyUtils.copyProperties(scriptlet, dynaForm);
@@ -106,11 +105,10 @@ public class ScriptletUpdateAction extends BaseAction {
 				// INSERT
 				scriptletDAO.insertData(scriptlet);
 			}
-			tx.commit();
 		} catch (LIMSRuntimeException lre) {
     		//bugzilla 2154
-			LogEvent.logError("ScriptletUpdateAction","performAction()",lre.toString());	
-			tx.rollback();
+			LogEvent.logError("ScriptletUpdateAction","performAction()",lre.toString());
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			errors = new ActionMessages();
 			java.util.Locale locale = (java.util.Locale) request.getSession()
 			.getAttribute("org.apache.struts.action.LOCALE");
@@ -145,9 +143,6 @@ public class ScriptletUpdateAction extends BaseAction {
 			request.setAttribute(PREVIOUS_DISABLED, "true");
 			request.setAttribute(NEXT_DISABLED, "true");
 			forward = FWD_FAIL;
-
-		} finally {
-            HibernateUtil.closeSession();
         }
 		if (forward.equals(FWD_FAIL))
 			return mapping.findForward(forward);

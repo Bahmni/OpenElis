@@ -290,7 +290,6 @@ public abstract class Accessioner {
 	 * @throws Exception
 	 */
 	public String save() throws Exception {
-		Transaction tx = null;
 		try {
 			if (!canAccession()) {
 				return null;
@@ -312,7 +311,6 @@ public abstract class Accessioner {
 			populateSampleHuman();
 			populateObservationHistory();
 
-			tx = HibernateUtil.getSession().beginTransaction();
 			// all of the following methods are assumed to only write when
 			// necessary
 			persistPatient();
@@ -327,16 +325,10 @@ public abstract class Accessioner {
 			persistRecordStatus();
 			deleteOldPatient();
 			populateAndPersistUnderInvestigationNote();
-			tx.commit();
 			return IActionConstants.FWD_SUCCESS;
 		} catch (Exception e) {
-			if (null != tx) {
-				tx.rollback();
-			}
 			logAndAddMessage("save()", "errors.InsertException", e);
 			return IActionConstants.FWD_FAIL;
-		} finally {
-			HibernateUtil.closeSession();
 		}
 	}
 

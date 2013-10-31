@@ -17,13 +17,6 @@
 */
 package us.mn.state.health.lims.inventory.action;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -32,10 +25,9 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.hibernate.Transaction;
-
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.DateUtil;
@@ -44,7 +36,6 @@ import us.mn.state.health.lims.common.util.validator.ActionError;
 import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
 import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
 import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.inventory.dao.InventoryItemDAO;
 import us.mn.state.health.lims.inventory.dao.InventoryLocationDAO;
 import us.mn.state.health.lims.inventory.dao.InventoryReceiptDAO;
@@ -64,6 +55,12 @@ import us.mn.state.health.lims.scriptlet.valueholder.Scriptlet;
 import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 import us.mn.state.health.lims.test.valueholder.Test;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class InventoryUpdateAction extends BaseAction {
 
@@ -101,8 +98,7 @@ public class InventoryUpdateAction extends BaseAction {
 
 		InventoryLocationDAO locationDAO = new InventoryLocationDAOImpl();
 		InventoryReceiptDAO receiptDAO = new InventoryReceiptDAOImpl();
-		
-		Transaction tx = HibernateUtil.getSession().beginTransaction();
+
 		try {
 			for( InventorySet inventory : modifiedInventory){
 				itemDAO.updateData(inventory.getItem());
@@ -123,10 +119,9 @@ public class InventoryUpdateAction extends BaseAction {
 				locationDAO.insertData(inventory.getLocation());
 				receiptDAO.insertData(inventory.getReceipt());
 			}
-			
-			tx.commit();
+
 		} catch (LIMSRuntimeException lre) {
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			forward = FWD_FAIL;
 		}
 

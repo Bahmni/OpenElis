@@ -30,7 +30,6 @@ import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.dao.UserTestSectionDAO;
 import us.mn.state.health.lims.login.daoimpl.UserTestSectionDAOImpl;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
@@ -91,7 +90,6 @@ public class SystemUserSectionUpdateAction extends BaseAction {
 
 		SystemUserSection systemUserSection = new SystemUserSection();
 		systemUserSection.setSysUserId(sysUserId);
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();	
 		
 		// populate valueholder from form
 		PropertyUtils.copyProperties(systemUserSection, dynaForm);
@@ -147,11 +145,10 @@ public class SystemUserSectionUpdateAction extends BaseAction {
 				// INSERT
 				systemUserSectionDAO.insertData(systemUserSection);
 			}
-			tx.commit();
 		} catch (LIMSRuntimeException lre) {
     		//bugzilla 2154
 			LogEvent.logError("SystemUserSectionUpdateAction","performAction()",lre.toString());
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			errors = new ActionMessages();
 			java.util.Locale locale = (java.util.Locale) request.getSession()
 			.getAttribute("org.apache.struts.action.LOCALE");
@@ -178,9 +175,6 @@ public class SystemUserSectionUpdateAction extends BaseAction {
 			request.setAttribute(PREVIOUS_DISABLED, "true");
 			request.setAttribute(NEXT_DISABLED, "true");
 			forward = FWD_FAIL;
-	
-		} finally {
-            HibernateUtil.closeSession();
         }
 		if (forward.equals(FWD_FAIL))
 			return mapping.findForward(forward);

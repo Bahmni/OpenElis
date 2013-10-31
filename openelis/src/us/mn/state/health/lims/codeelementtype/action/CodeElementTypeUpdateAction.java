@@ -26,13 +26,13 @@ import us.mn.state.health.lims.codeelementtype.daoimpl.CodeElementTypeDAOImpl;
 import us.mn.state.health.lims.codeelementtype.valueholder.CodeElementType;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
 import us.mn.state.health.lims.referencetables.dao.ReferenceTablesDAO;
 import us.mn.state.health.lims.referencetables.daoimpl.ReferenceTablesDAOImpl;
@@ -97,8 +97,7 @@ public class CodeElementTypeUpdateAction extends BaseAction {
 		//get sysUserId from login module
 		UserSessionData usd = (UserSessionData)request.getSession().getAttribute(USER_SESSION_DATA);
 		String sysUserId = String.valueOf(usd.getSystemUserId());	
-		codeElementType.setSysUserId(sysUserId);			
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
+		codeElementType.setSysUserId(sysUserId);
 
 		
 		String referenceTableId = (String) dynaForm.get("referenceTableId");
@@ -145,11 +144,10 @@ public class CodeElementTypeUpdateAction extends BaseAction {
 
 				codeElementTypeDAO.insertData(codeElementType);
 			}
-			tx.commit();
 		} catch (LIMSRuntimeException lre) {
 			//bugzilla 2154
-			LogEvent.logError("CodeElementTypeUpdateAction","performAction()",lre.toString());		
-			tx.rollback();
+			LogEvent.logError("CodeElementTypeUpdateAction","performAction()",lre.toString());
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			errors = new ActionMessages();
 			java.util.Locale locale = (java.util.Locale) request.getSession()
 			.getAttribute("org.apache.struts.action.LOCALE");
@@ -186,9 +184,6 @@ public class CodeElementTypeUpdateAction extends BaseAction {
 			request.setAttribute(PREVIOUS_DISABLED, "true");
 			request.setAttribute(NEXT_DISABLED, "true");
 			forward = FWD_FAIL;
-			
-		} finally {
-            HibernateUtil.closeSession();
         }
 		if (forward.equals(FWD_FAIL))
 			return mapping.findForward(forward);

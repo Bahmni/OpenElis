@@ -30,6 +30,7 @@ import us.mn.state.health.lims.address.valueholder.AddressPart;
 import us.mn.state.health.lims.address.valueholder.OrganizationAddress;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSInvalidSTNumberException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
@@ -237,8 +238,6 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 			return mapping.findForward(FWD_FAIL);
 		}
 
-		Transaction tx = HibernateUtil.getSession().beginTransaction();
-
 		try {
             patientId = patientUpdate.getPatientId(dynaForm);
             if (savePatient) {
@@ -251,26 +250,22 @@ public class SamplePatientEntrySaveAction extends BaseAction {
                     projectId, providerId, currentUserId,
                     PROVIDER_REQUESTER_TYPE_ID, REFERRING_ORG_TYPE_ID);
 
-			tx.commit();
-
 		} catch (LIMSInvalidSTNumberException e) {
-            tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
             return addErrorMessageAndForward(mapping, request, new ActionError("errors.InvalidStNumber", null, null));
         } catch (LIMSValidationException e) {
-            tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
             return addErrorMessageAndForward(mapping, request, new ActionError(e.getMessage(), null, null));
         } catch (LIMSDuplicateRecordException e){
-            tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
             return addErrorMessageAndForward(mapping, request, new ActionError("errors.duplicate.STNumber", null, null));
         }catch (LIMSRuntimeException lre) {
-            tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
             if (lre.getException() instanceof StaleObjectStateException) {
                 return addErrorMessageAndForward(mapping, request, new ActionError("errors.OptimisticLockException", null, null));
             } else {
                 return addErrorMessageAndForward(mapping, request, new ActionError("errors.UpdateException", null, null));
             }
-        }  finally {
-			HibernateUtil.closeSession();
 		}
 
 		setSuccessFlag(request, forward);

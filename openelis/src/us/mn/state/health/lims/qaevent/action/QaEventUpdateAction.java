@@ -23,6 +23,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
@@ -33,7 +34,6 @@ import us.mn.state.health.lims.common.util.validator.ActionError;
 import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
 import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
 import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.dao.UserTestSectionDAO;
 import us.mn.state.health.lims.login.daoimpl.UserTestSectionDAOImpl;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
@@ -97,8 +97,6 @@ public class QaEventUpdateAction extends BaseAction {
 		UserSessionData usd = (UserSessionData)request.getSession().getAttribute(USER_SESSION_DATA);
 		String sysUserId = String.valueOf(usd.getSystemUserId());
 		qaEvent.setSysUserId(sysUserId);
-		org.hibernate.Transaction tx = HibernateUtil.getSession()
-				.beginTransaction();
 
 		// populate valueholder from form
 		PropertyUtils.copyProperties(qaEvent, dynaForm);
@@ -146,11 +144,10 @@ public class QaEventUpdateAction extends BaseAction {
 				// INSERT
 				qaEventDAO.insertData(qaEvent);
 			}
-			tx.commit();
 		} catch (LIMSRuntimeException lre) {
     		//bugzilla 2154
 			LogEvent.logError("QaEventUpdateAction","performAction()",lre.toString());
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			errors = new ActionMessages();
 			ActionError error = null;
 			if (lre.getException() instanceof org.hibernate.StaleObjectStateException) {
@@ -181,9 +178,6 @@ public class QaEventUpdateAction extends BaseAction {
 			request.setAttribute(PREVIOUS_DISABLED, "true");
 			request.setAttribute(NEXT_DISABLED, "true");
 			forward = FWD_FAIL;
-
-		} finally {
-			HibernateUtil.closeSession();
 		}
 		if (forward.equals(FWD_FAIL))
 			return mapping.findForward(forward);

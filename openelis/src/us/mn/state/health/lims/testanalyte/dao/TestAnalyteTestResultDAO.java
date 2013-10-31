@@ -15,11 +15,11 @@
 */
 package us.mn.state.health.lims.testanalyte.dao;
 
-import java.util.List;
-
 import us.mn.state.health.lims.common.dao.BaseDAO;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.test.valueholder.Test;
+
+import java.util.List;
 
 /**
  * @author diane benz
@@ -34,58 +34,13 @@ import us.mn.state.health.lims.test.valueholder.Test;
  */
 public interface TestAnalyteTestResultDAO extends BaseDAO {
 
-	/**
-	 * @param test
-	 * @param testAnalytes
-	 * @param testResults
-	 * @return
-	 * @throws LIMSRuntimeException
-	 */
-	public boolean insertData(Test test, List testAnalytes, List testResults)
-			throws LIMSRuntimeException;
-
-	/**
+    /**
 	 * @param startingRecNo
 	 * @param test
 	 * @return
 	 * @throws LIMSRuntimeException
 	 */
 	public List getPageOfTestAnalyteTestResults(int startingRecNo, Test test)
-			throws LIMSRuntimeException;
-
-	/**
-	 * @param test
-	 * @return
-	 * @throws LIMSRuntimeException
-	 */
-	public List getAllTestAnalyteTestResultsPerTest(Test test)
-			throws LIMSRuntimeException;
-
-	/**
-	 * @param test
-	 * @param oldTestAnalytes
-	 * @param oldTestResults
-	 * @param testAnalytes
-	 * @param testResults
-	 * @throws LIMSRuntimeException
-	 */
-	public void updateData(Test test, List oldTestAnalytes, List oldTestResults, List testAnalytes, List testResults)
-			throws LIMSRuntimeException;
-
-	/**
-	 * @param id
-	 * @return
-	 * @throws LIMSRuntimeException
-	 */
-	public List getNextTestAnalyteTestResultRecord(String id)
-			throws LIMSRuntimeException;
-
-	/**
-	 * @param id
-	 * @return
-	 * @throws LIMSRuntimeException
-	 */
-	public List getPreviousTestAnalyteTestResultRecord(String id)
 			throws LIMSRuntimeException;
 
 }

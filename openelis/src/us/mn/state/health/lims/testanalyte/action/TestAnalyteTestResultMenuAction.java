@@ -15,22 +15,15 @@
 */
 package us.mn.state.health.lims.testanalyte.action;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-
 import us.mn.state.health.lims.common.action.BaseActionForm;
 import us.mn.state.health.lims.common.action.BaseMenuAction;
+import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
-import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.login.dao.UserTestSectionDAO;
 import us.mn.state.health.lims.login.daoimpl.UserTestSectionDAOImpl;
 import us.mn.state.health.lims.method.dao.MethodDAO;
@@ -40,6 +33,11 @@ import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.testanalyte.dao.TestAnalyteTestResultDAO;
 import us.mn.state.health.lims.testanalyte.daoimpl.TestAnalyteTestResultDAOImpl;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author diane benz
@@ -148,27 +146,20 @@ public class TestAnalyteTestResultMenuAction extends BaseMenuAction {
 			HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 
- 		//System.out
-		//		.println("I am in AnalyteTestResultMenuAction createMenuList()");
-
 		List testAnalyteTestResults = new ArrayList();
 		BaseActionForm dynaForm = (BaseActionForm) form;
 		String selectedTestId = (String) dynaForm.get("selectedTestId");
-		//System.out.println("createmenulist " + selectedTestId);
 		if (!StringUtil.isNullorNill(selectedTestId)) {
 			request.setAttribute(ALLOW_EDITS_KEY, "true");
 			String stringStartingRecNo = (String) request
 					.getAttribute("startingRecNo");
 			int startingRecNo = Integer.parseInt(stringStartingRecNo);
 			TestAnalyteTestResultDAO testAnalyteTestResultDAO = new TestAnalyteTestResultDAOImpl();
-			//System.out.println("Going to get next page " + selectedTestId);
 			Test test = new Test();
 			test.setId(selectedTestId);
 			TestDAO testDAO = new TestDAOImpl();
 			testDAO.getData(test);
 
-			// testAnalyteTestResults =
-			// testAnalyteTestResultDAO.getAllTestAnalyteTestResultsPerTest(test);
 			testAnalyteTestResults = testAnalyteTestResultDAO
 					.getPageOfTestAnalyteTestResults(startingRecNo, test);
 

@@ -17,24 +17,12 @@
  */
 package us.mn.state.health.lims.analyzerresults.action;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.validator.GenericValidator;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.DynaActionForm;
-import org.hibernate.Transaction;
-
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
@@ -46,13 +34,13 @@ import us.mn.state.health.lims.analyzerresults.dao.AnalyzerResultsDAO;
 import us.mn.state.health.lims.analyzerresults.daoimpl.AnalyzerResultsDAOImpl;
 import us.mn.state.health.lims.analyzerresults.valueholder.AnalyzerResults;
 import us.mn.state.health.lims.common.action.BaseAction;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.services.QAService;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
 import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
 import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.result.dao.ResultDAO;
 import us.mn.state.health.lims.result.daoimpl.ResultDAOImpl;
 import us.mn.state.health.lims.result.valueholder.Result;
@@ -71,6 +59,10 @@ import us.mn.state.health.lims.testresult.valueholder.TestResult;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleTestDAO;
 import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleTestDAOImpl;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSampleTest;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
 public class AnalyzerResultsAction extends BaseAction {
 
@@ -121,7 +113,7 @@ public class AnalyzerResultsAction extends BaseAction {
 				 */
 				boolean missingTest = false;
 
-				resolveMissingTests(analyzerResultsList);
+				resolveMissingTests(analyzerResultsList, request);
 
 				List<List<AnalyzerResultItem>> accessionGroupedResultsList = groupAnalyzerResults(analyzerResultsList);
 
@@ -223,7 +215,7 @@ public class AnalyzerResultsAction extends BaseAction {
 		return accessionGroupedResultsList;
 	}
 
-	private void resolveMissingTests(List<AnalyzerResults> analyzerResultsList) {
+	private void resolveMissingTests(List<AnalyzerResults> analyzerResultsList, HttpServletRequest request) {
 		boolean reloadCache = true;
 		List<AnalyzerResults> resolvedResults = new ArrayList<AnalyzerResults>();
 
@@ -245,19 +237,14 @@ public class AnalyzerResultsAction extends BaseAction {
 		}
 
 		if (resolvedResults.size() > 0) {
-			Transaction tx = HibernateUtil.getSession().beginTransaction();
 
 			try {
 				for (AnalyzerResults analyzerResult : resolvedResults) {
 					analyzerResult.setSysUserId(currentUserId);
 					analyzerResultsDAO.updateData(analyzerResult);
 				}
-
-				tx.commit();
 			} catch (LIMSRuntimeException lre) {
-				tx.rollback();
-			} finally {
-				HibernateUtil.closeSession();
+                request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			}
 
 		}

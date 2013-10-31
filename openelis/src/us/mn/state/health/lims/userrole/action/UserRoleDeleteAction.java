@@ -17,29 +17,20 @@
 */
 package us.mn.state.health.lims.userrole.action;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.struts.Globals;
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
-import org.apache.struts.action.ActionMessages;
-import org.apache.struts.action.DynaActionForm;
-
+import org.apache.struts.action.*;
 import us.mn.state.health.lims.common.action.BaseAction;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
-import us.mn.state.health.lims.role.dao.RoleDAO;
-import us.mn.state.health.lims.role.daoimpl.RoleDAOImpl;
-import us.mn.state.health.lims.role.valueholder.Role;
 import us.mn.state.health.lims.userrole.dao.UserRoleDAO;
 import us.mn.state.health.lims.userrole.daoimpl.UserRoleDAOImpl;
 import us.mn.state.health.lims.userrole.valueholder.UserRole;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class UserRoleDeleteAction extends BaseAction {
@@ -68,17 +59,14 @@ public class UserRoleDeleteAction extends BaseAction {
 			userRole.setSysUserId(sysUserId);
 			userRoles.add(userRole);
 		}
-
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();	
 		ActionMessages errors = null;
 		try {
 			
 			UserRoleDAO userRoleDAO = new UserRoleDAOImpl();
-			userRoleDAO.deleteData(userRoles);
-			
-			tx.commit();
-		} catch (LIMSRuntimeException lre) {
-			tx.rollback();
+
+            userRoleDAO.deleteData(userRoles);
+        } catch (LIMSRuntimeException lre) {
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			
 			errors = new ActionMessages();
 			ActionError error = null;
@@ -91,9 +79,6 @@ public class UserRoleDeleteAction extends BaseAction {
 			saveErrors(request, errors);
 			request.setAttribute(Globals.ERROR_KEY, errors);
 			forward = FWD_FAIL;
-			
-		}  finally {
-			HibernateUtil.closeSession();
         }							
 		if (forward.equals(FWD_FAIL))
 			return mapping.findForward(forward);

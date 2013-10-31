@@ -23,13 +23,13 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
 import us.mn.state.health.lims.referencetables.dao.ReferenceTablesDAO;
 import us.mn.state.health.lims.referencetables.daoimpl.ReferenceTablesDAOImpl;
@@ -90,7 +90,6 @@ public class ReferenceTablesUpdateAction extends BaseAction {
 
 		ReferenceTables referenceTables = new ReferenceTables();
 		referenceTables.setSysUserId(sysUserId);
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();	
 		
 		// populate object from form
 		PropertyUtils.copyProperties(referenceTables, dynaForm);
@@ -105,11 +104,10 @@ public class ReferenceTablesUpdateAction extends BaseAction {
 				// INSERT
 				referenceTablesDAO.insertData(referenceTables);
 			}
-			tx.commit();
 		} catch (LIMSRuntimeException lre) {
     		//bugzilla 2154
 			LogEvent.logError("ReferenceTablesUpdateAction","performAction()",lre.toString());
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			errors = new ActionMessages();
 			//bugzilla 1482
 			java.util.Locale locale = (java.util.Locale) request.getSession()
@@ -144,9 +142,6 @@ public class ReferenceTablesUpdateAction extends BaseAction {
 			request.setAttribute(PREVIOUS_DISABLED, "true");
 			request.setAttribute(NEXT_DISABLED, "true");
 			forward = FWD_FAIL;
-	
-		} finally {
-            HibernateUtil.closeSession();
         }
 		if (forward.equals(FWD_FAIL))
 			return mapping.findForward(forward);

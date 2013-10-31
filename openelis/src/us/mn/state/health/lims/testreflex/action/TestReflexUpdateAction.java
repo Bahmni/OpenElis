@@ -26,6 +26,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
@@ -113,8 +114,6 @@ public class TestReflexUpdateAction extends BaseAction {
 
 		String loggedOnUserId = getSysUserId(request);
 
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
-
 		Test reflexTest = loadTest(testDAO, dynaForm.getString("addedTestId"));
 		Scriptlet reflexScriptlet = loadScriptlet( scriptletDAO, dynaForm.getString("actionScriptletId"));
 
@@ -144,12 +143,10 @@ public class TestReflexUpdateAction extends BaseAction {
 					testReflexDAO.updateData(testReflex);
 				}
 			}
-
-			tx.commit();
 		} catch (LIMSRuntimeException lre) {
 			// bugzilla 2154
 			LogEvent.logError("TestReflexUpdateAction", "performAction()", lre.toString());
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			errors = new ActionMessages();
 			java.util.Locale locale = (java.util.Locale) request.getSession().getAttribute("org.apache.struts.action.LOCALE");
 			ActionError error = null;
@@ -173,9 +170,6 @@ public class TestReflexUpdateAction extends BaseAction {
 			request.setAttribute(PREVIOUS_DISABLED, "true");
 			request.setAttribute(NEXT_DISABLED, "true");
 			forward = FWD_FAIL;
-
-		} finally {
-			HibernateUtil.closeSession();
 		}
 		if (forward.equals(FWD_FAIL))
 			return mapping.findForward(forward);

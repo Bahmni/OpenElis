@@ -29,6 +29,7 @@ import org.apache.struts.action.ActionRedirect;
 
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.StringUtil;
@@ -142,8 +143,7 @@ public class NewbornSampleFullUpdateAction extends BaseAction {
 			java.text.SimpleDateFormat f = new java.text.SimpleDateFormat(format) ;
 			motherBirthDate = new java.sql.Timestamp(f.parse(motherBirthDateForDisplay).getTime());
 		}
-		
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
+
 		String accessionNumber = (String)dynaForm.get("accessionNumber");
 		try {
 			//Sample
@@ -324,11 +324,9 @@ public class NewbornSampleFullUpdateAction extends BaseAction {
 			sampleHuman.setProviderId(provider.getId());
 			sampleHuman.setSysUserId(sysUserId);
 			sampleHumanDAO.updateData(sampleHuman);
-
-			tx.commit();
 		} catch (LIMSRuntimeException lre) {
 		    LogEvent.logError("NewbornSampleFullUpdateAction","performAction()",lre.toString());
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			errors = new ActionMessages();
 			ActionError error = null;
 			if (lre.getException() instanceof org.hibernate.StaleObjectStateException) {
@@ -341,9 +339,6 @@ public class NewbornSampleFullUpdateAction extends BaseAction {
 			request.setAttribute(Globals.ERROR_KEY, errors);
 			request.setAttribute(ALLOW_EDITS_KEY, "false");
 			forward = FWD_FAIL;
-
-		} finally {
-			HibernateUtil.closeSession();
 		}
 		if (forward.equals(FWD_FAIL))
 			return mapping.findForward(forward);

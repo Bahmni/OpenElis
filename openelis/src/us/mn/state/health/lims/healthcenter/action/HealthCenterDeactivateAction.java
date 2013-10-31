@@ -20,12 +20,10 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.DynaActionForm;
-import org.hibernate.Transaction;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.healthcenter.dao.HealthCenterDAO;
 import us.mn.state.health.lims.healthcenter.daoimpl.HealthCenterDAOImpl;
 import us.mn.state.health.lims.healthcenter.valueholder.HealthCenter;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -66,11 +64,9 @@ public class HealthCenterDeactivateAction extends BaseAction {
 
     private void deactivateHealthCenters(List<HealthCenter> healthCenters){
         HealthCenterDAO healthCenterDAO = new HealthCenterDAOImpl();
-        Transaction tx = HibernateUtil.getSession().beginTransaction();
         for(HealthCenter healthCenter:healthCenters){
             healthCenter.setActive(false);
             healthCenterDAO.update(healthCenter);
         }
-        tx.commit();
     }
 }

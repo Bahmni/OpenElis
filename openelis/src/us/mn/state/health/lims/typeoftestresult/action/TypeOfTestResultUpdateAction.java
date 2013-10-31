@@ -23,6 +23,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
@@ -88,8 +89,7 @@ public class TypeOfTestResultUpdateAction extends BaseAction {
 		//get sysUserId from login module
 		UserSessionData usd = (UserSessionData)request.getSession().getAttribute(USER_SESSION_DATA);
 		String sysUserId = String.valueOf(usd.getSystemUserId());	
-		typeOfTestResult.setSysUserId(sysUserId);		
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
+		typeOfTestResult.setSysUserId(sysUserId);
 		
 		// populate valueholder from form
 		PropertyUtils.copyProperties(typeOfTestResult, dynaForm);
@@ -105,11 +105,10 @@ public class TypeOfTestResultUpdateAction extends BaseAction {
 				// INSERT
 				typeOfTestResultDAO.insertData(typeOfTestResult);
 			}
-			tx.commit();
 		} catch (LIMSRuntimeException lre) {
     		//bugzilla 2154
 			LogEvent.logError("TypeOfTestResultUpdateAction","performAction()",lre.toString());
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			errors = new ActionMessages();
 			java.util.Locale locale = (java.util.Locale) request.getSession()
 			.getAttribute("org.apache.struts.action.LOCALE");
@@ -143,9 +142,6 @@ public class TypeOfTestResultUpdateAction extends BaseAction {
 			request.setAttribute(PREVIOUS_DISABLED, "true");
 			request.setAttribute(NEXT_DISABLED, "true");
 			forward = FWD_FAIL;
-
-		} finally {
-            HibernateUtil.closeSession();
         }
 		if (forward.equals(FWD_FAIL))
 			return mapping.findForward(forward);

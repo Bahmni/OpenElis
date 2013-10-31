@@ -31,6 +31,7 @@ import us.mn.state.health.lims.citystatezip.dao.CityStateZipDAO;
 import us.mn.state.health.lims.citystatezip.daoimpl.CityStateZipDAOImpl;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.formfields.FormFields;
@@ -42,7 +43,6 @@ import us.mn.state.health.lims.common.provider.validation.ZipValidationProvider;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.organization.dao.OrganizationDAO;
 import us.mn.state.health.lims.organization.dao.OrganizationOrganizationTypeDAO;
 import us.mn.state.health.lims.organization.daoimpl.OrganizationDAOImpl;
@@ -156,7 +156,6 @@ public class OrganizationUpdateAction extends BaseAction {
 
 		createAddressParts(id, dynaForm);
 
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
 		try {
 
 			if (!isNew) {
@@ -169,11 +168,10 @@ public class OrganizationUpdateAction extends BaseAction {
 
 			linkOrgWithOrgType(organization);
 
-			tx.commit();
 		} catch (LIMSRuntimeException lre) {
 			// bugzilla 2154
 			LogEvent.logError("OrganizationUpdateAction", "performAction()", lre.toString());
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			errors = new ActionMessages();
 			ActionError error = null;
 			if (lre.getException() instanceof org.hibernate.StaleObjectStateException) {
@@ -202,9 +200,6 @@ public class OrganizationUpdateAction extends BaseAction {
 			request.setAttribute(PREVIOUS_DISABLED, "true");
 			request.setAttribute(NEXT_DISABLED, "true");
 			forward = FWD_FAIL;
-
-		} finally {
-			HibernateUtil.closeSession();
 		}
 		if (forward.equals(FWD_FAIL))
 			return mapping.findForward(forward);

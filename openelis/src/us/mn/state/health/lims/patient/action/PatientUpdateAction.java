@@ -21,16 +21,15 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
-import org.hibernate.Transaction;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.validator.ActionError;
 import us.mn.state.health.lims.gender.dao.GenderDAO;
 import us.mn.state.health.lims.gender.daoimpl.GenderDAOImpl;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
 import us.mn.state.health.lims.patient.dao.PatientDAO;
 import us.mn.state.health.lims.patient.daoimpl.PatientDAOImpl;
@@ -94,8 +93,7 @@ public class PatientUpdateAction extends BaseAction {
 		//get sysUserId from login module
 		UserSessionData usd = (UserSessionData)request.getSession().getAttribute(USER_SESSION_DATA);
 		String sysUserId = String.valueOf(usd.getSystemUserId());	
-		patient.setSysUserId(sysUserId);			
-		Transaction tx = HibernateUtil.getSession().beginTransaction();
+		patient.setSysUserId(sysUserId);
 		
 		String selectedPersonId = (String) dynaForm.get("selectedPersonId");
 
@@ -178,11 +176,10 @@ public class PatientUpdateAction extends BaseAction {
 
 				patientDAO.insertData(patient);
 			}
-			tx.commit();
 		} catch (LIMSRuntimeException lre) {
             //bugzilla 2154
-			LogEvent.logError("PatientUpdateAction","performAction()",lre.toString());      		
-			tx.rollback();
+			LogEvent.logError("PatientUpdateAction","performAction()",lre.toString());
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			errors = new ActionMessages();
 			ActionError error = null;
 			if (lre.getException() instanceof org.hibernate.StaleObjectStateException) {
@@ -202,9 +199,6 @@ public class PatientUpdateAction extends BaseAction {
 			request.setAttribute(PREVIOUS_DISABLED, "true");
 			request.setAttribute(NEXT_DISABLED, "true");
 			forward = FWD_FAIL;
-
-		} finally {
-            HibernateUtil.closeSession();
         }
 		if (forward.equals(FWD_FAIL))
 			return mapping.findForward(forward);

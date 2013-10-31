@@ -15,28 +15,22 @@
 */
 package us.mn.state.health.lims.analysis.action;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.struts.Globals;
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
-import org.apache.struts.action.ActionMessages;
-import org.apache.struts.action.DynaActionForm;
-
+import org.apache.struts.action.*;
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.common.action.BaseAction;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -79,7 +73,6 @@ public class AnalysisDeleteAction extends BaseAction {
 			analyses.add(analysis);
 		}
 
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
 		ActionMessages errors = null;
 		try {
 
@@ -101,11 +94,10 @@ public class AnalysisDeleteAction extends BaseAction {
 			// PropertyUtils.setProperty(dynaForm, "analyses", analyses);
 
 			// PropertyUtils.setProperty(dynaForm, "selectedIDs", selectedIDs);
-			tx.commit();
 		} catch (LIMSRuntimeException lre) {
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			//bugzilla 2154
-			LogEvent.logError("ActionDAOImpl","performAction()",lre.toString());			
-			tx.rollback();
+			LogEvent.logError("ActionDAOImpl","performAction()",lre.toString());
 			
 			errors = new ActionMessages();
 			ActionError error = null;
@@ -118,9 +110,6 @@ public class AnalysisDeleteAction extends BaseAction {
 			saveErrors(request, errors);
 			request.setAttribute(Globals.ERROR_KEY, errors);
 			forward = FWD_FAIL;
-			
-		}  finally {
-            HibernateUtil.closeSession();
         }	
 		if (forward.equals(FWD_FAIL))
 			return mapping.findForward(forward);

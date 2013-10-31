@@ -22,10 +22,9 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.DynaActionForm;
 import org.hibernate.HibernateException;
-import org.hibernate.Transaction;
 import us.mn.state.health.lims.common.action.BaseAction;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.util.ConfigurationProperties;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.scheduler.LateStartScheduler;
 import us.mn.state.health.lims.scheduler.dao.CronSchedulerDAO;
 import us.mn.state.health.lims.scheduler.daoimpl.CronSchedulerDAOImpl;
@@ -68,7 +67,6 @@ public class TestUsageConfigurationUpdateAction extends BaseAction {
         SiteInformation password = getSiteInformationFor("testUsageAggregationPassword", servicePassword, true);
         SiteInformation enableSending = getSiteInformationFor("testUsageReporting", sendingEnabled ? "true" : "false", false);
         boolean refreash = false;
-        Transaction tx = HibernateUtil.getSession().beginTransaction();
 
         try {
             updateSchedule(sendScheduler);
@@ -77,11 +75,10 @@ public class TestUsageConfigurationUpdateAction extends BaseAction {
             updateSite(password);
             updateSite(enableSending);
 
-            tx.commit();
 
             refreash = true;
         } catch (HibernateException e) {
-            tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
         }
 
         if (refreash) {

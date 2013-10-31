@@ -26,7 +26,6 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.hibernate.StaleObjectStateException;
-import org.hibernate.Transaction;
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
@@ -35,7 +34,6 @@ import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.note.dao.NoteDAO;
 import us.mn.state.health.lims.note.daoimpl.NoteDAOImpl;
 import us.mn.state.health.lims.note.util.NoteUtil;
@@ -137,8 +135,6 @@ public class ReferredOutUpdateAction extends BaseAction {
             return mapping.findForward(IActionConstants.FWD_VALIDATION_ERROR);
         }
 
-        Transaction tx = HibernateUtil.getSession().beginTransaction();
-
         try {
             for (ReferralSet referralSet : referralSets) {
                 referralDAO.updateData(referralSet.referral);
@@ -171,10 +167,8 @@ public class ReferredOutUpdateAction extends BaseAction {
                 sampleDAO.updateData(sample);
             }
 
-            tx.commit();
-
         } catch (LIMSRuntimeException lre) {
-            tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 
             ActionError error;
             if (lre.getException() instanceof StaleObjectStateException) {
@@ -189,9 +183,6 @@ public class ReferredOutUpdateAction extends BaseAction {
             request.setAttribute(Globals.ERROR_KEY, errors);
             request.setAttribute(ALLOW_EDITS_KEY, "false");
             return mapping.findForward(FWD_FAIL);
-
-        } finally {
-            HibernateUtil.closeSession();
         }
 
         return mapping.findForward(IActionConstants.FWD_SUCCESS);

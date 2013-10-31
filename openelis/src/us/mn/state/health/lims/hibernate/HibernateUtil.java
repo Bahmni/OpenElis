@@ -18,12 +18,15 @@ package us.mn.state.health.lims.hibernate;
 import org.apache.log4j.Logger;
 import org.hibernate.*;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.connection.C3P0ConnectionProvider;
+import org.hibernate.connection.ConnectionProvider;
+import org.hibernate.impl.SessionFactoryImpl;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 
 /**
  * Basic Hibernate helper class, handles SessionFactory, Session and Transaction.
- * <p>
+ * <p/>
  * Uses a static initializer for the initial SessionFactory creation
  * and holds Session and Transactions in thread local variables. All
  * exceptions are wrapped in an unchecked InfrastructureException.
@@ -39,9 +42,9 @@ public class HibernateUtil {
     private static final ThreadLocal threadInterceptor = new ThreadLocal();
     private static String CONFIG_FILE_LOCATION = "/us/mn/state/health/lims/hibernate/hibernate.cfg.xml";
     private static Logger logger = Logger.getLogger(HibernateUtil.class);
-    
+
     private static String configFile = CONFIG_FILE_LOCATION;
-    
+
     static {
         String testCfg = System.getProperty(HIBERNATE_CFG_FILE_PROPERTY);
         if (null != testCfg) {
@@ -51,20 +54,20 @@ public class HibernateUtil {
 
     static {
         try {
-        	configuration = new Configuration();
-			//bugzilla 1939 (trim changed data before update/insert)
+            configuration = new Configuration();
+            //bugzilla 1939 (trim changed data before update/insert)
 //			configuration.setInterceptor(new LIMSTrimDataInterceptor());
-             sessionFactory = configuration.configure(configFile).buildSessionFactory();
+            sessionFactory = configuration.configure(configFile).buildSessionFactory();
             // We could also let Hibernate bind it to JNDI:
-            
+
             // configuration.configure().buildSessionFactory()
         } catch (Throwable ex) {
             // We have to catch Throwable, otherwise we will miss
             // NoClassDefFoundError and other subclasses of Error
-        	//ex.printStackTrace();
+            //ex.printStackTrace();
             //log.error("Building SessionFactory failed.", ex);
             //bugzilla 2154
-			LogEvent.logError("HibernateUtil","static constructor","Building SessionFactory failed. " + ex.toString());
+            LogEvent.logError("HibernateUtil", "static constructor", "Building SessionFactory failed. " + ex.toString());
             throw new ExceptionInInitializerError(ex);
         }
     }
@@ -102,7 +105,6 @@ public class HibernateUtil {
 
     /**
      * Rebuild the SessionFactory with the static Configuration.
-     *
      */
     public static void rebuildSessionFactory() throws LIMSRuntimeException {
         synchronized (sessionFactory) {
@@ -110,8 +112,8 @@ public class HibernateUtil {
                 sessionFactory = getConfiguration().buildSessionFactory();
             } catch (Exception ex) {
                 //bugzilla 2154
-			    LogEvent.logError("HibernateUtil","rebuildSessionFactory()",ex.toString());
-            	throw new LIMSRuntimeException("Error in rebuildSessionFactory()", ex);
+                LogEvent.logError("HibernateUtil", "rebuildSessionFactory()", ex.toString());
+                throw new LIMSRuntimeException("Error in rebuildSessionFactory()", ex);
             }
         }
     }
@@ -129,8 +131,8 @@ public class HibernateUtil {
                 configuration = cfg;
             } catch (Exception ex) {
                 //bugzilla 2154
-			    LogEvent.logError("HibernateUtil","rebuildSessionFactory()",ex.toString());
-            	throw new LIMSRuntimeException("Error in rebuildSessionFactory()", ex);
+                LogEvent.logError("HibernateUtil", "rebuildSessionFactory()", ex.toString());
+                throw new LIMSRuntimeException("Error in rebuildSessionFactory()", ex);
             }
         }
     }
@@ -138,7 +140,7 @@ public class HibernateUtil {
     /**
      * Retrieves the current Session local to the thread.
      * <p/>
-
+     * <p/>
      * If no Session is open, opens a new Session for the running thread.
      *
      * @return Session
@@ -147,12 +149,12 @@ public class HibernateUtil {
         Session s = (Session) threadSession.get();
         try {
             if (s == null || !s.isOpen()) {
-                if ( s!=null && !s.isOpen())
+                if (s != null && !s.isOpen())
                     LogEvent.logWarn(HibernateUtil.class.getSimpleName(), "getSession()", "Session was not null but was closed.");
                 //bugzilla 2154
-                LogEvent.logDebug("HibernateUtil","getSession()","Opening new Session for this thread.");
+                LogEvent.logDebug("HibernateUtil", "getSession()", "Opening new Session for this thread.");
                 if (getInterceptor() != null) {
-                    LogEvent.logDebug("HibernateUtil","getSession()","Using interceptor: " + getInterceptor().getClass());
+                    LogEvent.logDebug("HibernateUtil", "getSession()", "Using interceptor: " + getInterceptor().getClass());
                     s = getSessionFactory().openSession(getInterceptor());
                 } else {
                     s = getSessionFactory().openSession();
@@ -161,8 +163,8 @@ public class HibernateUtil {
             }
         } catch (HibernateException ex) {
             //bugzilla 2154
-			LogEvent.logError("HibernateUtil","getSession()",ex.toString());
-        	throw new LIMSRuntimeException("Error in getSession()", ex);
+            LogEvent.logError("HibernateUtil", "getSession()", ex.toString());
+            throw new LIMSRuntimeException("Error in getSession()", ex);
         }
         return new ElisHibernateSession(s);
     }
@@ -175,22 +177,20 @@ public class HibernateUtil {
         try {
             Session s = (Session) threadSession.get();
             if (s != null && s.isOpen()) {
-                //bugzilla 2154
                 try {
                     Transaction transaction = s.getTransaction();
                     if (transaction != null && transaction.isActive()) {
-                        transaction.rollback();
+                        transaction.commit();
                     }
                 } catch (HibernateException e) {
                     logger.error(e, e);
                 }
-                LogEvent.logDebug("HibernateUtil","closeSession()","Closing Session of this thread.");
+                LogEvent.logDebug("HibernateUtil", "closeSession()", "Closing Session of this thread.");
                 s.close();
             }
             threadSession.remove();
         } catch (HibernateException ex) {
-            //bugzilla 2154
-        	throw new LIMSRuntimeException("Error in closeSession()", ex);
+            throw new LIMSRuntimeException("Error in closeSession()", ex);
         }
     }
 
@@ -257,12 +257,12 @@ public class HibernateUtil {
      */
 
     //public static void reconnect(Session session) throws LIMSRuntimeException {
-        //try {
-            //session.reconnect();
-            //threadSession.set(session);
-        //} catch (HibernateException ex) {
-            //throw new LIMSRuntimeException("Error in reconnect()", ex);
-        //}
+    //try {
+    //session.reconnect();
+    //threadSession.set(session);
+    //} catch (HibernateException ex) {
+    //throw new LIMSRuntimeException("Error in reconnect()", ex);
+    //}
     //}
 
     /**
@@ -285,10 +285,11 @@ public class HibernateUtil {
         return session;
     }
 */
+
     /**
      * Register a Hibernate interceptor with the current thread.
-     * <p>
-
+     * <p/>
+     * <p/>
      * Every Session opened is opened with this interceptor after
      * registration. Has no effect if the current Session of the
      * thread is already open, effective on next close()/getSession().
@@ -303,4 +304,12 @@ public class HibernateUtil {
         return interceptor;
     }
 
+    public static void closeSessionFactory() {
+        SessionFactoryImpl sf = (SessionFactoryImpl) sessionFactory;
+        ConnectionProvider conn = sf.getConnectionProvider();
+        if (conn instanceof C3P0ConnectionProvider) {
+            ((C3P0ConnectionProvider) conn).close();
+        }
+        sessionFactory.close();
+    }
 }

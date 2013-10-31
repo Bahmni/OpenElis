@@ -26,11 +26,11 @@ import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
 import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.dao.TestSectionDAO;
@@ -105,7 +105,6 @@ public class AnalysisUpdateAction extends BaseAction {
 		UserSessionData usd = (UserSessionData)request.getSession().getAttribute(USER_SESSION_DATA);
 		String sysUserId = String.valueOf(usd.getSystemUserId());	
 		analysis.setSysUserId(sysUserId);
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
 
 		// create TestSection and Test valueholder
 		TestSection testSection = new TestSection();
@@ -177,11 +176,10 @@ public class AnalysisUpdateAction extends BaseAction {
 				//bugzilla 2013 added duplicateCheck parameter
 				analysisDAO.insertData(analysis, false);
 			}
-			tx.commit();
 		} catch (LIMSRuntimeException lre) {
 			//bugzilla 2154
-			LogEvent.logError("AnalysisUpdateAction","performAction()",lre.toString());			
-			tx.rollback();
+			LogEvent.logError("AnalysisUpdateAction","performAction()",lre.toString());
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			errors = new ActionMessages();
 			ActionError error = null;
 			if (lre.getException() instanceof org.hibernate.StaleObjectStateException) {
@@ -202,8 +200,6 @@ public class AnalysisUpdateAction extends BaseAction {
 			
 			forward = FWD_FAIL;
 
-		} finally {
-            HibernateUtil.closeSession();
         }
 		if (forward.equals(FWD_FAIL))
 			return mapping.findForward(forward);

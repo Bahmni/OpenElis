@@ -16,25 +16,24 @@
  */
 package us.mn.state.health.lims.reports.action;
 
-import java.util.HashMap;
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.validator.GenericValidator;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.services.ReportTrackingService;
 import us.mn.state.health.lims.common.services.ReportTrackingService.ReportType;
 import us.mn.state.health.lims.reports.action.implementation.IReportCreator;
 import us.mn.state.health.lims.reports.action.implementation.ReportImplementationFactory;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 
 public class CommonReportPrintAction extends BaseAction {
 
@@ -80,14 +79,17 @@ public class CommonReportPrintAction extends BaseAction {
 				servletOutputStream.write(bytes, 0, bytes.length);
 				servletOutputStream.flush();
 				servletOutputStream.close();
+
+
+                if("patient".equals(request.getParameter("type"))){
+                    trackReports(reportCreator, request.getParameter("report"));
+                }
+
 			} catch (Exception e) {
 				LogEvent.logErrorStack("CommonReportPrintAction", "performAction", e);
+                request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 				e.printStackTrace();
 			}
-		}
-
-		if("patient".equals(request.getParameter("type"))){
-			trackReports( reportCreator, request.getParameter("report"));	
 		}
 		
 		return mapping.findForward(forward);

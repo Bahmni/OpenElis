@@ -17,27 +17,24 @@
  */
 package us.mn.state.health.lims.common.provider.query;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.validator.GenericValidator;
-
 import us.mn.state.health.lims.common.provider.query.workerObjects.PatientSearchLocalAndClinicWorker;
 import us.mn.state.health.lims.common.provider.query.workerObjects.PatientSearchLocalWorker;
 import us.mn.state.health.lims.common.provider.query.workerObjects.PatientSearchWorker;
 import us.mn.state.health.lims.common.servlet.validation.AjaxServlet;
 import us.mn.state.health.lims.common.util.ConfigurationProperties;
 import us.mn.state.health.lims.common.util.ConfigurationProperties.Property;
-import us.mn.state.health.lims.login.valueholder.UserSessionData;
 import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
 import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.samplehuman.dao.SampleHumanDAO;
 import us.mn.state.health.lims.samplehuman.daoimpl.SampleHumanDAOImpl;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 public class PatientSearchProvider extends BaseQueryProvider {
 
@@ -68,7 +65,7 @@ public class PatientSearchProvider extends BaseQueryProvider {
 
 		StringBuilder xml = new StringBuilder();
 
-		PatientSearchWorker worker = getAppropriateWorker(request);
+		PatientSearchWorker worker = getAppropriateWorker();
 		String result = VALID;
 
 		if (worker != null) {
@@ -106,18 +103,15 @@ public class PatientSearchProvider extends BaseQueryProvider {
 		}
 	}
 
-	private PatientSearchWorker getAppropriateWorker(HttpServletRequest request) {
-
-		if ("false".equals(ConfigurationProperties.getInstance().getPropertyValueLowerCase(Property.UseExternalPatientInfo))) {
-			return new PatientSearchLocalWorker();
-		} else {
-			UserSessionData usd = (UserSessionData) request.getSession().getAttribute(USER_SESSION_DATA);
-
-			return new PatientSearchLocalAndClinicWorker(String.valueOf(usd.getSystemUserId()));
-		}
+	private PatientSearchWorker getAppropriateWorker() {
+        return shouldGetExternalPatientInfo()? new PatientSearchLocalWorker(): new PatientSearchLocalAndClinicWorker();
 	}
 
-	@Override
+    private boolean shouldGetExternalPatientInfo() {
+        return "false".equals(ConfigurationProperties.getInstance().getPropertyValueLowerCase(Property.UseExternalPatientInfo));
+    }
+
+    @Override
 	public void setServlet(AjaxServlet as) {
 		this.ajaxServlet = as;
 	}

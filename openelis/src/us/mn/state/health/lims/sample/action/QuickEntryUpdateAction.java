@@ -15,15 +15,6 @@
 */
 package us.mn.state.health.lims.sample.action;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts.Globals;
 import org.apache.struts.action.ActionForm;
@@ -31,8 +22,6 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
 import org.hibernate.StaleObjectStateException;
-import org.hibernate.Transaction;
-
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
@@ -40,6 +29,7 @@ import us.mn.state.health.lims.analysisqaevent.dao.AnalysisQaEventDAO;
 import us.mn.state.health.lims.analysisqaevent.daoimpl.AnalysisQaEventDAOImpl;
 import us.mn.state.health.lims.analysisqaevent.valueholder.AnalysisQaEvent;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.provider.validation.QuickEntryAccessionNumberValidationProvider;
@@ -71,6 +61,10 @@ import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleDAO;
 import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleDAOImpl;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSample;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
 /**
  * The QuickEntryUpdateAction class represents the Update Action for the
@@ -124,7 +118,6 @@ public class QuickEntryUpdateAction extends BatchSampleProcessingBaseAction {
 		// 1926 get sysUserId from login module
 		UserSessionData usd = (UserSessionData)request.getSession().getAttribute(USER_SESSION_DATA);
 		String sysUserId = String.valueOf(usd.getSystemUserId());
-		Transaction tx = HibernateUtil.getSession().beginTransaction();
 		try {
 			SampleDAO sampleDAO = new SampleDAOImpl();
 			SampleItemDAO sampleItemDAO = new SampleItemDAOImpl();
@@ -274,12 +267,10 @@ public class QuickEntryUpdateAction extends BatchSampleProcessingBaseAction {
 				}
 			}
 
-			tx.commit();
-
 		} catch (LIMSRuntimeException lre) {
     		//bugzilla 2154
 			LogEvent.logError("QuickEntryUpdateAction","performAction()",lre.toString());
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			errors = new ActionMessages();
 			ActionError error = null;
 			if (lre.getException() instanceof StaleObjectStateException) {
@@ -295,9 +286,6 @@ public class QuickEntryUpdateAction extends BatchSampleProcessingBaseAction {
 			request.setAttribute(Globals.ERROR_KEY, errors);
 			request.setAttribute(ALLOW_EDITS_KEY, "false");
 			return mapping.findForward(FWD_FAIL);
-
-		} finally {
-			HibernateUtil.closeSession();
 		}
 
 		// initialize the form

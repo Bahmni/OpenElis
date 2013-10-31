@@ -15,17 +15,6 @@
 */
 package us.mn.state.health.lims.sample.action;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts.Globals;
 import org.apache.struts.action.ActionForm;
@@ -33,10 +22,9 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
 import org.hibernate.StaleObjectStateException;
-import org.hibernate.Transaction;
-
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSInvalidPrinterException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
@@ -44,11 +32,14 @@ import us.mn.state.health.lims.common.provider.reports.SampleLabelPrintProvider;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
 import us.mn.state.health.lims.sample.valueholder.Sample;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
 /**
  * @author diane benz
@@ -131,7 +122,6 @@ public class SampleLabelPrintProcessAction extends BaseAction {
 		String sysUserId = String.valueOf(usd.getSystemUserId());
 		//bgm added to see if this will fix the error for a record lock when this Sample is added here and
 		// then updated later,within same thread, on another screen.... like in QuickEntry.
-		Transaction tx = HibernateUtil.getSession().beginTransaction();
 
 		try{
 //			bgm - bugzilla 1568 added sample.setStatus for lable printed.
@@ -154,8 +144,6 @@ public class SampleLabelPrintProcessAction extends BaseAction {
 					printProvider.processRequest(parms, request, response);
 				} 
 			}
-
-			tx.commit();
 
 			//if it didn't fail then populate the accessionNumbersPrinted form field
 			String accessionNumbersPrinted = "";
@@ -194,8 +182,8 @@ public class SampleLabelPrintProcessAction extends BaseAction {
 
 		}catch(LIMSRuntimeException lre){
 			//bugzilla 2154
-			LogEvent.logError("SampleLabelPrintProcessAction","performAction()",lre.toString());	
-			tx.rollback();
+			LogEvent.logError("SampleLabelPrintProcessAction","performAction()",lre.toString());
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 
 
 
@@ -221,9 +209,6 @@ public class SampleLabelPrintProcessAction extends BaseAction {
 			request.setAttribute(Globals.ERROR_KEY, errors);
 			request.setAttribute(ALLOW_EDITS_KEY, "false");
 			return mapping.findForward(FWD_FAIL);
-
-		}finally{
-			HibernateUtil.closeSession();
 		}
 
 		return mapping.findForward(forward);

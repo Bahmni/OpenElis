@@ -17,208 +17,73 @@
  */
 package us.mn.state.health.lims.common.provider.query.workerObjects;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.validator.GenericValidator;
-import org.hibernate.Transaction;
-
 import us.mn.state.health.lims.common.action.IActionConstants;
-import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
-import us.mn.state.health.lims.common.externalLinks.ExternalPatientSearch;
-import us.mn.state.health.lims.common.provider.query.PatientDemographicsSearchResults;
 import us.mn.state.health.lims.common.provider.query.PatientSearchResults;
 import us.mn.state.health.lims.common.util.ConfigurationProperties;
 import us.mn.state.health.lims.common.util.StringUtil;
-import us.mn.state.health.lims.common.util.SystemConfiguration;
-import us.mn.state.health.lims.common.util.ConfigurationProperties.Property;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
-import us.mn.state.health.lims.patient.dao.PatientDAO;
-import us.mn.state.health.lims.patient.daoimpl.PatientDAOImpl;
-import us.mn.state.health.lims.patient.valueholder.Patient;
-import us.mn.state.health.lims.patientidentity.dao.PatientIdentityDAO;
-import us.mn.state.health.lims.patientidentity.daoimpl.PatientIdentityDAOImpl;
-import us.mn.state.health.lims.patientidentity.valueholder.PatientIdentity;
-import us.mn.state.health.lims.patientidentitytype.util.PatientIdentityTypeMap;
-import us.mn.state.health.lims.person.dao.PersonDAO;
-import us.mn.state.health.lims.person.daoimpl.PersonDAOImpl;
-import us.mn.state.health.lims.person.valueholder.Person;
 import us.mn.state.health.lims.sample.dao.SearchResultsDAO;
 import us.mn.state.health.lims.sample.daoimpl.SearchResultsDAOImp;
 
+import java.util.List;
+
 public class PatientSearchLocalAndClinicWorker extends PatientSearchWorker {
 
-	private final String sysUserId;
+    /**
+     * @see us.mn.state.health.lims.common.provider.query.workerObjects.PatientSearchWorker#createSearchResultXML(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.StringBuilder)
+     */
+    @Override
+    public String createSearchResultXML(String lastName, String firstName,
+                                        String STNumber, String subjectNumber, String nationalID, String patientID, StringBuilder xml) {
 
-	public PatientSearchLocalAndClinicWorker(String sysUserId) {
-		this.sysUserId = sysUserId;
-	}
+        // just to make the name shorter
+        ConfigurationProperties config = ConfigurationProperties.getInstance();
 
-	/**
-	 * @see us.mn.state.health.lims.common.provider.query.workerObjects.PatientSearchWorker#createSearchResultXML(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.StringBuilder)
-	 */
-	@Override
-	public String createSearchResultXML(String lastName, String firstName,
-			String STNumber, String subjectNumber, String nationalID, String patientID, StringBuilder xml) {
+        String success = IActionConstants.VALID;
 
-		// just to make the name shorter
-		ConfigurationProperties config = ConfigurationProperties.getInstance();
+        if (GenericValidator.isBlankOrNull(lastName)
+                && GenericValidator.isBlankOrNull(firstName)
+                && GenericValidator.isBlankOrNull(STNumber)
+                && GenericValidator.isBlankOrNull(subjectNumber)
+                && GenericValidator.isBlankOrNull(nationalID)
+                && GenericValidator.isBlankOrNull(patientID)) {
 
-		String success = IActionConstants.VALID;
+            xml.append("No search terms were entered");
+            return IActionConstants.INVALID;
+        }
 
-		if (GenericValidator.isBlankOrNull(lastName)
-				&& GenericValidator.isBlankOrNull(firstName)
-				&& GenericValidator.isBlankOrNull(STNumber)
-				&& GenericValidator.isBlankOrNull(subjectNumber)
-				&& GenericValidator.isBlankOrNull(nationalID)
-				&& GenericValidator.isBlankOrNull(patientID) ) {
 
-			xml.append("No search terms were entered");
-			return IActionConstants.INVALID;
-		}
-
-		ExternalPatientSearch externalSearch = new ExternalPatientSearch();
-		externalSearch.setSearchCriteria(lastName, firstName, STNumber,	subjectNumber, nationalID);
-		externalSearch.setConnectionCredentials(config.getPropertyValue(Property.PatientSearchURL),
-												config.getPropertyValue(Property.PatientSearchUserName),
-												config.getPropertyValue(Property.PatientSearchPassword),
-												(int) SystemConfiguration.getInstance().getSearchTimeLimit());
-
-		Thread searchThread = new Thread(externalSearch);
-		List<PatientSearchResults> localResults = null;
-		List<PatientDemographicsSearchResults> clinicResults = null;
-		List<PatientDemographicsSearchResults> newPatientsFromClinic = new ArrayList<PatientDemographicsSearchResults>();
+        List<PatientSearchResults> localResults;
         SearchResultsDAO localSearch = createLocalSearchResultDAOImp();
         localResults = localSearch.getSearchResults(lastName, firstName, STNumber, subjectNumber, nationalID, nationalID, patientID);
 
-//			searchThread.start();
-//			searchThread.join(SystemConfiguration.getInstance().getSearchTimeLimit() + 500);
+        setLocalSourceIndicators(localResults);
 
-//        if (externalSearch.getSearchResultStatus() == 200) {
-//            clinicResults = externalSearch.getSearchResults();
-            clinicResults = new ArrayList<>();
-//        }
+        sortPatients(localResults);
 
-		findNewPatients(localResults, clinicResults, newPatientsFromClinic);
-		insertNewPatients(newPatientsFromClinic);
-		localResults.addAll(newPatientsFromClinic);
-		setLocalSourceIndicators(localResults);
+        if (localResults.size() > 0) {
+            for (PatientSearchResults singleResult : localResults) {
+                appendSearchResultRow(singleResult, xml);
+            }
+        } else {
+            success = IActionConstants.INVALID;
+            xml.append("No results were found for search.  Check spelling or remove some of the fields");
+        }
 
-		sortPatients(localResults);
+        return success;
+    }
 
-		if (localResults.size() > 0) {
-			for (PatientSearchResults singleResult : localResults) {
-				appendSearchResultRow(singleResult, xml);
-			}
-		} else {
-			success = IActionConstants.INVALID;
-			xml.append("No results were found for search.  Check spelling or remove some of the fields");
-		}
+    private void setLocalSourceIndicators(List<PatientSearchResults> results) {
+        for (PatientSearchResults result : results) {
+            String messageKey = GenericValidator.isBlankOrNull(result.getGUID()) ? "patient.local.source"
+                    : "patient.imported.source";
+            result.setDataSourceName(StringUtil.getMessageForKey(messageKey));
+        }
+    }
 
-		return success;
-	}
-
-	private void insertNewPatients(	List<PatientDemographicsSearchResults> newPatientsFromClinic) {
-		Transaction tx = HibernateUtil.getSession().beginTransaction();
-
-		try {
-			for (PatientDemographicsSearchResults results : newPatientsFromClinic) {
-				insertNewPatients(results);
-			}
-
-			tx.commit();
-
-		} catch (LIMSRuntimeException lre) {
-			tx.rollback();
-		} finally {
-			HibernateUtil.closeSession();
-		}
-	}
-
-	private void insertNewPatients(PatientDemographicsSearchResults results) {
-		Patient patient = new Patient();
-		Person person = new Person();
-
-		patient.setBirthDateForDisplay(results.getBirthdate());
-		patient.setGender(results.getGender());
-		patient.setNationalId(results.getNationalId());
-		patient.setSysUserId(sysUserId);
-
-		person.setLastName(results.getLastName());
-		person.setFirstName(results.getFirstName());
-		person.setSysUserId(sysUserId);
-
-		PersonDAO personDAO = new PersonDAOImpl();
-		PatientDAO patientDAO = new PatientDAOImpl();
-		PatientIdentityDAO identityDAO = new PatientIdentityDAOImpl();
-
-		personDAO.insertData(person);
-		patient.setPerson(person);
-		patientDAO.insertData(patient);
-
-		persistIdentityType(identityDAO, results.getStNumber(), "ST", patient.getId());
-		persistIdentityType(identityDAO, results.getSubjectNumber(), "SUBJECT", patient.getId());
-		persistIdentityType(identityDAO, results.getMothersName(), "MOTHER", patient.getId());
-		persistIdentityType(identityDAO, results.getGUID(), "GUID", patient.getId());
-		persistIdentityType(identityDAO, results.getDataSourceId(), "ORG_SITE", patient.getId());
-
-		results.setPatientID(patient.getId());
-	}
-
-	public void persistIdentityType(PatientIdentityDAO identityDAO,	String paramValue, String type, String patientId)
-			throws LIMSRuntimeException {
-
-		if (!GenericValidator.isBlankOrNull(paramValue)) {
-
-			String typeID = PatientIdentityTypeMap.getInstance().getIDForType(
-					type);
-
-			PatientIdentity identity = new PatientIdentity();
-			identity.setPatientId(patientId);
-			identity.setIdentityTypeId(typeID);
-			identity.setSysUserId(sysUserId);
-			identity.setIdentityData(paramValue);
-			identity.setLastupdatedFields();
-			identityDAO.insertData(identity);
-		}
-	}
-
-	/*
-	 * This will check to see if the clinic results are in OpenELIS. If they are
-	 * not then they will be
-	 */
-	private void findNewPatients(List<PatientSearchResults> results,
-			List<PatientDemographicsSearchResults> clinicResults,
-			List<PatientDemographicsSearchResults> newPatientsFromClinic) {
-
-		if (clinicResults != null) {
-			List<String> currentGuids = new ArrayList<String>();
-
-			for (PatientSearchResults result : results) {
-				if (!GenericValidator.isBlankOrNull(result.getGUID())) {
-					currentGuids.add(result.getGUID());
-				}
-			}
-
-			for (PatientDemographicsSearchResults clinicResult : clinicResults) {
-				if (!currentGuids.contains(clinicResult.getGUID())) {
-					newPatientsFromClinic.add(clinicResult);
-				}
-			}
-		}
-	}
-
-	private void setLocalSourceIndicators(List<PatientSearchResults> results) {
-		for (PatientSearchResults result : results) {
-			String messageKey = GenericValidator.isBlankOrNull(result.getGUID()) ? "patient.local.source"
-																				 : "patient.imported.source";
-			result.setDataSourceName(StringUtil.getMessageForKey(messageKey));
-		}
-	}
-
-	// Protected for unit tests until we start using JMock
-	protected SearchResultsDAO createLocalSearchResultDAOImp() {
-		return new SearchResultsDAOImp();
-	}
+    // Protected for unit tests until we start using JMock
+    protected SearchResultsDAO createLocalSearchResultDAOImp() {
+        return new SearchResultsDAOImp();
+    }
 
 }

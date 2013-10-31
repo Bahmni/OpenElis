@@ -23,8 +23,8 @@ import org.apache.struts.Globals;
 import org.apache.struts.action.*;
 import org.bahmni.feed.openelis.feed.service.EventPublishers;
 import org.bahmni.feed.openelis.feed.service.impl.OpenElisUrlPublisher;
+import org.hibernate.HibernateException;
 import org.hibernate.StaleObjectStateException;
-import org.hibernate.Transaction;
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
@@ -43,7 +43,6 @@ import us.mn.state.health.lims.common.util.ConfigurationProperties.Property;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.note.dao.NoteDAO;
 import us.mn.state.health.lims.note.daoimpl.NoteDAOImpl;
 import us.mn.state.health.lims.note.util.NoteUtil;
@@ -134,7 +133,6 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
 
     protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
             throws Exception {
-        Transaction tx = HibernateUtil.getSession().beginTransaction();
 
         String forward = FWD_SUCCESS;
         String referer = request.getParameter("referer");
@@ -250,12 +248,9 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
                 updater.transactionalUpdate(this);
             }
 
-            tx.commit();
-
         } catch (LIMSRuntimeException lre) {
             logger.error("Could not update Results", lre);
-
-            tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 
 
             ActionError error = null;
@@ -281,9 +276,14 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
             return mapping.findForward("error");
         }
 
-        for (IResultUpdate updater : updaters) {
-            updater.postTransactionalCommitUpdate(this);
+        try {
+            for (IResultUpdate updater : updaters) {
+                updater.postTransactionalCommitUpdate(this);
+            }
+        } catch (HibernateException e) {
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
         }
+
 
         setSuccessFlag(request, forward);
 

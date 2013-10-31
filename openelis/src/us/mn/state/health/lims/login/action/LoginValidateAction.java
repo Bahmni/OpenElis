@@ -17,24 +17,16 @@
 */
 package us.mn.state.health.lims.login.action;
 
-import java.util.HashSet;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
-
 import us.mn.state.health.lims.common.action.BaseActionForm;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.dao.LoginDAO;
 import us.mn.state.health.lims.login.dao.UserModuleDAO;
 import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
@@ -49,6 +41,11 @@ import us.mn.state.health.lims.systemusermodule.daoimpl.RoleModuleDAOImpl;
 import us.mn.state.health.lims.systemusermodule.valueholder.RoleModule;
 import us.mn.state.health.lims.userrole.dao.UserRoleDAO;
 import us.mn.state.health.lims.userrole.daoimpl.UserRoleDAOImpl;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  *  @author     Hung Nguyen (Hung.Nguyen@health.state.mn.us)
@@ -75,16 +72,13 @@ public class LoginValidateAction extends LoginBaseAction {
 		Login login = new Login();
 		PropertyUtils.copyProperties(login, dynaForm);
 		login.setLoginName(login.getLoginName().trim());
-		
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();			
+
 		LoginDAO loginDAO = new LoginDAOImpl();
 		Login userInfo = loginDAO.getUserProfile(login.getLoginName());
-		Login loginInfo = loginDAO.getValidateLogin(login);
-		HibernateUtil.closeSession();
+		Login loginInfo;
 		
 		//if invalid loginName entered
 		if ( userInfo == null ) {
-			HibernateUtil.closeSession();
 			errors = new ActionMessages();
 			ActionError error = new ActionError("login.error.message", null, null);
 			errors.add(ActionMessages.GLOBAL_MESSAGE, error);
@@ -136,12 +130,9 @@ public class LoginValidateAction extends LoginBaseAction {
 
 				//lock account after number of failed attempts
 				if ( loginUserFailAttemptCount == loginUserFailAttemptCountDefault ) {
-					tx = HibernateUtil.getSession().beginTransaction();				
 					login = loginDAO.getUserProfile(login.getLoginName());
 					login.setAccountLocked(YES);
 					loginDAO.lockAccount(login);
-					tx.commit();
-					HibernateUtil.closeSession();
 					errors = new ActionMessages();	
 					
 					ActionError error = new ActionError("login.error.account.lock", null); 			
@@ -199,7 +190,7 @@ public class LoginValidateAction extends LoginBaseAction {
 					usd.setElisUserName(su.getNameForDisplay());
 					usd.setUserTimeOut(timeOut*60);
 					request.getSession().setAttribute(USER_SESSION_DATA,usd);
-					
+
 					boolean showAdminMenu = loginInfo.getIsAdmin().equalsIgnoreCase(YES);
 
 					if( SystemConfiguration.getInstance().getPermissionAgent().equals("ROLE")){
@@ -291,12 +282,9 @@ public class LoginValidateAction extends LoginBaseAction {
 			saveErrors(request, errors);
 		} else {			
 			request.getSession().removeAttribute(ACCOUNT_LOCK_TIME);
-			org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();			
 			LoginDAO loginDAO = new LoginDAOImpl();
 			loginDAO.unlockAccount(login);
 			login.setAccountLocked(NO);
-			tx.commit();
-			HibernateUtil.closeSession();
 			ActionError error = new ActionError("login.user.account.unlock.message", null);
 			errors.add(ActionMessages.GLOBAL_MESSAGE, error);
 			saveErrors(request, errors);	

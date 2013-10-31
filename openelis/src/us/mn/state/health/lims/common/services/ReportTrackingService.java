@@ -16,12 +16,7 @@
  */
 package us.mn.state.health.lims.common.services;
 
-import java.util.List;
-
-import org.hibernate.Transaction;
-
 import us.mn.state.health.lims.common.util.DateUtil;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.referencetables.daoimpl.ReferenceTablesDAOImpl;
 import us.mn.state.health.lims.reports.dao.DocumentTrackDAO;
 import us.mn.state.health.lims.reports.daoimpl.DocumentTrackDAOImpl;
@@ -29,6 +24,8 @@ import us.mn.state.health.lims.reports.daoimpl.DocumentTypeDAOImpl;
 import us.mn.state.health.lims.reports.valueholder.DocumentTrack;
 import us.mn.state.health.lims.reports.valueholder.DocumentType;
 import us.mn.state.health.lims.sample.valueholder.Sample;
+
+import java.util.List;
 
 public class ReportTrackingService {
 	private static DocumentTrackDAO docTrackDAO = new DocumentTrackDAOImpl();
@@ -44,35 +41,25 @@ public class ReportTrackingService {
 		}
 	}	
 	public void addReports(List<String> refIds, ReportType type, String name, String currentSystemUserId) {
-	
+        String refTableId = getReferenceTable(type);
+        DocumentTrackDAO rtDAO = new DocumentTrackDAOImpl();
 
-		Transaction trx = HibernateUtil.getSession().beginTransaction();
-		try {
+        for (String id : refIds) {
+            DocumentTrack docTrack = new DocumentTrack();
+            docTrack.setDocumentTypeId(getReportTypeId(type));
+            docTrack.setRecordId(id);
+            docTrack.setReportTime(DateUtil.getNowAsTimestamp());
+            docTrack.setDocumentName(name);
+            docTrack.setTableId(refTableId);
+            docTrack.setSysUserId(currentSystemUserId);
+            DocumentTrack parent = getParent(id, refTableId, docTrack.getDocumentTypeId());
+            if (parent != null) {
+                docTrack.setParent(parent);
+            }
+            rtDAO.insertData(docTrack);
 
-			String refTableId = getReferenceTable(type);
-			DocumentTrackDAO rtDAO = new DocumentTrackDAOImpl();
-			
-			for (String id : refIds) {
-				DocumentTrack docTrack = new DocumentTrack();
-				docTrack.setDocumentTypeId(getReportTypeId(type));
-				docTrack.setRecordId(id);
-				docTrack.setReportTime(DateUtil.getNowAsTimestamp());
-				docTrack.setDocumentName(name);
-				docTrack.setTableId(refTableId);
-				docTrack.setSysUserId(currentSystemUserId);
-				DocumentTrack parent = getParent(id, refTableId, docTrack.getDocumentTypeId());
-				if( parent != null){
-					docTrack.setParent(parent);
-				}
-				rtDAO.insertData(docTrack);
-				
-			}
-			
-			trx.commit();
-		} catch (Exception e) {
-			trx.rollback();
-		}
-	}
+        }
+    }
 
 	private DocumentTrack getParent(String id, String refTableId, String documentTypeId) {
 		List<DocumentTrack> docs = docTrackDAO.getByTypeRecordAndTable(documentTypeId, refTableId, id);

@@ -31,12 +31,12 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.patienttype.dao.PatientTypeDAO;
 import us.mn.state.health.lims.patienttype.daoimpl.PatientTypeDAOImpl;
 import us.mn.state.health.lims.patienttype.valueholder.PatientType;
@@ -83,7 +83,6 @@ public class PatientTypeUpdateAction extends BaseAction {
 
 		PropertyUtils.copyProperties(patientType, dynaForm);
 
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
 		
 		try {
 
@@ -95,9 +94,8 @@ public class PatientTypeUpdateAction extends BaseAction {
 				patientTypeDAO.updateData(patientType);
 			}
 
-			tx.commit();
 		} catch (LIMSRuntimeException lre) {
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			errors = new ActionMessages();
 			java.util.Locale locale = (java.util.Locale) request.getSession()
 					.getAttribute("org.apache.struts.action.LOCALE");
@@ -132,9 +130,6 @@ public class PatientTypeUpdateAction extends BaseAction {
 			request.setAttribute(PREVIOUS_DISABLED, TRUE);
 			request.setAttribute(NEXT_DISABLED, TRUE);
 			forward = FWD_FAIL;
-
-		} finally {
-			HibernateUtil.closeSession();
 		}
 		
 		if (forward.equals(FWD_FAIL))

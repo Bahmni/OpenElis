@@ -30,7 +30,6 @@ import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.dao.LoginDAO;
 import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
 import us.mn.state.health.lims.login.valueholder.Login;
@@ -83,7 +82,6 @@ public class LoginUserUpdateAction extends BaseAction {
 
 		Login login = new Login();
 		login.setSysUserId(sysUserId);
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();	
 		
 		// populate valueholder from form
 		PropertyUtils.copyProperties(login, dynaForm);
@@ -98,11 +96,10 @@ public class LoginUserUpdateAction extends BaseAction {
 				// INSERT
 				loginDAO.insertData(login);
 			}
-			tx.commit();
 		} catch (LIMSRuntimeException lre) {
             //bugzilla 2154
-			LogEvent.logError("LoginUserUpdateAction","performAction()",lre.toString());      		
-			tx.rollback();
+			LogEvent.logError("LoginUserUpdateAction","performAction()",lre.toString());
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			errors = new ActionMessages();
 			java.util.Locale locale = (java.util.Locale) request.getSession()
 			.getAttribute("org.apache.struts.action.LOCALE");
@@ -129,9 +126,6 @@ public class LoginUserUpdateAction extends BaseAction {
 			request.setAttribute(PREVIOUS_DISABLED, "true");
 			request.setAttribute(NEXT_DISABLED, "true");
 			forward = FWD_FAIL;
-	
-		} finally {
-            HibernateUtil.closeSession();
         }
 		if (forward.equals(FWD_FAIL))
 			return mapping.findForward(forward);

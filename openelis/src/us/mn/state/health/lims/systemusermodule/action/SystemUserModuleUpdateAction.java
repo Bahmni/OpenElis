@@ -33,7 +33,6 @@ import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.role.dao.RoleDAO;
 import us.mn.state.health.lims.role.daoimpl.RoleDAOImpl;
 import us.mn.state.health.lims.role.valueholder.Role;
@@ -109,8 +108,6 @@ public class SystemUserModuleUpdateAction extends BaseAction {
 	
 		permissionAgentModule.setPermissionAgent(permissionAgent);
 		permissionAgentModule.setSystemModule(systemModule);
-
-		org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();	
 		
 		try {
 			PermissionAgentModuleDAO permissionAgentModuleDAO = permissionAgentIsUser ? new SystemUserModuleDAOImpl() : new RoleModuleDAOImpl();
@@ -122,11 +119,10 @@ public class SystemUserModuleUpdateAction extends BaseAction {
 				// INSERT
 				permissionAgentModuleDAO.insertData(permissionAgentModule);
 			}
-			tx.commit();
 		} catch (LIMSRuntimeException lre) {
     		//bugzilla 2154
 			LogEvent.logError("SystemUserModuleUpdateAction","performAction()",lre.toString());
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			errors = new ActionMessages();
 			java.util.Locale locale = (java.util.Locale) request.getSession()
 			.getAttribute("org.apache.struts.action.LOCALE");
@@ -153,9 +149,6 @@ public class SystemUserModuleUpdateAction extends BaseAction {
 			request.setAttribute(PREVIOUS_DISABLED, "true");
 			request.setAttribute(NEXT_DISABLED, "true");
 			forward = FWD_FAIL;
-	
-		} finally {
-            HibernateUtil.closeSession();
         }
 		if (forward.equals(FWD_FAIL))
 			return mapping.findForward(forward);

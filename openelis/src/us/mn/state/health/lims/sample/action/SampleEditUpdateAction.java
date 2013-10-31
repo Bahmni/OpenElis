@@ -24,7 +24,6 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.hibernate.StaleObjectStateException;
-import org.hibernate.Transaction;
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
@@ -140,7 +139,6 @@ public class SampleEditUpdateAction extends BaseAction {
 			List<Analysis> addAnalysisList = createAddAanlysisList((List<SampleEditItem>) dynaForm.get("possibleTests"));
 
 			List<SampleTestCollection> addedSamples = createAddSampleList(dynaForm, updatedSample, analysisBuilder);
-			Transaction tx = HibernateUtil.getSession().beginTransaction();
 
 			try {
 
@@ -196,10 +194,8 @@ public class SampleEditUpdateAction extends BaseAction {
 						}
 					}
 				}
-				
-				tx.commit();
 			} catch (LIMSRuntimeException lre) {
-				tx.rollback();
+                request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 				errors = new ActionMessages();
 				if (lre.getException() instanceof StaleObjectStateException) {
 					errors.add(ActionMessages.GLOBAL_MESSAGE, new ActionError("errors.OptimisticLockException", null, null));
@@ -212,9 +208,6 @@ public class SampleEditUpdateAction extends BaseAction {
 				request.setAttribute(Globals.ERROR_KEY, errors);
 
 				return mapping.findForward(FWD_FAIL);
-
-			} finally {
-				HibernateUtil.closeSession();
 			}
 		}
 

@@ -30,8 +30,8 @@ import us.mn.state.health.lims.upload.service.TestResultPersisterService;
 import java.util.Arrays;
 import java.util.List;
 
-import static junit.framework.Assert.*;
-import static org.mockito.Matchers.any;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -119,31 +119,23 @@ public class TestResultPersisterTest {
     }
 
     @org.junit.Test
-    public void rowWithAllEmptyTestResult_ShouldBeInValid() throws Exception {
+    public void rowWithAllEmptyTestResult_IsOk() throws Exception {
         CSVTestResult emptyTestResult = new CSVTestResult("", "");
         List<CSVTestResult> testResultsWithAllEmptyTestResult = Arrays.asList(emptyTestResult);
         CSVSample csvSample_InvalidTestName = new CSVSample(validSubscenterNameGAN, "123", validAccessionNumber, "25-02-2012", "sub center", testResultsWithAllEmptyTestResult);
         RowResult<CSVSample> sampleRowResult = testResultPersister.validate(csvSample_InvalidTestName);
 
-        assertFalse("validation should fail because of all empty testResults", sampleRowResult.isSuccessful());
-
-        String[] rowWithErrorColumn = sampleRowResult.getRowWithErrorColumn();
-        String erroMessage = rowWithErrorColumn[rowWithErrorColumn.length - 1];
-        assertTrue("Error message incorrect", erroMessage.contains("There should be atleast one Test with a Result"));
+        assertTrue("empty test result rows are ok", sampleRowResult.isSuccessful());
     }
 
     @org.junit.Test
-    public void allTestShouldHaveSomeResults() throws Exception {
+    public void testNeedNotHaveResults() throws Exception {
         CSVTestResult invalidTestResult = new CSVTestResult(validTestResults.get(0).test, "");
         List<CSVTestResult> testResultsWithOneInvalidTestResult = Arrays.asList(invalidTestResult, validTestResults.get(1));
         CSVSample csvSample_InvalidTestName = new CSVSample(validSubscenterNameGAN, "123", validAccessionNumber, "25-02-2012", "sub center", testResultsWithOneInvalidTestResult);
         RowResult<CSVSample> sampleRowResult = testResultPersister.validate(csvSample_InvalidTestName);
 
-        assertFalse("validation should fail because of invalid test result", sampleRowResult.isSuccessful());
-
-        String[] rowWithErrorColumn = sampleRowResult.getRowWithErrorColumn();
-        String erroMessage = rowWithErrorColumn[rowWithErrorColumn.length - 1];
-        assertTrue("Error message incorrect", erroMessage.contains("All Tests should have a result"));
+        assertTrue("tests need not have results", sampleRowResult.isSuccessful());
     }
 
     @org.junit.Test

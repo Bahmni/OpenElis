@@ -15,25 +15,19 @@
  */
 package us.mn.state.health.lims.resultlimits.action;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.validator.GenericValidator;
 import org.apache.struts.Globals;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
-
 import org.hibernate.StaleObjectStateException;
-import org.hibernate.Transaction;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
-import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.resultlimits.dao.ResultLimitDAO;
 import us.mn.state.health.lims.resultlimits.daoimpl.ResultLimitDAOImpl;
 import us.mn.state.health.lims.resultlimits.form.ResultLimitsLink;
@@ -47,10 +41,9 @@ import us.mn.state.health.lims.testresult.valueholder.TestResult;
 import us.mn.state.health.lims.typeoftestresult.dao.TypeOfTestResultDAO;
 import us.mn.state.health.lims.typeoftestresult.daoimpl.TypeOfTestResultDAOImpl;
 import us.mn.state.health.lims.typeoftestresult.valueholder.TypeOfTestResult;
-import us.mn.state.health.lims.unitofmeasure.dao.UnitOfMeasureDAO;
-import us.mn.state.health.lims.unitofmeasure.daoimpl.UnitOfMeasureDAOImpl;
-import us.mn.state.health.lims.unitofmeasure.valueholder.UnitOfMeasure;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 public class ResultLimitsUpdateAction extends BaseAction {
@@ -85,7 +78,6 @@ public class ResultLimitsUpdateAction extends BaseAction {
 		String forward;
 		// server-side validation (validation.xml)
 		ActionMessages errors = dynaForm.validate(mapping, request);
-        Transaction tx = HibernateUtil.getSession().beginTransaction();
 
         try {
             ResultLimitsLink limitsLink = (ResultLimitsLink) dynaForm.get("limit");
@@ -103,14 +95,13 @@ public class ResultLimitsUpdateAction extends BaseAction {
             validateForAllDuplicateEntries(resultLimit);
 
             persistLimit(resultLimit);
-            tx.commit();
             forward = FWD_SUCCESS_INSERT;
         } catch (LIMSDuplicateRecordException e) {
-            tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
             ActionError error = new ActionError("errors.ResultLimits.DuplicateEntryException", null, null);
             return addErrors(request, error, errors);
         } catch (LIMSRuntimeException lre) {
-			tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 			ActionError error = null;
 			if (lre.getException() instanceof StaleObjectStateException) {
 				error = new ActionError("errors.OptimisticLockException", null, null);
@@ -118,8 +109,6 @@ public class ResultLimitsUpdateAction extends BaseAction {
 				error = new ActionError("errors.UpdateException", null, null);
 			}
             return addErrors(request, error, errors);
-		} finally {
-			HibernateUtil.closeSession();
 		}
 		return forward;
 	}

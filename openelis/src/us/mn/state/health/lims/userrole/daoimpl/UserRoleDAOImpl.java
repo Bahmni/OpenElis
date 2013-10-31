@@ -17,15 +17,10 @@
 */
 package us.mn.state.health.lims.userrole.daoimpl;
 
-import java.math.BigInteger;
-import java.util.List;
-import java.util.Vector;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.exception.ConstraintViolationException;
-
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
 import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
 import us.mn.state.health.lims.common.action.IActionConstants;
@@ -37,6 +32,9 @@ import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.userrole.dao.UserRoleDAO;
 import us.mn.state.health.lims.userrole.valueholder.UserRole;
 import us.mn.state.health.lims.userrole.valueholder.UserRolePK;
+
+import java.util.List;
+import java.util.Vector;
 
 public class UserRoleDAOImpl extends BaseDAOImpl implements UserRoleDAO {
 
@@ -228,7 +226,7 @@ public class UserRoleDAOImpl extends BaseDAOImpl implements UserRoleDAO {
 			Query query = HibernateUtil.getSession().createSQLQuery(sql);
 			query.setInteger("userId", Integer.parseInt(userId));
 			query.setString("roleName", roleName);
-			int result = ((BigInteger)query.uniqueResult()).intValue();
+			int result = ((Long)query.uniqueResult()).intValue();
 			
 			inRole = result != 0;
 		}catch(HibernateException he){

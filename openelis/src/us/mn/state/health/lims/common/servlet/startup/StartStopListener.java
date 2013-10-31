@@ -13,11 +13,11 @@
 * 
 * Copyright (C) The Minnesota Department of Health.  All Rights Reserved.
 */
-
 package us.mn.state.health.lims.common.servlet.startup;
 
 import org.apache.log4j.Logger;
 import org.quartz.SchedulerException;
+import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.scheduler.IndependentThreadStarter;
 import us.mn.state.health.lims.scheduler.LateStartScheduler;
 
@@ -37,7 +37,13 @@ public final class StartStopListener implements ServletContextListener {
         try {
             scheduler.shutdown();
         } catch (SchedulerException e) {
-            logger.warn("Scheduler shutdown failed", e);
+            logger.error("Scheduler shutdown failed", e);
+        }
+
+        try {
+            HibernateUtil.closeSessionFactory();
+        } catch (Exception e) {
+            logger.error("Session Factory close failed. This could lead to hanging threads", e);
         }
 
         logger.info(String.format("Shutting down"));

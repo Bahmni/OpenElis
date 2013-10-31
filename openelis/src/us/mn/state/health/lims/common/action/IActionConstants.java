@@ -63,6 +63,7 @@ public interface IActionConstants {
 	public static final String VALIDSTATUS = "validStatus";
 	public static final String MORE_THAN_ONE_ACCESSION_NUMBER = "moreThanOneAccessionNumber";
 	public static final String INVALIDOTHERS = "invalidOthers";
+    public static final String REQUEST_FAILED = "requestStatus";
 
 
 	//action forward constants

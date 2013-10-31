@@ -15,35 +15,13 @@
 */
 package us.mn.state.health.lims.common.provider.reports;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.JasperRunManager;
 import net.sf.jasperreports.engine.util.JRLoader;
-
 import org.apache.struts.Globals;
 import org.apache.struts.action.ActionMessages;
-
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
@@ -58,7 +36,6 @@ import us.mn.state.health.lims.common.util.validator.ActionError;
 import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
 import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
 import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
 import us.mn.state.health.lims.organization.valueholder.Organization;
 import us.mn.state.health.lims.patient.dao.PatientDAO;
@@ -71,12 +48,7 @@ import us.mn.state.health.lims.provider.dao.ProviderDAO;
 import us.mn.state.health.lims.provider.daoimpl.ProviderDAOImpl;
 import us.mn.state.health.lims.provider.valueholder.Provider;
 import us.mn.state.health.lims.reports.valueholder.common.JRHibernateDataSource;
-import us.mn.state.health.lims.reports.valueholder.resultsreport.ResultsReportAnalyteResult;
-import us.mn.state.health.lims.reports.valueholder.resultsreport.ResultsReportAnalyteResultComparator;
-import us.mn.state.health.lims.reports.valueholder.resultsreport.ResultsReportLabProject;
-import us.mn.state.health.lims.reports.valueholder.resultsreport.ResultsReportSample;
-import us.mn.state.health.lims.reports.valueholder.resultsreport.ResultsReportSampleComparator;
-import us.mn.state.health.lims.reports.valueholder.resultsreport.ResultsReportTest;
+import us.mn.state.health.lims.reports.valueholder.resultsreport.*;
 import us.mn.state.health.lims.result.dao.ResultDAO;
 import us.mn.state.health.lims.result.daoimpl.ResultDAOImpl;
 import us.mn.state.health.lims.result.valueholder.Result;
@@ -95,6 +67,16 @@ import us.mn.state.health.lims.sampleorganization.valueholder.SampleOrganization
 import us.mn.state.health.lims.sampleproject.valueholder.SampleProject;
 import us.mn.state.health.lims.sourceofsample.valueholder.SourceOfSample;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSample;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * @author benzd1
@@ -178,8 +160,6 @@ public class ResultsReportProvider extends BaseReportsProvider{
 		Date today = Calendar.getInstance().getTime();
 		dateAsText = DateUtil.formatDateAsText(today, locale);
 
-		org.hibernate.Transaction tx = HibernateUtil.getSession()
-				.beginTransaction();
 		ActionMessages errors = new ActionMessages();
 		ActionError error = null;
 		try {
@@ -604,11 +584,11 @@ public class ResultsReportProvider extends BaseReportsProvider{
 				analysis.setPrintedDateForDisplay(dateAsText);
 				analysisDAO.updateData(analysis);
 			}
-			tx.commit();
 		} catch (Exception e) {
 			//bugzilla 2154
 			LogEvent.logError("ResultsReportProvider","processRequest()",e.toString());
-			tx.rollback();
+            request.setAttribute(Globals.ERROR_KEY, errors);
+
 
 			if (e instanceof JRException) {
                 error = new ActionError("errors.jasperreport.general", null, null);
@@ -629,10 +609,7 @@ public class ResultsReportProvider extends BaseReportsProvider{
 				error = new ActionError("errors.jasperreport.general", null, null);
 			}
 			errors.add(ActionMessages.GLOBAL_MESSAGE, error);
-			request.setAttribute(Globals.ERROR_KEY, errors);
-			
-		} finally {
-			HibernateUtil.closeSession();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
     	}
 		
 		if (error != null) {

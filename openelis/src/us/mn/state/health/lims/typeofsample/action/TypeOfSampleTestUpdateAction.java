@@ -20,6 +20,7 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleTestDAO;
@@ -63,13 +64,11 @@ public class TypeOfSampleTestUpdateAction extends BaseAction {
 		//add check for combo already being in db 
 		TypeOfSampleTestDAO sampleTestDAO = new TypeOfSampleTestDAOImpl();
 
-        org.hibernate.Transaction tx = HibernateUtil.getSession().beginTransaction();
         try {
             sampleTestDAO.insertData(sampleTest);
             TypeOfSampleUtil.clearTestCache();
-            tx.commit();
         } catch (LIMSRuntimeException e) {
-            tx.rollback();
+            request.setAttribute(IActionConstants.REQUEST_FAILED, true);
             throw e;
         }
 
