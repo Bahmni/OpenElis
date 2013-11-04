@@ -132,8 +132,8 @@ var myActionForm;
          		if ( !errorKey.equals(moduleNotAllowMessageKey) && !SystemConfiguration.getInstance().errorsToScreen())
          		    out.println("alert(messages);");         		    
                 else{
-                	out.println("var lines = messages.split('\\r\\n');"); 
-                	out.println("document.write('<center><h1>');");
+                	out.println("var lines = messages.split('\\r\\n');");
+                    out.println("document.write('<center><h1 class=\"alert-error\">');");
                 	out.println("for( var i = 0; i < lines.length; i++)");
                     out.println("document.write(lines[i] + '</br>');");
                     out.println("document.write('</h1></center>');");
