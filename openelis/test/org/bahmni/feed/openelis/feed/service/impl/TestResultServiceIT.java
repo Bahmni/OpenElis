@@ -4,7 +4,6 @@ import org.bahmni.feed.openelis.IT;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import org.bahmni.openelis.domain.TestResultDetails;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
-import us.mn.state.health.lims.note.valueholder.Note;
 import us.mn.state.health.lims.panel.valueholder.Panel;
 import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.result.valueholder.Result;
@@ -35,14 +34,14 @@ public class TestResultServiceIT extends IT {
         String resultValue = "10000";
         Date today = new Date();
 
-        Patient patient = createPatient(firstName, lastName, "GAN9897889009");
+        Patient patient = createPatient(firstName, lastName, "GAN9897889009", null);
         Sample sample = createSample(accessionNumber, today);
         SampleHuman sampleHuman = createSampleHuman(sample, patient);
         SampleItem sampleItem = createSampleItem(sample);
-        Test test = createTest(testName, unitOfMeasureName);
-        Panel panel = createPanel("Test Blood Panel", test);
-        ExternalReference testExternalReference = createExternalReference(test.getId(), "Test");
-        ExternalReference panelExternalReference = createExternalReference(panel.getId(), "Panel");
+        Panel panel = createPanel("Test Blood Panel");
+        Test test = createTest(testName, unitOfMeasureName, panel);
+        ExternalReference testExternalReference = createExternalReference(test.getId(), "Test", null);
+        ExternalReference panelExternalReference = createExternalReference(panel.getId(), "Panel", null);
         ResultLimit resultLimit = createResultLimit(test, 100.0, 200.0, 10.0, 1000.0, null, null, null);
         Analysis analysis = createAnalysis(sampleItem, StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance, "New", test, panel);
         Result result = createResult(analysis, resultValue, resultLimit);
@@ -78,7 +77,7 @@ public class TestResultServiceIT extends IT {
         String unitOfMeasureName = "cumm";
         Date today = new Date();
 
-        Patient patient = createPatient(firstName, lastName, "GAN1290898903");
+        Patient patient = createPatient(firstName, lastName, "GAN1290898903", null);
         Sample sample = createSample(accessionNumber, today);
         SampleHuman sampleHuman = createSampleHuman(sample, patient);
         SampleItem sampleItem = createSampleItem(sample);

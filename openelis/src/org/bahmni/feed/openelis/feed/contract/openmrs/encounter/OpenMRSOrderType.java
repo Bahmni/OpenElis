@@ -26,6 +26,16 @@ public class OpenMRSOrderType {
     private String name;
     private boolean isRetired;
 
+    public OpenMRSOrderType() {
+    }
+
+    public OpenMRSOrderType(String uuid, String name, boolean retired) {
+
+        this.uuid = uuid;
+        this.name = name;
+        isRetired = retired;
+    }
+
     public String getName() {
         return name;
     }

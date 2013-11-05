@@ -34,6 +34,12 @@ public class OpenMRSPatient {
     public OpenMRSPatient() {
     }
 
+    public OpenMRSPatient(String uuid, OpenMRSPerson person, List<OpenMRSPatientIdentifier> identifiers) {
+        this.uuid = uuid;
+        this.person = person;
+        this.identifiers = identifiers;
+    }
+
     public OpenMRSPatient addIdentifier(OpenMRSPatientIdentifier identifier) {
         if (identifiers == null) identifiers = new ArrayList<OpenMRSPatientIdentifier>();
 

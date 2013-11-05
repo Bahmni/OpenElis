@@ -73,9 +73,7 @@ import us.mn.state.health.lims.upload.action.AddSampleService;
 import java.io.IOException;
 import java.net.URI;
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 //analogous to a controller because it receives the request which is an event in this case
 public class EncounterFeedWorker extends OpenElisEventWorker {
@@ -136,7 +134,9 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
             String content = event.getContent();
             String encounterJSON = webClient.get(URI.create(urlPrefix + content), new HashMap<String, String>(0));
 
-            process(encounterJSON);
+            OpenMRSEncounterMapper openMRSEncounterMapper = new OpenMRSEncounterMapper(ObjectMapperRepository.objectMapper);
+            OpenMRSEncounter openMRSEncounter = openMRSEncounterMapper.map(encounterJSON);
+            process(openMRSEncounter);
 
         } catch (IOException e) {
             throw new LIMSRuntimeException(e);
@@ -146,9 +146,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         }
     }
 
-    public void process(String encounterJSON) throws IOException {
-        OpenMRSEncounterMapper openMRSEncounterMapper = new OpenMRSEncounterMapper(ObjectMapperRepository.objectMapper);
-        OpenMRSEncounter openMRSEncounter = openMRSEncounterMapper.map(encounterJSON);
+    public void process(OpenMRSEncounter openMRSEncounter) {
         logInfo(openMRSEncounter);
 
         if (!openMRSEncounter.hasLabOrder())
@@ -203,31 +201,55 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         List<SampleTestCollection> sampleTestCollections = new ArrayList<>();
         int sampleItemIdIndex = 0;
         List<OpenMRSOrder> labOrders = openMRSEncounter.getLabOrders();
+        Map<SampleItem,Set<Test>> sampleItemTestsMap = new HashMap();
+        Map<String, SampleItem> typeOfSampleSampleItemMap = new HashMap();
+
         for (OpenMRSOrder labOrder : labOrders) {
-            sampleItemIdIndex++;
 
             List<Test> tests = getTests(labOrder);
 
             String anyTestId = tests.get(0).getId();
             TypeOfSampleTest typeOfSampleTestForTest = typeOfSampleTestDAO.getTypeOfSampleTestForTest(anyTestId);
 
-            // TODO : Mujir - should this be empty??
-            String collector = "";
+            SampleItem sampleItem = typeOfSampleSampleItemMap.get(typeOfSampleTestForTest.getTypeOfSampleId());
+            if(sampleItem != null){
+                    Set<Test> existingTest = sampleItemTestsMap.get(sampleItem);
+                existingTest.addAll(tests);
+                }
 
-            SampleItem item = new SampleItem();
-            item.setSysUserId(sysUserId);
-            item.setSample(sample);
-            item.setTypeOfSample(typeOfSampleDAO.getTypeOfSampleById(typeOfSampleTestForTest.getTypeOfSampleId()));
-            item.setSortOrder(Integer.toString(sampleItemIdIndex));
-            item.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.SampleStatus.Entered));
-            item.setCollector(collector);
+            if(sampleItem == null){
+                sampleItemIdIndex++;
+                sampleItem = buildSampleItem(sysUserId, sample, sampleItemIdIndex, typeOfSampleTestForTest);
+                typeOfSampleSampleItemMap.put(typeOfSampleTestForTest.getTypeOfSampleId() ,sampleItem);
+                sampleItemTestsMap.put(sampleItem, new HashSet<>(tests));
+            }
+
+        }
+
+        for (Object sampleItem : sampleItemTestsMap.keySet()) {
+            List<Test> tests = new ArrayList<>(sampleItemTestsMap.get(sampleItem));
 
             // TODO : Mujir - is DateUtil.convertSqlDateToStringDate(nowAsSqlDate) ok?
-            SampleTestCollection sampleTestCollection = new SampleTestCollection(item, tests,
+            SampleTestCollection sampleTestCollection = new SampleTestCollection((SampleItem) sampleItem, tests,
                     DateUtil.formatDateTimeAsText(nowAsSqlDate), new ArrayList<ObservationHistory>());
             sampleTestCollections.add(sampleTestCollection);
         }
         return sampleTestCollections;
+    }
+
+    private SampleItem buildSampleItem(String sysUserId, Sample sample, int sampleItemIdIndex, TypeOfSampleTest typeOfSampleTestForTest) {
+
+        // TODO : Mujir - should this be empty??
+        String collector = "";
+
+        SampleItem item = new SampleItem();
+        item.setSysUserId(sysUserId);
+        item.setSample(sample);
+        item.setTypeOfSample(typeOfSampleDAO.getTypeOfSampleById(typeOfSampleTestForTest.getTypeOfSampleId()));
+        item.setSortOrder(Integer.toString(sampleItemIdIndex));
+        item.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.SampleStatus.Entered));
+        item.setCollector(collector);
+        return item;
     }
 
     private List<Test> getTests(OpenMRSOrder labOrder) {

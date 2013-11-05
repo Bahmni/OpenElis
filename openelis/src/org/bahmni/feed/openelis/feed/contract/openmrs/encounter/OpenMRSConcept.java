@@ -24,6 +24,16 @@ public class OpenMRSConcept {
     private OpenMRSConceptName name;
     private boolean set;
 
+    public OpenMRSConcept() {
+    }
+
+    public OpenMRSConcept(String uuid, OpenMRSConceptName name, boolean set) {
+
+        this.uuid = uuid;
+        this.name = name;
+        this.set = set;
+    }
+
     public void setSet(boolean set) {
         this.set = set;
     }

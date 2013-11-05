@@ -48,6 +48,11 @@ import us.mn.state.health.lims.testanalyte.daoimpl.TestAnalyteDAOImpl;
 import us.mn.state.health.lims.testanalyte.valueholder.TestAnalyte;
 import us.mn.state.health.lims.testresult.daoimpl.TestResultDAOImpl;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
+import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleDAO;
+import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleDAOImpl;
+import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleTestDAOImpl;
+import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSample;
+import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSampleTest;
 import us.mn.state.health.lims.unitofmeasure.daoimpl.UnitOfMeasureDAOImpl;
 import us.mn.state.health.lims.unitofmeasure.valueholder.UnitOfMeasure;
 
@@ -135,28 +140,40 @@ public class TestSetup {
         return test;
     }
 
-    public static Panel createPanel(String panelName, Test test) {
+    public static Test createTest(String testName, String unitOfMeasureName, Panel panel) {
+        Test test = createTest(testName, unitOfMeasureName);
+
+        if(panel != null){
+        PanelItem panelItem = new PanelItem();
+        panelItem.setPanel(panel);
+        panelItem.setPanelName(panel.getPanelName());
+        panelItem.setTest(test);
+        panelItem.setTestName(test.getTestName());
+        panelItem.setSysUserId("1");
+        new PanelItemDAOImpl().insertData(panelItem);
+        }
+
+        return test;
+    }
+
+    public static Panel createPanel(String panelName) {
         Panel panel = new Panel();
         panel.setSysUserId("1");
         panel.setPanelName(panelName);
         panel.setDescription(panelName);
         new PanelDAOImpl().insertData(panel);
 
-        PanelItem panelItem = new PanelItem();
-        panelItem.setPanel(panel);
-        panelItem.setPanelName(panelName);
-        panelItem.setTest(test);
-        panelItem.setTestName(test.getTestName());
-        panelItem.setSysUserId("1");
-        new PanelItemDAOImpl().insertData(panelItem);
-
         return panel;
     }
 
-    public static ExternalReference createExternalReference(String itemId, String type) {
+    public static ExternalReference createExternalReference(String itemId, String type, String uuid) {
         ExternalReference externalReference = new ExternalReference();
         externalReference.setItemId(Integer.parseInt(itemId));
-        externalReference.setExternalId(UUID.randomUUID().toString());
+
+        if(uuid == null){
+            uuid = UUID.randomUUID().toString();
+        }
+        externalReference.setExternalId(uuid);
         externalReference.setType(type);
         new ExternalReferenceDaoImpl().insertData(externalReference);
         return externalReference;
@@ -230,7 +247,30 @@ public class TestSetup {
         return result;
     }
 
-    public static Patient createPatient(String firstName, String lastName, String patientIdentityData) {
+    public static TypeOfSample createTypeOfSample(String desc, String localAbbrev) {
+        TypeOfSample typeOfSample = new TypeOfSample();
+        typeOfSample.setDescription(desc);
+        typeOfSample.setDomain("H");
+        typeOfSample.setLocalAbbreviation(localAbbrev);
+        typeOfSample.setActive(true);
+        typeOfSample.setSysUserId("1");
+        new TypeOfSampleDAOImpl().insertData(typeOfSample);
+
+        return typeOfSample;
+    }
+
+
+    public static TypeOfSampleTest createTypeOfSampleTest(String testId, String typeOfSampleId) {
+        TypeOfSampleTest typeOfSampleTest = new TypeOfSampleTest();
+        typeOfSampleTest.setSysUserId("1");
+        typeOfSampleTest.setTestId(testId);
+        typeOfSampleTest.setTypeOfSampleId(typeOfSampleId);
+        new TypeOfSampleTestDAOImpl().insertData(typeOfSampleTest);
+
+        return typeOfSampleTest;
+    }
+
+    public static Patient createPatient(String firstName, String lastName, String patientIdentityData, String uuid) {
         Person person = new Person();
         person.setFirstName(firstName);
         person.setLastName(lastName);
@@ -243,6 +283,7 @@ public class TestSetup {
         patient.setBirthDate(DateUtil.getNowAsTimestamp());
         patient.setSysUserId("1");
         patient.setLastupdated(DateUtil.getNowAsTimestamp());
+        patient.setUuid(uuid);
         new PatientDAOImpl().insertData(patient);
 
         PatientIdentity patientIdentity = new PatientIdentity();

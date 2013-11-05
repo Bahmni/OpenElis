@@ -24,6 +24,16 @@ public class OpenMRSOrder {
     private OpenMRSOrderType orderType;
     private OpenMRSConcept concept;
 
+    public OpenMRSOrder() {
+    }
+
+    public OpenMRSOrder(String uuid, OpenMRSOrderType orderType, OpenMRSConcept concept) {
+
+        this.uuid = uuid;
+        this.orderType = orderType;
+        this.concept = concept;
+    }
+
     public String getUuid() {
         return uuid;
     }

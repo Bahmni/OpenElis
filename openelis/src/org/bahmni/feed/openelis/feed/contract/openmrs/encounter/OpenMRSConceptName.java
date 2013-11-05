@@ -22,6 +22,13 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 public class OpenMRSConceptName {
     private String name;
 
+    public OpenMRSConceptName() {
+    }
+
+    public OpenMRSConceptName(String name) {
+        this.name = name;
+    }
+
     public String getName() {
         return name;
     }

@@ -28,6 +28,24 @@ public class OpenMRSEncounter {
     private OpenMRSPatient patient;
     private List<OpenMRSOrder> orders = new ArrayList<>();
 
+    public OpenMRSEncounter() {
+    }
+
+    public OpenMRSEncounter(String uuid, OpenMRSPatient patient, List<OpenMRSOrder> orders) {
+
+        this.uuid = uuid;
+        this.patient = patient;
+        this.orders = orders;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public void setPatient(OpenMRSPatient patient) {
+        this.patient = patient;
+    }
+
     public String getUuid() {
         return uuid;
     }
