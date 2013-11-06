@@ -8,6 +8,12 @@
 	<import value="net.sf.jasperreports.engine.*"/>
 	<import value="java.util.*"/>
 	<import value="net.sf.jasperreports.engine.data.*"/>
+	<style name="boldIfAbnormal" isBold="false">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$F{alerts}.contains("B") || $F{alerts}.contains("A")]]></conditionExpression>
+			<style isBold="true" pdfFontName="Helvetica-Bold"/>
+		</conditionalStyle>	
+	</style>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String">
 		<defaultValueExpression><![CDATA["../reports/"]]></defaultValueExpression>
 	</parameter>
@@ -58,6 +64,8 @@
 	<field name="patientSiteNumber" class="java.lang.String"/>
 	<field name="primaryRelative" class="java.lang.String"/>
 	<field name="resultType" class="java.lang.String"/>
+
+
 	<group name="person" isStartNewPage="true" isResetPageNumber="true">
 		<groupExpression><![CDATA[$F{accessionNumber}]]></groupExpression>
 	</group>
@@ -484,7 +492,7 @@
 					<rightPen lineWidth="0.25" lineColor="#CCCCCC"/>
 				</box>
 				<textField>
-					<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="162" height="18"/>
+					<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="162" height="18" style="boldIfAbnormal"/>
 					<box leftPadding="4">
 						<topPen lineWidth="0.0" lineColor="#CCCCCC"/>
 						<leftPen lineWidth="0.5"/>
@@ -495,7 +503,7 @@
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{testName}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-					<reportElement x="162" y="0" width="303" height="18">
+					<reportElement x="162" y="0" width="303" height="18" style="boldIfAbnormal">
 					    <printWhenExpression><![CDATA[$F{resultType}.equals("R")]]></printWhenExpression>
 					</reportElement>
 					<box rightPadding="4" leftPadding="4">
@@ -508,7 +516,7 @@
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{result}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-					<reportElement x="162" y="0" width="64" height="18">
+					<reportElement x="162" y="0" width="64" height="18" style="boldIfAbnormal">
 					    <printWhenExpression><![CDATA[!$F{resultType}.equals("R")]]></printWhenExpression>
 					</reportElement>
 					<box rightPadding="4">
@@ -521,8 +529,8 @@
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{result}]]></textFieldExpression>
 				</textField>
                 <textField isBlankWhenNull="true">
-                    <reportElement stretchType="RelativeToTallestObject" x="226" y="0" width="69" height="18">
-                        <printWhenExpression><![CDATA[!$F{resultType}.equals("R")]]></printWhenExpression>
+                    <reportElement stretchType="RelativeToTallestObject" x="226" y="0" width="69" height="18" style="boldIfAbnormal">
+                      	<printWhenExpression><![CDATA[!$F{resultType}.equals("R")]]></printWhenExpression>
                     </reportElement>
                     <box>
                         <topPen lineWidth="0.0" lineColor="#CCCCCC"/>
@@ -530,11 +538,11 @@
                         <bottomPen lineWidth="0.2" lineColor="#CCCCCC"/>
                         <rightPen lineWidth="0.5"/>
                     </box>
-                    <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                    <textElement textAlignment="Center" verticalAlignment="Middle" />
                     <textFieldExpression class="java.lang.String"><![CDATA[$F{uom}]]></textFieldExpression>
                 </textField>
 				<textField isBlankWhenNull="true">
-					<reportElement stretchType="RelativeToTallestObject" x="295" y="0" width="44" height="18">
+					<reportElement stretchType="RelativeToTallestObject" x="295" y="0" width="44" height="18" style="boldIfAbnormal" >
 					    <printWhenExpression><![CDATA[!$F{resultType}.equals("R")]]></printWhenExpression>
 					</reportElement>
 					<box>
@@ -549,7 +557,7 @@
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{alerts}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement stretchType="RelativeToTallestObject" x="339" y="0" width="126" height="18">
+					<reportElement stretchType="RelativeToTallestObject" x="339" y="0" width="126" height="18" style="boldIfAbnormal">
 					    <printWhenExpression><![CDATA[!$F{resultType}.equals("R")]]></printWhenExpression>
 					</reportElement>
 					<box>
