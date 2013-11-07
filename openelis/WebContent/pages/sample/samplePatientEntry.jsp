@@ -41,6 +41,8 @@
     Map<String,String> fieldsetToJspMap = new HashMap<String, String>() ;
 %>
 <%
+    boolean allHealthCenter = true;
+    request.setAttribute("allHealthCenter",allHealthCenter);
 	String path = request.getContextPath();
 	basePath = request.getScheme() + "://" + request.getServerName() + ":"	+ request.getServerPort() + path + "/";
 	useSTNumber =  FormFields.getInstance().useField(FormFields.Field.StNumber);
@@ -60,12 +62,8 @@
 
 <script type="text/javascript" src="<%=basePath%>scripts/utilities.js?ver=<%= Versioning.getBuildNumber() %>" ></script>
 
-
-
-
 <link rel="stylesheet" href="css/jquery_ui/jquery.ui.all.css?ver=<%= Versioning.getBuildNumber() %>">
 <link rel="stylesheet" href="css/customAutocomplete.css?ver=<%= Versioning.getBuildNumber() %>">
-
 
 <script src="scripts/ui/jquery.ui.core.js?ver=<%= Versioning.getBuildNumber() %>"></script>
 <script src="scripts/ui/jquery.ui.widget.js?ver=<%= Versioning.getBuildNumber() %>"></script>

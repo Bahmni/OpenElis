@@ -20,7 +20,6 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.bahmni.feed.openelis.ObjectMapperRepository;
-import org.codehaus.jackson.map.ObjectMapper;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.healthcenter.daoimpl.HealthCenterDAOImpl;
 import us.mn.state.health.lims.healthcenter.valueholder.HealthCenter;
@@ -33,15 +32,25 @@ import java.util.List;
 public class HealthCenterListAction extends BaseAction {
     @Override
     protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        HealthCenterDAOImpl healthCenterDAO = new HealthCenterDAOImpl();
-        List<HealthCenter> healthCenters = healthCenterDAO.getAll();
 
+        Boolean allHealthCenter = Boolean.valueOf(request.getParameter("allHealthCenter"));
+
+        HealthCenterDAOImpl healthCenterDAO = new HealthCenterDAOImpl();
+        List<HealthCenter> healthCenters = healthCenterDAO.getAllActive();
         List<String> activeHealthCenters = new ArrayList();
-        for (HealthCenter healthCenter : healthCenters) {
-            if (healthCenter.isActive()) {
+        if(allHealthCenter){
+            for (HealthCenter healthCenter : healthCenters) {
                 activeHealthCenters.add(healthCenter.getName());
             }
         }
+        else{
+            for (HealthCenter healthCenter : healthCenters) {
+                if(healthCenter.isAllowPatientCreation()){
+                    activeHealthCenters.add(healthCenter.getName());
+                }
+            }
+        }
+
         response.setContentType("application/json");
         ObjectMapperRepository.objectMapper.writeValue(response.getWriter(), activeHealthCenters);
 

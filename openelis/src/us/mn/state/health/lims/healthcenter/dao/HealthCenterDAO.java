@@ -24,6 +24,7 @@ import us.mn.state.health.lims.healthcenter.valueholder.HealthCenter;
 public interface HealthCenterDAO {
     HealthCenter get(String id);
     public List<HealthCenter> getAll() throws LIMSRuntimeException;
+    public List<HealthCenter> getAllActive() throws LIMSRuntimeException;
     public HealthCenter getByName(String name) throws LIMSRuntimeException;
     public void add(HealthCenter healthCenter) throws LIMSRuntimeException;
     public void update(HealthCenter healthCenter) throws LIMSRuntimeException;

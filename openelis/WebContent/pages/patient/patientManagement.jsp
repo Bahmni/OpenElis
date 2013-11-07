@@ -48,9 +48,15 @@
     boolean supportfirstNameFirst;
     boolean supportHealthCenters = false;
     boolean supportPrimaryRelative = false;
+    boolean allHealthCenter = false;
  %>
 <%
-	String path = request.getContextPath();
+    allHealthCenter = false;
+    if (request.getAttribute("allHealthCenter") != null) {
+        allHealthCenter = (Boolean) request.getAttribute("allHealthCenter");
+    }
+
+    String path = request.getContextPath();
 	basePath = request.getScheme() + "://" + request.getServerName() + ":"
 			+ request.getServerPort() + path + "/";
 	supportSTNumber = FormFields.getInstance().useField(Field.StNumber);
@@ -734,6 +740,7 @@ function /*void*/ makeDirty(){
 }
 
 function addPatient(){
+
 	$("PatientDetail").show();
     jQuery(".required-message").removeClass("hide");
 	clearPatientInfo();
@@ -1373,7 +1380,12 @@ function validatePatientId(){
 }
 
 function populateHealthCenter() {
-    new Ajax.Request('<%= request.getContextPath() + "/HealthCenterList.do"%>', {
+
+    var url = "/HealthCenterList.do?allHealthCenter=false";
+    if(<%= allHealthCenter %>){
+        url = "/HealthCenterList.do?allHealthCenter=true";
+    }
+    new Ajax.Request('<%= request.getContextPath() %>' + url, {
         method: 'get',
         onSuccess:  function(object) {
             var selectObj = jQuery("#healthCenterName")[0];

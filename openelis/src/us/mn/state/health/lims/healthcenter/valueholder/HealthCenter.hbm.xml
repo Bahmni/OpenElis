@@ -20,5 +20,8 @@
         <property name="active" type="boolean">
             <column name="ACTIVE" />
         </property>
+        <property name="allowPatientCreation" type="boolean">
+            <column name="ALLOW_PATIENT_CREATION" />
+        </property>
     </class>
 </hibernate-mapping>
