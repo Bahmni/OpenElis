@@ -145,8 +145,9 @@ $jq(document).ready( function() {
          pageSearch.highlightSearch( searchTerm, false );
     }
 
-    $jq("html, body").animate({ scrollTop: $jq("#resultsDisplayBlock").offset().top }, 500);
-
+    if (jQuery(".alert-error").length == 0) {
+        $jq("html, body").animate({ scrollTop: $jq("#resultsDisplayBlock").offset().top }, 500);
+    }
 });
 
 function handleMultiSelectChange( e, data ){
