@@ -33,6 +33,7 @@ import us.mn.state.health.lims.userrole.dao.UserRoleDAO;
 import us.mn.state.health.lims.userrole.valueholder.UserRole;
 import us.mn.state.health.lims.userrole.valueholder.UserRolePK;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Vector;
 
@@ -226,7 +227,7 @@ public class UserRoleDAOImpl extends BaseDAOImpl implements UserRoleDAO {
 			Query query = HibernateUtil.getSession().createSQLQuery(sql);
 			query.setInteger("userId", Integer.parseInt(userId));
 			query.setString("roleName", roleName);
-			int result = ((Long)query.uniqueResult()).intValue();
+			int result = ((BigInteger)query.uniqueResult()).intValue();
 			
 			inRole = result != 0;
 		}catch(HibernateException he){

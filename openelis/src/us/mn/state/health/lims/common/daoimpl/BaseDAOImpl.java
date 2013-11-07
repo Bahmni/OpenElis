@@ -101,7 +101,7 @@ public class BaseDAOImpl implements BaseDAO, IActionConstants{
 
         } catch (Exception e) {
         	//bugzilla 2154
-			LogEvent.logError("BaseDAOImpl","getTotalCount()",e.toString());
+			LogEvent.logErrorStack("BaseDAOImpl","getTotalCount()",e);
 			throw new LIMSRuntimeException("Error in getTotalCount() for " + table, e);
         }
 
