@@ -927,4 +927,15 @@
         </modifyColumn>
     </changeSet>
 
+    <changeSet id="62" author="tw" context="bahmni">
+        <comment>Add new column to Health Center</comment>
+        <addColumn tableName="health_center" schemaName="clinlims">
+            <column name="allow_patient_creation" type="boolean" valueBoolean="true"/>
+        </addColumn>
+        <update schemaName="clinlims" tableName="health_center">
+            <column name="allow_patient_creation" value="false"/>
+            <where>name IN ('SEM','GAN','SIV','BAM')</where>
+        </update>
+    </changeSet>
+    
 </databaseChangeLog>

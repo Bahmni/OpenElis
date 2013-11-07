@@ -27,6 +27,18 @@ public class HealthCenterDAOImpl implements HealthCenterDAO {
     }
 
     @Override
+    public List<HealthCenter> getAllActive() throws LIMSRuntimeException {
+        try {
+            String sql = "from HealthCenter where active = true";
+            Query query = HibernateUtil.getSession().createQuery(sql);
+            return query.list();
+        } catch (Exception e) {
+            LogEvent.logErrorStack("HealthCenterDAOImpl", "getAllActive()", e);
+            throw new LIMSRuntimeException("Error in HealthCenterDAOImpl getAllActive()", e);
+        }
+    }
+
+    @Override
     public HealthCenter getByName(String name) throws LIMSRuntimeException {
         try {
             HealthCenter healthCenter = null;

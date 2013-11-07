@@ -7,10 +7,16 @@ public class HealthCenter{
     private String name;
     private String description;
     private boolean active;
+    private boolean allowPatientCreation;
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
 
     public HealthCenter(){
         super();
         this.setActive(true);
+        this.setAllowPatientCreation(true);
     }
 
     public HealthCenter(String name, String description) {
@@ -49,6 +55,14 @@ public class HealthCenter{
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public boolean isAllowPatientCreation() {
+        return allowPatientCreation;
+    }
+
+    public void setAllowPatientCreation(boolean allowPatientCreation) {
+        this.allowPatientCreation = allowPatientCreation;
     }
 
     @Override
