@@ -86,7 +86,8 @@ public class TestResultServiceIT extends IT {
         TestResult testResult_2 = createTestResult(test, "D", "Value2");
         TestResult testResult_3 = createTestResult(test, "D", "Value3");
         Analysis analysis = createAnalysis(sampleItem, StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance, "New", test);
-        Result result = createResult(analysis, testResult_2, testResult_2.getValue());
+        String value = testResult_2.getValue();
+        Result result = createResult(analysis, testResult_2, testResult_2.getTestResultType());
 
         TestResultService testResultService = new TestResultService();
         TestResultDetails testResultDetails = testResultService.detailsFor(result.getId());
@@ -95,5 +96,56 @@ public class TestResultServiceIT extends IT {
         assertEquals(result.getId(), testResultDetails.getResultId());
         assertEquals("Value2", testResultDetails.getResult());
         assertNull(testResultDetails.getPanelExternalId());
+    }
+
+    @org.junit.Test
+    public void shouldReturnResultDetailsForTestsWithoutResultButHasNotes() throws Exception {
+        String accessionNumber = "10102013-002";
+        String testName = "Test Platelet Count";
+        String firstName = "First";
+        String lastName = "Last";
+        String unitOfMeasureName = "some unit";
+        String resultValue = "";
+        Date today = new Date();
+
+        Patient patient = createPatient(firstName, lastName, "GAN9897889010", null);
+        Sample sample = createSample(accessionNumber, today);
+        SampleHuman sampleHuman = createSampleHuman(sample, patient);
+        SampleItem sampleItem = createSampleItem(sample);
+        Panel panel = createPanel("Test Blood Panel");
+        Test test = createTest(testName, unitOfMeasureName, panel);
+        ExternalReference testExternalReference = createExternalReference(test.getId(), "Test", null);
+        ExternalReference panelExternalReference = createExternalReference(panel.getId(), "Panel", null);
+        ResultLimit resultLimit = createResultLimit(test, 100.0, 200.0, 10.0, 1000.0, null, null, null);
+        Analysis analysis = createAnalysis(sampleItem, StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance, "New", test, panel);
+        Result result = createResult(analysis, resultValue, resultLimit);
+        createResultNote(result, "Some note 1");
+        createResultNote(result, "Some note 2");
+
+        TestResultService testResultService = new TestResultService();
+        TestResultDetails testResultDetails = testResultService.detailsFor(result.getId());
+
+        assertEquals(resultValue, testResultDetails.getResult());
+        assertEquals(result.getId(), testResultDetails.getResultId());
+        assertEquals(testExternalReference.getExternalId(), testResultDetails.getTestExternalId());
+        assertEquals(panelExternalReference.getExternalId(), testResultDetails.getPanelExternalId());
+        assertTrue(testResultDetails.getNotes().contains("Some note 1"));
+        assertTrue(testResultDetails.getNotes().contains("Some note 2"));
+
+        Test testWithDictionaryResult = createTest("dictTest", unitOfMeasureName);
+        TestResult testResult_1 = createTestResult(testWithDictionaryResult, "D", "Value1");
+        TestResult testResult_2 = createTestResult(testWithDictionaryResult, "D", "Value2");
+        TestResult testResult_3 = createTestResult(testWithDictionaryResult, "D", "Value3");
+        Analysis dictionaryAnalysis = createAnalysis(sampleItem, StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance, "New", testWithDictionaryResult);
+        Result dictionaryResult = createResult(dictionaryAnalysis, null, testResult_2.getTestResultType() );
+        createResultNote(dictionaryResult, "Some dict note 1");
+        createResultNote(dictionaryResult, "Some dict note 2");
+
+        TestResultDetails dictTestResultDetails = testResultService.detailsFor(dictionaryResult.getId());
+
+        assertEquals("", dictTestResultDetails.getResult());
+        assertEquals(dictionaryResult.getId(), dictTestResultDetails.getResultId());
+        assertTrue(dictTestResultDetails.getNotes().contains("Some dict note 1"));
+        assertTrue(dictTestResultDetails.getNotes().contains("Some dict note 2"));
     }
 }

@@ -143,14 +143,14 @@ public class TestSetup {
     public static Test createTest(String testName, String unitOfMeasureName, Panel panel) {
         Test test = createTest(testName, unitOfMeasureName);
 
-        if(panel != null){
-        PanelItem panelItem = new PanelItem();
-        panelItem.setPanel(panel);
-        panelItem.setPanelName(panel.getPanelName());
-        panelItem.setTest(test);
-        panelItem.setTestName(test.getTestName());
-        panelItem.setSysUserId("1");
-        new PanelItemDAOImpl().insertData(panelItem);
+        if (panel != null) {
+            PanelItem panelItem = new PanelItem();
+            panelItem.setPanel(panel);
+            panelItem.setPanelName(panel.getPanelName());
+            panelItem.setTest(test);
+            panelItem.setTestName(test.getTestName());
+            panelItem.setSysUserId("1");
+            new PanelItemDAOImpl().insertData(panelItem);
         }
 
         return test;
@@ -170,7 +170,7 @@ public class TestSetup {
         ExternalReference externalReference = new ExternalReference();
         externalReference.setItemId(Integer.parseInt(itemId));
 
-        if(uuid == null){
+        if (uuid == null) {
             uuid = UUID.randomUUID().toString();
         }
         externalReference.setExternalId(uuid);
@@ -234,13 +234,21 @@ public class TestSetup {
         return result;
     }
 
-    public static Result createResult(Analysis analysis, TestResult testResult, String value) {
+    public static Result createResult(Analysis analysis, TestResult testResult, String testResultType) {
         Result result = new Result();
         result.setAnalysis(analysis);
-        result.setValue(value);
         result.setSysUserId("1");
-        result.setResultType(testResult.getTestResultType());
-        if (testResult.getTestResultType().equals("D")) {
+        result.setResultType(testResultType);
+        if (testResult == null) {
+            switch (testResultType) {
+                case "D":
+                    result.setValue("0");
+                    break;
+                case "N":
+                    result.setValue("");
+                    break;
+            }
+        } else {
             result.setValue(testResult.getValue());
         }
         new ResultDAOImpl().insertData(result);

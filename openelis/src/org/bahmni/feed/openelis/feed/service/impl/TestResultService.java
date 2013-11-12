@@ -1,5 +1,6 @@
 package org.bahmni.feed.openelis.feed.service.impl;
 
+import org.apache.commons.lang.StringUtils;
 import org.bahmni.openelis.domain.TestResultDetails;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
@@ -49,6 +50,9 @@ public class TestResultService {
     }
 
     private void addResultLimitsAlert(TestResultDetails testResultDetails) {
+        if(StringUtils.isBlank(testResultDetails.getResult())){
+            return;
+        }
         double result = Double.parseDouble(testResultDetails.getResult());
         if(hasNoResultLimits(testResultDetails)) {
             return;
@@ -108,7 +112,11 @@ public class TestResultService {
     private void addDictionaryValueIfRequired(TestResultDetails testResultDetails) {
         if (testResultDetails.getResultType() != null && testResultDetails.getResultType().equals("D")) {
             Dictionary dictionary = new DictionaryDAOImpl().getDataForId(testResultDetails.getResult());
-            testResultDetails.setResult(dictionary.getDictEntry());
+            if(dictionary != null){
+                testResultDetails.setResult(dictionary.getDictEntry());
+            }else{
+                testResultDetails.setResult("");
+            }
         }
     }
 
