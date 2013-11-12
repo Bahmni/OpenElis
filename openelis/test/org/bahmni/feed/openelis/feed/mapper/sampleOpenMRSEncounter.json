@@ -1,5 +1,68 @@
 {
     "uuid": "7a4ea494-01f3-4e28-bc96-f42960065bc4",
+    "visit": {
+        "uuid": "4c864abe-e286-4a4c-8626-398d5ba84ece",
+        "display": "EMERGENCY ? - 07/11/2013 15:02",
+        "patient": {
+            "uuid": "183190b3-5ffe-452d-ba7b-ceda848f5760",
+            "display": "GAN204955 - Unknown Unknown",
+            "links": [
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/patient/183190b3-5ffe-452d-ba7b-ceda848f5760",
+                    "rel": "self"
+                }
+            ]
+        },
+        "visitType": {
+            "uuid": "9174aa52-3c7f-11e3-8f4c-005056823ee5",
+            "display": "EMERGENCY",
+            "links": [
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/visittype/9174aa52-3c7f-11e3-8f4c-005056823ee5",
+                    "rel": "self"
+                }
+            ]
+        },
+        "indication": null,
+        "location": null,
+        "startDatetime": "2013-11-07T15:02:07.000+0530",
+        "stopDatetime": null,
+        "encounters": [
+            {
+                "uuid": "218d6313-c7d0-44a1-a897-315763558caa",
+                "display": "OPD 07/11/2013",
+                "links": [
+                    {
+                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/encounter/218d6313-c7d0-44a1-a897-315763558caa",
+                        "rel": "self"
+                    }
+                ]
+            },
+            {
+                "uuid": "68ca0e50-74e9-4bda-a22a-e4cc891d8981",
+                "display": "REG 07/11/2013",
+                "links": [
+                    {
+                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/encounter/68ca0e50-74e9-4bda-a22a-e4cc891d8981",
+                        "rel": "self"
+                    }
+                ]
+            }
+        ],
+        "attributes": [],
+        "voided": false,
+        "links": [
+            {
+                "uri": "NEED-TO-CONFIGURE/ws/rest/v1/visit/4c864abe-e286-4a4c-8626-398d5ba84ece",
+                "rel": "self"
+            },
+            {
+                "uri": "NEED-TO-CONFIGURE/ws/rest/v1/visit/4c864abe-e286-4a4c-8626-398d5ba84ece?v=full",
+                "rel": "full"
+            }
+        ],
+        "resourceVersion": "1.9"
+    },
     "orders": [
         {
             "uuid": "b6d0590a-8a18-4255-8dd6-5be84b3f9c34",
