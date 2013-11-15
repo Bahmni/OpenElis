@@ -19,7 +19,7 @@ package org.bahmni.feed.openelis.feed.client;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.AtomFeedProperties;
-import org.bahmni.webclients.WebClient;
+import org.bahmni.webclients.HttpClient;
 import org.ict4h.atomfeed.client.service.AtomFeedClient;
 import org.ict4h.atomfeed.client.service.EventWorker;
 import org.quartz.JobExecutionContext;
@@ -43,18 +43,18 @@ public abstract class OpenMRSFeedReaderJob extends OpenELISFeedReaderJob {
     }
 
     protected AtomFeedClient createAtomFeedClient(AtomFeedProperties atomFeedProperties, AtomFeedClientFactory atomFeedClientFactory) {
-        WebClient authenticatedWebClient = getWebClient(atomFeedProperties, atomFeedClientFactory);
+        HttpClient authenticatedWebClient = getWebClient(atomFeedProperties, atomFeedClientFactory);
         String feedName = getFeedName();
         EventWorker eventWorker = createWorker(authenticatedWebClient, getURLPrefix(atomFeedProperties, AUTH_URI));
         return atomFeedClientFactory.getMRSFeedClient(atomFeedProperties,
-                feedName, eventWorker, authenticatedWebClient);
+                feedName, eventWorker);
     }
 
-    protected abstract EventWorker createWorker(WebClient authenticatedWebClient, String urlPrefix);
+    protected abstract EventWorker createWorker(HttpClient authenticatedWebClient, String urlPrefix);
 
     protected abstract String getFeedName();
 
-    private WebClient getWebClient(AtomFeedProperties atomFeedProperties, AtomFeedClientFactory atomFeedClientFactory) {
+    private HttpClient getWebClient(AtomFeedProperties atomFeedProperties, AtomFeedClientFactory atomFeedClientFactory) {
         return atomFeedClientFactory.getAuthenticatedOpenMRSWebClient(
                 atomFeedProperties.getProperty(AUTH_URI),
                 atomFeedProperties.getProperty(OPENMRS_USER),

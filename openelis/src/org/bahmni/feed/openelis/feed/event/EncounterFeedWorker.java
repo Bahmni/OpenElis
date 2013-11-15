@@ -27,7 +27,7 @@ import org.bahmni.feed.openelis.feed.contract.openmrs.encounter.OpenMRSEncounter
 import org.bahmni.feed.openelis.feed.contract.openmrs.encounter.OpenMRSOrder;
 import org.bahmni.feed.openelis.feed.mapper.encounter.OpenMRSEncounterMapper;
 import org.bahmni.feed.openelis.utils.AuditingService;
-import org.bahmni.webclients.WebClient;
+import org.bahmni.webclients.HttpClient;
 import org.ict4h.atomfeed.client.domain.Event;
 import us.mn.state.health.lims.address.valueholder.OrganizationAddress;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
@@ -77,7 +77,7 @@ import java.util.*;
 
 //analogous to a controller because it receives the request which is an event in this case
 public class EncounterFeedWorker extends OpenElisEventWorker {
-    private WebClient webClient;
+    private HttpClient webClient;
     private String urlPrefix;
     private StringBuilder panelIdsBuilder = new StringBuilder();
 
@@ -99,7 +99,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
     private static Logger logger = Logger.getLogger(EncounterFeedWorker.class);
     private TestDAO testDAO;
 
-    public EncounterFeedWorker(WebClient webClient, String urlPrefix, ExternalReferenceDao externalReferenceDao,
+    public EncounterFeedWorker(HttpClient webClient, String urlPrefix, ExternalReferenceDao externalReferenceDao,
                                AuditingService auditingService, PanelItemDAO panelItemDAO,
                                TypeOfSampleTestDAO typeOfSampleTestDAO, TypeOfSampleDAO typeOfSampleDAO,
                                RequesterTypeDAO requesterTypeDAO, OrganizationTypeDAO organizationTypeDAO,
@@ -120,7 +120,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         this.testDAO = testDAO;
     }
 
-    public EncounterFeedWorker(WebClient authenticatedWebClient, String urlPrefix) {
+    public EncounterFeedWorker(HttpClient authenticatedWebClient, String urlPrefix) {
         this(authenticatedWebClient, urlPrefix, new ExternalReferenceDaoImpl(),
                 new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl()),
                 new PanelItemDAOImpl(), new TypeOfSampleTestDAOImpl(), new TypeOfSampleDAOImpl(),
@@ -132,7 +132,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
     public void process(Event event) {
         try {
             String content = event.getContent();
-            String encounterJSON = webClient.get(URI.create(urlPrefix + content), new HashMap<String, String>(0));
+            String encounterJSON = webClient.get(URI.create(urlPrefix + content));
 
             OpenMRSEncounterMapper openMRSEncounterMapper = new OpenMRSEncounterMapper(ObjectMapperRepository.objectMapper);
             OpenMRSEncounter openMRSEncounter = openMRSEncounterMapper.map(encounterJSON);

@@ -18,7 +18,7 @@ package org.bahmni.feed.openelis.feed.client;
 
 import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.feed.event.EncounterFeedWorker;
-import org.bahmni.webclients.WebClient;
+import org.bahmni.webclients.HttpClient;
 import org.ict4h.atomfeed.client.service.EventWorker;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
@@ -37,7 +37,7 @@ public class OpenMRSEncounterFeedReaderJob extends OpenMRSFeedReaderJob {
     }
 
     @Override
-    protected EventWorker createWorker(WebClient authenticatedWebClient, String urlPrefix) {
+    protected EventWorker createWorker(HttpClient authenticatedWebClient, String urlPrefix) {
         return new EncounterFeedWorker(authenticatedWebClient, urlPrefix);
     }
 

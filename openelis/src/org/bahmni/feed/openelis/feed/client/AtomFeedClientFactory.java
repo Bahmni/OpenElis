@@ -17,13 +17,10 @@
 package org.bahmni.feed.openelis.feed.client;
 
 import org.bahmni.feed.openelis.AtomFeedProperties;
-import org.bahmni.feed.openelis.ObjectMapperRepository;
-import org.bahmni.feed.openelis.feed.FeedException;
-import org.bahmni.feed.openelis.feed.event.PatientFeedWorker;
 import org.bahmni.feed.openelis.utils.OpenElisConnectionProvider;
-import org.bahmni.webclients.WebClient;
-import org.bahmni.webclients.openmrs.OpenMRSAuthenticationResponse;
-import org.bahmni.webclients.openmrs.OpenMRSAuthenticator;
+import org.bahmni.webclients.ConnectionDetails;
+import org.bahmni.webclients.HttpClient;
+import org.bahmni.webclients.openmrs.OpenMRSLoginAuthenticator;
 import org.ict4h.atomfeed.client.factory.AtomFeedClientBuilder;
 import org.ict4h.atomfeed.client.service.AtomFeedClient;
 import org.ict4h.atomfeed.client.service.EventWorker;
@@ -32,6 +29,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.HashMap;
 
 public class AtomFeedClientFactory {
     public AtomFeedClient getERPLabTestFeedClient(AtomFeedProperties atomFeedProperties, String feedName, EventWorker eventWorker) {
@@ -49,7 +47,7 @@ public class AtomFeedClientFactory {
     }
 
     public AtomFeedClient getMRSFeedClient(AtomFeedProperties atomFeedProperties, String feedName,
-                                           EventWorker patientFeedWorker, WebClient authenticatedWebClient) {
+                                           EventWorker patientFeedWorker) {
         String uri = atomFeedProperties.getProperty(feedName);
         try {
             org.ict4h.atomfeed.client.factory.AtomFeedProperties feedProperties = createAtomFeedClientProperties(atomFeedProperties);
@@ -58,7 +56,7 @@ public class AtomFeedClientFactory {
                     forFeedAt(new URI(uri)).
                     processedBy(patientFeedWorker).
                     usingConnectionProvider(new OpenElisConnectionProvider()).
-                    with(feedProperties, authenticatedWebClient.getCookies()).
+                    with(feedProperties, new HashMap<String, String>()).
                     build();
         } catch (URISyntaxException e) {
             throw new RuntimeException(String.format("Is not a valid URI - %s", uri));
@@ -74,17 +72,13 @@ public class AtomFeedClientFactory {
         return feedProperties;
     }
 
-    public WebClient getAuthenticatedOpenMRSWebClient(String authenticationURI, String userName, String password,
+    public HttpClient getAuthenticatedOpenMRSWebClient(String authenticationURI, String userName, String password,
                                                       String connectTimeoutStr, String readTimeoutStr) {
         int connectTimeout = Integer.parseInt(connectTimeoutStr);
         int readTimeout = Integer.parseInt(readTimeoutStr);
 
-        OpenMRSAuthenticator openMRSAuthenticator = new OpenMRSAuthenticator(authenticationURI, connectTimeout, readTimeout);
-        OpenMRSAuthenticationResponse authenticationResponse = openMRSAuthenticator.authenticate(userName, password, ObjectMapperRepository.objectMapper);
-
-        if (!authenticationResponse.isAuthenticated()) throw new FeedException("Failed to authenticate with OpenMRS");
-
-        return new WebClient(connectTimeout, readTimeout, "JSESSIONID", authenticationResponse.getSessionId());
+        ConnectionDetails connectionDetails = new ConnectionDetails(authenticationURI, userName, password, connectTimeout,readTimeout);
+        return new HttpClient(connectionDetails, new OpenMRSLoginAuthenticator(connectionDetails));
     }
 
     private static String getURLPrefix(AtomFeedProperties atomFeedProperties, String authenticationURI) {
