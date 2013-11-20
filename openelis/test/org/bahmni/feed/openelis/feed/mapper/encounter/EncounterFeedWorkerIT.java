@@ -226,7 +226,39 @@ public class EncounterFeedWorkerIT extends IT {
         assertTrue(containsTestInAnalysis(analysisListForBlood, bloodSmearTest));
     }
 
+    @org.junit.Test
+    public void shouldUpdateEncounterWhenNewOrderIsAdded() {
+        OpenMRSConcept openMRSAneamiaConcept = createOpenMRSConcept(anaemiaPanel.getPanelName(), anaemiaPanelConceptUUID, true);
+        //this test shouldnt be added to sample Item blood as this test is included in anaemia panel
+        OpenMRSConcept openMRSHaemoglobinConcept = createOpenMRSConcept(haemoglobinTest.getTestName(), haemoglobinTestConceptUUID, false);
+        OpenMRSConcept openMRSDiabeticsConcept = createOpenMRSConcept(diabeticsPanel.getPanelName(), diabeticsPanelConceptUUID, true);
+        OpenMRSConcept openMRSLoneConcept = createOpenMRSConcept(loneTest.getTestName(), loneTestConceptUUID, false);
 
+        List<OpenMRSConcept> labTests = Arrays.asList(openMRSHaemoglobinConcept); //test for only blood sample type
+        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, identifier, firstName, lastName, labTests);
+        EncounterFeedWorker encounterFeedWorker = new EncounterFeedWorker(null, null);
+        encounterFeedWorker.process(openMRSEncounter);
+
+        addNewOrders(openMRSEncounter, Arrays.asList(openMRSLoneConcept, openMRSAneamiaConcept, openMRSDiabeticsConcept));  // tests for blood and urine sample type
+        encounterFeedWorker.process(openMRSEncounter);
+
+        assertEquals(1, new SampleHumanDAOImpl().getSamplesForPatient(patient.getId()).size());
+        Sample sample = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId()).get(0);
+        List<SampleItem> sampleItems = new SampleItemDAOImpl().getSampleItemsBySampleId(sample.getId());
+        assertEquals(2,sampleItems.size());
+
+        SampleItem sampleItemForBlood = getSampleItemForSampleType(bloodSample, sampleItems);
+        List<Analysis> analysisListForBlood = new AnalysisDAOImpl().getAnalysesBySampleItem(sampleItemForBlood);
+        assertEquals(2,analysisListForBlood.size());
+        assertTrue(containsTestInAnalysis(analysisListForBlood, haemoglobinTest));
+        assertTrue(containsTestInAnalysis(analysisListForBlood, bloodSmearTest));
+
+        SampleItem sampleItemForUrine = getSampleItemForSampleType(urineSample, sampleItems);
+        List<Analysis> analysisListForUrine = new AnalysisDAOImpl().getAnalysesBySampleItem(sampleItemForUrine);
+        assertEquals(2, analysisListForUrine.size());
+        assertTrue(containsTestInAnalysis(analysisListForUrine, diabeticsTest));
+        assertTrue(containsTestInAnalysis(analysisListForUrine, loneTest));
+    }
 
     private Boolean containsTestInAnalysis(List<Analysis> analysisList, Test haemoglobinTest) {
         for (Analysis analysis : analysisList) {
@@ -247,24 +279,39 @@ public class EncounterFeedWorkerIT extends IT {
     }
 
     private OpenMRSEncounter createOpenMRSEncounter(String patientUUID, String identifier, String firstName, String lastName, List<OpenMRSConcept> openmrsConcepts) {
-        String orderTypeName = "Lab Order";
-
         OpenMRSName openMRSName = new OpenMRSName(firstName, lastName);
         OpenMRSPerson openMRSPerson = new OpenMRSPerson(openMRSName, patientUUID, "M", DateUtil.convertStringDateToTimestamp("01/01/2001 00:00"), false, null);
         OpenMRSPatient openMRSPatient = new OpenMRSPatient(patientUUID,openMRSPerson ,Arrays.asList(new OpenMRSPatientIdentifier(identifier)));
 
-        String orderTypeUUID = UUID.randomUUID().toString();
-        OpenMRSOrderType openMRSOrderType = new OpenMRSOrderType(orderTypeUUID, orderTypeName, false);
+        OpenMRSOrderType labOrderType = createLabOrderType();
+        List<OpenMRSOrder> openMRSOrders = createOpenMRSOrders(openmrsConcepts, labOrderType);
 
+        String encounterUUID = UUID.randomUUID().toString();
+        return new OpenMRSEncounter(encounterUUID, openMRSPatient, openMRSOrders);
+    }
+
+    private void addNewOrders(OpenMRSEncounter openMRSEncounter, List<OpenMRSConcept> concepts) {
+        List<OpenMRSOrder> orders = openMRSEncounter.getOrders();
+        OpenMRSOrderType labOrderType = orders.get(0).getOrderType();
+        List<OpenMRSOrder> newOrders = createOpenMRSOrders(concepts, labOrderType);
+        orders.addAll(newOrders);
+        openMRSEncounter.setOrders(orders);
+    }
+
+    private List<OpenMRSOrder> createOpenMRSOrders(List<OpenMRSConcept> openmrsConcepts, OpenMRSOrderType openMRSOrderType) {
         List<OpenMRSOrder> openMRSOrders = new ArrayList<>();
         for (OpenMRSConcept openmrsConcept : openmrsConcepts) {
             String orderUUID = UUID.randomUUID().toString();
             OpenMRSOrder openMRSOrder = new OpenMRSOrder(orderUUID, openMRSOrderType, openmrsConcept);
             openMRSOrders.add(openMRSOrder);
         }
+        return openMRSOrders;
+    }
 
-        String encounterUUID = UUID.randomUUID().toString();
-        return new OpenMRSEncounter(encounterUUID, openMRSPatient, openMRSOrders);
+    private OpenMRSOrderType createLabOrderType() {
+        String orderTypeName = "Lab Order";
+        String orderTypeUUID = UUID.randomUUID().toString();
+        return new OpenMRSOrderType(orderTypeUUID, orderTypeName, false);
     }
 
     private OpenMRSConcept createOpenMRSConcept(String conceptName, String conceptUUID, Boolean isSet) {

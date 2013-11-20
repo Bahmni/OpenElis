@@ -30,6 +30,9 @@ import org.bahmni.feed.openelis.utils.AuditingService;
 import org.bahmni.webclients.HttpClient;
 import org.ict4h.atomfeed.client.domain.Event;
 import us.mn.state.health.lims.address.valueholder.OrganizationAddress;
+import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
+import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
+import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
@@ -55,6 +58,8 @@ import us.mn.state.health.lims.sample.util.AccessionNumberUtil;
 import us.mn.state.health.lims.sample.util.AnalysisBuilder;
 import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.samplehuman.valueholder.SampleHuman;
+import us.mn.state.health.lims.sampleitem.dao.SampleItemDAO;
+import us.mn.state.health.lims.sampleitem.daoimpl.SampleItemDAOImpl;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
 import us.mn.state.health.lims.samplesource.dao.SampleSourceDAO;
 import us.mn.state.health.lims.samplesource.daoimpl.SampleSourceDAOImpl;
@@ -67,6 +72,8 @@ import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleDAO;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleTestDAO;
 import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleDAOImpl;
 import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleTestDAOImpl;
+import us.mn.state.health.lims.typeofsample.util.TypeOfSampleUtil;
+import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSample;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSampleTest;
 import us.mn.state.health.lims.upload.action.AddSampleService;
 
@@ -136,8 +143,9 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
 
             OpenMRSEncounterMapper openMRSEncounterMapper = new OpenMRSEncounterMapper(ObjectMapperRepository.objectMapper);
             OpenMRSEncounter openMRSEncounter = openMRSEncounterMapper.map(encounterJSON);
-            process(openMRSEncounter);
-
+            if(openMRSEncounter.hasLabOrder()) {
+                process(openMRSEncounter);
+            }
         } catch (IOException e) {
             throw new LIMSRuntimeException(e);
         } finally {
@@ -148,18 +156,22 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
 
     public void process(OpenMRSEncounter openMRSEncounter) {
         logInfo(openMRSEncounter);
+        Sample sample = sampleDAO.getSampleByUUID(openMRSEncounter.getUuid());
+        if (sample != null) {
+            updateSample(openMRSEncounter, sample);
+        } else {
+            createSample(openMRSEncounter);
+        }
+    }
 
-        if (!openMRSEncounter.hasLabOrder())
-            return;
-
-        Patient patient = getPatient(openMRSEncounter.getPatient());
-
+    private void createSample(OpenMRSEncounter openMRSEncounter) {
         String sysUserId = auditingService.getSysUserId();
         Date nowAsSqlDate = DateUtil.getNowAsSqlDate();
+        Sample sample;Patient patient = getPatient(openMRSEncounter.getPatient());
 
-        Sample sample = getSample(sysUserId, nowAsSqlDate, openMRSEncounter.getUuid());
-        List<SampleTestCollection> sampleTestCollections = getSampleTestCollections(openMRSEncounter, sysUserId, nowAsSqlDate, sample);
+        sample = getSample(sysUserId, nowAsSqlDate, openMRSEncounter.getUuid());
         SampleHuman sampleHuman = getSampleHuman(sysUserId);
+        List<SampleTestCollection> sampleTestCollections = getSampleTestCollections(openMRSEncounter, sysUserId, nowAsSqlDate, sample);
 
         RequesterType providerRequesterType = requesterTypeDAO.getRequesterTypeByName("provider");
         if (providerRequesterType != null) {
@@ -179,7 +191,57 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
                 new ArrayList<OrganizationAddress>(), sample,
                 sampleTestCollections, new ArrayList<ObservationHistory>(), sampleHuman,
                 patient.getId(), projectId, providerId, sysUserId,
-                provider_requester_type_id,  referring_org_type_id);
+                provider_requester_type_id, referring_org_type_id);
+    }
+
+    private void updateSample(OpenMRSEncounter openMRSEncounter, Sample sample) {
+        String sysUserId = auditingService.getSysUserId();
+        Date nowAsSqlDate = DateUtil.getNowAsSqlDate();
+        AnalysisDAO analysisDAO = new AnalysisDAOImpl();
+        List<SampleTestCollection> sampleTestCollections = getSampleTestCollections(openMRSEncounter, sysUserId, nowAsSqlDate, sample);
+        AnalysisBuilder analysisBuilder = getAnalysisBuilder();
+
+        Set<Test> testsToBeAdded = getTestsToBeAdded(sample, sampleTestCollections);
+
+        SampleItemDAO sampleItemDAO = new SampleItemDAOImpl();
+        List<SampleItem> existingSampleItems = sampleItemDAO.getSampleItemsBySampleId(sample.getId());
+        int sortOrder = existingSampleItems.size();
+
+        String analysisRevision = SystemConfiguration.getInstance().getAnalysisDefaultRevision();
+        for (Test test : testsToBeAdded) {
+            TypeOfSample typeOfSample = TypeOfSampleUtil.getTypeOfSampleForTest(test.getId());
+            SampleItem sampleItem = null;
+            for (SampleItem item : existingSampleItems) {
+                if(item.getTypeOfSample().getId().equals(typeOfSample.getId())){
+                    sampleItem = item;
+                }
+            }
+            if(sampleItem == null){
+                sampleItem = buildSampleItem(sysUserId, sample, ++sortOrder, typeOfSample);
+                sampleItemDAO.insertData(sampleItem);
+                existingSampleItems.add(sampleItem);
+            }
+            Analysis analysis = analysisBuilder.populateAnalysis(analysisRevision, sampleItem, test, sysUserId, nowAsSqlDate);
+            analysisDAO.insertData(analysis, false); // false--do not check
+        }
+    }
+
+    private Set<Test> getTestsToBeAdded(Sample sample, List<SampleTestCollection> sampleTestCollections) {
+        AnalysisDAO analysisDAO = new AnalysisDAOImpl();
+        List<Analysis> existingAnalyses = analysisDAO.getAnalysesBySampleId(sample.getId());
+
+        Set<Test> existingTests = new HashSet<>();
+        for (Analysis analysis : existingAnalyses) {
+            existingTests.add(analysis.getTest());
+        }
+
+        Set<Test> newTests = new HashSet<>();
+        for (SampleTestCollection sampleTestCollection : sampleTestCollections) {
+            newTests.addAll(sampleTestCollection.tests);
+        }
+
+        newTests.removeAll(existingTests);
+        return newTests;
     }
 
     private SampleHuman getSampleHuman(String sysUserId) {
@@ -192,7 +254,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         String patientUUID = openMRSPatient.getUuid();
         Patient patient = patientDAO.getPatientByUUID(patientUUID);
         if (patient == null) {
-            throw new RuntimeException(String.format("Patient with uuid '%s' not found in ELIS",patientUUID));
+            throw new RuntimeException(String.format("Patient with uuid '%s' not found in ELIS", patientUUID));
         }
         return patient;
     }
@@ -201,7 +263,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         List<SampleTestCollection> sampleTestCollections = new ArrayList<>();
         int sampleItemIdIndex = 0;
         List<OpenMRSOrder> labOrders = openMRSEncounter.getLabOrders();
-        Map<SampleItem,Set<Test>> sampleItemTestsMap = new HashMap();
+        Map<SampleItem, Set<Test>> sampleItemTestsMap = new HashMap();
         Map<String, SampleItem> typeOfSampleSampleItemMap = new HashMap();
 
         for (OpenMRSOrder labOrder : labOrders) {
@@ -212,15 +274,16 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
             TypeOfSampleTest typeOfSampleTestForTest = typeOfSampleTestDAO.getTypeOfSampleTestForTest(anyTestId);
 
             SampleItem sampleItem = typeOfSampleSampleItemMap.get(typeOfSampleTestForTest.getTypeOfSampleId());
-            if(sampleItem != null){
-                    Set<Test> existingTest = sampleItemTestsMap.get(sampleItem);
+            if (sampleItem != null) {
+                Set<Test> existingTest = sampleItemTestsMap.get(sampleItem);
                 existingTest.addAll(tests);
-                }
+            }
 
-            if(sampleItem == null){
+            if (sampleItem == null) {
                 sampleItemIdIndex++;
-                sampleItem = buildSampleItem(sysUserId, sample, sampleItemIdIndex, typeOfSampleTestForTest);
-                typeOfSampleSampleItemMap.put(typeOfSampleTestForTest.getTypeOfSampleId() ,sampleItem);
+                TypeOfSample typeOfSample = typeOfSampleDAO.getTypeOfSampleById(typeOfSampleTestForTest.getTypeOfSampleId());
+                sampleItem = buildSampleItem(sysUserId, sample, sampleItemIdIndex, typeOfSample);
+                typeOfSampleSampleItemMap.put(typeOfSampleTestForTest.getTypeOfSampleId(), sampleItem);
                 sampleItemTestsMap.put(sampleItem, new HashSet<>(tests));
             }
 
@@ -237,7 +300,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         return sampleTestCollections;
     }
 
-    private SampleItem buildSampleItem(String sysUserId, Sample sample, int sampleItemIdIndex, TypeOfSampleTest typeOfSampleTestForTest) {
+    private SampleItem buildSampleItem(String sysUserId, Sample sample, int sampleItemIdIndex, TypeOfSample typeOfSample) {
 
         // TODO : Mujir - should this be empty??
         String collector = "";
@@ -245,7 +308,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         SampleItem item = new SampleItem();
         item.setSysUserId(sysUserId);
         item.setSample(sample);
-        item.setTypeOfSample(typeOfSampleDAO.getTypeOfSampleById(typeOfSampleTestForTest.getTypeOfSampleId()));
+        item.setTypeOfSample(typeOfSample);
         item.setSortOrder(Integer.toString(sampleItemIdIndex));
         item.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.SampleStatus.Entered));
         item.setCollector(collector);

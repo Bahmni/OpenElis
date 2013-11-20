@@ -780,4 +780,17 @@ public class SampleDAOImpl extends BaseDAOImpl implements SampleDAO {
 		}
 		return null;
 	}
+
+    @Override
+    public Sample getSampleByUUID(String uuid) {
+        try{
+            String sql = "from Sample as sample where sample.uuid = :uuid";
+            Query query = HibernateUtil.getSession().createQuery(sql);
+            query.setParameter("uuid", uuid);
+            return (Sample) query.uniqueResult();
+        } catch(HibernateException he) {
+            LogEvent.logErrorStack("SampleDAOImpl", "getSampleByUUID(String uuid)", he);
+            throw new LIMSRuntimeException("Error in Sample getSampleByUUID(String uuid)", he);
+        }
+    }
 }

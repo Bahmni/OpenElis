@@ -26,6 +26,7 @@ import us.mn.state.health.lims.panelitem.dao.PanelItemDAO;
 import us.mn.state.health.lims.panelitem.daoimpl.PanelItemDAOImpl;
 import us.mn.state.health.lims.panelitem.valueholder.PanelItem;
 import us.mn.state.health.lims.sample.bean.SampleTestCollection;
+import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.test.valueholder.Test;
 
@@ -42,7 +43,10 @@ public class AnalysisBuilder {
 
     public Analysis populateAnalysis(String analysisRevision, SampleTestCollection sampleTestCollection, Test test) {
         Date collectionDateTime = DateUtil.convertStringDateTimeToSqlDate(sampleTestCollection.collectionDate);
+        return populateAnalysis(analysisRevision, sampleTestCollection.item, test, sampleTestCollection.item.getSysUserId(), collectionDateTime);
+    }
 
+    public Analysis populateAnalysis(String analysisRevision, SampleItem sampleItem, Test test, String sysUserId, Date collectionDate) {
         Panel panel = getPanelForTest(test);
 
         Analysis analysis = new Analysis();
@@ -50,10 +54,10 @@ public class AnalysisBuilder {
         analysis.setPanel(panel);
         analysis.setIsReportable(test.getIsReportable());
         analysis.setAnalysisType(DEFAULT_ANALYSIS_TYPE);
-        analysis.setSampleItem(sampleTestCollection.item);
-        analysis.setSysUserId(sampleTestCollection.item.getSysUserId());
+        analysis.setSampleItem(sampleItem);
+        analysis.setSysUserId(sysUserId);
         analysis.setRevision(analysisRevision);
-        analysis.setStartedDate(collectionDateTime);
+        analysis.setStartedDate(collectionDate);
         analysis.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.NotTested));
         analysis.setTestSection(test.getTestSection());
         return analysis;
