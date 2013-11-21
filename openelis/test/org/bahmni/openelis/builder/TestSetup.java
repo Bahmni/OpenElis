@@ -7,7 +7,6 @@ import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.analyte.daoimpl.AnalyteDAOImpl;
 import us.mn.state.health.lims.analyte.valueholder.Analyte;
 import us.mn.state.health.lims.common.action.IActionConstants;
-import us.mn.state.health.lims.common.provider.query.SampleEntryTestsForTypeProvider;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
 import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
@@ -48,7 +47,6 @@ import us.mn.state.health.lims.testanalyte.daoimpl.TestAnalyteDAOImpl;
 import us.mn.state.health.lims.testanalyte.valueholder.TestAnalyte;
 import us.mn.state.health.lims.testresult.daoimpl.TestResultDAOImpl;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
-import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleDAO;
 import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleDAOImpl;
 import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleTestDAOImpl;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSample;
@@ -144,16 +142,20 @@ public class TestSetup {
         Test test = createTest(testName, unitOfMeasureName);
 
         if (panel != null) {
-            PanelItem panelItem = new PanelItem();
-            panelItem.setPanel(panel);
-            panelItem.setPanelName(panel.getPanelName());
-            panelItem.setTest(test);
-            panelItem.setTestName(test.getTestName());
-            panelItem.setSysUserId("1");
-            new PanelItemDAOImpl().insertData(panelItem);
+            createPanelItem(test, panel);
         }
 
         return test;
+    }
+
+    public static void createPanelItem(Test test, Panel panel) {
+        PanelItem panelItem = new PanelItem();
+        panelItem.setPanel(panel);
+        panelItem.setPanelName(panel.getPanelName());
+        panelItem.setTest(test);
+        panelItem.setTestName(test.getTestName());
+        panelItem.setSysUserId("1");
+        new PanelItemDAOImpl().insertData(panelItem);
     }
 
     public static Panel createPanel(String panelName) {

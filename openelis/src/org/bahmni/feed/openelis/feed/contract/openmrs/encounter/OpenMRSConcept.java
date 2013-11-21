@@ -53,4 +53,21 @@ public class OpenMRSConcept {
     public boolean isSet() {
         return set;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        OpenMRSConcept that = (OpenMRSConcept) o;
+
+        if (!uuid.equals(that.uuid)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return uuid.hashCode();
+    }
 }

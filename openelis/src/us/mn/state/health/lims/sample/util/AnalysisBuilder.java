@@ -78,7 +78,7 @@ public class AnalysisBuilder {
         }
     }
 
-    private Panel getPanelForTest(Test test) {
+    public Panel getPanelForTest(Test test) {
         List<PanelItem> panelItems = panelItemDAO.getPanelItemByTest(test);
 
         for( PanelItem panelItem : panelItems){
