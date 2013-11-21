@@ -16,10 +16,13 @@
 
 package us.mn.state.health.lims.sample.bean;
 
+import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.observationhistory.valueholder.ObservationHistory;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
 import us.mn.state.health.lims.test.valueholder.Test;
 
+import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SampleTestCollection {
@@ -33,5 +36,10 @@ public class SampleTestCollection {
         this.tests = tests;
         this.collectionDate = collectionDate;
         initialSampleConditionIdList = initialConditionList;
+    }
+
+    public SampleTestCollection(SampleItem item, List<Test> tests, Date collectionDate) {
+        // TODO : Mujir - is DateUtil.convertSqlDateToStringDate(nowAsSqlDate) ok?
+        this(item, tests, DateUtil.formatDateTimeAsText(collectionDate), new ArrayList<ObservationHistory>());
     }
 }

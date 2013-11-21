@@ -98,6 +98,8 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
     private SampleSourceDAO sampleSourceDAO;
     private PatientDAO patientDAO;
     private TestDAO testDAO;
+    private AnalysisDAO analysisDAO;
+    private SampleItemDAO sampleItemDAO;
 
     private static long provider_requester_type_id;
     private static String referring_org_type_id;
@@ -108,7 +110,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
                                TypeOfSampleTestDAO typeOfSampleTestDAO, TypeOfSampleDAO typeOfSampleDAO,
                                RequesterTypeDAO requesterTypeDAO, OrganizationTypeDAO organizationTypeDAO,
                                SampleSourceDAO sampleSourceDAO, SampleDAOImpl sampleDAO, PatientDAO patientDAO,
-                               TestDAO testDAO) {
+                               TestDAO testDAO, AnalysisDAO analysisDAO, SampleItemDAOImpl sampleItemDAO) {
         this.webClient = webClient;
         this.urlPrefix = urlPrefix;
         this.externalReferenceDao = externalReferenceDao;
@@ -122,6 +124,8 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         this.sampleDAO = sampleDAO;
         this.patientDAO = patientDAO;
         this.testDAO = testDAO;
+        this.analysisDAO = analysisDAO;
+        this.sampleItemDAO = sampleItemDAO;
     }
 
     public EncounterFeedWorker(HttpClient authenticatedWebClient, String urlPrefix) {
@@ -129,7 +133,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
                 new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl()),
                 new PanelItemDAOImpl(), new TypeOfSampleTestDAOImpl(), new TypeOfSampleDAOImpl(),
                 new RequesterTypeDAOImpl(), new OrganizationTypeDAOImpl(), new SampleSourceDAOImpl(),
-                new SampleDAOImpl(), new PatientDAOImpl(), new TestDAOImpl());
+                new SampleDAOImpl(), new PatientDAOImpl(), new TestDAOImpl(), new AnalysisDAOImpl(), new SampleItemDAOImpl());
     }
 
     @Override
@@ -140,7 +144,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
 
             OpenMRSEncounterMapper openMRSEncounterMapper = new OpenMRSEncounterMapper(ObjectMapperRepository.objectMapper);
             OpenMRSEncounter openMRSEncounter = openMRSEncounterMapper.map(encounterJSON);
-            if(openMRSEncounter.hasLabOrder()) {
+            if (openMRSEncounter.hasLabOrder()) {
                 process(openMRSEncounter);
             }
         } catch (IOException e) {
@@ -166,70 +170,53 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
     private void createSample(OpenMRSEncounter openMRSEncounter, FeedProcessState processState) {
         String sysUserId = auditingService.getSysUserId();
         Date nowAsSqlDate = DateUtil.getNowAsSqlDate();
-        Sample sample;Patient patient = getPatient(openMRSEncounter.getPatient());
 
-        sample = getSample(sysUserId, nowAsSqlDate, openMRSEncounter.getUuid());
+        Patient patient = getPatient(openMRSEncounter.getPatient());
+        Sample sample = getSample(sysUserId, nowAsSqlDate, openMRSEncounter.getUuid());
         SampleHuman sampleHuman = getSampleHuman(sysUserId);
         List<SampleTestCollection> sampleTestCollections = getSampleTestCollections(openMRSEncounter, sysUserId, nowAsSqlDate, sample, processState);
 
-        RequesterType providerRequesterType = requesterTypeDAO.getRequesterTypeByName("provider");
-        if (providerRequesterType != null) {
-            provider_requester_type_id = Long.parseLong(providerRequesterType.getId());
-        }
-        OrganizationType orgType = organizationTypeDAO.getOrganizationTypeByName("referring clinic");
-        if (orgType != null) {
-            referring_org_type_id = orgType.getId();
-        }
-
         AnalysisBuilder analysisBuilder = getAnalysisBuilder(processState);
 
-        String providerId = null;
-        String projectId = null;
         AddSampleService addSampleService = new AddSampleService(false);
         addSampleService.persist(analysisBuilder, false, null, null,
                 new ArrayList<OrganizationAddress>(), sample,
                 sampleTestCollections, new ArrayList<ObservationHistory>(), sampleHuman,
-                patient.getId(), projectId, providerId, sysUserId,
-                provider_requester_type_id, referring_org_type_id);
+                patient.getId(), null, null, sysUserId,
+                getProviderRequesterTypeId(), getReferringOrgTypeId());
     }
 
     private void updateSample(OpenMRSEncounter openMRSEncounter, Sample sample, FeedProcessState processState) {
         String sysUserId = auditingService.getSysUserId();
         Date nowAsSqlDate = DateUtil.getNowAsSqlDate();
-        AnalysisDAO analysisDAO = new AnalysisDAOImpl();
+
         List<SampleTestCollection> sampleTestCollections = getSampleTestCollections(openMRSEncounter, sysUserId, nowAsSqlDate, sample, processState);
+        List<Analysis> existingAnalyses = analysisDAO.getAnalysesBySampleId(sample.getId());
+        TestOrderDiff testOrderDiff = new TestOrderDiff(sampleTestCollections, existingAnalyses);
+
         AnalysisBuilder analysisBuilder = getAnalysisBuilder(processState);
 
-        TestOrderDiff testOrderDiff = getTestsOrderDiff(sample, sampleTestCollections);
-        Set<Test> testsToBeAdded = testOrderDiff.getTestsAdded();
-        Set<Test> testsToBeDeleted = testOrderDiff.getTestsDeleted();
-        Set<Test> testsIntersecting = testOrderDiff.getTestsIntersection();
+        addTestsToExistingSample(sample, sysUserId, nowAsSqlDate, analysisBuilder, testOrderDiff);
+        cancelAnalysisForDeletedTests(sample, sysUserId, testOrderDiff);
+        setCorrectPanelIdForUnchangedTests(sample, sysUserId, analysisBuilder, testOrderDiff);
+    }
 
-        SampleItemDAO sampleItemDAO = new SampleItemDAOImpl();
-        List<SampleItem> existingSampleItems = sampleItemDAO.getSampleItemsBySampleId(sample.getId());
-        int sortOrder = existingSampleItems.size();
-
-        String analysisRevision = SystemConfiguration.getInstance().getAnalysisDefaultRevision();
-        for (Test test : testsToBeAdded) {
-            TypeOfSample typeOfSample = TypeOfSampleUtil.getTypeOfSampleForTest(test.getId());
-            SampleItem sampleItem = null;
-            for (SampleItem item : existingSampleItems) {
-                if(item.getTypeOfSample().getId().equals(typeOfSample.getId())){
-                    sampleItem = item;
-                }
+    private void setCorrectPanelIdForUnchangedTests(Sample sample, String sysUserId, AnalysisBuilder analysisBuilder, TestOrderDiff testOrderDiff) {
+        String analysisCancelStatus = StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.Canceled);
+        HashSet<Integer> cancelledStatusIds = new HashSet<>(Arrays.asList(Integer.parseInt(analysisCancelStatus)));
+        List<Analysis> analysesIntersection = analysisDAO.getAnalysesBySampleIdExcludedByStatusId(sample.getId(), cancelledStatusIds);
+        for (Analysis analysis : analysesIntersection) {
+            if (testOrderDiff.getTestsIntersection().contains(analysis.getTest())) {
+                analysis.setPanel(analysisBuilder.getPanelForTest(analysis.getTest()));
+                analysis.setSysUserId(sysUserId);
+                analysisDAO.updateData(analysis);
             }
-            if(sampleItem == null){
-                sampleItem = buildSampleItem(sysUserId, sample, ++sortOrder, typeOfSample);
-                sampleItemDAO.insertData(sampleItem);
-                existingSampleItems.add(sampleItem);
-            }
-            Analysis analysis = analysisBuilder.populateAnalysis(analysisRevision, sampleItem, test, sysUserId, nowAsSqlDate);
-            analysisDAO.insertData(analysis, false); // false--do not check
         }
+    }
 
-
+    private void cancelAnalysisForDeletedTests(Sample sample, String sysUserId, TestOrderDiff testOrderDiff) {
         List<Integer> toBeDeletedTestIds = new ArrayList<>();
-        for (Test test : testsToBeDeleted) {
+        for (Test test : testOrderDiff.getTestsDeleted()) {
             toBeDeletedTestIds.add(Integer.parseInt(test.getId()));
         }
         List<Analysis> analysisToBeCanceled = analysisDAO.getAnalysisBySampleAndTestIds(sample.getId(), toBeDeletedTestIds);
@@ -238,41 +225,31 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
             analysis.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.Canceled));
             analysisDAO.updateData(analysis);
         }
+    }
 
-        String analysisCancelStatus = StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.Canceled);
-        HashSet<Integer> cancelledStatusIds = new HashSet<>(Arrays.asList(Integer.parseInt(analysisCancelStatus)));
-        List<Analysis> analysesIntersection = analysisDAO.getAnalysesBySampleIdExcludedByStatusId(sample.getId(), cancelledStatusIds);
-        for (Analysis analysis : analysesIntersection) {
-            if(testsIntersecting.contains(analysis.getTest())){
-                analysis.setPanel(analysisBuilder.getPanelForTest(analysis.getTest()));
-                analysis.setSysUserId(sysUserId);
-                analysisDAO.updateData(analysis);
-            }
+    private void addTestsToExistingSample(Sample sample, String sysUserId, Date nowAsSqlDate, AnalysisBuilder analysisBuilder, TestOrderDiff testOrderDiff) {
+        List<SampleItem> existingSampleItems = sampleItemDAO.getSampleItemsBySampleId(sample.getId());
+        int sortOrder = existingSampleItems.size();
+        String analysisRevision = SystemConfiguration.getInstance().getAnalysisDefaultRevision();
+
+        for (Test test : testOrderDiff.getTestsAdded()) {
+            SampleItem sampleItem = findOrCreateSampleItem(existingSampleItems, test, sample, sysUserId, sortOrder);
+            Analysis analysis = analysisBuilder.populateAnalysis(analysisRevision, sampleItem, test, sysUserId, nowAsSqlDate);
+            analysisDAO.insertData(analysis, false); // false--do not check
         }
     }
 
-    private TestOrderDiff getTestsOrderDiff(Sample sample, List<SampleTestCollection> sampleTestCollections) {
-        AnalysisDAO analysisDAO = new AnalysisDAOImpl();
-        List<Analysis> existingAnalyses = analysisDAO.getAnalysesBySampleId(sample.getId());
-
-        Set<Test> existingTests = new HashSet<>();
-        for (Analysis analysis : existingAnalyses) {
-            existingTests.add(analysis.getTest());
+    private SampleItem findOrCreateSampleItem(List<SampleItem> existingSampleItems, Test test, Sample sample, String sysUserId, int sortOrder) {
+        TypeOfSample typeOfSample = TypeOfSampleUtil.getTypeOfSampleForTest(test.getId());
+        for (SampleItem item : existingSampleItems) {
+            if (item.getTypeOfSample().getId().equals(typeOfSample.getId())) {
+                return item;
+            }
         }
-
-        Set<Test> newTests = new HashSet<>();
-        for (SampleTestCollection sampleTestCollection : sampleTestCollections) {
-            newTests.addAll(sampleTestCollection.tests);
-        }
-
-        HashSet<Test> existingTestsClone = new HashSet<>(existingTests);
-        HashSet<Test> newTestsClone = new HashSet<>(newTests);
-        HashSet<Test> intersectionTests = new HashSet<>(newTests);
-
-        newTestsClone.removeAll(existingTests);
-        existingTestsClone.removeAll(newTests);
-        intersectionTests.retainAll(existingTests);
-        return new TestOrderDiff(newTestsClone, existingTestsClone, intersectionTests);
+        SampleItem sampleItem = buildSampleItem(sysUserId, sample, ++sortOrder, typeOfSample);
+        sampleItemDAO.insertData(sampleItem);
+        existingSampleItems.add(sampleItem);
+        return sampleItem;
     }
 
     private SampleHuman getSampleHuman(String sysUserId) {
@@ -292,46 +269,19 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
 
     private List<SampleTestCollection> getSampleTestCollections(OpenMRSEncounter openMRSEncounter, String sysUserId, Date nowAsSqlDate, Sample sample, FeedProcessState processState) {
         List<SampleTestCollection> sampleTestCollections = new ArrayList<>();
-        int sampleItemIdIndex = 0;
-        List<OpenMRSOrder> labOrders = openMRSEncounter.getLabOrders();
-        Map<SampleItem, Set<Test>> sampleItemTestsMap = new HashMap();
-        Map<String, SampleItem> typeOfSampleSampleItemMap = new HashMap();
-
-        for (OpenMRSOrder labOrder : labOrders) {
-
-            List<Test> tests = getTests(labOrder, processState);
-
-            String anyTestId = tests.get(0).getId();
-            TypeOfSampleTest typeOfSampleTestForTest = typeOfSampleTestDAO.getTypeOfSampleTestForTest(anyTestId);
-
-            SampleItem sampleItem = typeOfSampleSampleItemMap.get(typeOfSampleTestForTest.getTypeOfSampleId());
-            if (sampleItem != null) {
-                Set<Test> existingTest = sampleItemTestsMap.get(sampleItem);
-                existingTest.addAll(tests);
-            }
-
-            if (sampleItem == null) {
-                sampleItemIdIndex++;
-                TypeOfSample typeOfSample = typeOfSampleDAO.getTypeOfSampleById(typeOfSampleTestForTest.getTypeOfSampleId());
-                sampleItem = buildSampleItem(sysUserId, sample, sampleItemIdIndex, typeOfSample);
-                typeOfSampleSampleItemMap.put(typeOfSampleTestForTest.getTypeOfSampleId(), sampleItem);
-                sampleItemTestsMap.put(sampleItem, new HashSet<>(tests));
-            }
-
+        SampleItemTestCache sampleItemTestCache = new SampleItemTestCache(typeOfSampleTestDAO, typeOfSampleDAO, sample, sysUserId);
+        for (OpenMRSOrder labOrder : openMRSEncounter.getLabOrders()) {
+            sampleItemTestCache.add(getTests(labOrder, processState));
         }
 
-        for (Object sampleItem : sampleItemTestsMap.keySet()) {
-            List<Test> tests = new ArrayList<>(sampleItemTestsMap.get(sampleItem));
-
-            // TODO : Mujir - is DateUtil.convertSqlDateToStringDate(nowAsSqlDate) ok?
-            SampleTestCollection sampleTestCollection = new SampleTestCollection((SampleItem) sampleItem, tests,
-                    DateUtil.formatDateTimeAsText(nowAsSqlDate), new ArrayList<ObservationHistory>());
+        for (SampleItem sampleItem : sampleItemTestCache.getSampleItems()) {
+            SampleTestCollection sampleTestCollection = new SampleTestCollection(sampleItem, sampleItemTestCache.getTests(sampleItem), nowAsSqlDate);
             sampleTestCollections.add(sampleTestCollection);
         }
         return sampleTestCollections;
     }
 
-    private SampleItem buildSampleItem(String sysUserId, Sample sample, int sampleItemIdIndex, TypeOfSample typeOfSample) {
+    private static SampleItem buildSampleItem(String sysUserId, Sample sample, int sampleItemIdIndex, TypeOfSample typeOfSample) {
 
         // TODO : Mujir - should this be empty??
         String collector = "";
@@ -428,6 +378,78 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         logger.info(String.format("Processing encounter with ID='%s'", openMRSEncounter.getUuid()));
     }
 
+    private long getProviderRequesterTypeId() {
+        if(provider_requester_type_id > 0) {
+            return provider_requester_type_id;
+        }
+
+        RequesterType providerRequesterType = requesterTypeDAO.getRequesterTypeByName("provider");
+        if (providerRequesterType != null) {
+            provider_requester_type_id = Long.parseLong(providerRequesterType.getId());
+        }
+        return provider_requester_type_id;
+    }
+
+    private String getReferringOrgTypeId() {
+        if(referring_org_type_id != null) {
+            return referring_org_type_id;
+        }
+
+        OrganizationType orgType = organizationTypeDAO.getOrganizationTypeByName("referring clinic");
+        if (orgType != null) {
+            referring_org_type_id = orgType.getId();
+        }
+        return referring_org_type_id;
+    }
+
+
+    private static class SampleItemTestCache {
+        private TypeOfSampleTestDAO typeOfSampleTestDAO;
+        private TypeOfSampleDAO typeOfSampleDAO;
+        private final Sample sample;
+        private final String sysUserId;
+        private Map<String, SampleItem> typeOfSampleSampleItemMap = new HashMap<>();
+        private Map<SampleItem, Set<Test>> sampleItemTestMap = new HashMap<>();
+        private int sampleItemIdIndex = 0;
+
+        public SampleItemTestCache(TypeOfSampleTestDAO typeOfSampleTestDAO, TypeOfSampleDAO typeOfSampleDAO, Sample sample, String sysUserId) {
+            this.typeOfSampleTestDAO = typeOfSampleTestDAO;
+            this.typeOfSampleDAO = typeOfSampleDAO;
+            this.sample = sample;
+            this.sysUserId = sysUserId;
+        }
+
+        public void add(List<Test> tests) {
+            SampleItem sampleItem = findOrCreateSampleItemFromCache(tests.get(0));
+            Set<Test> existingTests = sampleItemTestMap.get(sampleItem);
+            if(existingTests == null) {
+                sampleItemTestMap.put(sampleItem, new HashSet<Test>(tests));
+            } else {
+                existingTests.addAll(tests);
+            }
+        }
+
+        public List<Test> getTests(SampleItem sampleItem) {
+            return new ArrayList<>(sampleItemTestMap.get(sampleItem));
+        }
+
+        public Set<SampleItem> getSampleItems() {
+            return sampleItemTestMap.keySet();
+        }
+
+        private SampleItem findOrCreateSampleItemFromCache(Test test) {
+            TypeOfSampleTest typeOfSampleTestForTest = typeOfSampleTestDAO.getTypeOfSampleTestForTest(test.getId());
+            SampleItem sampleItem = typeOfSampleSampleItemMap.get(typeOfSampleTestForTest.getTypeOfSampleId());
+            if (sampleItem == null) {
+                TypeOfSample typeOfSample = typeOfSampleDAO.getTypeOfSampleById(typeOfSampleTestForTest.getTypeOfSampleId());
+                sampleItem = buildSampleItem(sysUserId, sample, ++sampleItemIdIndex, typeOfSample);
+                typeOfSampleSampleItemMap.put(typeOfSample.getId(), sampleItem);
+            }
+
+            return sampleItem;
+        }
+    }
+
     private static class FeedProcessState {
         private StringBuilder panelIdsBuilder = new StringBuilder();
 
@@ -441,26 +463,47 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
     }
 
     private static class TestOrderDiff {
-        private Set<Test> testsAdded;
-        private Set<Test> testsDeleted;
-        private Set<Test> testsIntersection;
+        private List<SampleTestCollection> sampleTestCollections;
+        private List<Analysis> existingAnalyses;
 
-        private TestOrderDiff(Set<Test> testsAdded, Set<Test> testsDeleted, Set<Test> testsIntersection) {
-            this.testsAdded = testsAdded;
-            this.testsDeleted = testsDeleted;
-            this.testsIntersection = testsIntersection;
+        public TestOrderDiff(List<SampleTestCollection> sampleTestCollections, List<Analysis> existingAnalyses) {
+            this.sampleTestCollections = sampleTestCollections;
+            this.existingAnalyses = existingAnalyses;
         }
 
         private Set<Test> getTestsAdded() {
-            return testsAdded;
+            Set<Test> newTests = getNewlyOrderedTests();
+            newTests.removeAll(getPreviouslyOrderedTest());
+            return newTests;
         }
 
         private Set<Test> getTestsDeleted() {
-            return testsDeleted;
+            Set<Test> existingTests = getPreviouslyOrderedTest();
+            existingTests.removeAll(getNewlyOrderedTests());
+            return existingTests;
         }
 
         private Set<Test> getTestsIntersection() {
-            return testsIntersection;
+            Set<Test> newTests = getNewlyOrderedTests();
+            Set<Test> existingTests = getPreviouslyOrderedTest();
+            newTests.retainAll(existingTests);
+            return newTests;
+        }
+
+        private Set<Test> getPreviouslyOrderedTest() {
+            Set<Test> existingTests = new HashSet<>();
+            for (Analysis analysis : existingAnalyses) {
+                existingTests.add(analysis.getTest());
+            }
+            return existingTests;
+        }
+
+        private Set<Test> getNewlyOrderedTests() {
+            Set<Test> newTests = new HashSet<>();
+            for (SampleTestCollection sampleTestCollection : sampleTestCollections) {
+                newTests.addAll(sampleTestCollection.tests);
+            }
+            return newTests;
         }
     }
 }
