@@ -47,6 +47,7 @@ import java.io.*;
 
 import static org.bahmni.openelis.builder.TestSetup.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -330,6 +331,33 @@ public class EncounterFeedWorkerIT extends IT {
         assertTrue(analysisListForBlood.get(0).getPanel().getPanelName().equals(routineBloodPanel.getPanelName()));
     }
 
+    @org.junit.Test
+    public void shouldNotReadVoidedOrders() {
+        OpenMRSConcept openMRSHaemoglobinConcept = createOpenMRSConcept(haemoglobinTest.getTestName(), haemoglobinTestConceptUUID, false);
+        OpenMRSConcept openMRSLoneConcept = createOpenMRSConcept(loneTest.getTestName(), loneTestConceptUUID, false);
+
+        OpenMRSOrderType labOrderType = createLabOrderType();
+        List<OpenMRSOrder> voidedOrders = createOpenMRSOrders(Arrays.asList(openMRSHaemoglobinConcept), labOrderType, true);
+        List<OpenMRSOrder> nonVoidedOrders = createOpenMRSOrders(Arrays.asList(openMRSLoneConcept), labOrderType, false);
+        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, identifier, firstName, lastName, new ArrayList<OpenMRSConcept>());
+        openMRSEncounter.setOrders(Arrays.asList(voidedOrders.get(0), nonVoidedOrders.get(0)));
+
+        EncounterFeedWorker encounterFeedWorker = new EncounterFeedWorker(null, null);
+        encounterFeedWorker.process(openMRSEncounter);
+
+        Sample sample = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId()).get(0);
+        List<SampleItem> sampleItems = new SampleItemDAOImpl().getSampleItemsBySampleId(sample.getId());
+        assertEquals(1,sampleItems.size());
+
+        SampleItem sampleItemForBlood = getSampleItemForSampleType(bloodSample, sampleItems);
+        assertNull(sampleItemForBlood);
+
+        SampleItem sampleItemForUrine = getSampleItemForSampleType(urineSample, sampleItems);
+        List<Analysis> analysisListForUrine = new AnalysisDAOImpl().getAnalysesBySampleItem(sampleItemForUrine);
+        assertEquals(1, analysisListForUrine.size());
+        assertTrue(containsTestInAnalysis(analysisListForUrine, loneTest));
+    }
+
     private Boolean containsTestInAnalysis(List<Analysis> analysisList, Test test) {
         for (Analysis analysis : analysisList) {
             if(analysis.getTest().getId().equals(test.getId())){
@@ -380,14 +408,18 @@ public class EncounterFeedWorkerIT extends IT {
         openMRSEncounter.setOrders(orders);
     }
 
-    private List<OpenMRSOrder> createOpenMRSOrders(List<OpenMRSConcept> openmrsConcepts, OpenMRSOrderType openMRSOrderType) {
+    private List<OpenMRSOrder> createOpenMRSOrders(List<OpenMRSConcept> openmrsConcepts, OpenMRSOrderType openMRSOrderType, Boolean voided) {
         List<OpenMRSOrder> openMRSOrders = new ArrayList<>();
         for (OpenMRSConcept openmrsConcept : openmrsConcepts) {
             String orderUUID = UUID.randomUUID().toString();
-            OpenMRSOrder openMRSOrder = new OpenMRSOrder(orderUUID, openMRSOrderType, openmrsConcept);
+            OpenMRSOrder openMRSOrder = new OpenMRSOrder(orderUUID, openMRSOrderType, openmrsConcept, voided);
             openMRSOrders.add(openMRSOrder);
         }
         return openMRSOrders;
+    }
+
+    private List<OpenMRSOrder> createOpenMRSOrders(List<OpenMRSConcept> openmrsConcepts, OpenMRSOrderType openMRSOrderType) {
+        return createOpenMRSOrders(openmrsConcepts, openMRSOrderType, false);
     }
 
     private OpenMRSOrderType createLabOrderType() {

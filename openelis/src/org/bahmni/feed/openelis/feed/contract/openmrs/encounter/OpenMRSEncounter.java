@@ -73,7 +73,7 @@ public class OpenMRSEncounter {
     public List<OpenMRSOrder> getLabOrders() {
         List<OpenMRSOrder> labOrders = new ArrayList<>();
         for (OpenMRSOrder openMRSOrder : orders) {
-            if (openMRSOrder.isLabOrder())
+            if (openMRSOrder.isLabOrder() && !openMRSOrder.isVoided())
                 labOrders.add(openMRSOrder);
         }
         return labOrders;

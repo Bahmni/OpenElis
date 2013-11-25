@@ -22,15 +22,16 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 public class OpenMRSOrder {
     private String uuid;
     private OpenMRSOrderType orderType;
+    private Boolean voided;
     private OpenMRSConcept concept;
 
     public OpenMRSOrder() {
     }
 
-    public OpenMRSOrder(String uuid, OpenMRSOrderType orderType, OpenMRSConcept concept) {
-
+    public OpenMRSOrder(String uuid, OpenMRSOrderType orderType, OpenMRSConcept concept, Boolean voided) {
         this.uuid = uuid;
         this.orderType = orderType;
+        this.voided = voided;
         this.concept = concept;
     }
 
@@ -60,6 +61,14 @@ public class OpenMRSOrder {
 
     public boolean isLabOrderForPanel() {
         return concept != null && concept.isSet();
+    }
+
+    public Boolean isVoided() {
+        return voided;
+    }
+
+    public void setVoided(Boolean voided) {
+        this.voided = voided;
     }
 
     public String getLabTestName() {
