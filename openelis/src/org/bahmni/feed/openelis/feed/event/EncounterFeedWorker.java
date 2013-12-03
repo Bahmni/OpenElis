@@ -191,7 +191,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         Date nowAsSqlDate = DateUtil.getNowAsSqlDate();
 
         List<SampleTestCollection> sampleTestCollections = getSampleTestCollections(openMRSEncounter, sysUserId, nowAsSqlDate, sample, processState);
-        List<Analysis> existingAnalyses = analysisDAO.getAnalysesBySampleId(sample.getId());
+        List<Analysis> existingAnalyses = analysisDAO.getAnalysesBySampleIdExcludedByStatusId(sample.getId(), getCancelledAnalysisStatusIds());
         TestOrderDiff testOrderDiff = new TestOrderDiff(sampleTestCollections, existingAnalyses);
 
         AnalysisBuilder analysisBuilder = getAnalysisBuilder(processState);
@@ -202,9 +202,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
     }
 
     private void setCorrectPanelIdForUnchangedTests(Sample sample, String sysUserId, AnalysisBuilder analysisBuilder, TestOrderDiff testOrderDiff) {
-        String analysisCancelStatus = StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.Canceled);
-        HashSet<Integer> cancelledStatusIds = new HashSet<>(Arrays.asList(Integer.parseInt(analysisCancelStatus)));
-        List<Analysis> analysesIntersection = analysisDAO.getAnalysesBySampleIdExcludedByStatusId(sample.getId(), cancelledStatusIds);
+        List<Analysis> analysesIntersection = analysisDAO.getAnalysesBySampleIdExcludedByStatusId(sample.getId(), getCancelledAnalysisStatusIds());
         for (Analysis analysis : analysesIntersection) {
             if (testOrderDiff.getTestsIntersection().contains(analysis.getTest())) {
                 analysis.setPanel(analysisBuilder.getPanelForTest(analysis.getTest()));
@@ -376,6 +374,11 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
 
     private void logInfo(OpenMRSEncounter openMRSEncounter) {
         logger.info(String.format("Processing encounter with ID='%s'", openMRSEncounter.getUuid()));
+    }
+
+    private HashSet<Integer> getCancelledAnalysisStatusIds() {
+        String analysisCancelStatus = StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.Canceled);
+        return new HashSet<>(Arrays.asList(Integer.parseInt(analysisCancelStatus)));
     }
 
     private long getProviderRequesterTypeId() {
