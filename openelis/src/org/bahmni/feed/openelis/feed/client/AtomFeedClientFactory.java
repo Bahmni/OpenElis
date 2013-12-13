@@ -21,15 +21,17 @@ import org.bahmni.feed.openelis.utils.OpenElisConnectionProvider;
 import org.bahmni.webclients.ConnectionDetails;
 import org.bahmni.webclients.HttpClient;
 import org.bahmni.webclients.openmrs.OpenMRSLoginAuthenticator;
+import org.ict4h.atomfeed.client.exceptions.AtomFeedClientException;
 import org.ict4h.atomfeed.client.factory.AtomFeedClientBuilder;
 import org.ict4h.atomfeed.client.service.AtomFeedClient;
 import org.ict4h.atomfeed.client.service.EventWorker;
 
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.*;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AtomFeedClientFactory {
     public AtomFeedClient getERPLabTestFeedClient(AtomFeedProperties atomFeedProperties, String feedName, EventWorker eventWorker) {
@@ -52,11 +54,12 @@ public class AtomFeedClientFactory {
         try {
             org.ict4h.atomfeed.client.factory.AtomFeedProperties feedProperties = createAtomFeedClientProperties(atomFeedProperties);
 
+            URI feedURI = new URI(uri);
             return new AtomFeedClientBuilder().
-                    forFeedAt(new URI(uri)).
+                    forFeedAt(feedURI).
                     processedBy(patientFeedWorker).
                     usingConnectionProvider(new OpenElisConnectionProvider()).
-                    with(feedProperties, new HashMap<String, String>()).
+                    with(feedProperties, getCookiesForUri(feedURI)).
                     build();
         } catch (URISyntaxException e) {
             throw new RuntimeException(String.format("Is not a valid URI - %s", uri));
@@ -73,11 +76,11 @@ public class AtomFeedClientFactory {
     }
 
     public HttpClient getAuthenticatedOpenMRSWebClient(String authenticationURI, String userName, String password,
-                                                      String connectTimeoutStr, String readTimeoutStr) {
+                                                       String connectTimeoutStr, String readTimeoutStr) {
         int connectTimeout = Integer.parseInt(connectTimeoutStr);
         int readTimeout = Integer.parseInt(readTimeoutStr);
 
-        ConnectionDetails connectionDetails = new ConnectionDetails(authenticationURI, userName, password, connectTimeout,readTimeout);
+        ConnectionDetails connectionDetails = new ConnectionDetails(authenticationURI, userName, password, connectTimeout, readTimeout);
         return new HttpClient(connectionDetails, new OpenMRSLoginAuthenticator(connectionDetails));
     }
 
@@ -90,5 +93,34 @@ public class AtomFeedClientFactory {
             throw new RuntimeException("Is not a valid URI - " + openMRSAuthURI);
         }
         return String.format("%s://%s", openMRSAuthURL.getProtocol(), openMRSAuthURL.getAuthority());
+    }
+
+    private Map<String, String> getCookiesForUri(URI uri) {
+
+        HttpURLConnection connection = null;
+        StringBuilder stringBuilder = new StringBuilder();
+        try {
+            connection = (HttpURLConnection) uri.toURL().openConnection();
+            connection.setRequestMethod("GET");
+                       connection.connect();
+
+            HashMap<String, String> cookiesStore = new HashMap<>();
+            List<String> cookies = connection.getHeaderFields().get("Set-Cookie");
+            for (String cookie : cookies) {
+                String keyValue = cookie.substring(0, cookie.indexOf(';'));
+                String[] nameValuePair = keyValue.split("=");
+                cookiesStore.put(nameValuePair[0], nameValuePair[1]);
+            }
+
+            return cookiesStore;
+
+        } catch (Exception e) {
+            throw new AtomFeedClientException(e);
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+
     }
 }
