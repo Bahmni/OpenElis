@@ -18,6 +18,7 @@ package org.bahmni.feed.openelis.feed.client;
 
 import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.utils.OpenElisConnectionProvider;
+import org.bahmni.webclients.ClientCookies;
 import org.bahmni.webclients.ConnectionDetails;
 import org.bahmni.webclients.HttpClient;
 import org.bahmni.webclients.openmrs.OpenMRSLoginAuthenticator;
@@ -47,7 +48,7 @@ public class AtomFeedClientFactory {
     }
 
     public AtomFeedClient getMRSFeedClient(AtomFeedProperties atomFeedProperties, String feedName,
-                                           EventWorker patientFeedWorker) {
+                                           EventWorker patientFeedWorker, ClientCookies cookies) {
         String uri = atomFeedProperties.getProperty(feedName);
         try {
             org.ict4h.atomfeed.client.factory.AtomFeedProperties feedProperties = createAtomFeedClientProperties(atomFeedProperties);
@@ -56,7 +57,7 @@ public class AtomFeedClientFactory {
                     forFeedAt(new URI(uri)).
                     processedBy(patientFeedWorker).
                     usingConnectionProvider(new OpenElisConnectionProvider()).
-                    with(feedProperties, new HashMap<String, String>()).
+                    with(feedProperties, cookies).
                     build();
         } catch (URISyntaxException e) {
             throw new RuntimeException(String.format("Is not a valid URI - %s", uri));

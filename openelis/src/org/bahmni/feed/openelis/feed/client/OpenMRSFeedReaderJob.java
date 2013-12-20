@@ -19,12 +19,15 @@ package org.bahmni.feed.openelis.feed.client;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.AtomFeedProperties;
+import org.bahmni.webclients.ClientCookies;
 import org.bahmni.webclients.HttpClient;
 import org.ict4h.atomfeed.client.service.AtomFeedClient;
 import org.ict4h.atomfeed.client.service.EventWorker;
 import org.quartz.JobExecutionContext;
 
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,10 +47,20 @@ public abstract class OpenMRSFeedReaderJob extends OpenELISFeedReaderJob {
 
     protected AtomFeedClient createAtomFeedClient(AtomFeedProperties atomFeedProperties, AtomFeedClientFactory atomFeedClientFactory) {
         HttpClient authenticatedWebClient = getWebClient(atomFeedProperties, atomFeedClientFactory);
+        String urlString = getURLPrefix(atomFeedProperties, AUTH_URI);
+        ClientCookies cookies = getCookies(authenticatedWebClient, urlString);
         String feedName = getFeedName();
-        EventWorker eventWorker = createWorker(authenticatedWebClient, getURLPrefix(atomFeedProperties, AUTH_URI));
+        EventWorker eventWorker = createWorker(authenticatedWebClient, urlString);
         return atomFeedClientFactory.getMRSFeedClient(atomFeedProperties,
-                feedName, eventWorker);
+                feedName, eventWorker, cookies);
+    }
+
+    private ClientCookies getCookies(HttpClient authenticatedWebClient, String urlString) {
+        try {
+            return authenticatedWebClient.getCookies(new URI(urlString));
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("Is not a valid URI - " + urlString);
+        }
     }
 
     protected abstract EventWorker createWorker(HttpClient authenticatedWebClient, String urlPrefix);
@@ -67,6 +80,7 @@ public abstract class OpenMRSFeedReaderJob extends OpenELISFeedReaderJob {
     @Override
     protected void handleException(Throwable e) {
         if (e != null && ExceptionUtils.getStackTrace(e).contains("HTTP response code: 401")) {
+
             initializeAtomFeedClient();
         }
     }
