@@ -49,6 +49,9 @@ public abstract class OpenMRSFeedReaderJob extends OpenELISFeedReaderJob {
         HttpClient authenticatedWebClient = getWebClient(atomFeedProperties, atomFeedClientFactory);
         String urlString = getURLPrefix(atomFeedProperties, AUTH_URI);
         ClientCookies cookies = getCookies(authenticatedWebClient, atomFeedProperties.getProperty(AUTH_URI));
+        if(cookies == null || cookies.size() == 0){
+            return null;
+        }
         String feedName = getFeedName();
         EventWorker eventWorker = createWorker(authenticatedWebClient, urlString);
         return atomFeedClientFactory.getMRSFeedClient(atomFeedProperties,
@@ -80,13 +83,15 @@ public abstract class OpenMRSFeedReaderJob extends OpenELISFeedReaderJob {
     @Override
     protected void handleException(Throwable e) {
         if (e != null && ExceptionUtils.getStackTrace(e).contains("HTTP response code: 401")) {
-
             initializeAtomFeedClient();
         }
     }
 
     private void initializeAtomFeedClient() {
-        atomFeedClients.put(this.getClass(), createAtomFeedClient(AtomFeedProperties.getInstance(), new AtomFeedClientFactory()));
+        AtomFeedClient atomFeedClient = createAtomFeedClient(AtomFeedProperties.getInstance(), new AtomFeedClientFactory());
+        if(atomFeedClient != null){
+            atomFeedClients.put(this.getClass(), atomFeedClient);
+        }
     }
 
     protected void processEvents(JobExecutionContext jobExecutionContext) {
