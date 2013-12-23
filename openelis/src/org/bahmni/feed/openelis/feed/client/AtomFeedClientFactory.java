@@ -18,6 +18,7 @@ package org.bahmni.feed.openelis.feed.client;
 
 import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.utils.OpenElisConnectionProvider;
+import org.bahmni.webclients.AnonymousAuthenticator;
 import org.bahmni.webclients.ClientCookies;
 import org.bahmni.webclients.ConnectionDetails;
 import org.bahmni.webclients.HttpClient;
@@ -33,14 +34,14 @@ import java.net.URL;
 import java.util.HashMap;
 
 public class AtomFeedClientFactory {
-    public AtomFeedClient getERPLabTestFeedClient(AtomFeedProperties atomFeedProperties, String feedName, EventWorker eventWorker) {
+    public AtomFeedClient getERPLabTestFeedClient(AtomFeedProperties atomFeedProperties, String feedName, EventWorker eventWorker, ClientCookies cookies) {
         String uri = atomFeedProperties.getProperty(feedName);
         try {
             return new AtomFeedClientBuilder().
                     forFeedAt(new URI(uri)).
                     processedBy(eventWorker).
                     usingConnectionProvider(new OpenElisConnectionProvider()).
-                    with(createAtomFeedClientProperties(atomFeedProperties)).
+                    with(createAtomFeedClientProperties(atomFeedProperties), cookies).
                     build();
         } catch (URISyntaxException e) {
             throw new RuntimeException(String.format("Is not a valid URI - %s", uri));
@@ -91,5 +92,14 @@ public class AtomFeedClientFactory {
             throw new RuntimeException("Is not a valid URI - " + openMRSAuthURI);
         }
         return String.format("%s://%s", openMRSAuthURL.getProtocol(), openMRSAuthURL.getAuthority());
+    }
+
+    public HttpClient getOpenERPWebClient(String connectionURI, String connectTimeoutStr, String readTimeoutStr) {
+        int connectTimeout = Integer.parseInt(connectTimeoutStr);
+        int readTimeout = Integer.parseInt(readTimeoutStr);
+
+        ConnectionDetails connectionDetails = new ConnectionDetails(connectionURI, null,null, connectTimeout,readTimeout);
+        return new HttpClient(connectionDetails, new AnonymousAuthenticator(connectionDetails));
+
     }
 }

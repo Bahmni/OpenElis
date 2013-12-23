@@ -16,21 +16,52 @@
 
 package org.bahmni.feed.openelis.feed.client;
 
+import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.feed.event.LabTestFeedEventWorker;
+import org.bahmni.webclients.ClientCookies;
+import org.bahmni.webclients.HttpClient;
 import org.ict4h.atomfeed.client.service.AtomFeedClient;
 import org.quartz.Job;
 
-public abstract class OpenERPFeedReaderJob implements Job {
-    protected AtomFeedClient atomFeedClient;
-    private static final String FEED_NAME = "openerp.labtest.feed.uri";
+import java.net.URI;
+import java.net.URISyntaxException;
 
-    protected OpenERPFeedReaderJob(AtomFeedClient atomFeedClient) {
-        this.atomFeedClient = atomFeedClient;
+public abstract class OpenERPFeedReaderJob implements Job {
+    private static final String OPENERP_WEBCLIENT_CONNECT_TIMEOUT = "openerp.connectionTimeoutInMilliseconds";
+    private static final String OPENERP_WEBCLIENT_READ_TIMEOUT = "openerp.replyTimeoutInMilliseconds";
+    private final Logger logger;
+    protected AtomFeedClient atomFeedClient;
+
+    private AtomFeedProperties atomFeedProperties;
+
+    protected OpenERPFeedReaderJob(Logger logger){
+        this.logger = logger;
     }
 
-    protected OpenERPFeedReaderJob() {
-        this(new AtomFeedClientFactory().getERPLabTestFeedClient(AtomFeedProperties.getInstance(), FEED_NAME,
-                new LabTestFeedEventWorker()));
+    protected AtomFeedClient initializeERPAtomFeedClient() {
+
+        atomFeedProperties = AtomFeedProperties.getInstance();
+        ClientCookies cookies = null;
+        try {
+            cookies = getWebClient().getCookies(new URI(atomFeedProperties.getProperty(getFeedName())));
+        } catch (URISyntaxException e) {
+            logger.error("Unable to get cookies");
+            cookies = new ClientCookies();
+        }
+        AtomFeedClient erpLabTestFeedClient = new AtomFeedClientFactory().getERPLabTestFeedClient(AtomFeedProperties.getInstance(), getFeedName(),
+                new LabTestFeedEventWorker(),cookies);
+        return erpLabTestFeedClient;
+    }
+
+    protected abstract String getFeedName();
+
+    private HttpClient getWebClient() {
+        AtomFeedClientFactory atomFeedClientFactory = new AtomFeedClientFactory();
+        return atomFeedClientFactory.getOpenERPWebClient(
+                atomFeedProperties.getProperty(getFeedName()),
+                atomFeedProperties.getProperty(OPENERP_WEBCLIENT_CONNECT_TIMEOUT),
+                atomFeedProperties.getProperty(OPENERP_WEBCLIENT_READ_TIMEOUT)
+        );
     }
 }
