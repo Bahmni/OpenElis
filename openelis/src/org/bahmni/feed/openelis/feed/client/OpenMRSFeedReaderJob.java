@@ -48,7 +48,7 @@ public abstract class OpenMRSFeedReaderJob extends OpenELISFeedReaderJob {
     protected AtomFeedClient createAtomFeedClient(AtomFeedProperties atomFeedProperties, AtomFeedClientFactory atomFeedClientFactory) {
         HttpClient authenticatedWebClient = getWebClient(atomFeedProperties, atomFeedClientFactory);
         String urlString = getURLPrefix(atomFeedProperties, AUTH_URI);
-        ClientCookies cookies = getCookies(authenticatedWebClient, urlString);
+        ClientCookies cookies = getCookies(authenticatedWebClient, atomFeedProperties.getProperty(AUTH_URI));
         String feedName = getFeedName();
         EventWorker eventWorker = createWorker(authenticatedWebClient, urlString);
         return atomFeedClientFactory.getMRSFeedClient(atomFeedProperties,

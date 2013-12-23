@@ -24,14 +24,27 @@ import org.quartz.JobExecutionException;
 @DisallowConcurrentExecution
 public class OpenERPLabTestFailedEventsJob extends OpenERPFeedReaderJob {
     private static Logger logger = Logger.getLogger(OpenERPLabTestFailedEventsJob.class);
+    private static final String FEED_NAME = "openerp.labtest.feed.uri";
+
+    protected OpenERPLabTestFailedEventsJob(Logger logger) {
+        super(logger);
+    }
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
+            if(atomFeedClient == null){
+                initializeERPAtomFeedClient();
+            }
             logger.info("Started");
             atomFeedClient.processFailedEvents();
         } catch (Exception e) {
             logger.error("Failed", e);
         }
+    }
+
+    @Override
+    protected String getFeedName() {
+        return FEED_NAME;
     }
 }
