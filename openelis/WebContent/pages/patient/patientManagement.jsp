@@ -864,12 +864,8 @@ jQuery(function(){
                         <option value="">Select One</option>
                     </select>
                 <% } %>
-                <nested:text name='<%=formName%>'
-                          property="patientProperties.STnumber"
-                          onchange="patientIdChanged();"
-                          styleId="ST_ID"
-                          styleClass="text"
-                          />
+                <input id="hiddenPatientProperties" name="patientProperties.STnumber" type="hidden">
+                <input type="text" id="ST_ID" onchange="patientIdChanged();">
             </div>
         </td>
         <%} %>
