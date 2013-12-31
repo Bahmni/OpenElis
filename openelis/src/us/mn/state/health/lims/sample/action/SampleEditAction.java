@@ -358,16 +358,18 @@ public class SampleEditAction extends BaseAction {
 	private static class SampleEditItemComparator implements Comparator<SampleEditItem> {
 
 		public int compare(SampleEditItem o1, SampleEditItem o2) {
-			if (GenericValidator.isBlankOrNull(o1.getSortOrder()) || GenericValidator.isBlankOrNull(o2.getSortOrder())) {
-				if(GenericValidator.isBlankOrNull(o1.getTestName()) && GenericValidator.isBlankOrNull(o2.getTestName()))
-                    return o1.getTestName().compareTo(o2.getTestName());
-                else if(GenericValidator.isBlankOrNull(o1.getPanelName()) && GenericValidator.isBlankOrNull(o2.getPanelName())){
+            if (GenericValidator.isBlankOrNull(o1.getSortOrder()) || GenericValidator.isBlankOrNull(o2.getSortOrder())) {
+                if(o1.isPanel() && o2.isPanel()){
                     return o1.getPanelName().compareTo(o2.getPanelName());
                 }
-                //TODO : fix this to return panels with highest sort order
-                else if (o1.isPanel()) return -1;
-                else if (o2.isPanel()) return 1;
-			}
+                if(o1.isPanel() && !o2.isPanel()){
+                    return o1.getPanelName().compareTo(o2.getTestName());
+                }
+                if(o2.isPanel() && !o1.isPanel()){
+                    return o2.getPanelName().compareTo(o1.getTestName());
+                }
+                return o1.getTestName().compareTo(o2.getTestName());
+            }
 
 			try {
 				return Integer.parseInt(o1.getSortOrder()) - Integer.parseInt(o2.getSortOrder());

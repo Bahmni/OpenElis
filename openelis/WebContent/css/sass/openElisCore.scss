@@ -20,7 +20,6 @@ time, mark, audio, video {
   padding: 0;
   border: 0;
   font-size: 100%;
-  font: inherit;
 }
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure, 
@@ -1296,6 +1295,13 @@ table.administration{
         width:180px;
         padding-top:6px;
       }
+    }
+  }
+}
+.existingTests{
+  tr{
+    td{
+      vertical-align: top;
     }
   }
 }

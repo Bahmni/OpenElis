@@ -248,7 +248,7 @@ function processAccessionFailure(xhr)
 <logic:equal name='<%=formName%>' property="isEditable" value="true" >
 	<h2><%=StringUtil.getContextualMessageForKey("sample.edit.tests") %></h2>
 </logic:equal>
-<table width="100%">
+<table width="100%" class="existingTests">
 <caption><bean:message key="sample.edit.existing.tests"/></caption>
 <tr>
 <th><%= StringUtil.getContextualMessageForKey("quick.entry.accession.number") %></th>
@@ -288,14 +288,11 @@ function processAccessionFailure(xhr)
 		</logic:equal>
 		<td>
             <% if( existingTests.isPanel()){%>
-                <bean:write name="existingTests" property="panelName"/>
-                <table>
+                <strong><bean:write name="existingTests" property="panelName"/></strong>
                     <%for (SampleEditItem panelItem : existingTests.getPanelTests()) { %>
-                        <tr>
-                            <%=panelItem.getTestName()%>
-                        </tr>
+                        <br> &nbsp;
+                        <%=panelItem.getTestName()%>
                     <%}%>
-                </table>
             <% }else{ %>
                 <bean:write name="existingTests" property="testName"/>
             <%}%>

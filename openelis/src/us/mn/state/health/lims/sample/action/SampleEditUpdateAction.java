@@ -18,7 +18,11 @@ package us.mn.state.health.lims.sample.action;
 
 import org.apache.commons.validator.GenericValidator;
 import org.apache.struts.Globals;
-import org.apache.struts.action.*;
+import org.apache.struts.action.ActionForm;
+import org.apache.struts.action.ActionForward;
+import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.ActionMessages;
+import org.apache.struts.action.DynaActionForm;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -38,7 +42,6 @@ import us.mn.state.health.lims.common.util.ConfigurationProperties.Property;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.observationhistory.dao.ObservationHistoryDAO;
 import us.mn.state.health.lims.observationhistory.daoimpl.ObservationHistoryDAOImpl;
 import us.mn.state.health.lims.observationhistory.valueholder.ObservationHistory;
@@ -69,7 +72,12 @@ import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleDAOImpl;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 public class SampleEditUpdateAction extends BaseAction {
     private AnalysisDAO analysisDAO = new AnalysisDAOImpl();
@@ -331,11 +339,14 @@ public class SampleEditUpdateAction extends BaseAction {
 			}
 
 			if (editItem.isRemoveSample()) {
-				cancelTest = true;
-				SampleItem sampleItem = getCancelableSampleItem(editItem);
-				if (sampleItem != null) {
-					cancelList.add(sampleItem);
-				}
+                if(editItem.isPanel()){
+                    for (SampleEditItem panelTest : editItem.getPanelTests()) {
+                        addSampleItemToCancelList(cancelList, panelTest);
+                    }
+                }
+                else{
+                    addSampleItemToCancelList(cancelList, editItem);
+                }
 				if (!cancelAnalysisListContainsId(editItem.getAnalysisId(), cancelAnalysisList)) {
 					Analysis analysis = getCancelableAnalysis(editItem);
 					cancelAnalysisList.add(analysis);
@@ -346,7 +357,16 @@ public class SampleEditUpdateAction extends BaseAction {
 		return cancelList;
 	}
 
-	private SampleItem getCancelableSampleItem(SampleEditItem editItem) {
+    private void addSampleItemToCancelList(List<SampleItem> cancelList, SampleEditItem editItem) {
+        boolean cancelTest;
+        cancelTest = true;
+        SampleItem sampleItem = getCancelableSampleItem(editItem);
+        if (sampleItem != null) {
+            cancelList.add(sampleItem);
+        }
+    }
+
+    private SampleItem getCancelableSampleItem(SampleEditItem editItem) {
 		String sampleItemId = editItem.getSampleItemId();
 		SampleItem item = new SampleItem();
 		item.setId(sampleItemId);
@@ -455,8 +475,15 @@ public class SampleEditUpdateAction extends BaseAction {
 
 		for (SampleEditItem sampleEditItem : tests) {
 			if (sampleEditItem.isCanceled()) {
-				Analysis analysis = getCancelableAnalysis(sampleEditItem);
-				removeAnalysisList.add(analysis);
+                if(sampleEditItem.isPanel()){
+                    for (SampleEditItem panelTest : sampleEditItem.getPanelTests()) {
+                        Analysis analysis = getCancelableAnalysis(panelTest);
+                        removeAnalysisList.add(analysis);
+                    }
+                }else{
+                    Analysis analysis = getCancelableAnalysis(sampleEditItem);
+                    removeAnalysisList.add(analysis);
+                }
 			}
 		}
 
