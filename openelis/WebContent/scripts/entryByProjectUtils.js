@@ -139,6 +139,7 @@ function /*void*/ synchronizeCheckBoxes(){
 }
 
 function  /*void*/ savePage() {
+    jQuery("#saveButtonId").attr("disabled", "disabled");
 	if ( projectChecker != null && projectChecker.checkAllFields != undefined) {
 		projectChecker.checkAllFields(false);
 	} else {

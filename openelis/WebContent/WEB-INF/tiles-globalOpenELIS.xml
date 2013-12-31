@@ -15,7 +15,7 @@
         <put name="footer" value="/pages/common/saveCancelFooterButtons.jsp"/>
     </definition>
 
-    <definition name="sampleConfirmationCore" path="/pages/sample/sampleConfirmationAdd.jsp">
+    <definition name="sampleConfirmationCore" page="/pages/sample/sampleConfirmationAdd.jsp">
         <put name="patientInfo" value="patientManagementCore"/>
     </definition>
 
@@ -25,7 +25,7 @@
         <put name="footer" value="/pages/common/saveCancelFooterButtons.jsp"/>
     </definition>
 
-    <definition name="samplePatientEntryCore" path="/pages/sample/samplePatientEntry.jsp">
+    <definition name="samplePatientEntryCore" page="/pages/sample/samplePatientEntry.jsp">
         <put name="addSample" value="/pages/sample/sampleAdd.jsp"/>
         <put name="patientInfo" value="patientManagementCore"/>
         <put name="patientClinicalInfo" value="/pages/patient/patientClinicalInfo.jsp"/>
@@ -43,7 +43,7 @@
         <put name="footer" value="/pages/common/saveCancelFooterButtons.jsp"/>
     </definition>
 
-    <definition name="sampleEntryEIDFormDefintion" path="/pages/sample/CI/sampleAddEIDProject.jsp">
+    <definition name="sampleEntryEIDFormDefintion" page="/pages/sample/CI/sampleAddEIDProject.jsp">
         <put name="eidStudy" value="/pages/patient/CI/eidStudy.jsp"/>
     </definition>
 
@@ -60,7 +60,7 @@
         <put name="footer" value="/pages/common/saveCancelFooterButtons.jsp"/>
     </definition>
 
-    <definition name="patientEntryByProjectCore" path="/pages/patient/retroCIEntryByProject.jsp">
+    <definition name="patientEntryByProjectCore" page="/pages/patient/retroCIEntryByProject.jsp">
         <put name="arvInitialStudy" value="/pages/patient/CI/arvInitialStudy.jsp"/>
         <put name="arvFollowupStudy" value="/pages/patient/CI/arvFollowupStudy.jsp"/>
         <put name="ediStudy" value="/pages/patient/CI/eidStudy.jsp"/>
@@ -83,26 +83,26 @@
         <put name="footer" value="/pages/common/saveCancelFooterButtons.jsp"/>
     </definition>
 
-    <definition name="patientResultsCore" path="/pages/result/resultsBySearch.jsp">
+    <definition name="patientResultsCore" page="/pages/result/resultsBySearch.jsp">
         <put name="searchPanel" value="/pages/patient/patientSearch.jsp"/>
         <put name="resultsPanel" value="resultListViewCore"/>
     </definition>
 
-    <definition name="accessionResultsCore" path="/pages/result/resultsBySearch.jsp">
+    <definition name="accessionResultsCore" page="/pages/result/resultsBySearch.jsp">
         <put name="searchPanel" value="/pages/accession/accessionSearch.jsp"/>
         <put name="resultsPanel" value="resultListViewCore"/>
     </definition>
 
-    <definition name="accessionSampleEditCore" path="/pages/result/resultsBySearch.jsp">
+    <definition name="accessionSampleEditCore" page="/pages/result/resultsBySearch.jsp">
         <put name="searchPanel" value="/pages/search/compoundSearch.jsp"/>
         <put name="resultsPanel" value="sampleEditCore"/>
     </definition>
 
-    <definition name="sampleEditCore" path="/pages/sample/sampleEdit.jsp">
+    <definition name="sampleEditCore" page="/pages/sample/sampleEdit.jsp">
         <put name="addSample" value="/pages/sample/sampleAdd.jsp"/>
     </definition>
 
-    <definition name="patientManagementCore" path="/pages/patient/patientManagement.jsp">
+    <definition name="patientManagementCore" page="/pages/patient/patientManagement.jsp">
         <put name="patientSearch" value="/pages/patient/patientSearch.jsp"/>
     </definition>
 
@@ -126,7 +126,7 @@
         <put name="testKitInfo" value="/pages/inventory/displayInventory.jsp"/>
     </definition>
 
-    <definition name="statusResultsCore" path="/pages/result/resultsBySearch.jsp">
+    <definition name="statusResultsCore" page="/pages/result/resultsBySearch.jsp">
         <put name="searchPanel" value="/pages/result/statusSearch.jsp"/>
         <put name="resultsPanel" value="resultListViewCore"/>
     </definition>
@@ -174,7 +174,7 @@
         <put name="body" value="workplanDefinition"/>
         <put name="footer" value="/pages/common/saveCancelFooterButtons.jsp"/>
     </definition>
-    <definition name="workplanDefinition" path="/pages/result/resultsBySearch.jsp">
+    <definition name="workplanDefinition" page="/pages/result/resultsBySearch.jsp">
         <put name="searchPanel" value="/pages/workplan/workplanSearch.jsp"/>
         <put name="resultsPanel" value="/pages/workplan/workplan.jsp"/>
     </definition>
@@ -299,7 +299,7 @@
         <put name="body" value="/pages/analyzertestname/analyzerTestName.jsp"/>
     </definition>
 
-    <definition name="webTestInfoDefinition" path="/pages/common/util/webtestInfo.jsp"/>
+    <definition name="webTestInfoDefinition" page="/pages/common/util/webtestInfo.jsp"/>
 
     <definition name="testUsageConfigurationDefinition" extends="baseDefinition">
         <put name="body" value="/pages/dataexchange/testUsageConfiguration.jsp"/>

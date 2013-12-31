@@ -694,6 +694,7 @@ function makeDirty() {
 }
 
 function /*void*/savePage() {
+    jQuery("#saveButtonId").attr("disabled", "disabled");
 	if (areNewTypesOfSamples() && !confirm(confirmNewTypeMessage)) {
 		return false;
 	}

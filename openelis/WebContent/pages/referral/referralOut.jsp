@@ -409,6 +409,7 @@ function /*void*/ addTestToXMLWad(headElement){
 }
 
 function /*void*/ savePage(){
+    jQuery("#saveButtonId").attr("disabled", "disabled");
 	setXMLWads();
 
   window.onbeforeunload = null; // Added to flag that formWarning alert isn't needed.

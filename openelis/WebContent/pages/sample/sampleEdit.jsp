@@ -101,6 +101,7 @@ function formWarning(){
 window.onbeforeunload = formWarning;
 
 function /*void*/ savePage(){
+    jQuery("#saveButtonId").attr("disabled", "disabled");
 	if( samplesHaveBeenAdded() && !allSamplesHaveTests()){
 		alert('<%= StringUtil.getMessageForKey("warning.sample.missing.test")%>');
 		return;

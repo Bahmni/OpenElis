@@ -277,6 +277,7 @@ function /*void*/ handleReferralReasonChange(select,  index ){
 //this overrides the form in utilities.jsp
 function  /*void*/ savePage()
 {
+    jQuery("#saveButtonId").attr("disabled", "disabled");
 	window.onbeforeunload = null; // Added to flag that formWarning alert isn't needed.
 	var form = window.document.forms[0];
 	form.action = '<%=formName%>'.sub('Form','') + "Update.do?referer=" + '<%= referer %>'  + '<%= logbookType == "" ? "" : "&type=" + logbookType  %>';

@@ -98,6 +98,7 @@ function  /*void*/ setMyCancelAction(form, action, validate, parameters)
 
 function  /*void*/ savePage()
 {
+    jQuery("#saveButtonId").attr("disabled", "disabled");
 	window.onbeforeunload = null; // Added to flag that formWarning alert isn't needed.
 	var form = window.document.forms[0];
 	form.action = "AnalyzerResultsSave.do"  + '<%= analyzerType == "" ? "" : "?type=" + analyzerType  %>';

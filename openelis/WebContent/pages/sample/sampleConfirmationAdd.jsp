@@ -1042,6 +1042,7 @@ function /*void*/ makeDirty(){
 }
 
 function savePage(){
+    jQuery("#saveButtonId").attr("disabled", "disabled");
 	loadDynamicData();
 	//alert( $("xmlWad").value );
 	

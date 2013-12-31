@@ -35,6 +35,7 @@ function setMyCancelAction(){
 }
 
 function savePage(){
+    jQuery("#saveButtonId").attr("disabled", "disabled");
 	if( formValid() ){
 		var form = window.document.forms[0];
 		form.action = "UpdateResultReportingConfiguration.do";

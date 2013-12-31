@@ -171,6 +171,7 @@ function  /*void*/ setMyCancelAction(form, action, validate, parameters)
 
 function  /*void*/ savePage()
 {
+    jQuery("#saveButtonId").attr("disabled", "disabled");
 	var recieveDates, expirationDates;
 	var kits = $$("input.kitName");
 		
