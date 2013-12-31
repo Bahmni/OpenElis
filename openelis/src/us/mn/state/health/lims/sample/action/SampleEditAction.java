@@ -16,24 +16,12 @@
  */
 package us.mn.state.health.lims.sample.action;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.validator.GenericValidator;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.DynaActionForm;
-
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
@@ -74,6 +62,16 @@ import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleTestDAOImpl;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSample;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSampleTest;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 public class SampleEditAction extends BaseAction {
 
 	private String accessionNumber;
@@ -95,7 +93,7 @@ public class SampleEditAction extends BaseAction {
 
 		includedSampleStatusList = new HashSet<Integer>();
 		includedSampleStatusList.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(SampleStatus.Entered)));
-		
+
 		ObservationHistoryType observationType = new ObservationHistoryTypeDAOImpl().getByName("paymentStatus");
 		if (observationType != null) {
 			PAYMENT_STATUS_OBSERVATION_ID = observationType.getId();
@@ -113,7 +111,7 @@ public class SampleEditAction extends BaseAction {
 		DynaActionForm dynaForm = (DynaActionForm) form;
 
 		accessionNumber = request.getParameter("accessionNumber");
-		
+
 		if( GenericValidator.isBlankOrNull(accessionNumber)){
 			accessionNumber = getMostRecentAccessionNumberForPaitient( request.getParameter("patientID"));
 		}
@@ -160,9 +158,9 @@ public class SampleEditAction extends BaseAction {
 		if (FormFields.getInstance().useField(FormFields.Field.InitialSampleCondition)) {
 			PropertyUtils.setProperty(dynaForm, "initialSampleConditionList", DisplayListService.getList(ListType.INITIAL_SAMPLE_CONDITION));
 		}
-		
+
 		PropertyUtils.setProperty(form, "currentDate", DateUtil.getCurrentDateAsText());
-		
+
 		return mapping.findForward(forward);
 	}
 
@@ -170,7 +168,7 @@ public class SampleEditAction extends BaseAction {
 		String accessionNumber = null;
 		if( !GenericValidator.isBlankOrNull(patientID)){
 			List<Sample> samples = new SampleHumanDAOImpl().getSamplesForPatient(patientID);
-			
+
 			int maxId = 0;
 			for( Sample sample : samples){
 				if( Integer.parseInt(sample.getId()) > maxId){
@@ -178,7 +176,7 @@ public class SampleEditAction extends BaseAction {
 					accessionNumber = sample.getAccessionNumber();
 				}
 			}
-			
+
 		}
 		return accessionNumber;
 	}
@@ -227,26 +225,26 @@ public class SampleEditAction extends BaseAction {
 
 		List<SampleEditItem> analysisSampleItemList = new ArrayList<SampleEditItem>();
 
-		boolean canRemove = true;
+		boolean canRemoveSample = true;
 		for (Analysis analysis : analysisList) {
 			SampleEditItem sampleEditItem = new SampleEditItem();
 
 			sampleEditItem.setTestId(analysis.getTest().getId());
 			sampleEditItem.setTestName(analysis.getTest().getTestName());
 			sampleEditItem.setSampleItemId(sampleItem.getId());
-
-			boolean canCancel = !analysis.getStatusId().equals(StatusOfSampleUtil.getStatusID(AnalysisStatus.Canceled))
-					&& analysis.getStatusId().equals(StatusOfSampleUtil.getStatusID(AnalysisStatus.NotTested));
-
+			boolean canCancel = canCancel(analysis);
 			if( !canCancel){
-				canRemove = false;
+				canRemoveSample = false;
 			}
 			sampleEditItem.setCanCancel(canCancel);
 			sampleEditItem.setAnalysisId(analysis.getId());
 			sampleEditItem.setStatus(StatusOfSampleUtil.getStatusNameFromId(analysis.getStatusId()));
 			sampleEditItem.setSortOrder(analysis.getTest().getSortOrder());
-
-			analysisSampleItemList.add(sampleEditItem);
+            if (isPanelItem(analysis)) {
+                handleTestsBelongingToPanel(analysisSampleItemList, analysis, sampleEditItem);
+            }else{
+                analysisSampleItemList.add(sampleEditItem);
+            }
 		}
 
 		if (!analysisSampleItemList.isEmpty()) {
@@ -254,13 +252,47 @@ public class SampleEditAction extends BaseAction {
 
 			analysisSampleItemList.get(0).setAccessionNumber(accessionNumber + "-" + sampleItem.getSortOrder());
 			analysisSampleItemList.get(0).setSampleType(typeOfSample.getLocalizedName());
-			analysisSampleItemList.get(0).setCanRemoveSample(canRemove);
+			analysisSampleItemList.get(0).setCanRemoveSample(canRemoveSample);
 			maxAccessionNumber = analysisSampleItemList.get(0).getAccessionNumber();
 			currentTestList.addAll(analysisSampleItemList);
 		}
 	}
 
-	private void setAddableTestInfo(DynaActionForm dynaForm) throws IllegalAccessException, InvocationTargetException,
+    private boolean canCancel(Analysis analysis) {
+        return !analysis.getStatusId().equals(StatusOfSampleUtil.getStatusID(AnalysisStatus.Canceled))
+                && analysis.getStatusId().equals(StatusOfSampleUtil.getStatusID(AnalysisStatus.NotTested));
+    }
+
+    private void handleTestsBelongingToPanel(List<SampleEditItem> analysisSampleItemList, Analysis analysis, SampleEditItem sampleEditItem) {
+        SampleEditItem alreadyAddedPanel = getAlreadyAddedPanel(analysis.getPanel().getPanelName(), analysisSampleItemList);
+        if (alreadyAddedPanel != null) {
+            alreadyAddedPanel.addPanelTest(sampleEditItem);
+            boolean canCancelPanel = alreadyAddedPanel.isCanCancel() && canCancel(analysis);
+            alreadyAddedPanel.setCanCancel(canCancelPanel);
+        }
+        else{
+            SampleEditItem panelItem = new SampleEditItem();
+            panelItem.setPanelName(analysis.getPanel().getPanelName());
+            panelItem.addPanelTest(sampleEditItem);
+            panelItem.setSortOrder(analysis.getPanel().getSortOrder());
+            panelItem.setCanCancel(canCancel(analysis));
+            analysisSampleItemList.add(panelItem);
+        }
+    }
+
+    private SampleEditItem getAlreadyAddedPanel(String panelName, List<SampleEditItem> analysisSampleItemList) {
+        for (SampleEditItem sampleEditItem : analysisSampleItemList) {
+            if(sampleEditItem.getPanelName() != null && sampleEditItem.getPanelName().equals(panelName))
+                return sampleEditItem;
+        }
+        return null;
+    }
+
+    private boolean isPanelItem(Analysis analysis) {
+        return analysis.getPanel() != null;
+    }
+
+    private void setAddableTestInfo(DynaActionForm dynaForm) throws IllegalAccessException, InvocationTargetException,
 			NoSuchMethodException {
 		List<SampleEditItem> possibleTestList = new ArrayList<SampleEditItem>();
 
@@ -275,7 +307,7 @@ public class SampleEditAction extends BaseAction {
 	private void setAddableSampleTypes(DynaActionForm dynaForm) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		PropertyUtils.setProperty(dynaForm, "sampleTypes", DisplayListService.getList(ListType.SAMPLE_TYPE));
 	}
-	
+
 	private void addPossibleTestsToList(SampleItem sampleItem, List<SampleEditItem> possibleTestList) {
 
 		TypeOfSample typeOfSample = new TypeOfSample();
@@ -327,7 +359,14 @@ public class SampleEditAction extends BaseAction {
 
 		public int compare(SampleEditItem o1, SampleEditItem o2) {
 			if (GenericValidator.isBlankOrNull(o1.getSortOrder()) || GenericValidator.isBlankOrNull(o2.getSortOrder())) {
-				return o1.getTestName().compareTo(o2.getTestName());
+				if(GenericValidator.isBlankOrNull(o1.getTestName()) && GenericValidator.isBlankOrNull(o2.getTestName()))
+                    return o1.getTestName().compareTo(o2.getTestName());
+                else if(GenericValidator.isBlankOrNull(o1.getPanelName()) && GenericValidator.isBlankOrNull(o2.getPanelName())){
+                    return o1.getPanelName().compareTo(o2.getPanelName());
+                }
+                //TODO : fix this to return panels with highest sort order
+                else if (o1.isPanel()) return -1;
+                else if (o2.isPanel()) return 1;
 			}
 
 			try {

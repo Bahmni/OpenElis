@@ -287,7 +287,18 @@ function processAccessionFailure(xhr)
 			</td>
 		</logic:equal>
 		<td>
-			<bean:write name="existingTests" property="testName"/>
+            <% if( existingTests.isPanel()){%>
+                <bean:write name="existingTests" property="panelName"/>
+                <table>
+                    <%for (SampleEditItem panelItem : existingTests.getPanelTests()) { %>
+                        <tr>
+                            <%=panelItem.getTestName()%>
+                        </tr>
+                    <%}%>
+                </table>
+            <% }else{ %>
+                <bean:write name="existingTests" property="testName"/>
+            <%}%>
 		</td>
         <% if(allowEditOrRemoveTests){ %>
 		<logic:equal name='<%=formName%>' property="isEditable" value="true" >

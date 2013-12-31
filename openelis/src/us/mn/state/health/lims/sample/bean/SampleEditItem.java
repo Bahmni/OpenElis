@@ -16,6 +16,9 @@
 
 package us.mn.state.health.lims.sample.bean;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SampleEditItem {
 	private String accessionNumber;
 	private String analysisId;
@@ -30,8 +33,11 @@ public class SampleEditItem {
 	private String sortOrder;
 	private boolean canRemoveSample = false;
 	private boolean removeSample;
+    private String panelName;
+    private boolean isPanel = false;
+    private List<SampleEditItem> panelTests = new ArrayList<SampleEditItem>();
 
-	public String getAccessionNumber() {
+    public String getAccessionNumber() {
 		return accessionNumber;
 	}
 	public void setAccessionNumber(String accessionNumber) {
@@ -110,5 +116,31 @@ public class SampleEditItem {
 	public void setRemoveSample(boolean removeSample) {
 		this.removeSample = removeSample;
 	}
+    public String getPanelName() {
+        return panelName;
+    }
 
+    public void setPanelName(String panelName) {
+        this.panelName = panelName;
+    }
+
+    public boolean isPanel() {
+        return org.apache.commons.lang.StringUtils.isNotBlank(panelName);
+    }
+
+    public void setPanel(boolean isPanel) {
+        this.isPanel = isPanel;
+    }
+
+    public List<SampleEditItem> getPanelTests() {
+        return panelTests;
+    }
+
+    public void setPanelTests(List<SampleEditItem> panelTests) {
+        this.panelTests = panelTests;
+    }
+
+    public void addPanelTest(SampleEditItem sampleItem) {
+        this.panelTests.add(sampleItem);
+    }
 }
