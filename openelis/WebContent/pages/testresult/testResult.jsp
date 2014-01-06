@@ -48,6 +48,9 @@
         }
         return validated;
     }
+    function changeAbnormal(cb) {
+        document.getElementById("abnormal").value = cb.checked;
+    }
 </script>
 
 
@@ -102,6 +105,15 @@
             <html:text name="<%=formName%>" property="value" styleId="resultValue" size="30"/>
             <span id="indicator4" style="display:none;"><img src="<%=basePath%>images/indicator.gif"/></span>
             <input id="selectedDictionaryValue" name="selectedDictionaryValue" type="hidden" size="30"/>
+        </td>
+    </tr>
+    <tr>
+        <td class="label">
+            <bean:message key="testresult.abnormal"/>:<span class="requiredlabel">*</span>
+        </td>
+        <td>
+            <html:checkbox name="<%=formName%>" property="abnormal" onclick="changeAbnormal(this)"/>
+            <html:hidden property="abnormal" value="false" styleId="abnormal"/>
         </td>
     </tr>
     <tr>

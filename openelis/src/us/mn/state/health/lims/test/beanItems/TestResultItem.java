@@ -118,11 +118,13 @@ public class TestResultItem implements ResultItem, Serializable{
 	private String qualifiedDictonaryId = null;
 	private String qualifiedResultValue = "";
 	private String qualifiedResultId;
-	
+    private Boolean abnormal;
+    private List<IdValuePair> abnormalTestResult;
+
 	public String getAccessionNumber() {
 		return accessionNumber;
 	}
-	public void setAccessionNumber(String accessionNumber) {
+    public void setAccessionNumber(String accessionNumber) {
 		this.accessionNumber = accessionNumber;
 	}
 	public String getSequenceNumber() {
@@ -587,5 +589,17 @@ public class TestResultItem implements ResultItem, Serializable{
 	public void setQualifiedResultId(String qualifiedResultId) {
 		this.qualifiedResultId = qualifiedResultId;
 	}
-	
+    public Boolean getAbnormal() {
+        return abnormal;
+    }
+    public void setAbnormal(Boolean abnormal) {
+        this.abnormal = abnormal;
+    }
+    public List<IdValuePair> getAbnormalTestResult() {
+        return abnormalTestResult;
+    }
+    public void setAbnormalTestResult(List<IdValuePair> abnormalTestResult) {
+        this.abnormalTestResult = abnormalTestResult;
+    }
+
 }

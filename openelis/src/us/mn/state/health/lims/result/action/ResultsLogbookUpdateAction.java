@@ -601,6 +601,7 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
                 setNewResultValues(testResultItem, analysis, result);
                 setStandardResultValues(multiResults[i], result);
                 result.setSortOrder(getResultSortOrder(analysis, result.getValue()));
+                result.setAbnormal(testResultItem.getAbnormal());
 
                 results.add(result);
             }
@@ -646,6 +647,7 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
             }
 
             setStandardResultValues(testResultItem.getResultValue(), result);
+            result.setAbnormal(testResultItem.getAbnormal());
             results.add(result);
 
             if (isQualifiedResult) {

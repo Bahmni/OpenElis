@@ -51,6 +51,8 @@ public class TestResult extends EnumValueItemImpl {
 
 	private ValueHolderInterface scriptlet;
 
+    private Boolean abnormal;
+
     public static final String MULTI_RESULT_TYPE = "M";
 
     public TestResult() {
@@ -183,6 +185,14 @@ public class TestResult extends EnumValueItemImpl {
 	public void setSortOrder(String sortOrder) {
 		this.sortOrder = sortOrder;
 	}
+
+    public Boolean getAbnormal() {
+        return abnormal;
+    }
+
+    public void setAbnormal(Boolean abnormal) {
+        this.abnormal = abnormal;
+    }
 
     public boolean canHaveMultipleValues() {
         return testResultType.equalsIgnoreCase(MULTI_RESULT_TYPE);

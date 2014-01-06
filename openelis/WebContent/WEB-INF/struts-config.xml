@@ -1831,8 +1831,9 @@
     <form-property name="flags" type="java.lang.String" initial=""/> 
     <form-property name="testResultType" type="java.lang.String" initial=""/> 
     <form-property name="value" type="java.lang.String" initial=""/> 
-    <form-property name="significantDigits" type="java.lang.String" initial=""/> 
-    <form-property name="quantLimit" type="java.lang.String" initial=""/> 
+    <form-property name="abnormal" type="java.lang.Boolean" initial=""/>
+    <form-property name="significantDigits" type="java.lang.String" initial=""/>
+    <form-property name="quantLimit" type="java.lang.String" initial="false"/>
     <form-property name="contLevel" type="java.lang.String" initial=""/> 
     <form-property name="scriptletName" type="java.lang.String" initial=""/>
     <form-property name="scriptlet" type="us.mn.state.health.lims.scriptlet.valueholder.Scriptlet"/>

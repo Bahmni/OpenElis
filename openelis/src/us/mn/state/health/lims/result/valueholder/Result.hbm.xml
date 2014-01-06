@@ -38,5 +38,8 @@
         <many-to-one name="parentResult" class="us.mn.state.health.lims.result.valueholder.Result" fetch="select">
             <column name="parent_id" precision="10" scale="0" />
         </many-to-one>
+        <property name="abnormal" type="java.lang.Boolean">
+            <column name="abnormal" length="1"/>
+        </property>
     </class>
 </hibernate-mapping>

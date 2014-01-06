@@ -47,5 +47,8 @@
         <property name="contLevel" type="java.lang.String">
             <column name="CONT_LEVEL" length="30" />
         </property>
+        <property name="abnormal" type="java.lang.Boolean">
+            <column name="abnormal" length="1"/>
+        </property>
     </class>
 </hibernate-mapping>

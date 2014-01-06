@@ -42,6 +42,8 @@ public class Result extends EnumValueItemImpl {
 	private Double maxNormal;
 	private ValueHolder parentResult;
 
+    private Boolean abnormal;
+
 	public Result() {
 		super();
 		analysis = new ValueHolder();
@@ -211,6 +213,14 @@ public class Result extends EnumValueItemImpl {
 	public void setParentResult(Result parentResult) {
 		this.parentResult.setValue( parentResult );
 	}
+
+    public Boolean getAbnormal() {
+        return abnormal;
+    }
+
+    public void setAbnormal(Boolean abnormal) {
+        this.abnormal = abnormal;
+    }
 
     public boolean canHaveMultipleValues() {
         TestResult testResultValue = (TestResult) this.testResult.getValue();

@@ -874,6 +874,10 @@ public class ResultsLoadUtility {
         testItem.setResultType(getTestResultType(testResults));
         testItem.setAnalysisStatusId(analysis.getStatusId());
         setDictionaryResults(testItem, isConclusion, result, testResults);
+        setAbnormalTestResultsToDictionaryResults(testItem, isConclusion, result,testResults);
+        if(result != null){
+            testItem.setAbnormal(result.getAbnormal()!=null?result.getAbnormal():false);
+        }
 
         testItem.setTechnician(techSignature);
         testItem.setTechnicianSignatureId(techSignatureId);
@@ -904,6 +908,19 @@ public class ResultsLoadUtility {
         testItem.setDisplayResultAsLog(hasLogValue(analysis, testItem.getResultValue()));
         testItem.setNonconforming(QAService.isAnalysisParentNonConforming(analysis));
         return testItem;
+    }
+
+    private void setAbnormalTestResultsToDictionaryResults(TestResultItem testItem, boolean isConclusion, Result result, List<TestResult> testResults) {
+        if(isConclusion) {
+            testItem.setAbnormal(result.getAbnormal());
+        }
+        else {
+            List<IdValuePair> values = new ArrayList<>();
+            for (TestResult testResult : testResults) {
+                values.add(new IdValuePair(testResult.getValue(), testResult.getAbnormal() == null ? null : testResult.getAbnormal().toString()));
+            }
+            testItem.setAbnormalTestResult(values);
+        }
     }
 
     private void setDictionaryResults(TestResultItem testItem, boolean isConclusion, Result result,

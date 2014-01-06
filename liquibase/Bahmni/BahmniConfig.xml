@@ -967,4 +967,16 @@
             <where>name IN ('SEM','GAN','SIV','BAM')</where>
         </update>
     </changeSet>
+    <changeSet id="63" author="tw" context="bahmni">
+        <comment>Add Abnormal Column to Test Result</comment>
+        <addColumn tableName="test_result" schemaName="clinlims">
+            <column name="abnormal" type="boolean"></column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="64" author="tw" context="bahmni">
+        <comment>Add Abnormal Column to Result</comment>
+        <addColumn tableName="result" schemaName="clinlims">
+            <column name="abnormal" type="boolean"></column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

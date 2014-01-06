@@ -274,9 +274,47 @@ function /*void*/ handleReferralReasonChange(select,  index ){
 	}
 }
 
+function updateAbnormalCheck(isNormal, index) {
+    if(isNormal == true){
+        $("abnormalId_" + index).checked = false;
+    } else {
+        $("abnormalId_" + index).checked = true;
+    }
+}
+function isNormalForNumeric(value, lowerBound, upperBound) {
+    return value <= upperBound && value >= lowerBound;
+}
+
+function isNormalForDropDown(id, idValuePair) {
+var retVal;
+    idValuePair.forEach(function(idValue){
+        if(idValue.id === id){
+            if(idValue.value === "true"){
+                retVal = false;
+            } else {
+                retVal = true;
+            }
+        }
+    })
+    return retVal;
+}
+
+function enableOnlyForRemark(index, resultType) {
+    if(resultType === 'R') {
+        $("abnormalId_" + index).disabled = false;
+    } else {
+        $("abnormalId_" + index).disabled = true;
+    }
+}
+
 //this overrides the form in utilities.jsp
 function  /*void*/ savePage()
 {
+    for(i=1; i< <%= testCount%>; i++) {
+        $("abnormalId_" + i).disabled = false;
+    }
+
+
     jQuery("#saveButtonId").attr("disabled", "disabled");
 	window.onbeforeunload = null; // Added to flag that formWarning alert isn't needed.
 	var form = window.document.forms[0];
@@ -495,6 +533,9 @@ function /*void*/ processTestReflexCD4Success(xhr)
 		<th width="165px" style="text-align: left">
 			<bean:message key="result.result"/>
 		</th>
+        <th width="165px" style="text-align: left">
+			<bean:message key="result.abnormal"/>
+		</th>
 		<% if( ableToRefer ){ %>
 		<th>
 			<bean:message key="referral.referandreason"/>
@@ -531,6 +572,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 	</tr>
 	</logic:equal>
 	<logic:equal name="testResult" property="isGroupSeparator" value="false">
+		<bean:define id="abnormalDictValuePair" name="testResult" property="abnormalTestResult"/>
 		<bean:define id="lowerBound" name="testResult" property="lowerNormalRange" />
 		<bean:define id="upperBound" name="testResult" property="upperNormalRange" />
 		<bean:define id="lowerAbnormalBound" name="testResult" property="lowerAbnormalRange" />
@@ -539,7 +581,6 @@ function /*void*/ processTestReflexCD4Success(xhr)
 		<bean:define id="rowColor" value='<%=(testResult.getSampleGroupingNumber() % 2 == 0) ? "evenRow" : "oddRow" %>' />
 		<bean:define id="readOnly" value='<%=testResult.isReadOnly() ? "disabled=\'true\'" : "" %>' />
 		<bean:define id="accessionNumber" name="testResult" property="accessionNumber"/>
-
    <% if( compactHozSpace ){ %>
    <logic:equal  name="testResult" property="showSampleDetails" value="true">
 		<tr class='<%= rowColor %>Head <%= accessionNumber%>' >
@@ -697,22 +738,23 @@ function /*void*/ processTestReflexCD4Success(xhr)
 		<!-- result cell -->
 		<td id='<%="cell_" + index %>' class="ruled">
 			<logic:equal name="testResult" property="resultType" value="N">
-			    <input type="text" 
-			           name='<%="testResult[" + index + "].resultValue" %>' 
-			           size="6" 
-			           value='<%= testResult.getResultValue() %>' 
+			    <input type="text"
+			           name='<%="testResult[" + index + "].resultValue" %>'
+			           size="6"
+			           value='<%= testResult.getResultValue() %>'
 			           id='<%= "results_" + index %>'
                        class="testResultValue"
 			           style='<%="background: " + (testResult.isValid() ? testResult.isNormal() ? "#ffffff" : "#ffffa0" : "#ffa0a0") %>'
-			           title='<%= (testResult.isValid() ? testResult.isNormal() ? "" : StringUtil.getMessageForKey("result.value.abnormal") : StringUtil.getMessageForKey("result.value.invalid")) %>' 
+			           title='<%= (testResult.isValid() ? testResult.isNormal() ? "" : StringUtil.getMessageForKey("result.value.abnormal") : StringUtil.getMessageForKey("result.value.invalid")) %>'
 					   <%= testResult.isReadOnly() || testResult.isReferredOut() ? "disabled='disabled'" : ""%>
-					   class='<%= (testResult.isReflexGroup() ? "reflexGroup_" + testResult.getReflexParentGroup()  : "")  +  (testResult.isChildReflex() ? " childReflex_" + testResult.getReflexParentGroup() : "") %> ' 
-					   onchange='<%="validateResults( this," + index + "," + lowerBound + "," + upperBound + "," + lowerAbnormalBound + "," + upperAbnormalBound + ", \"XXXX\" );" + 
+					   class='<%= (testResult.isReflexGroup() ? "reflexGroup_" + testResult.getReflexParentGroup()  : "")  +  (testResult.isChildReflex() ? " childReflex_" + testResult.getReflexParentGroup() : "") %> '
+					   onchange='<%="validateResults( this," + index + "," + lowerBound + "," + upperBound + "," + lowerAbnormalBound + "," + upperAbnormalBound + ", \"XXXX\" );" +
 						               "markUpdated(" + index + "); " +
 						                (testResult.isReflexGroup() && !testResult.isChildReflex() ? "updateReflexChild(" + testResult.getReflexParentGroup()  +  " ); " : "") +
-						                ( noteRequired && !"".equals(testResult.getResultValue())  ? "showNote( " + index + ");" : ""  ) + 
-						                ( testResult.isDisplayResultAsLog() ? " updateLogValue(this, " + index + ");" : "" )  %>'/>
-						               
+						                ( noteRequired && !"".equals(testResult.getResultValue())  ? "showNote( " + index + ");" : ""  ) +
+						                ( testResult.isDisplayResultAsLog() ? " updateLogValue(this, " + index + ");" : "" ) +
+						                 "; updateAbnormalCheck( isNormalForNumeric(this.value,"+lowerBound+","+upperBound+")," + index + ")" %>'/>
+
 				<bean:write name="testResult" property="unitsOfMeasure"/>
 			</logic:equal><logic:equal name="testResult" property="resultType" value="A">
 				<app:text name="testResult"
@@ -721,7 +763,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 						  size="20"
 						  disabled='<%= testResult.isReadOnly() || testResult.isReferredOut() %>'
                           style='<%="background: " + (testResult.isValid() ? testResult.isNormal() ? "#ffffff" : "#ffffa0" : "#ffa0a0") %>'
-						  title='<%= (testResult.isValid() ? testResult.isNormal() ? "" : StringUtil.getMessageForKey("result.value.abnormal") : StringUtil.getMessageForKey("result.value.invalid")) %>' 
+						  title='<%= (testResult.isValid() ? testResult.isNormal() ? "" : StringUtil.getMessageForKey("result.value.abnormal") : StringUtil.getMessageForKey("result.value.invalid")) %>'
 						  styleId='<%="results_" + index %>'
                           styleClass="testResultValue"
 						  onchange='<%="markUpdated(" + index + ");"  +
@@ -745,12 +787,22 @@ function /*void*/ processTestReflexCD4Success(xhr)
 			<% if( "D".equals(testResult.getResultType()) || "Q".equals(testResult.getResultType()) ){ %>
 			<!-- dictionary results -->
 			<select name="<%="testResult[" + index + "].resultValue" %>"
-			        onchange="<%="markUpdated(" + index + ", " + testResult.isUserChoiceReflex() +  ", \'" + testResult.getSiblingReflexKey() + "\');"   +
+			        onchange="<%="markUpdated(" + index + ", " + testResult.isUserChoiceReflex() +  ", \'" + testResult.getSiblingReflexKey() + "\') ;"   +
+" updateAbnormalCheck( isNormalForDropDown(this.value, ["%>
+                            <%for (int i = 0; i < testResult.getAbnormalTestResult().size(); i++){%>
+                            {'id':'<%=(testResult.getAbnormalTestResult().get(i).getId())%>',
+                            'value':'<%=(testResult.getAbnormalTestResult().get(i).getValue())%>'}
+                            <% if (testResult.getAbnormalTestResult().size() - i > 1) {%>
+                            ,
+                            <%}%>
+                            <%}%>
+                            <%="])," + index + "); " +
 						               ((noteRequired && !"".equals(testResult.getResultValue()) )? "showNote( " + index + ");" : "") +
 						               (testResult.getQualifiedDictonaryId() != null ? "showQuanitiy( this, "+ index + ", " + testResult.getQualifiedDictonaryId() + ");" :"") %>"
 			        id='<%="results_" + index%>'
                     class="testResultValue"
-			        <%=testResult.isReadOnly() || testResult.isReferredOut() ? "disabled=\'true\'" : "" %> >
+
+            <%=testResult.isReadOnly() || testResult.isReferredOut() ? "disabled=\'true\'" : "" %> >
 					<option value="0"></option>
 					<logic:iterate id="optionValue" name="testResult" property="dictionaryResults" type="IdValuePair" >
 						<option value='<%=optionValue.getId()%>'  <%if(optionValue.getId().equals(testResult.getResultValue())) out.print("selected"); %>  >
@@ -758,9 +810,9 @@ function /*void*/ processTestReflexCD4Success(xhr)
 						</option>
 					</logic:iterate>
 			</select><br/>
-			<input type="text" 
-			           name='<%="testResult[" + index + "].qualifiedResultValue" %>' 
-			           value='<%= testResult.getQualifiedResultValue() %>' 
+			<input type="text"
+			           name='<%="testResult[" + index + "].qualifiedResultValue" %>'
+			           value='<%= testResult.getQualifiedResultValue() %>'
 			           id='<%= "qualifiedDict_" + index %>'
 			           style = '<%= "display:" + ("".equals(testResult.getQualifiedResultValue()) ? "none" : "inline") %>'
 					   <%= (testResult.isReadOnly() || testResult.isReferredOut()) ? "disabled='disabled'" : ""%> />
@@ -797,6 +849,18 @@ function /*void*/ processTestReflexCD4Success(xhr)
 									size='6' /> log
 					<% } %>
 		</td>
+        <td>
+            <html:checkbox name='testResult'
+                           property="abnormal"
+                           indexed="true"
+                           styleId='<%="abnormalId_" + index %>'
+            onchange='<%="markUpdated(" + index + ");"%>'/>
+
+            <script language="JavaScript">
+                enableOnlyForRemark(<%=index%>,'<%=testResult.getResultType()%>');
+            </script>
+
+        </td>
 		<% if( ableToRefer ){ %>
 		<td style="white-space: nowrap" class="ruled">
 		<html:hidden name="testResult" property="referralId" indexed='true'/>
