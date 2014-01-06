@@ -19,12 +19,13 @@ package us.mn.state.health.lims.sample.action;
 
 import org.apache.struts.Globals;
 import org.apache.struts.action.*;
+import org.bahmni.feed.openelis.feed.service.EventPublishers;
+import org.bahmni.feed.openelis.feed.service.impl.OpenElisUrlPublisher;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.hibernate.StaleObjectStateException;
-import org.hibernate.Transaction;
 import us.mn.state.health.lims.address.daoimpl.AddressPartDAOImpl;
 import us.mn.state.health.lims.address.valueholder.AddressPart;
 import us.mn.state.health.lims.address.valueholder.OrganizationAddress;
@@ -44,7 +45,6 @@ import us.mn.state.health.lims.common.util.ConfigurationProperties.Property;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.laborder.dao.LabOrderTypeDAO;
 import us.mn.state.health.lims.laborder.daoimpl.LabOrderTypeDAOImpl;
 import us.mn.state.health.lims.laborder.valueholder.LabOrderType;
@@ -83,10 +83,7 @@ import us.mn.state.health.lims.upload.action.AddSampleService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 
 import static org.apache.commons.validator.GenericValidator.isBlankOrNull;
 
@@ -107,7 +104,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
     private ActionMessages patientErrors;
 	private Organization newOrganization = null;
     private SampleSource sampleSource;
-    private String projectId;
+    private OpenElisUrlPublisher accessionPublisher = new EventPublishers().accessionPublisher();
 
 
     private boolean useReceiveDateForCollectionDate = false;
@@ -247,10 +244,11 @@ public class SamplePatientEntrySaveAction extends BaseAction {
             AddSampleService addSampleService = new AddSampleService(true);
             addSampleService.persist(analysisBuilder, useInitialSampleCondition, newOrganization, requesterSite,
                     orgAddressExtra, sample, sampleItemsTests, observations, sampleHuman, patientId,
-                    projectId, providerId, currentUserId,
+                    null, providerId, currentUserId,
                     PROVIDER_REQUESTER_TYPE_ID, REFERRING_ORG_TYPE_ID);
+            accessionPublisher.publish(sample.getUUID(), request.getContextPath());
 
-		} catch (LIMSInvalidSTNumberException e) {
+        } catch (LIMSInvalidSTNumberException e) {
             request.setAttribute(IActionConstants.REQUEST_FAILED, true);
             return addErrorMessageAndForward(mapping, request, new ActionError("errors.InvalidStNumber", null, null));
         } catch (LIMSValidationException e) {
@@ -514,6 +512,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 		sample.setSysUserId(currentUserId);
 		sample.setAccessionNumber(accessionNumber);
         sample.setSampleSource(sampleSource);
+        sample.setUUID(UUID.randomUUID().toString());
 
         sample.setEnteredDate(DateUtil.getNowAsSqlDate());
 		if (useReceiveTimestamp) {

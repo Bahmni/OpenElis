@@ -17,7 +17,7 @@
 package org.bahmni.feed.openelis.feed.service;
 
 import org.bahmni.feed.openelis.AtomFeedProperties;
-import org.bahmni.feed.openelis.feed.service.impl.EmptyService;
+import org.bahmni.feed.openelis.feed.service.impl.EmptyLabService;
 import org.bahmni.feed.openelis.feed.service.impl.LabPanelService;
 import org.bahmni.feed.openelis.feed.service.impl.LabTestService;
 
@@ -33,6 +33,6 @@ public class LabServiceFactory {
         else if(properties.getProductTypePanel().equals(type)){
             return  new LabPanelService();
         }
-        return  new EmptyService();
+        return  new EmptyLabService();
     }
 }

@@ -25,6 +25,7 @@ import org.ict4h.atomfeed.server.service.EventServiceImpl;
 public class EventPublishers {
     private final String PATIENT_CATEGORY = "patient";
     private final String RESULT_CATEGORY = "result";
+    private final String ACCESSION_CATEGORY = "accession";
     private EventService eventService;
 
     public EventPublishers() {
@@ -41,5 +42,9 @@ public class EventPublishers {
 
     public OpenElisUrlPublisher testResultPublisher() {
         return new OpenElisUrlPublisher(eventService, RESULT_CATEGORY);
+    }
+
+    public OpenElisUrlPublisher accessionPublisher() {
+        return new OpenElisUrlPublisher(eventService, ACCESSION_CATEGORY);
     }
 }

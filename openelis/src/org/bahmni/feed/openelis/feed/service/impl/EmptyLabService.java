@@ -21,7 +21,7 @@ import org.bahmni.feed.openelis.feed.service.LabService;
 
 import java.io.IOException;
 
-public class EmptyService extends LabService {
+public class EmptyLabService extends LabService {
 
     @Override
     protected void delete(LabObject labObject) {
