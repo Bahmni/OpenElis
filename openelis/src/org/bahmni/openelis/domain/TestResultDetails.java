@@ -22,7 +22,7 @@ public class TestResultDetails {
     private String alerts;
     private List<String> notes = new ArrayList<>();
     private String resultType;
-
+    private Boolean abnormal;
     public String getOrderId() {
         return orderId;
     }
@@ -156,4 +156,14 @@ public class TestResultDetails {
     public void setPanelExternalId(String panelExternalId) {
         this.panelExternalId = panelExternalId;
     }
+
+    public Boolean getAbnormal() {
+        return abnormal;
+    }
+
+    public void setAbnormal(Boolean abnormal) {
+        this.abnormal = abnormal;
+    }
+
+
 }

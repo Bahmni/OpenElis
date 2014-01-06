@@ -81,6 +81,7 @@ public class TestResultService {
                 "    exref_panel.external_id as panelExternalId, \n" +
                 "    result.id as resultId,\n" +
                 "    result.value as result,\n" +
+                "    result.abnormal as abnormal,\n" +
                 "    result.result_type as resultType,\n" +
                 "    result.min_normal as minNormal,\n" +
                 "    result.max_normal as maxNormal,\n" +
@@ -125,6 +126,7 @@ public class TestResultService {
             testResultDetails.setAccessionNumber(resultSet.getString("accessionNumber"));
             testResultDetails.setOrderId(resultSet.getString("orderId"));
             testResultDetails.setResult(resultSet.getString("result"));
+            testResultDetails.setAbnormal(resultSet.getBoolean("abnormal"));
             testResultDetails.setTestName(resultSet.getString("testName"));
             testResultDetails.setPatientExternalId(resultSet.getString("patientExternalId"));
             testResultDetails.setPatientFirstName(resultSet.getString("patientFirstName"));
