@@ -42,7 +42,7 @@ public class Result extends EnumValueItemImpl {
 	private Double maxNormal;
 	private ValueHolder parentResult;
 
-    private Boolean abnormal;
+    private boolean abnormal;
 
 	public Result() {
 		super();
@@ -214,11 +214,11 @@ public class Result extends EnumValueItemImpl {
 		this.parentResult.setValue( parentResult );
 	}
 
-    public Boolean getAbnormal() {
+    public boolean getAbnormal() {
         return abnormal;
     }
 
-    public void setAbnormal(Boolean abnormal) {
+    public void setAbnormal(boolean abnormal) {
         this.abnormal = abnormal;
     }
 

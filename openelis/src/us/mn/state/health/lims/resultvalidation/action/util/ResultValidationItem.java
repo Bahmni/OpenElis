@@ -56,6 +56,8 @@ public class ResultValidationItem implements ResultItem, Serializable{
 	private String resultValue;
 	private String remarks;
 
+    private boolean abnormal;
+
 	private String unitsOfMeasure = "";
 	private String testSortNumber;
 	private String resultType;
@@ -80,6 +82,9 @@ public class ResultValidationItem implements ResultItem, Serializable{
 	private boolean isReflexGroup = false;
 	private boolean isChildReflex = false;
 	private boolean nonconforming = false;
+    private Double minNormal;
+    private Double maxNormal;
+    private List<IdValuePair> abnormalTestResult;
 
     public String getAccessionNumber() {
 		return accessionNumber;
@@ -250,17 +255,20 @@ public class ResultValidationItem implements ResultItem, Serializable{
 		return receivedDate;
 	}
 
-	public void setResult(Result result) {
-		if( result == null ){
-			setResultId("");
-			setResultValue("");
-		}else{
-			setResultId(result.getId());
-			setResultValue(result.getValue());
-		}
+    public void setResult(Result result) {
+        if (result == null) {
+            setResultId("");
+            setResultValue("");
+        } else {
+            setResultId(result.getId());
+            setResultValue(result.getValue());
+            setAbnormal(result.getAbnormal());
+            setMinNormal(result.getMinNormal());
+            setMaxNormal(result.getMaxNormal());
+        }
 
-		this.result = result;
-	}
+        this.result = result;
+    }
 
 	public Result getResult() {
 		return result;
@@ -344,4 +352,35 @@ public class ResultValidationItem implements ResultItem, Serializable{
 		this.nonconforming = nonconforming;
 	}
 
+    public void setAbnormal(Boolean abnormal) {
+        this.abnormal = abnormal;
+    }
+
+    public boolean isAbnormal() {
+        return abnormal;
+    }
+
+    public void setMinNormal(Double minNormal) {
+        this.minNormal = minNormal;
+    }
+
+    public void setMaxNormal(Double maxNormal) {
+        this.maxNormal = maxNormal;
+    }
+
+    public Double getMinNormal() {
+        return minNormal;
+    }
+
+    public Double getMaxNormal() {
+        return maxNormal;
+    }
+
+    public List<IdValuePair> getAbnormalTestResult() {
+        return abnormalTestResult;
+    }
+
+    public void setAbnormalTestResult(List<IdValuePair> abnormalTestResult) {
+        this.abnormalTestResult = abnormalTestResult;
+    }
 }

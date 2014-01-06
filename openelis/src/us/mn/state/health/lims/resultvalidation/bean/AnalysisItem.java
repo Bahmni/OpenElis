@@ -137,6 +137,38 @@ public class AnalysisItem {
     private boolean isChildReflex = false;
 
     private boolean nonconforming = false;
+    private boolean abnormal;
+
+    private double upperAbnormalRange;
+    private double lowerAbnormalRange;
+    private Double minNormal;
+    private Double maxNormal;
+
+    public double getUpperAbnormalRange() {
+        return upperAbnormalRange;
+    }
+
+    public void setUpperAbnormalRange(double upperAbnormalRange) {
+        this.upperAbnormalRange = upperAbnormalRange;
+    }
+
+    public double getLowerAbnormalRange() {
+        return lowerAbnormalRange;
+    }
+
+    public void setLowerAbnormalRange(double lowerAbnormalRange) {
+        this.lowerAbnormalRange = lowerAbnormalRange;
+    }
+
+    public List<IdValuePair> getAbnormalTestResult() {
+        return abnormalTestResult;
+    }
+
+    public void setAbnormalTestResult(List<IdValuePair> abnormalTestResult) {
+        this.abnormalTestResult = abnormalTestResult;
+    }
+
+    private List<IdValuePair> abnormalTestResult;
 
     public AnalysisItem() {
 
@@ -154,7 +186,7 @@ public class AnalysisItem {
         return this.testName;
     }
 
-    public boolean isReferredOut(){
+    public boolean isReferredOut() {
         return StatusOfSampleUtil.getStatusID(TechnicalAcceptanceRO).equals(statusId);
     }
 
@@ -603,4 +635,43 @@ public class AnalysisItem {
     }
 
 
+    public void setAbnormal(boolean abnormal) {
+        this.abnormal = abnormal;
+    }
+
+    public boolean isAbnormal() {
+        return abnormal;
+    }
+
+    public void setMinNormal(Double minNormal) {
+        this.minNormal = minNormal;
+    }
+
+    public void setMaxNormal(Double maxNormal) {
+        this.maxNormal = maxNormal;
+    }
+
+    public Double getMinNormal() {
+        return minNormal;
+    }
+
+    public Double getMaxNormal() {
+        return maxNormal;
+    }
+
+    public String getAbnormalTestResultMap() {
+        StringBuilder map = new StringBuilder();
+
+        List<IdValuePair> abnormalResults = getAbnormalTestResult();
+        for (int i = 0; i < abnormalResults.size(); i++) {
+            map.append("{");
+            map.append("'id':'").append(abnormalResults.get(i).getId()).append("'");
+            map.append(",");
+            map.append("'value':'").append(abnormalResults.get(i).getValue()).append("'");
+            map.append("}");
+            if (i < abnormalResults.size() - 1)
+                map.append(",");
+        }
+        return map.toString();
+    }
 }

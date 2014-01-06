@@ -876,7 +876,7 @@ public class ResultsLoadUtility {
         setDictionaryResults(testItem, isConclusion, result, testResults);
         setAbnormalTestResultsToDictionaryResults(testItem, isConclusion, result,testResults);
         if(result != null){
-            testItem.setAbnormal(result.getAbnormal()!=null?result.getAbnormal():false);
+            testItem.setAbnormal(result.getAbnormal());
         }
 
         testItem.setTechnician(techSignature);

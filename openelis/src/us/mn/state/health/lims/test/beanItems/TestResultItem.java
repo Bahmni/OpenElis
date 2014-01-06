@@ -47,7 +47,9 @@ public class TestResultItem implements ResultItem, Serializable{
 	@SuppressWarnings("unused")
 	private static String YES = "yes";
 
-	public enum Method{ DNA, MANUAL, AUTO; }
+
+
+    public enum Method{ DNA, MANUAL, AUTO; }
 	public enum ResultDisplayType { TEXT, POS_NEG, POS_NEG_IND, HIV, SYPHILIS; }
 
 	private String sampleSource;
@@ -118,7 +120,7 @@ public class TestResultItem implements ResultItem, Serializable{
 	private String qualifiedDictonaryId = null;
 	private String qualifiedResultValue = "";
 	private String qualifiedResultId;
-    private Boolean abnormal;
+    private boolean abnormal;
     private List<IdValuePair> abnormalTestResult;
 
 	public String getAccessionNumber() {
@@ -589,10 +591,10 @@ public class TestResultItem implements ResultItem, Serializable{
 	public void setQualifiedResultId(String qualifiedResultId) {
 		this.qualifiedResultId = qualifiedResultId;
 	}
-    public Boolean getAbnormal() {
+    public boolean getAbnormal() {
         return abnormal;
     }
-    public void setAbnormal(Boolean abnormal) {
+    public void setAbnormal(boolean abnormal) {
         this.abnormal = abnormal;
     }
     public List<IdValuePair> getAbnormalTestResult() {
@@ -602,4 +604,19 @@ public class TestResultItem implements ResultItem, Serializable{
         this.abnormalTestResult = abnormalTestResult;
     }
 
+    public String getAbnormalTestResultMap() {
+        StringBuilder map = new StringBuilder();
+
+        List<IdValuePair> abnormalResults = getAbnormalTestResult();
+        for (int i = 0; i < abnormalResults.size(); i++) {
+            map.append("{");
+            map.append("'id':'").append(abnormalResults.get(i).getId()).append("'");
+            map.append(",");
+            map.append("'value':'").append(abnormalResults.get(i).getValue()).append("'");
+            map.append("}");
+            if (i < abnormalResults.size() - 1)
+                map.append(",");
+        }
+        return map.toString();
+    }
 }

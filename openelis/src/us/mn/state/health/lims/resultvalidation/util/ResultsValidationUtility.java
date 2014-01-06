@@ -466,6 +466,7 @@ public class ResultsValidationUtility {
 		testItem.setAnalysisMethod(analysis.getAnalysisType());
 		testItem.setResult(result);
 		testItem.setDictionaryResults(getAnyDictonaryValues(testResults));
+        testItem.setAbnormalTestResult(getAnyAbnormalTestResult(testResults));
 		testItem.setResultType(getTestResultType(testResults));
 		testItem.setAnalysisStatusId(analysis.getStatusId());
 		testItem.setTestSortNumber(test.getSortOrder());
@@ -484,7 +485,15 @@ public class ResultsValidationUtility {
 		return testItem;
 	}
 
-	private String augmentUOMWithRange(String uom,	Result result) {
+    private List<IdValuePair> getAnyAbnormalTestResult(List<TestResult> testResults) {
+            List<IdValuePair> values = new ArrayList<>();
+            for (TestResult testResult : testResults) {
+                values.add(new IdValuePair(testResult.getValue(), testResult.getAbnormal() == null ? null : testResult.getAbnormal().toString()));
+            }
+        return values;
+    }
+
+    private String augmentUOMWithRange(String uom,	Result result) {
 		Double max = result.getMaxNormal();
 		Double min = result.getMinNormal();		
 		
@@ -782,6 +791,10 @@ public class ResultsValidationUtility {
 		analysisResultItem.setChildReflex(testResultItem.isChildReflex());
 		analysisResultItem.setNonconforming(testResultItem.isNonconforming());
         analysisResultItem.setStatusId(testResultItem.getAnalysisStatusId());
+        analysisResultItem.setAbnormal(testResultItem.isAbnormal());
+        analysisResultItem.setMinNormal(testResultItem.getMinNormal());
+        analysisResultItem.setMaxNormal(testResultItem.getMaxNormal());
+        analysisResultItem.setAbnormalTestResult(testResultItem.getAbnormalTestResult());
 
 		return analysisResultItem;
 

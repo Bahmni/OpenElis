@@ -979,4 +979,20 @@
             <column name="abnormal" type="boolean"></column>
         </addColumn>
     </changeSet>
+    <changeSet id="65" author="tw" context="bahmni">
+        <addDefaultValue tableName="result" columnName="abnormal" schemaName="clinlims"  defaultValueBoolean="false" />
+    </changeSet>
+    <changeSet id="66" author="tw" context="bahmni">
+        <addDefaultValue tableName="test_result" columnName="abnormal" schemaName="clinlims"  defaultValueBoolean="false" />
+    </changeSet>
+    <changeSet id="67" author="tw" context="bahmni">
+        <update schemaName="clinlims" tableName="test_result">
+            <column name="abnormal" value="false"/>
+        </update>
+    </changeSet>
+    <changeSet id="68" author="tw" context="bahmni">
+        <update schemaName="clinlims" tableName="result">
+            <column name="abnormal" value="false"/>
+        </update>
+    </changeSet>
 </databaseChangeLog>

@@ -92,6 +92,31 @@ function /*void*/ enableDisableCheckboxes( matchedElement, groupingNumber ){
 	$("selectAllAccept").checked = false;
 }
 
+function updateAbnormalCheck(isNormal, index) {
+    if(isNormal == true){
+        $("abnormalId_" + index).checked = false;
+    } else {
+        $("abnormalId_" + index).checked = true;
+    }
+}
+function isNormalForNumeric(value, lowerBound, upperBound) {
+    return value <= upperBound && value >= lowerBound;
+}
+
+function isNormalForDropDown(id, idValuePair) {
+    var retVal;
+    idValuePair.forEach(function(idValue){
+        if(idValue.id === id){
+            if(idValue.value === "true"){
+                retVal = false;
+            } else {
+                retVal = true;
+            }
+        }
+    })
+    return retVal;
+}
+
 function /*void*/ acceptSample(element, groupingNumber ){
 	$$(".accepted_" + groupingNumber).each( function(item){
 		item.checked = element.checked;
@@ -141,6 +166,10 @@ function /*void*/ makeDirty(){
 }
 
 function savePage() {
+    for(i=0; i< <%= resultCount %>; i++) {
+        $("abnormalId_" + i).disabled = false;
+    }
+
     jQuery("#saveButtonId").attr("disabled", "disabled");
   window.onbeforeunload = null; // Added to flag that formWarning alert isn't needed.
 	var form = window.document.forms[0];
@@ -254,6 +283,14 @@ function /*boolean*/ handleEnterEvent(){
 	return false;
 }
 
+function enableOnlyForRemark(index, resultType) {
+    if(resultType === 'R') {
+        $("abnormalId_" + index).disabled = false;
+    } else {
+        $("abnormalId_" + index).disabled = true;
+    }
+}
+
 </script>
 <logic:notEmpty name="patientId">
     <h3><span>PatientID: </span><span><%=patientId%></span></h3>
@@ -345,7 +382,10 @@ function /*boolean*/ handleEnterEvent(){
 		<th>
 			<bean:message key="analyzer.results.result"/>
 		</th>
-		<th align="center">
+        <th align="center">
+            <bean:message key="result.abnormal" />
+        </th>
+        <th align="center">
 			<bean:message key="validation.accept" />
 		</th>
 		<th align="center">
@@ -428,14 +468,15 @@ function /*boolean*/ handleEnterEvent(){
 							   class='<%= (resultList.getIsHighlighted() ? "invalidHighlight " : " ") + (resultList.isReflexGroup() ? "reflexGroup_" + resultList.getSampleGroupingNumber()  : "")  +  
 							              (resultList.isChildReflex() ? " childReflex_" + resultList.getSampleGroupingNumber(): "") %> ' 
 							   onchange='<%=  "markUpdated(); makeDirty(); updateLogValue(this, " + index + "); " +
-								                (resultList.isReflexGroup() && !resultList.isChildReflex() ? "updateReflexChild(" + resultList.getSampleGroupingNumber()  +  " ); " : "")  %>'/>
+								                (resultList.isReflexGroup() && !resultList.isChildReflex() ? "updateReflexChild(" + resultList.getSampleGroupingNumber()  +  " ); " : "") +
+								                 "; updateAbnormalCheck( isNormalForNumeric(this.value,"+resultList.getMinNormal()+","+resultList.getMaxNormal()+")," + index + ")"%>'/>
 	    				<% } %>
 						<bean:write name="resultList" property="units"/>
 					</logic:equal>
 					<logic:equal name="resultList" property="resultType" value="D">
 						<select name="<%="resultList[" + index + "].result" %>" 
 						        id='<%="resultId_" + index%>' 
-						        onchange="markUpdated(); makeDirty();" >
+						        onchange="markUpdated(); makeDirty(); updateAbnormalCheck(isNormalForDropDown(this.value, [<%= resultList.getAbnormalTestResultMap() %>]), <%= index %>);" >
 								<logic:iterate id="optionValue" name="resultList" property="dictionaryResults" type="IdValuePair" >
 									<option value='<%=optionValue.getId()%>'  <%if(optionValue.getId().equals(resultList.getResult())) out.print("selected"); %>  >
 										<bean:write name="optionValue" property="value"/>
@@ -477,6 +518,20 @@ function /*boolean*/ handleEnterEvent(){
 						</div> log
 					<% } %>
 				</td>
+                <td>
+                    <html:checkbox name='resultList'
+                                   property="abnormal"
+                                   indexed="true"
+                                   styleId='<%="abnormalId_" + index %>'
+                                   onchange='<%="markUpdated();" %>' />
+
+                    <html:hidden property='<%="resultList["+index+"].abnormal"%>' value="false"/> <!-- To submit checkbox value when unchecked -->
+                    <script language="JavaScript">
+                        enableOnlyForRemark(<%=index%>,'<%=resultList.getResultType()%>');
+                    </script>
+
+                </td>
+
 				<% if(resultList.isShowAcceptReject()){ %>
 				<td>
 					<html:checkbox styleId='<%="accepted_" + index %>'

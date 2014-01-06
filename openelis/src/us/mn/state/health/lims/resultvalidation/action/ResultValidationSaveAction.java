@@ -405,7 +405,9 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 			}
 					
 			result.setValue(analysisResult);
-			analysis.setRevision(String.valueOf(Integer.parseInt(analysis.getRevision()) + 1 ));
+            result.setAbnormal(analysisItem.isAbnormal());
+
+            analysis.setRevision(String.valueOf(Integer.parseInt(analysis.getRevision()) + 1 ));
 			analysis.setEnteredDate(DateUtil.getNowAsTimestamp());
 		}
 		result.setSysUserId(currentUserId);

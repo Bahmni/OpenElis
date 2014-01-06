@@ -787,16 +787,8 @@ function /*void*/ processTestReflexCD4Success(xhr)
 			<% if( "D".equals(testResult.getResultType()) || "Q".equals(testResult.getResultType()) ){ %>
 			<!-- dictionary results -->
 			<select name="<%="testResult[" + index + "].resultValue" %>"
-			        onchange="<%="markUpdated(" + index + ", " + testResult.isUserChoiceReflex() +  ", \'" + testResult.getSiblingReflexKey() + "\') ;"   +
-" updateAbnormalCheck( isNormalForDropDown(this.value, ["%>
-                            <%for (int i = 0; i < testResult.getAbnormalTestResult().size(); i++){%>
-                            {'id':'<%=(testResult.getAbnormalTestResult().get(i).getId())%>',
-                            'value':'<%=(testResult.getAbnormalTestResult().get(i).getValue())%>'}
-                            <% if (testResult.getAbnormalTestResult().size() - i > 1) {%>
-                            ,
-                            <%}%>
-                            <%}%>
-                            <%="])," + index + "); " +
+			        onchange="<%= "updateAbnormalCheck(isNormalForDropDown(this.value, ["+ testResult.getAbnormalTestResultMap()+" ]),"+  index+" );" +
+            "markUpdated(" + index + ", " + testResult.isUserChoiceReflex() +  ", \'" + testResult.getSiblingReflexKey() + "\') ; "   +
 						               ((noteRequired && !"".equals(testResult.getResultValue()) )? "showNote( " + index + ");" : "") +
 						               (testResult.getQualifiedDictonaryId() != null ? "showQuanitiy( this, "+ index + ", " + testResult.getQualifiedDictonaryId() + ");" :"") %>"
 			        id='<%="results_" + index%>'
@@ -855,7 +847,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
                            indexed="true"
                            styleId='<%="abnormalId_" + index %>'
             onchange='<%="markUpdated(" + index + ");"%>'/>
-
+            <html:hidden property='<%="testResult["+index+"].abnormal"%>' value="false"/> <!-- To submit checkbox value when unchecked -->
             <script language="JavaScript">
                 enableOnlyForRemark(<%=index%>,'<%=testResult.getResultType()%>');
             </script>
