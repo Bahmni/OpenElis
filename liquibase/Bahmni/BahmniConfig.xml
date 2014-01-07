@@ -995,4 +995,9 @@
             <column name="abnormal" value="false"/>
         </update>
     </changeSet>
+    <changeSet id="69" author="tw" context="bahmni">
+        <update schemaName="clinlims" tableName="test_result">
+            <column name="lastupdated" valueDate="now()"/>
+        </update>
+    </changeSet>
 </databaseChangeLog>
