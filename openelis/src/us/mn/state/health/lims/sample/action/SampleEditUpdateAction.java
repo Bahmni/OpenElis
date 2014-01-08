@@ -23,6 +23,8 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
 import org.apache.struts.action.DynaActionForm;
+import org.bahmni.feed.openelis.feed.service.EventPublishers;
+import org.bahmni.feed.openelis.feed.service.impl.OpenElisUrlPublisher;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -92,8 +94,10 @@ public class SampleEditUpdateAction extends BaseAction {
 	private ObservationHistoryDAO observationDAO = new ObservationHistoryDAOImpl();
 	private static String INITIAL_CONDITION_OBSERVATION_ID;
 	private TypeOfSampleDAO typeOfSampleDAO = new TypeOfSampleDAOImpl();
+    private OpenElisUrlPublisher accessionPublisher = new EventPublishers().accessionPublisher();
 
-	static {
+
+    static {
 		ObservationHistoryTypeDAO ohtDAO = new ObservationHistoryTypeDAOImpl();
 		ObservationHistoryType observationType = ohtDAO.getByName("paymentStatus");
 		if (observationType != null) {
@@ -121,7 +125,7 @@ public class SampleEditUpdateAction extends BaseAction {
 
 		DynaActionForm dynaForm = (DynaActionForm) form;
 
-		boolean accessionNumberChanged = accessionNumberChanged(dynaForm);
+        boolean accessionNumberChanged = accessionNumberChanged(dynaForm);
 		Sample updatedSample = null;
 		if (accessionNumberChanged) {
 			errors = validateNewAccessionNumber(dynaForm.getString("newAccessionNumber"));
@@ -202,6 +206,9 @@ public class SampleEditUpdateAction extends BaseAction {
 						}
 					}
 				}
+                Sample sample = sampleDAO.getSampleByAccessionNumber(dynaForm.getString("accessionNumber"));
+                accessionPublisher.publish(sample.getUUID(), request.getContextPath());
+
 			} catch (LIMSRuntimeException lre) {
                 request.setAttribute(IActionConstants.REQUEST_FAILED, true);
 				errors = new ActionMessages();
