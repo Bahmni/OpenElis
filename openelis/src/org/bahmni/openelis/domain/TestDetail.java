@@ -1,9 +1,13 @@
 package org.bahmni.openelis.domain;
 
+import org.bahmni.feed.openelis.utils.JsonTimeSerializer;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestResult {
+public class TestDetail {
     private String testName;
     private String testUnitOfMeasurement;
     private String testUuid;
@@ -14,6 +18,8 @@ public class TestResult {
     private List<String> notes;
     private String resultType;
     private String providerUuid;
+    private boolean isAbnormal;
+    private Timestamp dateTime;
 
     public String getTestName() {
         return testName;
@@ -98,5 +104,26 @@ public class TestResult {
 
     public String getProviderUuid() {
         return providerUuid;
+    }
+
+    public void setIsAbnormal(boolean isAbnormal) {
+        this.isAbnormal = isAbnormal;
+    }
+
+    public boolean isAbnormal() {
+        return isAbnormal;
+    }
+
+    public void setAbnormal(boolean isAbnormal) {
+        this.isAbnormal = isAbnormal;
+    }
+
+    public void setDateTime(Timestamp dateTime) {
+        this.dateTime = dateTime;
+    }
+
+    @JsonSerialize(using=JsonTimeSerializer.class)
+    public Timestamp getDateTime() {
+        return dateTime;
     }
 }

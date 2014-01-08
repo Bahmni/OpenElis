@@ -16,7 +16,7 @@
 package us.mn.state.health.lims.ws.handler;
 
 import org.bahmni.feed.openelis.feed.service.impl.AccessionService;
-import org.bahmni.openelis.domain.AccessionDetails;
+import org.bahmni.openelis.domain.AccessionDetail;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -51,10 +51,10 @@ public class AccessionHandlerTest {
 
     @Test
     public void shouldDelegateCallToAccessionService(){
-        AccessionDetails expectedAccessionDetails = new AccessionDetails();
+        AccessionDetail expectedAccessionDetail = new AccessionDetail();
         String uuid = "uuid";
-        when(accessionService.getAccessionDetailsFor(uuid)).thenReturn(expectedAccessionDetails);
-        AccessionDetails accessionDetails = new AccessionHandler(accessionService).handle(uuid);
-        assertEquals(expectedAccessionDetails, accessionDetails);
+        when(accessionService.getAccessionDetailsFor(uuid)).thenReturn(expectedAccessionDetail);
+        AccessionDetail accessionDetail = new AccessionHandler(accessionService).handle(uuid);
+        assertEquals(expectedAccessionDetail, accessionDetail);
     }
 }

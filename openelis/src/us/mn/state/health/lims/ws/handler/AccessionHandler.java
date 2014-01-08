@@ -17,13 +17,13 @@ package us.mn.state.health.lims.ws.handler;
 
 import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoImpl;
 import org.bahmni.feed.openelis.feed.service.impl.AccessionService;
-import org.bahmni.openelis.domain.AccessionDetails;
+import org.bahmni.openelis.domain.AccessionDetail;
 import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
 import us.mn.state.health.lims.note.daoimpl.NoteDAOImpl;
 import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
 import us.mn.state.health.lims.samplehuman.daoimpl.SampleHumanDAOImpl;
 
-public class AccessionHandler implements Handler<AccessionDetails>{
+public class AccessionHandler implements Handler<AccessionDetail>{
     private static final String ACCESSION = "accession";
     private AccessionService accessionService;
 
@@ -41,7 +41,7 @@ public class AccessionHandler implements Handler<AccessionDetails>{
     }
 
     @Override
-    public AccessionDetails handle(String uuid) {
+    public AccessionDetail handle(String uuid) {
         return accessionService.getAccessionDetailsFor(uuid);
     }
 }

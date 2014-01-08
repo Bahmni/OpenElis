@@ -18,8 +18,8 @@ package org.bahmni.feed.openelis.feed.service.impl;
 
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
-import org.bahmni.openelis.domain.AccessionDetails;
-import org.bahmni.openelis.domain.TestResult;
+import org.bahmni.openelis.domain.AccessionDetail;
+import org.bahmni.openelis.domain.TestDetail;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
 import us.mn.state.health.lims.note.dao.NoteDAO;
@@ -57,49 +57,53 @@ public class AccessionService {
         this.dictionaryDAO = dictionaryDAO;
     }
 
-    public AccessionDetails getAccessionDetailsFor(String sampleUuid) {
+    public AccessionDetail getAccessionDetailsFor(String sampleUuid) {
         Sample sample = sampleDao.getSampleByUUID(sampleUuid);
         Patient patient = sampleHumanDAO.getPatientForSample(sample);
 
         return mapSampleToAccessionDetails(sample, patient);
     }
 
-    private AccessionDetails mapSampleToAccessionDetails(Sample sample, Patient patient) {
+    private AccessionDetail mapSampleToAccessionDetails(Sample sample, Patient patient) {
         Person person = patient.getPerson();
 
-        AccessionDetails accessionDetails = new AccessionDetails();
-        accessionDetails.setAccessionUuid(sample.getUUID());
-        accessionDetails.setPatientUuid(patient.getUuid());
-        accessionDetails.setPatientFirstName(person.getFirstName());
-        accessionDetails.setPatientLastName(person.getLastName());
+        AccessionDetail accessionDetail = new AccessionDetail();
+        accessionDetail.setAccessionUuid(sample.getUUID());
+        accessionDetail.setPatientUuid(patient.getUuid());
+        accessionDetail.setPatientFirstName(person.getFirstName());
+        accessionDetail.setPatientLastName(person.getLastName());
+        //too many dates in sample table. We just picked the one that can be closest to what we need.
+        accessionDetail.setDateTime(sample.getLastupdated());
 
-        List<TestResult> testResults = new ArrayList<>();
+        List<TestDetail> testDetails = new ArrayList<>();
 
         for (SampleItem sampleItem : sample.getSampleItems())
             for (Analysis analysis : sampleItem.getAnalyses()) {
-                TestResult tr = new TestResult();
-                testResults.add(tr);
+                TestDetail testDetail = new TestDetail();
+                testDetails.add(testDetail);
                 Test test = analysis.getTest();
-                tr.setTestName(test.getTestName());
+                testDetail.setTestName(test.getTestName());
                 UnitOfMeasure unitOfMeasure = test.getUnitOfMeasure();
-                if (unitOfMeasure != null) tr.setTestUnitOfMeasurement(unitOfMeasure.getUnitOfMeasureName());
+                if (unitOfMeasure != null) testDetail.setTestUnitOfMeasurement(unitOfMeasure.getUnitOfMeasureName());
 
-                setExternalIds(analysis, tr);
+                setExternalIds(analysis, testDetail);
 
                 for (Result result : analysis.getResults()) {
                     ResultSignature resultSignature = (ResultSignature) result.getResultSignatures().toArray()[0];
-                    tr.setProviderUuid(resultSignature.getSystemUser().getExternalId());
+                    testDetail.setProviderUuid(resultSignature.getSystemUser().getExternalId());
 
-                    addNotes(result.getId(), tr);
-                    tr.setMinNormal(result.getMinNormal());
-                    tr.setMaxNormal(result.getMaxNormal());
-                    tr.setResult(getResultValue(result));
-                    tr.setResultType(result.getResultType());
+                    addNotes(result.getId(), testDetail);
+                    testDetail.setMinNormal(result.getMinNormal());
+                    testDetail.setMaxNormal(result.getMaxNormal());
+                    testDetail.setResult(getResultValue(result));
+                    testDetail.setResultType(result.getResultType());
+                    testDetail.setIsAbnormal(result.getAbnormal());
+                    testDetail.setDateTime(result.getLastupdated());
                 }
             }
 
-        accessionDetails.setTestResults(testResults);
-        return accessionDetails;
+        accessionDetail.setTestDetails(testDetails);
+        return accessionDetail;
     }
 
     private String getResultValue(Result result) {
@@ -108,7 +112,7 @@ public class AccessionService {
         else return result.getValue();
     }
 
-    private void setExternalIds(Analysis analysis, TestResult tr) {
+    private void setExternalIds(Analysis analysis, TestDetail tr) {
         ExternalReference externalReferenceForTest = externalReferenceDao.getDataByItemId(analysis.getTest().getId(), "Test");
         tr.setTestUuid(externalReferenceForTest.getExternalId());
 
@@ -119,7 +123,7 @@ public class AccessionService {
         }
     }
 
-    private void addNotes(String resultId, TestResult testResult) {
+    private void addNotes(String resultId, TestDetail testResult) {
         List<Note> notes = noteDao.getNoteByRefIAndRefTableAndSubject(resultId, getResultReferenceTableId(), "Result Note");
         for (Note note : notes) {
             testResult.addNotes(note.getText());

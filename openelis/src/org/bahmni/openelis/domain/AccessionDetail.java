@@ -16,14 +16,19 @@
 
 package org.bahmni.openelis.domain;
 
+import org.bahmni.feed.openelis.utils.JsonTimeSerializer;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
+import java.sql.Timestamp;
 import java.util.List;
 
-public class AccessionDetails {
+public class AccessionDetail {
     private String accessionUuid;
     private String patientUuid;
     private String patientFirstName;
     private String patientLastName;
-    private List<TestResult> testResults;
+    private Timestamp dateTime;
+    private List<TestDetail> testDetails;
 
     public String getAccessionUuid() {
         return accessionUuid;
@@ -57,11 +62,20 @@ public class AccessionDetails {
         this.patientLastName = patientLastName;
     }
 
-    public List<TestResult> getTestResults() {
-        return testResults;
+    public List<TestDetail> getTestDetails() {
+        return testDetails;
     }
 
-    public void setTestResults(List<TestResult> testResults) {
-        this.testResults = testResults;
+    public void setTestDetails(List<TestDetail> tests) {
+        this.testDetails = tests;
+    }
+
+    public void setDateTime(Timestamp dateTime) {
+        this.dateTime = dateTime;
+    }
+
+    @JsonSerialize(using=JsonTimeSerializer.class)
+    public Timestamp getDateTime() {
+        return dateTime;
     }
 }

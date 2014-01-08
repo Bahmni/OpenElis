@@ -1,6 +1,8 @@
 package us.mn.state.health.lims.ws.handler;
 
 import org.bahmni.feed.openelis.IT;
+import org.bahmni.feed.openelis.ObjectMapperRepository;
+import org.bahmni.openelis.domain.AccessionDetail;
 import org.junit.Test;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.panel.valueholder.Panel;
@@ -11,6 +13,7 @@ import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 
+import java.io.IOException;
 import java.util.Date;
 
 import static org.bahmni.openelis.builder.TestSetup.*;
@@ -18,7 +21,7 @@ import static org.bahmni.openelis.builder.TestSetup.*;
 public class AccessionHandlerIT extends IT{
 
     @Test
-    public void shouldDelegateCallToAccessionService(){
+    public void shouldRetrieveAccessionBasedOnUuid() throws IOException {
 
         Patient patient = createPatient("First", "Last", "GAN9897889009", null);
         Sample sample = createSample("10102013-001", new Date());
@@ -34,7 +37,8 @@ public class AccessionHandlerIT extends IT{
         createResultNote(result, "Some note 1");
         createResultNote(result, "Some note 2");
 
-        new AccessionHandler().handle(sample.getUUID());
+        AccessionDetail accessionDetail = new AccessionHandler().handle(sample.getUUID());
+        ObjectMapperRepository.objectMapper.writeValue(System.out, accessionDetail);
     }
 
 }

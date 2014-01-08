@@ -19,7 +19,7 @@ package org.bahmni.feed.openelis.feed.service.impl;
 import junit.framework.Assert;
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
-import org.bahmni.openelis.domain.AccessionDetails;
+import org.bahmni.openelis.domain.AccessionDetail;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -74,8 +74,8 @@ public class AccessionServiceTest {
         when(sampleDao.getSampleByUUID(sample.getUUID())).thenReturn(sample);
         when(sampleHumanDAO.getPatientForSample(sample)).thenReturn(patient);
         when(externalReferenceDao.getDataByItemId(anyString(), anyString())).thenReturn(new ExternalReference(456789, "Ex Id", "type"));
-        AccessionDetails accessionDetails = accessionService.getAccessionDetailsFor(sample.getUUID());
-        assert accessionDetails != null;
+        AccessionDetail accessionDetail = accessionService.getAccessionDetailsFor(sample.getUUID());
+        assert accessionDetail != null;
     }
 
     @Test
@@ -90,12 +90,12 @@ public class AccessionServiceTest {
         when(externalReferenceDao.getDataByItemId(analysis.getPanel().getId(), "Panel")).thenReturn(externalReferences);
         when(noteDao.getNoteByRefIAndRefTableAndSubject(anyString(), anyString(), anyString())).thenReturn(new ArrayList<Note>());
 
-        AccessionDetails accessionDetails = accessionService.getAccessionDetailsFor(sample.getUUID());
+        AccessionDetail accessionDetail = accessionService.getAccessionDetailsFor(sample.getUUID());
 
-        Assert.assertEquals(accessionDetails.getAccessionUuid(), sample.getUUID());
-        Assert.assertNotNull(accessionDetails.getTestResults());
-        Assert.assertNotNull(accessionDetails.getPatientUuid());
-        Assert.assertEquals(accessionDetails.getPatientUuid(), patient.getUuid());
+        Assert.assertEquals(accessionDetail.getAccessionUuid(), sample.getUUID());
+        Assert.assertNotNull(accessionDetail.getTestDetails());
+        Assert.assertNotNull(accessionDetail.getPatientUuid());
+        Assert.assertEquals(accessionDetail.getPatientUuid(), patient.getUuid());
     }
 
     private class TestableAccessionService extends AccessionService {
