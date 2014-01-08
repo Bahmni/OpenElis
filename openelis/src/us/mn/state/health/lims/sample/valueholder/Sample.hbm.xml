@@ -69,5 +69,9 @@
         <property name="uuid" type="java.lang.String" access="field">
             <column name="uuid"/>
         </property>
+        <set name="sampleItems" inverse="true">
+            <key column="samp_id"/>
+            <one-to-many class="us.mn.state.health.lims.sampleitem.valueholder.SampleItem"/>
+        </set>
     </class>
 </hibernate-mapping>

@@ -26,7 +26,9 @@ import us.mn.state.health.lims.person.daoimpl.PersonDAOImpl;
 import us.mn.state.health.lims.person.valueholder.Person;
 import us.mn.state.health.lims.result.action.util.ResultsLoadUtility;
 import us.mn.state.health.lims.result.daoimpl.ResultDAOImpl;
+import us.mn.state.health.lims.result.daoimpl.ResultSignatureDAOImpl;
 import us.mn.state.health.lims.result.valueholder.Result;
+import us.mn.state.health.lims.result.valueholder.ResultSignature;
 import us.mn.state.health.lims.resultlimits.daoimpl.ResultLimitDAOImpl;
 import us.mn.state.health.lims.resultlimits.valueholder.ResultLimit;
 import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
@@ -38,6 +40,8 @@ import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
 import us.mn.state.health.lims.samplesource.daoimpl.SampleSourceDAOImpl;
 import us.mn.state.health.lims.samplesource.valueholder.SampleSource;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
+import us.mn.state.health.lims.systemuser.daoimpl.SystemUserDAOImpl;
+import us.mn.state.health.lims.systemuser.valueholder.SystemUser;
 import us.mn.state.health.lims.test.dao.TestSectionDAO;
 import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 import us.mn.state.health.lims.test.daoimpl.TestSectionDAOImpl;
@@ -88,6 +92,7 @@ public class TestSetup {
         analysis.setTestSection(testSection);
         analysis.setLastupdated(sampleItem.getSample().getLastupdated());
         analysis.setPanel(panel);
+        sampleItem.addAnalysis(analysis);
         new AnalysisDAOImpl().insertData(analysis, false);
         return analysis;
     }
@@ -98,6 +103,7 @@ public class TestSetup {
         enteredSampleItem.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.SampleStatus.Entered));
         enteredSampleItem.setSortOrder("1");
         enteredSampleItem.setSysUserId("1");
+        startedSample.addSampleItem(enteredSampleItem);
         new SampleItemDAOImpl().insertData(enteredSampleItem);
         return enteredSampleItem;
     }
@@ -110,6 +116,7 @@ public class TestSetup {
         sample.setEnteredDate(DateUtil.convertStringDateToSqlDate(new SimpleDateFormat("dd/MM/yyyy").format(new Date())));
         sample.setReceivedTimestamp(DateUtil.convertStringDateToTimestamp("01/01/2001 00:00"));
         sample.setSampleSource(sampleSources.get(0));
+        sample.setUUID(UUID.randomUUID().toString());
         sample.setSysUserId("1");
         sample.setLastupdated(new Timestamp(date.getTime()));
         new SampleDAOImpl().insertDataWithAccessionNumber(sample);
@@ -232,8 +239,38 @@ public class TestSetup {
         result.setResultType("N");
         result.setMinNormal(resultLimit.getLowNormal());
         result.setMaxNormal(resultLimit.getHighNormal());
+
         new ResultDAOImpl().insertData(result);
+        analysis.addResult(result);
+        createResultSignature(result);
+
+
         return result;
+    }
+
+    public static ResultSignature createResultSignature(Result result) {
+        ResultSignature resultSignature = new ResultSignature();
+        resultSignature.setSystemUserId("1");
+        resultSignature.setIsSupervisor(false);
+        resultSignature.setNonUserName("Some User");
+        resultSignature.setResultId(result.getId());
+
+        resultSignature.setSystemUserId("1");
+        new ResultSignatureDAOImpl().insertData(resultSignature);
+        return resultSignature;
+    }
+
+    public static SystemUser createSystemUser() {
+        SystemUser systemUser = new SystemUser();
+        systemUser.setExternalId(UUID.randomUUID().toString());
+        systemUser.setFirstName("first");
+        systemUser.setLastName("last");
+        systemUser.setLoginName(UUID.randomUUID().toString().substring(0, 19));
+        systemUser.setIsActive("Y");
+        systemUser.setIsEmployee("Y");
+        systemUser.setSysUserId("1");
+        new SystemUserDAOImpl().insertData(systemUser);
+        return systemUser;
     }
 
     public static Result createResult(Analysis analysis, TestResult testResult, String testResultType) {

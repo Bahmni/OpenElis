@@ -21,13 +21,16 @@ import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.common.valueholder.EnumValueItemImpl;
 import us.mn.state.health.lims.common.valueholder.ValueHolder;
 import us.mn.state.health.lims.common.valueholder.ValueHolderInterface;
+import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
 import us.mn.state.health.lims.samplesource.valueholder.SampleSource;
 import us.mn.state.health.lims.systemuser.valueholder.SystemUser;
 
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Sample extends EnumValueItemImpl {
 
@@ -58,6 +61,7 @@ public class Sample extends EnumValueItemImpl {
 	private Date transmissionDate;
 	private String transmissionDateForDisplay;
 	private ValueHolderInterface systemUser;
+    private Set<SampleItem> sampleItems;
 
     private String uuid;
 
@@ -382,4 +386,18 @@ public class Sample extends EnumValueItemImpl {
     public void setUUID(String uuid) {
         this.uuid = uuid;
     }
+
+    public Set<SampleItem> getSampleItems() {
+        if (sampleItems == null) sampleItems = new HashSet<>();
+        return sampleItems;
+    }
+
+    public void setSampleItems(Set<SampleItem> sampleItems) {
+        this.sampleItems = sampleItems;
+    }
+
+    public void addSampleItem(SampleItem sampleItem) {
+        getSampleItems().add(sampleItem);
+    }
+
 }

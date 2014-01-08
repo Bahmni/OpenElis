@@ -322,7 +322,7 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
             List<ReferralResult> referrals = referralResultDAO.getReferralsByResultId(result.getId());
 
             for (ResultSignature signature : signatures) {
-                signature.setSysUserId(currentUserId);
+                signature.setSystemUserId(currentUserId);
             }
 
             resultSigDAO.deleteData(signatures);
@@ -717,7 +717,7 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
             sig.setIsSupervisor(false);
             sig.setNonUserName(testResult.getTechnician());
 
-            sig.setSysUserId(currentUserId);
+            sig.setSystemUserId(currentUserId);
         }
         return sig;
     }

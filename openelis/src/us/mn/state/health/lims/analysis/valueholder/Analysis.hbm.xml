@@ -83,6 +83,11 @@
 				  type="us.mn.state.health.lims.hibernate.resources.usertype.LIMSStringNumberUserType"
             	  column="status_id"
             	  precision="10" />
+
+        <set name="results" inverse="true">
+            <key column="ANALYSIS_ID"/>
+            <one-to-many class="us.mn.state.health.lims.result.valueholder.Result"/>
+        </set>
     </class>
 
     <!-- bugzilla 1993 get sample analyses as reported on in results report see main_report.jrxml for printed date update -->

@@ -481,13 +481,11 @@ public class SampleDAOImpl extends BaseDAOImpl implements SampleDAO {
 			if ((list != null) && !list.isEmpty()) {
 				sample = list.get(0);
 			}
-			closeSession();
 		} catch (Exception e) {
 			throw new LIMSRuntimeException("Exception occurred in getSampleForAccessionNumber", e);
 		}
 		return sample;
 	}
-	//==============================================================
 
 
 	public List getSamplesByStatusAndDomain(List statuses, String domain) throws LIMSRuntimeException {

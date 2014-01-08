@@ -28,11 +28,11 @@ public class Result extends EnumValueItemImpl {
 	private static final long serialVersionUID = 1L;
 
 	private String id;
-	private ValueHolderInterface analysis;
+	private Analysis analysis;
 	private String analysisId;
 	private ValueHolderInterface analyte;
 	private String analyteId;
-	private ValueHolderInterface testResult;
+	private TestResult testResult;
 	private String testResultId;
 	private String sortOrder;
 	private String isReportable;
@@ -46,35 +46,21 @@ public class Result extends EnumValueItemImpl {
 
 	public Result() {
 		super();
-		analysis = new ValueHolder();
 		analyte = new ValueHolder();
-		testResult = new ValueHolder();
 		parentResult = new ValueHolder();
 	}
 
 	// ANALYSIS
 	public Analysis getAnalysis() {
-		return (Analysis) this.analysis.getValue();
-	}
-
-	public void setAnalysis(ValueHolderInterface analysis) {
-		this.analysis = analysis;
-	}
-
-	public void setAnalysis(Analysis analysis) {
-		this.analysis.setValue(analysis);
-        this.setAnalysisId(analysis.getId());
-	}
-
-	protected ValueHolderInterface getAnalysisHolder() {
 		return this.analysis;
 	}
 
-	protected void setAnalysisHolder(ValueHolderInterface analysis) {
+	public void setAnalysis(Analysis analysis) {
 		this.analysis = analysis;
+        this.setAnalysisId(analysis.getId());
 	}
 
-	// ANALYTE
+    // ANALYTE
 	public Analyte getAnalyte() {
 		return (Analyte) this.analyte.getValue();
 	}
@@ -121,23 +107,11 @@ public class Result extends EnumValueItemImpl {
 
 	// TEST_RESULT
 	public TestResult getTestResult() {
-		return (TestResult) this.testResult.getValue();
-	}
-
-	public void setTestResult(ValueHolderInterface testResult) {
-		this.testResult = testResult;
-	}
-
-	public void setTestResult(TestResult testResult) {
-		this.testResult.setValue(testResult);
-	}
-
-	protected ValueHolderInterface getTestResultHolder() {
 		return this.testResult;
 	}
 
-	protected void setTestResultHolder(ValueHolderInterface testResult) {
-		this.testResult = testResult;
+	public void setTestResult(TestResult testResult) {
+		this.testResult= testResult;
 	}
 
 	public String getValue() {
@@ -223,8 +197,7 @@ public class Result extends EnumValueItemImpl {
     }
 
     public boolean canHaveMultipleValues() {
-        TestResult testResultValue = (TestResult) this.testResult.getValue();
-        return testResultValue != null && testResultValue.canHaveMultipleValues();
+        return this.testResult != null && this.testResult.canHaveMultipleValues();
     }
 
     @Override

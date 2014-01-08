@@ -22,13 +22,9 @@ import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 
 import java.sql.SQLException;
 
-public class TestResultHandler implements Handler {
+public class TestResultHandler implements Handler<TestResultDetails> {
     private final String RESULT = "RESULT";
     private TestResultService testResultService;
-
-    public TestResultHandler() {
-        this(new TestResultService());
-    }
 
     public TestResultHandler(TestResultService testResultService) {
         this.testResultService = testResultService;

@@ -45,7 +45,7 @@ public class ResultSignatureDAOImpl extends BaseDAOImpl implements ResultSignatu
 			
 				ResultSignature oldData = (ResultSignature)readResultSignature(resultSig.getId());
 
-				String sysUserId = resultSig.getSysUserId();
+				String sysUserId = resultSig.getSystemUserId();
 				String event = IActionConstants.AUDIT_TRAIL_DELETE;
 				String tableName = "RESULT_SIGNATURE";
 				auditDAO.saveHistory(resultSig,oldData,sysUserId,event,tableName);
@@ -77,7 +77,7 @@ public class ResultSignatureDAOImpl extends BaseDAOImpl implements ResultSignatu
 			resultSignature.setId(id);
 			
 			AuditTrailDAO auditDAO = new AuditTrailDAOImpl();
-			String sysUserId = resultSignature.getSysUserId();
+			String sysUserId = resultSignature.getSystemUserId();
 			String tableName = "RESULT_SIGNATURE";
 			auditDAO.saveNewHistory(resultSignature,sysUserId,tableName);
 			
@@ -99,7 +99,7 @@ public class ResultSignatureDAOImpl extends BaseDAOImpl implements ResultSignatu
 		//add to audit trail
 		try {
 			AuditTrailDAO auditDAO = new AuditTrailDAOImpl();
-			String sysUserId = resultSignature.getSysUserId();
+			String sysUserId = resultSignature.getSystemUserId();
 			String event = IActionConstants.AUDIT_TRAIL_UPDATE;
 			String tableName = "RESULT_SIGNATURE";
 			auditDAO.saveHistory(newData,oldData,sysUserId,event,tableName);

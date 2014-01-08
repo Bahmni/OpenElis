@@ -55,6 +55,19 @@ public class ExternalReferenceDaoImpl extends BaseDAOImpl implements ExternalRef
     }
 
     @Override
+    public ExternalReference getDataByItemId(String itemId, String category) throws LIMSRuntimeException {
+        String sql = "from ExternalReference e where e.itemId =:param1 and e.type=:param2 ";
+        org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
+        query.setParameter("param1", Integer.parseInt(itemId));
+        query.setParameter("param2", category);
+
+        List refs = query.list();
+        if (!refs.isEmpty())
+            return (ExternalReference) refs.get(0);
+        return null;
+    }
+
+    @Override
     public void deleteData(ExternalReference data) throws LIMSRuntimeException {
         data = getData(data.getExternalId(), data.getType());
         if (data != null) {

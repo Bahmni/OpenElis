@@ -27,7 +27,7 @@ public class TestResult extends EnumValueItemImpl {
 
 	private String id;
 
-	private ValueHolderInterface test;
+	private Test test;
 
 	private String testName;
 
@@ -57,7 +57,6 @@ public class TestResult extends EnumValueItemImpl {
 
     public TestResult() {
 		super();
-		this.test = new ValueHolder();
 		this.scriptlet = new ValueHolder();
 	}
 
@@ -66,15 +65,11 @@ public class TestResult extends EnumValueItemImpl {
 	}
 
 	public Test getTest() {
-		return (Test) this.test.getValue();
+		return test;
 	}
 
 	public void setTest(Test test) {
-		this.test.setValue(test);
-	}
-
-	protected ValueHolderInterface getTestHolder() {
-		return this.test;
+		this.test = test;
 	}
 
 	public String getTestName() {
@@ -83,10 +78,6 @@ public class TestResult extends EnumValueItemImpl {
 
 	public void setId(String id) {
 		this.id = id;
-	}
-
-	protected void setTestHolder(ValueHolderInterface test) {
-		this.test = test;
 	}
 
 	public void setTestName(String testName) {
@@ -149,10 +140,6 @@ public class TestResult extends EnumValueItemImpl {
 		this.value = value;
 	}
 
-	public void setTest(ValueHolderInterface test) {
-		this.test = test;
-	}
-	
 	public String getScriptletName() {
 		return scriptletName;
 	}

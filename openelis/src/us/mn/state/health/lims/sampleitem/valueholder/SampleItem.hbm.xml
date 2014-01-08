@@ -18,7 +18,7 @@
         <property name="sampleItemId" type="us.mn.state.health.lims.hibernate.resources.usertype.LIMSStringNumberUserType">
             <column name="SAMPITEM_ID" precision="10" scale="0" />
         </property>
-		
+
         <many-to-one name="sample" class="us.mn.state.health.lims.sample.valueholder.Sample" fetch="select">
             <column name="SAMP_ID" precision="10" scale="0" />
         </many-to-one>
@@ -41,5 +41,10 @@
         <property name="collectionDate" type="java.sql.Timestamp" column="collection_date" />
 		<property name="statusId" column="status_id" type="us.mn.state.health.lims.hibernate.resources.usertype.LIMSStringNumberUserType" />
 	    <property name="collector" column="collector"  type="java.lang.String" />
+
+        <set name="analyses" inverse="true">
+            <key column="SAMPITEM_ID"/>
+            <one-to-many class="us.mn.state.health.lims.analysis.valueholder.Analysis"/>
+        </set>
     </class>
 </hibernate-mapping>

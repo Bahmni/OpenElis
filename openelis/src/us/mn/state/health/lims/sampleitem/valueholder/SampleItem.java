@@ -15,8 +15,7 @@
 */
 package us.mn.state.health.lims.sampleitem.valueholder;
 
-import java.sql.Timestamp;
-
+import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.common.valueholder.BaseObject;
 import us.mn.state.health.lims.common.valueholder.ValueHolder;
 import us.mn.state.health.lims.common.valueholder.ValueHolderInterface;
@@ -24,6 +23,10 @@ import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.sourceofsample.valueholder.SourceOfSample;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSample;
 import us.mn.state.health.lims.unitofmeasure.valueholder.UnitOfMeasure;
+
+import java.sql.Timestamp;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SampleItem extends BaseObject {
 
@@ -33,11 +36,8 @@ public class SampleItem extends BaseObject {
 
 	private String quantity;
 
-	//bugzilla 1773 need to store sample not sampleId for use in sorting
-	private ValueHolderInterface sample;
+	private Sample sample;
 
-	private ValueHolderInterface sampleItem;
-	private String sampleItemId;
 	private String sortOrder;
 	private ValueHolderInterface sourceOfSample;
 	private String sourceOfSampleId;
@@ -50,14 +50,13 @@ public class SampleItem extends BaseObject {
 	private Timestamp collectionDate;
 	private String statusId;
 	private String collector;
+    private Set<Analysis> analyses;
 	
 	public SampleItem() {
 		super();
-		this.sampleItem = new ValueHolder();
 		this.typeOfSample = new ValueHolder();
 		this.sourceOfSample = new ValueHolder();
 		this.unitOfMeasure = new ValueHolder();
-		this.sample = new ValueHolder();
 	}
 
 	public String getExternalId() {
@@ -132,33 +131,19 @@ public class SampleItem extends BaseObject {
 	}
 
 	public Sample getSample() {
-		return (Sample) this.sample.getValue();
+		return (Sample) this.sample;
 	}
 
 	public void setSample(Sample sample) {
-		this.sample.setValue(sample);
+		this.sample = sample;
 	}
 
 	public String getSampleItemId() {
-		if( sampleItemId == null ){
-			if( getSampleItem() != null){
-				sampleItemId = getSampleItem().getId();
-			}
-		}
-
-		return sampleItemId;
+		return id;
 	}
 
 	public void setSampleItemId(String sampleItemId) {
-		this.sampleItemId = sampleItemId;
-	}
-
-	public SampleItem getSampleItem() {
-		return (SampleItem) this.sampleItem.getValue();
-	}
-
-	public void setSampleItem(SampleItem sampleItem) {
-		this.sampleItem.setValue(sampleItem);
+		this.id = sampleItemId;
 	}
 
 	public TypeOfSample getTypeOfSample() {
@@ -209,4 +194,17 @@ public class SampleItem extends BaseObject {
 		this.collector = collector;
 	}
 
+
+    public Set<Analysis> getAnalyses() {
+        if (analyses == null) analyses = new HashSet<>();
+        return analyses;
+    }
+
+    public void setAnalyses(Set<Analysis> analyses) {
+        this.analyses = analyses;
+    }
+
+    public void addAnalysis(Analysis analysis) {
+        getAnalyses().add(analysis);
+    }
 }

@@ -18,11 +18,6 @@
  */
 package us.mn.state.health.lims.analysis.valueholder;
 
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.common.valueholder.BaseObject;
@@ -35,6 +30,12 @@ import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.test.valueholder.TestSection;
 
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.*;
 
 public class Analysis extends BaseObject {
@@ -46,7 +47,7 @@ public class Analysis extends BaseObject {
     private String analysisType;
     private ValueHolderInterface testSection;
     private String testSectionName;
-    private ValueHolderInterface test;
+    private Test test;
     private String testName;
     private String revision;
     private String status;
@@ -74,10 +75,11 @@ public class Analysis extends BaseObject {
     private String soSendEntryDateForDisplay = null;
     private ValueHolderInterface parentAnalysis;
     private ValueHolderInterface parentResult;
-    private ValueHolderInterface panel;
+    private Panel panel;
     private Boolean triggeredReflex = false;
     private String statusId;
     private String assignedSortedTestTreeDisplayValue;
+    private Set<Result> results;
 
     public String getAssignedSortedTestTreeDisplayValue() {
         return assignedSortedTestTreeDisplayValue;
@@ -103,10 +105,8 @@ public class Analysis extends BaseObject {
         super();
         sampleItem = new ValueHolder();
         testSection = new ValueHolder();
-        test = new ValueHolder();
         parentAnalysis = new ValueHolder();
         parentResult = new ValueHolder();
-        panel = new ValueHolder();
     }
 
     public void setId(String id) {
@@ -416,15 +416,6 @@ public class Analysis extends BaseObject {
     public void setTestSection(TestSection testSection) {
         this.testSection.setValue(testSection);
     }
-
-    public Test getTest() {
-        return (Test) this.test.getValue();
-    }
-
-    public void setTest(Test test) {
-        this.test.setValue(test);
-    }
-
     public String getTestSectionName() {
         return this.testSectionName;
     }
@@ -482,11 +473,11 @@ public class Analysis extends BaseObject {
     }
 
     public Panel getPanel() {
-        return (Panel) panel.getValue();
+        return panel;
     }
 
     public void setPanel(Panel panel) {
-        this.panel.setValue(panel);
+        this.panel = panel;
     }
 
     public boolean isFinished() {
@@ -522,4 +513,24 @@ public class Analysis extends BaseObject {
         }
     }
 
+    public Set<Result> getResults() {
+        if (results == null) results = new HashSet<>();
+        return results;
+    }
+
+    public void setResults(Set<Result> results) {
+        this.results = results;
+    }
+
+    public void addResult(Result result) {
+        getResults().add(result);
+    }
+
+    public Test getTest() {
+        return test;
+    }
+
+    public void setTest(Test test) {
+        this.test = test;
+    }
 }

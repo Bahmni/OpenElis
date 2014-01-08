@@ -17,6 +17,7 @@
 package us.mn.state.health.lims.ws.handler;
 
 import org.bahmni.feed.openelis.feed.service.impl.BahmniPatientService;
+import org.bahmni.feed.openelis.feed.service.impl.TestResultService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +26,10 @@ public class Handlers {
     private List<Handler> handlers;
 
     public Handlers() {
-        this(Arrays.<Handler>asList(new PatientHandler(new BahmniPatientService()), new TestResultHandler()));
+        this(Arrays.<Handler>asList(
+                new PatientHandler(new BahmniPatientService())
+                , new TestResultHandler(new TestResultService())
+                , new AccessionHandler()));
     }
 
     public Handlers(List<Handler> handlers) {
