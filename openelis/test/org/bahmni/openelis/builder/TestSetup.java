@@ -41,7 +41,6 @@ import us.mn.state.health.lims.samplesource.daoimpl.SampleSourceDAOImpl;
 import us.mn.state.health.lims.samplesource.valueholder.SampleSource;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.systemuser.daoimpl.SystemUserDAOImpl;
-import us.mn.state.health.lims.systemuser.valueholder.SystemUser;
 import us.mn.state.health.lims.test.dao.TestSectionDAO;
 import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 import us.mn.state.health.lims.test.daoimpl.TestSectionDAOImpl;
@@ -250,27 +249,14 @@ public class TestSetup {
 
     public static ResultSignature createResultSignature(Result result) {
         ResultSignature resultSignature = new ResultSignature();
-        resultSignature.setSystemUserId("1");
+        resultSignature.setSystemUser(new SystemUserDAOImpl().getUserById("1"));
         resultSignature.setIsSupervisor(false);
         resultSignature.setNonUserName("Some User");
         resultSignature.setResultId(result.getId());
+        result.addResultSignature(resultSignature);
 
-        resultSignature.setSystemUserId("1");
         new ResultSignatureDAOImpl().insertData(resultSignature);
         return resultSignature;
-    }
-
-    public static SystemUser createSystemUser() {
-        SystemUser systemUser = new SystemUser();
-        systemUser.setExternalId(UUID.randomUUID().toString());
-        systemUser.setFirstName("first");
-        systemUser.setLastName("last");
-        systemUser.setLoginName(UUID.randomUUID().toString().substring(0, 19));
-        systemUser.setIsActive("Y");
-        systemUser.setIsEmployee("Y");
-        systemUser.setSysUserId("1");
-        new SystemUserDAOImpl().insertData(systemUser);
-        return systemUser;
     }
 
     public static Result createResult(Analysis analysis, TestResult testResult, String testResultType) {

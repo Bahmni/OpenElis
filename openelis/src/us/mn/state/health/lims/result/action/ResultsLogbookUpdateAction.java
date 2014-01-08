@@ -79,6 +79,8 @@ import us.mn.state.health.lims.samplehuman.valueholder.SampleHuman;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.OrderStatus;
+import us.mn.state.health.lims.systemuser.daoimpl.SystemUserDAOImpl;
+import us.mn.state.health.lims.systemuser.valueholder.SystemUser;
 import us.mn.state.health.lims.test.beanItems.TestResultItem;
 import us.mn.state.health.lims.testanalyte.valueholder.TestAnalyte;
 import us.mn.state.health.lims.testreflex.action.util.TestReflexBean;
@@ -320,9 +322,10 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
         for (Result result : deletableResults) {
             List<ResultSignature> signatures = resultSigDAO.getResultSignaturesByResult(result);
             List<ReferralResult> referrals = referralResultDAO.getReferralsByResultId(result.getId());
+            SystemUser systemUser = new SystemUserDAOImpl().getUserById(currentUserId);
 
             for (ResultSignature signature : signatures) {
-                signature.setSystemUserId(currentUserId);
+                signature.setSystemUser(systemUser);
             }
 
             resultSigDAO.deleteData(signatures);
@@ -717,7 +720,8 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
             sig.setIsSupervisor(false);
             sig.setNonUserName(testResult.getTechnician());
 
-            sig.setSystemUserId(currentUserId);
+            SystemUser systemUser = new SystemUserDAOImpl().getUserById(currentUserId);
+            sig.setSystemUser(systemUser);
         }
         return sig;
     }

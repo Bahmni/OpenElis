@@ -28,11 +28,13 @@ import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.person.valueholder.Person;
 import us.mn.state.health.lims.result.daoimpl.ResultDAOImpl;
 import us.mn.state.health.lims.result.valueholder.Result;
+import us.mn.state.health.lims.result.valueholder.ResultSignature;
 import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
 import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.sampleitem.daoimpl.SampleItemDAOImpl;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
+import us.mn.state.health.lims.systemuser.valueholder.SystemUser;
 import us.mn.state.health.lims.test.dao.TestSectionDAO;
 import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 import us.mn.state.health.lims.test.daoimpl.TestSectionDAOImpl;
@@ -41,6 +43,8 @@ import us.mn.state.health.lims.test.valueholder.TestSection;
 import us.mn.state.health.lims.testresult.daoimpl.TestResultDAOImpl;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 public class DBHelper {
@@ -109,7 +113,22 @@ public class DBHelper {
         result.setTestResult(testResult);
         result.setResultType("N");
         analysis.addResult(result);
+        result.setResultSignatures(createResultSignatures());
         return result;
+    }
+
+    private static Set<ResultSignature> createResultSignatures() {
+        HashSet<ResultSignature> resultSignatures = new HashSet<>();
+        ResultSignature resultSignature = new ResultSignature();
+        resultSignature.setSystemUser(createSystemUser());
+        resultSignatures.add(resultSignature);
+        return resultSignatures;
+    }
+
+    private static SystemUser createSystemUser() {
+        SystemUser systemUser = new SystemUser();
+        systemUser.setExternalId(UUID.randomUUID().toString());
+        return systemUser;
     }
 
     public static TestResult createTestResult(Test test) {

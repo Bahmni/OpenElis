@@ -12,9 +12,10 @@
         </id>
         <version name="lastupdated" column="LASTUPDATED" type="timestamp" access="field"/>
 
-        <property name="systemUserId" type="us.mn.state.health.lims.hibernate.resources.usertype.LIMSStringNumberUserType">
-            <column name="SYSTEM_USER_ID" precision="10" scale="0" />
-        </property>
+        <many-to-one name="systemUser" class="us.mn.state.health.lims.systemuser.valueholder.SystemUser" fetch="select">
+            <column name="system_user_id" precision="10" scale="0" />
+        </many-to-one>
+
         <property name="resultId" type="us.mn.state.health.lims.hibernate.resources.usertype.LIMSStringNumberUserType">
             <column name="result_id" precision="10" scale="0" />
         </property>

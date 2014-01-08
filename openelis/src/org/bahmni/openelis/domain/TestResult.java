@@ -13,6 +13,7 @@ public class TestResult {
     private String result;
     private List<String> notes;
     private String resultType;
+    private String providerUuid;
 
     public String getTestName() {
         return testName;
@@ -89,5 +90,13 @@ public class TestResult {
 
     public void setResultType(String resultType) {
         this.resultType = resultType;
+    }
+
+    public void setProviderUuid(String providerUuid) {
+        this.providerUuid = providerUuid;
+    }
+
+    public String getProviderUuid() {
+        return providerUuid;
     }
 }

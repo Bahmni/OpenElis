@@ -20,17 +20,15 @@ import org.bahmni.feed.openelis.feed.service.impl.AccessionService;
 import org.bahmni.openelis.domain.AccessionDetails;
 import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
 import us.mn.state.health.lims.note.daoimpl.NoteDAOImpl;
-import us.mn.state.health.lims.result.daoimpl.ResultSignatureDAOImpl;
 import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
 import us.mn.state.health.lims.samplehuman.daoimpl.SampleHumanDAOImpl;
-import us.mn.state.health.lims.systemuser.daoimpl.SystemUserDAOImpl;
 
 public class AccessionHandler implements Handler<AccessionDetails>{
     private static final String ACCESSION = "accession";
     private AccessionService accessionService;
 
     public AccessionHandler() {
-        this(new AccessionService(new SampleDAOImpl(), new SampleHumanDAOImpl(), new ExternalReferenceDaoImpl(), new NoteDAOImpl(), new DictionaryDAOImpl(), new ResultSignatureDAOImpl(), new SystemUserDAOImpl()));
+        this(new AccessionService(new SampleDAOImpl(), new SampleHumanDAOImpl(), new ExternalReferenceDaoImpl(), new NoteDAOImpl(), new DictionaryDAOImpl()));
     }
 
     public AccessionHandler(AccessionService accessionService) {

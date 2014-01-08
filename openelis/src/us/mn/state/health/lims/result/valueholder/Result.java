@@ -18,9 +18,12 @@ package us.mn.state.health.lims.result.valueholder;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.analyte.valueholder.Analyte;
 import us.mn.state.health.lims.common.valueholder.EnumValueItemImpl;
-import us.mn.state.health.lims.testresult.valueholder.TestResult;
 import us.mn.state.health.lims.common.valueholder.ValueHolder;
 import us.mn.state.health.lims.common.valueholder.ValueHolderInterface;
+import us.mn.state.health.lims.testresult.valueholder.TestResult;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class Result extends EnumValueItemImpl {
 
@@ -41,6 +44,7 @@ public class Result extends EnumValueItemImpl {
 	private Double minNormal;
 	private Double maxNormal;
 	private ValueHolder parentResult;
+    private Set<ResultSignature> resultSignatures;
 
     private boolean abnormal;
 
@@ -218,5 +222,18 @@ public class Result extends EnumValueItemImpl {
                 ", maxNormal=" + maxNormal +
                 ", parentResult=" + parentResult +
                 '}';
+    }
+
+    public Set<ResultSignature> getResultSignatures() {
+        if (resultSignatures == null) resultSignatures = new HashSet<>();
+        return resultSignatures;
+    }
+
+    public void setResultSignatures(Set<ResultSignature> resultSignatures) {
+        this.resultSignatures = resultSignatures;
+    }
+
+    public void addResultSignature(ResultSignature resultSignature) {
+        getResultSignatures().add(resultSignature);
     }
 }

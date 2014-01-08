@@ -20,7 +20,6 @@ import java.util.List;
 
 public class AccessionDetails {
     private String accessionUuid;
-    private String providerUuid;
     private String patientUuid;
     private String patientFirstName;
     private String patientLastName;
@@ -32,14 +31,6 @@ public class AccessionDetails {
 
     public void setAccessionUuid(String accessionUuid) {
         this.accessionUuid = accessionUuid;
-    }
-
-    public String getProviderUuid() {
-        return providerUuid;
-    }
-
-    public void setProviderUuid(String providerUuid) {
-        this.providerUuid = providerUuid;
     }
 
     public String getPatientUuid() {

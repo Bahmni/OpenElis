@@ -41,5 +41,9 @@
         <property name="abnormal" type="java.lang.Boolean">
             <column name="abnormal" length="1"/>
         </property>
+        <set name="resultSignatures" batch-size="1" inverse="true">
+            <key column="result_id"></key>
+            <one-to-many class="us.mn.state.health.lims.result.valueholder.ResultSignature"/>
+        </set>
     </class>
 </hibernate-mapping>

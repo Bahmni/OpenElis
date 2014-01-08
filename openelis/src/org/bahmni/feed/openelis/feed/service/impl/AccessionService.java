@@ -28,13 +28,12 @@ import us.mn.state.health.lims.panel.valueholder.Panel;
 import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.person.valueholder.Person;
 import us.mn.state.health.lims.result.action.util.ResultsLoadUtility;
-import us.mn.state.health.lims.result.dao.ResultSignatureDAO;
 import us.mn.state.health.lims.result.valueholder.Result;
+import us.mn.state.health.lims.result.valueholder.ResultSignature;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.samplehuman.dao.SampleHumanDAO;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
-import us.mn.state.health.lims.systemuser.dao.SystemUserDAO;
 import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.unitofmeasure.valueholder.UnitOfMeasure;
 
@@ -47,18 +46,15 @@ public class AccessionService {
     private ExternalReferenceDao externalReferenceDao;
     private NoteDAO noteDao;
     private DictionaryDAO dictionaryDAO;
-    private ResultSignatureDAO resultSignatureDAO;
-    private SystemUserDAO systemUserDAO;
 
-    public AccessionService(SampleDAO sampleDao, SampleHumanDAO sampleHumanDAO, ExternalReferenceDao externalReferenceDao, NoteDAO noteDao, DictionaryDAO dictionaryDAO, ResultSignatureDAO resultSignatureDAO, SystemUserDAO systemUserDAO) {
+    public AccessionService(SampleDAO sampleDao, SampleHumanDAO sampleHumanDAO, ExternalReferenceDao externalReferenceDao,
+                            NoteDAO noteDao, DictionaryDAO dictionaryDAO) {
 
         this.sampleDao = sampleDao;
         this.sampleHumanDAO = sampleHumanDAO;
         this.externalReferenceDao = externalReferenceDao;
         this.noteDao = noteDao;
         this.dictionaryDAO = dictionaryDAO;
-        this.resultSignatureDAO = resultSignatureDAO;
-        this.systemUserDAO = systemUserDAO;
     }
 
     public AccessionDetails getAccessionDetailsFor(String sampleUuid) {
@@ -79,7 +75,7 @@ public class AccessionService {
 
         List<TestResult> testResults = new ArrayList<>();
 
-        for (SampleItem sampleItem : sample.getSampleItems()) {
+        for (SampleItem sampleItem : sample.getSampleItems())
             for (Analysis analysis : sampleItem.getAnalyses()) {
                 TestResult tr = new TestResult();
                 testResults.add(tr);
@@ -91,8 +87,8 @@ public class AccessionService {
                 setExternalIds(analysis, tr);
 
                 for (Result result : analysis.getResults()) {
-                    String systemUserId = resultSignatureDAO.getResultSignaturesByResult(result).get(0).getSystemUserId();
-                    accessionDetails.setProviderUuid(systemUserDAO.getUserById(systemUserId).getExternalId());
+                    ResultSignature resultSignature = (ResultSignature) result.getResultSignatures().toArray()[0];
+                    tr.setProviderUuid(resultSignature.getSystemUser().getExternalId());
 
                     addNotes(result.getId(), tr);
                     tr.setMinNormal(result.getMinNormal());
@@ -101,7 +97,6 @@ public class AccessionService {
                     tr.setResultType(result.getResultType());
                 }
             }
-        }
 
         accessionDetails.setTestResults(testResults);
         return accessionDetails;

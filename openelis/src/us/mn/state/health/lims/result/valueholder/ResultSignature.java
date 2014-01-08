@@ -16,26 +16,23 @@
 package us.mn.state.health.lims.result.valueholder;
 
 import us.mn.state.health.lims.common.valueholder.EnumValueItemImpl;
+import us.mn.state.health.lims.systemuser.valueholder.SystemUser;
 
 public class ResultSignature extends EnumValueItemImpl {
 
 	private static final long serialVersionUID = 1L;
 
 	private String id;
-	private String systemUserId;
 	private String resultId;
 	private boolean isSupervisor;
 	private String nonUserName;
+    private SystemUser systemUser;
 	
 	public String getSystemUserId() {
-		return systemUserId;
+		return systemUser.getId();
 	}
 
-	public void setSystemUserId(String systemUserId) {
-		this.systemUserId = systemUserId;
-	}
-
-	public String getResultId() {
+    public String getResultId() {
 		return resultId;
 	}
 
@@ -76,4 +73,11 @@ public class ResultSignature extends EnumValueItemImpl {
 		return nonUserName;
 	}
 
+    public SystemUser getSystemUser() {
+        return systemUser;
+    }
+
+    public void setSystemUser(SystemUser systemUser) {
+        this.systemUser = systemUser;
+    }
 }
