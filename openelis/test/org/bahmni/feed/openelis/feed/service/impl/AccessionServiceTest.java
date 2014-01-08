@@ -75,7 +75,7 @@ public class AccessionServiceTest {
         when(sampleDao.getSampleByUUID(sample.getUUID())).thenReturn(sample);
         when(sampleHumanDAO.getPatientForSample(sample)).thenReturn(patient);
         when(externalReferenceDao.getDataByItemId(anyString(), anyString())).thenReturn(new ExternalReference(456789, "Ex Id", "type"));
-        AccessionDetail accessionDetail = accessionService.getAccessionDetailsFor(sample.getUUID());
+        AccessionDetail accessionDetail = accessionService.getAccessionDetailFor(sample.getUUID());
         assertNotNull(accessionDetail);
     }
 
@@ -91,7 +91,7 @@ public class AccessionServiceTest {
         when(externalReferenceDao.getDataByItemId(analysis.getPanel().getId(), "Panel")).thenReturn(externalReferences);
         when(noteDao.getNoteByRefIAndRefTableAndSubject(anyString(), anyString(), anyString())).thenReturn(new ArrayList<Note>());
 
-        AccessionDetail accessionDetail = accessionService.getAccessionDetailsFor(sample.getUUID());
+        AccessionDetail accessionDetail = accessionService.getAccessionDetailFor(sample.getUUID());
 
         Assert.assertEquals(accessionDetail.getAccessionUuid(), sample.getUUID());
         Assert.assertNotNull(accessionDetail.getTestDetails());

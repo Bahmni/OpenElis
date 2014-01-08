@@ -58,52 +58,70 @@ public class AccessionService {
         this.dictionaryDAO = dictionaryDAO;
     }
 
-    public AccessionDetail getAccessionDetailsFor(String sampleUuid) {
+    public AccessionDetail getAccessionDetailFor(String sampleUuid) {
         Sample sample = sampleDao.getSampleByUUID(sampleUuid);
         Patient patient = sampleHumanDAO.getPatientForSample(sample);
 
-        return mapSampleToAccessionDetails(sample, patient);
+        return mapToAccessionDetail(sample, patient);
     }
 
-    private AccessionDetail mapSampleToAccessionDetails(Sample sample, Patient patient) {
-        String finalizedStatusId = getFinalizedStatus();
-
-        Person person = patient.getPerson();
-
+    private AccessionDetail mapToAccessionDetail(Sample sample, Patient patient) {
         AccessionDetail accessionDetail = new AccessionDetail();
-        accessionDetail.setAccessionUuid(sample.getUUID());
-        accessionDetail.setPatientUuid(patient.getUuid());
-        accessionDetail.setPatientFirstName(person.getFirstName());
-        accessionDetail.setPatientLastName(person.getLastName());
-        //too many dates in sample table. We just picked the one that can be closest to what we need.
-        accessionDetail.setDateTime(sample.getLastupdated());
+        mapSample(sample, accessionDetail);
+        mapPatient(patient, accessionDetail);
 
-        List<TestDetail> testDetails = new ArrayList<>();
-
-        for (SampleItem sampleItem : sample.getSampleItems())
-            for (Analysis analysis : sampleItem.getAnalyses()) {
-                TestDetail testDetail = new TestDetail();
-                testDetails.add(testDetail);
-                Test test = analysis.getTest();
-                testDetail.setTestName(test.getTestName());
-                UnitOfMeasure unitOfMeasure = test.getUnitOfMeasure();
-                if (unitOfMeasure != null) testDetail.setTestUnitOfMeasurement(unitOfMeasure.getUnitOfMeasureName());
-
-                setExternalIds(analysis, testDetail);
-
-                for (Result result : analysis.getResults()) {
-                    if (finalizedStatusId.equals(analysis.getStatusId())) {
-                        setResultDetail(testDetail, result);
-                    }
-                }
-            }
-
-        accessionDetail.setTestDetails(testDetails);
         return accessionDetail;
     }
 
-    protected String getFinalizedStatus() {
-        return StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.Finalized);
+    private void mapPatient(Patient patient, AccessionDetail accessionDetail) {
+        Person person = patient.getPerson();
+        accessionDetail.setPatientUuid(patient.getUuid());
+        accessionDetail.setPatientFirstName(person.getFirstName());
+        accessionDetail.setPatientLastName(person.getLastName());
+    }
+
+    private void mapSample(Sample sample, AccessionDetail accessionDetail) {
+        String finalizedStatusId = getFinalizedStatus();
+        accessionDetail.setAccessionUuid(sample.getUUID());
+        //too many dates in sample table. We just picked the one that can be closest to what we need.
+        accessionDetail.setDateTime(sample.getLastupdated());
+        List<TestDetail> testDetails = new ArrayList<>();
+        for (SampleItem sampleItem : sample.getSampleItems()) {
+            mapSampleItem(finalizedStatusId, testDetails, sampleItem);
+        }
+
+        accessionDetail.setTestDetails(testDetails);
+    }
+
+    private void mapSampleItem(String finalizedStatusId, List<TestDetail> testDetails, SampleItem sampleItem) {
+        for (Analysis analysis : sampleItem.getAnalyses()) {
+            mapAnalysis(finalizedStatusId, testDetails, analysis);
+        }
+    }
+
+    private void mapAnalysis(String finalizedStatusId, List<TestDetail> testDetails, Analysis analysis) {
+        TestDetail testDetail = new TestDetail();
+        testDetails.add(testDetail);
+        Test test = analysis.getTest();
+        testDetail.setTestName(test.getTestName());
+        UnitOfMeasure unitOfMeasure = test.getUnitOfMeasure();
+        if (unitOfMeasure != null) testDetail.setTestUnitOfMeasurement(unitOfMeasure.getUnitOfMeasureName());
+
+        setExternalIds(analysis, testDetail);
+
+        mapResults(finalizedStatusId, analysis, testDetail);
+    }
+
+    private void mapResults(String finalizedStatusId, Analysis analysis, TestDetail testDetail) {
+        for (Result result : analysis.getResults()) {
+            mapResult(finalizedStatusId, analysis, testDetail, result);
+        }
+    }
+
+    private void mapResult(String finalizedStatusId, Analysis analysis, TestDetail testDetail, Result result) {
+        if (finalizedStatusId.equals(analysis.getStatusId())) {
+            setResultDetail(testDetail, result);
+        }
     }
 
     private void setResultDetail(TestDetail testDetail, Result result) {
@@ -144,5 +162,9 @@ public class AccessionService {
 
     protected String getResultReferenceTableId() {
         return ResultsLoadUtility.getResultReferenceTableId();
+    }
+
+    protected String getFinalizedStatus() {
+        return StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.Finalized);
     }
 }

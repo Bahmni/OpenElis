@@ -53,7 +53,7 @@ public class AccessionHandlerTest {
     public void shouldDelegateCallToAccessionService(){
         AccessionDetail expectedAccessionDetail = new AccessionDetail();
         String uuid = "uuid";
-        when(accessionService.getAccessionDetailsFor(uuid)).thenReturn(expectedAccessionDetail);
+        when(accessionService.getAccessionDetailFor(uuid)).thenReturn(expectedAccessionDetail);
         AccessionDetail accessionDetail = new AccessionHandler(accessionService).handle(uuid);
         assertEquals(expectedAccessionDetail, accessionDetail);
     }

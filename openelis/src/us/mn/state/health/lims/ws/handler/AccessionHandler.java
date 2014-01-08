@@ -42,6 +42,6 @@ public class AccessionHandler implements Handler<AccessionDetail>{
 
     @Override
     public AccessionDetail handle(String uuid) {
-        return accessionService.getAccessionDetailsFor(uuid);
+        return accessionService.getAccessionDetailFor(uuid);
     }
 }
