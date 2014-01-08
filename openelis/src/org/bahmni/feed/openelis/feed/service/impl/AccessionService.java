@@ -34,6 +34,7 @@ import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.samplehuman.dao.SampleHumanDAO;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
+import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.unitofmeasure.valueholder.UnitOfMeasure;
 
@@ -65,6 +66,8 @@ public class AccessionService {
     }
 
     private AccessionDetail mapSampleToAccessionDetails(Sample sample, Patient patient) {
+        String finalizedStatusId = getFinalizedStatus();
+
         Person person = patient.getPerson();
 
         AccessionDetail accessionDetail = new AccessionDetail();
@@ -89,21 +92,30 @@ public class AccessionService {
                 setExternalIds(analysis, testDetail);
 
                 for (Result result : analysis.getResults()) {
-                    ResultSignature resultSignature = (ResultSignature) result.getResultSignatures().toArray()[0];
-                    testDetail.setProviderUuid(resultSignature.getSystemUser().getExternalId());
-
-                    addNotes(result.getId(), testDetail);
-                    testDetail.setMinNormal(result.getMinNormal());
-                    testDetail.setMaxNormal(result.getMaxNormal());
-                    testDetail.setResult(getResultValue(result));
-                    testDetail.setResultType(result.getResultType());
-                    testDetail.setIsAbnormal(result.getAbnormal());
-                    testDetail.setDateTime(result.getLastupdated());
+                    if (finalizedStatusId.equals(analysis.getStatusId())) {
+                        setResultDetail(testDetail, result);
+                    }
                 }
             }
 
         accessionDetail.setTestDetails(testDetails);
         return accessionDetail;
+    }
+
+    protected String getFinalizedStatus() {
+        return StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.Finalized);
+    }
+
+    private void setResultDetail(TestDetail testDetail, Result result) {
+        ResultSignature resultSignature = (ResultSignature) result.getResultSignatures().toArray()[0];
+        testDetail.setProviderUuid(resultSignature.getSystemUser().getExternalId());
+        addNotes(result.getId(), testDetail);
+        testDetail.setMinNormal(result.getMinNormal());
+        testDetail.setMaxNormal(result.getMaxNormal());
+        testDetail.setResult(getResultValue(result));
+        testDetail.setResultType(result.getResultType());
+        testDetail.setIsAbnormal(result.getAbnormal());
+        testDetail.setDateTime(result.getLastupdated());
     }
 
     private String getResultValue(Result result) {

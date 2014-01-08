@@ -38,6 +38,7 @@ import us.mn.state.health.lims.systemuser.dao.SystemUserDAO;
 
 import java.util.ArrayList;
 
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -75,7 +76,7 @@ public class AccessionServiceTest {
         when(sampleHumanDAO.getPatientForSample(sample)).thenReturn(patient);
         when(externalReferenceDao.getDataByItemId(anyString(), anyString())).thenReturn(new ExternalReference(456789, "Ex Id", "type"));
         AccessionDetail accessionDetail = accessionService.getAccessionDetailsFor(sample.getUUID());
-        assert accessionDetail != null;
+        assertNotNull(accessionDetail);
     }
 
     @Test
@@ -107,6 +108,11 @@ public class AccessionServiceTest {
         @Override
         protected String getResultReferenceTableId() {
             return "1";
+        }
+
+        @Override
+        protected String getFinalizedStatus() {
+            return "6";
         }
     }
 

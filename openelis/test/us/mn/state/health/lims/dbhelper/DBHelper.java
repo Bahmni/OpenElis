@@ -77,7 +77,7 @@ public class DBHelper {
         Analysis analysis = new Analysis();
         analysis.setSampleItem(sampleItem);
         analysis.setAnalysisType(IActionConstants.ANALYSIS_TYPE_MANUAL);
-        analysis.setStatusId("1");
+        analysis.setStatusId("6");
         analysis.setSysUserId("1");
         analysis.setPanel(panel);
         analysis.setTest(test);

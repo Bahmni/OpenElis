@@ -32,7 +32,7 @@ public class AccessionHandlerIT extends IT{
         createExternalReference(test.getId(), "Test", null);
         createExternalReference(panel.getId(), "Panel", null);
         ResultLimit resultLimit = createResultLimit(test, 100.0, 200.0, 10.0, 1000.0, null, null, null);
-        Analysis analysis = createAnalysis(sampleItem, StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance, "New", test, panel);
+        Analysis analysis = createAnalysis(sampleItem, StatusOfSampleUtil.AnalysisStatus.Finalized, "New", test, panel);
         Result result = createResult(analysis, "10000", resultLimit);
         createResultNote(result, "Some note 1");
         createResultNote(result, "Some note 2");
