@@ -18,8 +18,9 @@ public class TestDetail {
     private List<String> notes;
     private String resultType;
     private String providerUuid;
-    private boolean isAbnormal;
+    private Boolean isAbnormal;
     private Timestamp dateTime;
+    private String status;
 
     public String getTestName() {
         return testName;
@@ -110,11 +111,11 @@ public class TestDetail {
         this.isAbnormal = isAbnormal;
     }
 
-    public boolean isAbnormal() {
+    public Boolean isAbnormal() {
         return isAbnormal;
     }
 
-    public void setAbnormal(boolean isAbnormal) {
+    public void setAbnormal(Boolean isAbnormal) {
         this.isAbnormal = isAbnormal;
     }
 
@@ -125,5 +126,13 @@ public class TestDetail {
     @JsonSerialize(using=JsonTimeSerializer.class)
     public Timestamp getDateTime() {
         return dateTime;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getStatus() {
+        return status;
     }
 }

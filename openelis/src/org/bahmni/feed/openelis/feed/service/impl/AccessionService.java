@@ -120,11 +120,11 @@ public class AccessionService {
 
     private void mapResult(String finalizedStatusId, Analysis analysis, TestDetail testDetail, Result result) {
         if (finalizedStatusId.equals(analysis.getStatusId())) {
-            setResultDetail(testDetail, result);
+            setResultDetail(testDetail, result, analysis);
         }
     }
 
-    private void setResultDetail(TestDetail testDetail, Result result) {
+    private void setResultDetail(TestDetail testDetail, Result result, Analysis analysis) {
         ResultSignature resultSignature = (ResultSignature) result.getResultSignatures().toArray()[0];
         testDetail.setProviderUuid(resultSignature.getSystemUser().getExternalId());
         addNotes(result.getId(), testDetail);
@@ -134,7 +134,9 @@ public class AccessionService {
         testDetail.setResultType(result.getResultType());
         testDetail.setIsAbnormal(result.getAbnormal());
         testDetail.setDateTime(result.getLastupdated());
+        testDetail.setStatus(getStatus(analysis.getStatusId()));
     }
+
 
     private String getResultValue(Result result) {
         if (result.getResultType().equals("D"))
@@ -166,5 +168,9 @@ public class AccessionService {
 
     protected String getFinalizedStatus() {
         return StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.Finalized);
+    }
+
+    protected String getStatus(String statusId) {
+        return StatusOfSampleUtil.getStatusNameFromId(statusId);
     }
 }
