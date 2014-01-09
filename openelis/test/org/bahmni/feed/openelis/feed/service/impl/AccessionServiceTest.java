@@ -114,6 +114,11 @@ public class AccessionServiceTest {
         protected String getFinalizedStatus() {
             return "6";
         }
+
+        @Override
+        protected String getStatus(String statusId) {
+            return "Status";
+        }
     }
 
 }

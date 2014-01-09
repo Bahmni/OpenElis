@@ -40,7 +40,7 @@ public class OpenElisUrlPublisherTest {
 
     @Test
     public void shouldConstructUrlIdentifierAndProperties() {
-        OpenElisUrlPublisher publisher = new OpenElisUrlPublisher(eventService, "patient");
+        OpenElisUrlPublisher publisher = new OpenElisUrlPublisher(eventService, CATEGORY, PATIENT_TITLE);
 
         publisher.publish(SAMPLE_UUID, "/openelis");
 
@@ -52,7 +52,7 @@ public class OpenElisUrlPublisherTest {
 
     @Test
     public void shouldPopulateDefaultFieldsWhenCallingEventService() {
-        OpenElisUrlPublisher publisher = new OpenElisUrlPublisher(eventService, "patient");
+        OpenElisUrlPublisher publisher = new OpenElisUrlPublisher(eventService, CATEGORY, PATIENT_TITLE);
 
         publisher.publish(SAMPLE_UUID, "/openelis");
 

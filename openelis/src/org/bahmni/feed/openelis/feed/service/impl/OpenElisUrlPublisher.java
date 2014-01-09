@@ -27,27 +27,28 @@ import java.util.UUID;
 public class OpenElisUrlPublisher {
     private EventService eventService;
     private String category;
+    private String messageType;
     private final String URL_PREFIX = "/ws/rest/";
-    private final String FEED_TITLE = "openelis";
 
-    public OpenElisUrlPublisher(EventService eventService, String category) {
+    public OpenElisUrlPublisher(EventService eventService, String category, String messageType) {
         this.eventService = eventService;
         this.category = category;
+        this.messageType = messageType;
     }
 
     public void publish(String resourcePath, String contextPath) {
         String contentUrl = getContentUrlFor(resourcePath, contextPath);
-        eventService.notify(new Event(UUID.randomUUID().toString(), FEED_TITLE, DateTime.now(), (URI) null, contentUrl, category));
+        eventService.notify(new Event(UUID.randomUUID().toString(), messageType, DateTime.now(), (URI) null, contentUrl, category));
     }
 
     public void publish(Collection<String> resourcePaths, String contextPath) {
         for (String resourcePath : resourcePaths) {
             String contentUrl = getContentUrlFor(resourcePath, contextPath);
-            eventService.notify(new Event(UUID.randomUUID().toString(), FEED_TITLE, DateTime.now(), (URI) null, contentUrl, category));
+            eventService.notify(new Event(UUID.randomUUID().toString(), messageType, DateTime.now(), (URI) null, contentUrl, category));
         }
     }
 
     private String getContentUrlFor(String resourcePath, String contextPath) {
-        return contextPath + URL_PREFIX + category + "/" + resourcePath;
+        return contextPath + URL_PREFIX + messageType + "/" + resourcePath;
     }
 }
