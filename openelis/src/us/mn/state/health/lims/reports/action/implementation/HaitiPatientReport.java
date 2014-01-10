@@ -515,7 +515,14 @@ public abstract class HaitiPatientReport extends Report {
             data.setAlerts(getResultFlag(result, imbed));
         }
 
+        if(resultList.size() > 0){
+            setAbnormal(data, resultList.get(0));
+        }
         data.setConclusion(currentConclusion);
+    }
+
+    private void setAbnormal(HaitiClinicalPatientData data, Result result) {
+        data.setAbnormal(result.getAbnormal());
     }
 
     private void setNote(HaitiClinicalPatientData data, List<Result> resultList) {

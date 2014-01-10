@@ -10,7 +10,7 @@
 	<import value="net.sf.jasperreports.engine.data.*"/>
 	<style name="boldIfAbnormal" isBold="false">
 		<conditionalStyle>
-			<conditionExpression><![CDATA[$F{alerts}.contains("B") || $F{alerts}.contains("A")]]></conditionExpression>
+			<conditionExpression><![CDATA[$F{abnormal}]]></conditionExpression>
 			<style isBold="true" pdfFontName="Helvetica-Bold"/>
 		</conditionalStyle>	
 	</style>
@@ -57,6 +57,7 @@
 	<field name="commune" class="java.lang.String"/>
 	<field name="completeFlag" class="java.lang.String"/>
 	<field name="alerts" class="java.lang.String"/>
+	<field name="abnormal" class="java.lang.Boolean"/>
 	<field name="panelName" class="java.lang.String"/>
 	<field name="separator" class="java.lang.Boolean"/>
 	<field name="orderFinishDate" class="java.lang.String"/>

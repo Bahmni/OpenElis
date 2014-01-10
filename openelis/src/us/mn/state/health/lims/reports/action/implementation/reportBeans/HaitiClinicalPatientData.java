@@ -68,6 +68,7 @@ public class HaitiClinicalPatientData {
     private String patientSiteNumber;
     private String primaryRelative;
     private String resultType;
+    private boolean abnormal;
 
     public String getReferralRefRange() {
         return referralRefRange;
@@ -450,5 +451,13 @@ public class HaitiClinicalPatientData {
 
     public String getResultType() {
         return resultType;
+    }
+
+    public void setAbnormal(boolean abnormal) {
+        this.abnormal = abnormal;
+    }
+
+    public boolean isAbnormal() {
+        return abnormal;
     }
 }
