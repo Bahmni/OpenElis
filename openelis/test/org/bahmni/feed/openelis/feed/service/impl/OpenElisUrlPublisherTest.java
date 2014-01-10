@@ -48,7 +48,7 @@ public class OpenElisUrlPublisherTest {
         ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);
         verify(eventService).notify(captor.capture());
         Event event = captor.getValue();
-        assertEquals("/openelis/ws/rest/patient/" + SAMPLE_UUID, event.getContents());
+        assertEquals("/openelis/ws/rest/accession/" + SAMPLE_UUID, event.getContents());
     }
 
     @Test
@@ -63,6 +63,6 @@ public class OpenElisUrlPublisherTest {
         assertEquals("patient", event.getCategory());
         assertEquals(null, event.getUri());
         assertNotNull(event.getTimeStamp());
-        assertEquals("openelis",event.getTitle());
+        assertEquals("accession",event.getTitle());
     }
 }
