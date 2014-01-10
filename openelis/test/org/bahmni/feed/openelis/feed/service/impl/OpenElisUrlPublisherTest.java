@@ -32,17 +32,18 @@ public class OpenElisUrlPublisherTest {
 
     @Mock
     EventService eventService;
+    private OpenElisUrlPublisher openElisUrlPublisher;
 
     @Before
     public void setUp() {
         initMocks(this);
+        openElisUrlPublisher = new OpenElisUrlPublisher(eventService, "patient", "accession");
     }
 
     @Test
     public void shouldConstructUrlIdentifierAndProperties() {
-        OpenElisUrlPublisher publisher = new OpenElisUrlPublisher(eventService, CATEGORY, PATIENT_TITLE);
 
-        publisher.publish(SAMPLE_UUID, "/openelis");
+        openElisUrlPublisher.publish(SAMPLE_UUID, "/openelis");
 
         ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);
         verify(eventService).notify(captor.capture());
@@ -52,9 +53,7 @@ public class OpenElisUrlPublisherTest {
 
     @Test
     public void shouldPopulateDefaultFieldsWhenCallingEventService() {
-        OpenElisUrlPublisher publisher = new OpenElisUrlPublisher(eventService, CATEGORY, PATIENT_TITLE);
-
-        publisher.publish(SAMPLE_UUID, "/openelis");
+        openElisUrlPublisher.publish(SAMPLE_UUID, "/openelis");
 
         ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);
         verify(eventService).notify(captor.capture());
