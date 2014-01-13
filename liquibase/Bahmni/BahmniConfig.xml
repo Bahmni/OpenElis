@@ -1010,4 +1010,9 @@
 	       <column name="category" type="varchar(255)"/>
 	   </createTable>
 	</changeSet>
+    <changeSet id="71" author="ict4h" context="bahmni">
+        <addColumn tableName="failed_events" schemaName="clinlims">
+            <column name="title" type="varchar(255)"></column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
