@@ -1015,4 +1015,11 @@
             <column name="title" type="varchar(255)"></column>
         </addColumn>
     </changeSet>
+    <changeSet id="72" author="tw" context="bahmni">
+        <comment>Fix changeset 50</comment>
+        <update schemaName="clinlims" tableName="failed_events">
+            <column name="title" value="patient"/>
+            <where>title is null</where>
+        </update>
+    </changeSet>
 </databaseChangeLog>
