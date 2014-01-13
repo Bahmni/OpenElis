@@ -1000,4 +1000,14 @@
             <column name="lastupdated" valueDate="now()"/>
         </update>
     </changeSet>
+	<changeSet id="70" author="ict4h" context="bahmni">
+       	<createTable tableName="event_records_offset_marker" schemaName="clinlims">
+	       <column name="id" type="int" autoIncrement="true">
+	           <constraints nullable="false" primaryKey="true"/>
+	       </column>
+	       <column name="event_id" type="int"/>
+	       <column name="event_count" type="int"/>
+	       <column name="category" type="varchar(255)"/>
+	   </createTable>
+	</changeSet>
 </databaseChangeLog>
