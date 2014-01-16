@@ -368,15 +368,13 @@ public class SampleEditAction extends BaseAction {
                 if(o2.isPanel() && !o1.isPanel()){
                     return o2.getPanelName().compareTo(o1.getTestName());
                 }
-                return o1.getTestName().compareTo(o2.getTestName());
+            } else {
+                Integer testSortOrder1 = Integer.getInteger(o1.getSortOrder());
+                Integer testSortOrder2 = Integer.getInteger(o2.getSortOrder());
+                if (testSortOrder1 != null && testSortOrder2 != null)
+                    return testSortOrder1.compareTo(testSortOrder2);
             }
-
-			try {
-				return Integer.parseInt(o1.getSortOrder()) - Integer.parseInt(o2.getSortOrder());
-			} catch (NumberFormatException e) {
-				return o1.getTestName().compareTo(o2.getTestName());
-			}
-		}
-
-	}
+            return o1.getTestName().compareTo(o2.getTestName());
+        }
+    }
 }
