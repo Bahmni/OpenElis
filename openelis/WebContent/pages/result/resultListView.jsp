@@ -262,8 +262,10 @@ function /*void*/ handleReferralCheckChange(checkbox){
     var result = $(testResult).down('.testResultValue');
     result.style.background = "#ffffff";
     result.disabled = isTestReferredOut;
+    var abnormal = $(testResult).down('.testValueAbnormal');
     if(isTestReferredOut) {
         result.value = "";
+        abnormal.checked = false;
     }
 }
 
@@ -843,6 +845,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 		</td>
         <td>
             <html:checkbox name='testResult'
+                           styleClass="testValueAbnormal"
                            property="abnormal"
                            indexed="true"
                            styleId='<%="abnormalId_" + index %>'
