@@ -16,10 +16,8 @@
 
 package org.bahmni.feed.openelis.feed.client;
 
-import org.apache.log4j.Logger;
-import org.quartz.DisallowConcurrentExecution;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
+import org.apache.log4j.*;
+import org.quartz.*;
 
 @DisallowConcurrentExecution
 public class OpenERPLabTestFeedJob extends OpenERPFeedReaderJob {
@@ -30,19 +28,11 @@ public class OpenERPLabTestFeedJob extends OpenERPFeedReaderJob {
         super(logger);
     }
 
-    @Override
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        try {
-            if(atomFeedClient == null){
-                initializeERPAtomFeedClient();
-            }
-            logger.info("Started");
-            atomFeedClient.processEvents();
-        } catch (Exception e) {
-            logger.error("Failed", e);
-        }
-    }
 
+    @Override
+    protected void processEvents() {
+        atomFeedClient.processEvents();
+    }
 
     @Override
     protected String getFeedName() {

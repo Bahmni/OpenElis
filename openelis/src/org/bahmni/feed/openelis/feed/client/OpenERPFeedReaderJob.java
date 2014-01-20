@@ -22,7 +22,7 @@ import org.bahmni.feed.openelis.feed.event.LabTestFeedEventWorker;
 import org.bahmni.webclients.ClientCookies;
 import org.bahmni.webclients.HttpClient;
 import org.ict4h.atomfeed.client.service.AtomFeedClient;
-import org.quartz.Job;
+import org.quartz.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -39,19 +39,37 @@ public abstract class OpenERPFeedReaderJob implements Job {
         this.logger = logger;
     }
 
-    protected AtomFeedClient initializeERPAtomFeedClient() {
+    @Override
+    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+        try {
+            if(atomFeedClient == null){
+                initializeERPAtomFeedClient();
+            }
+            logger.info("Started");
+
+            processEvents();
+
+            logger.info("Successfully completed");
+        } catch (Exception e) {
+            logger.error("Failed", e);
+        }
+    }
+
+    protected abstract void processEvents();
+
+
+    protected void initializeERPAtomFeedClient() {
 
         atomFeedProperties = AtomFeedProperties.getInstance();
-        ClientCookies cookies = null;
+        ClientCookies cookies;
         try {
             cookies = getWebClient().getCookies(new URI(atomFeedProperties.getProperty(getFeedName())));
         } catch (URISyntaxException e) {
             logger.error("Unable to get cookies");
             cookies = new ClientCookies();
         }
-        AtomFeedClient erpLabTestFeedClient = new AtomFeedClientFactory().getERPLabTestFeedClient(AtomFeedProperties.getInstance(), getFeedName(),
+        atomFeedClient = new AtomFeedClientFactory().getERPLabTestFeedClient(AtomFeedProperties.getInstance(), getFeedName(),
                 new LabTestFeedEventWorker(),cookies);
-        return erpLabTestFeedClient;
     }
 
     protected abstract String getFeedName();
