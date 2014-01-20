@@ -26,7 +26,7 @@ public class OpenERPLabTestFeedJob extends OpenERPFeedReaderJob {
     private static Logger logger = Logger.getLogger(OpenERPLabTestFeedJob.class);
     private static final String FEED_NAME = "openerp.labtest.feed.uri";
 
-    protected OpenERPLabTestFeedJob(Logger logger) {
+    public OpenERPLabTestFeedJob() {
         super(logger);
     }
 
