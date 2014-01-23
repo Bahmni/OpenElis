@@ -284,10 +284,17 @@ function updateAbnormalCheck(isNormal, index) {
     }
 }
 function isNormalForNumeric(value, lowerBound, upperBound) {
-    return value <= upperBound && value >= lowerBound;
+    if(value) {
+        return value <= upperBound && value >= lowerBound;
+    } else {
+        return true;
+    }
 }
 
 function isNormalForDropDown(id, idValuePair) {
+    if(id === "0") {
+        return true;
+    }
 var retVal;
     idValuePair.forEach(function(idValue){
         if(idValue.id === id){
