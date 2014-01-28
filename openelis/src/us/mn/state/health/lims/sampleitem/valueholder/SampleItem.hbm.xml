@@ -15,9 +15,6 @@
         <property name="sortOrder" type="us.mn.state.health.lims.hibernate.resources.usertype.LIMSStringNumberUserType">
             <column name="SORT_ORDER" precision="22" scale="0" not-null="true" />
         </property>
-        <property name="sampleItemId" type="us.mn.state.health.lims.hibernate.resources.usertype.LIMSStringNumberUserType">
-            <column name="SAMPITEM_ID" precision="10" scale="0" />
-        </property>
 
         <many-to-one name="sample" class="us.mn.state.health.lims.sample.valueholder.Sample" fetch="select">
             <column name="SAMP_ID" precision="10" scale="0" />
