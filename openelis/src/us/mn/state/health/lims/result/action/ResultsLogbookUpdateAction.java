@@ -123,7 +123,7 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
     private String statusRuleSet = ConfigurationProperties.getInstance().getPropertyValueUpperCase(Property.StatusRules);
     private Analysis previousAnalysis;
     private ResultsValidation resultValidation = new ResultsValidation();
-    private OpenElisUrlPublisher resultPublisher = new EventPublishers().testResultPublisher();
+    private OpenElisUrlPublisher accessionPublisher = new EventPublishers().accessionPublisher();
 
     static {
         ReferralTypeDAO referralTypeDAO = new ReferralTypeDAOImpl();
@@ -188,8 +188,9 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
                     insertNewReferralAndReferralResult(resultSet);
                 }
 
-                publishFinalizedResult(resultSet, request);
             }
+
+            publishFinalizedResultAccessionNumber(newResults, request);
 
             for (ResultSet resultSet : modifiedResults) {
                 resultDAO.updateData(resultSet.result);
@@ -232,9 +233,9 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
                     referralDAO.updateData(resultSet.existingReferral);
                 }
 
-                publishFinalizedResult(resultSet, request);
             }
 
+            publishFinalizedResultAccessionNumber(modifiedResults, request);
 
             for (Analysis analysis : modifiedAnalysis) {
                 analysisDAO.updateData(analysis);
@@ -303,10 +304,14 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
         }
     }
 
-    private void publishFinalizedResult(ResultSet resultSet, HttpServletRequest request) {
-        if(resultSet.result.getAnalysis().getStatusId().equals(StatusOfSampleUtil.getStatusID(AnalysisStatus.Finalized))) {
-            resultPublisher.publish(resultSet.result.getId(), request.getContextPath());
+    private void publishFinalizedResultAccessionNumber(List<ResultSet> resultSets, HttpServletRequest request) {
+        Set<String> accessionNumbers = new HashSet<>();
+        for (ResultSet resultSet : resultSets) {
+            if(resultSet.result.getAnalysis().getStatusId().equals(StatusOfSampleUtil.getStatusID(AnalysisStatus.Finalized))) {
+                accessionNumbers.add(resultSet.sample.getUUID());
+            }
         }
+        accessionPublisher.publish(accessionNumbers, request.getContextPath());
     }
 
     private void insertNewReferralAndReferralResult(ResultSet resultSet) {

@@ -69,7 +69,7 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 	private TestAnalyteDAO testAnalyteDAO = new TestAnalyteDAOImpl();
 	private ResultDAO resultDAO = new ResultDAOImpl();
 	private final NoteDAO noteDAO = new NoteDAOImpl();
-    private OpenElisUrlPublisher resultPublisher = new EventPublishers().testResultPublisher();
+    private OpenElisUrlPublisher accessionPublisher = new EventPublishers().accessionPublisher();
 
 
     // Update Lists
@@ -122,7 +122,7 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 			}
 			checkAndUpdateStatusOfFinishedSamples(resultItemList);
             createOrUpdateNotes(noteUpdateList);
-            publishValidatedTestResults(resultItemList, request);
+            publishEditedAccessionNumbers(resultItemList, request);
 		} catch (LIMSRuntimeException lre) {
             request.setAttribute(IActionConstants.REQUEST_FAILED, true);
             throw lre;
@@ -174,14 +174,21 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
         }
     }
 
-    private void publishValidatedTestResults(List<AnalysisItem> resultItemList, HttpServletRequest request) {
-        Set<String> editedSamples = new HashSet<>();
+    private void publishEditedAccessionNumbers(List<AnalysisItem> resultItemList, HttpServletRequest request) {
+        Set<String> editedAccessionNumber = new HashSet<>();
+        Set<String> editedSampleUuid = new HashSet<>();
         for (AnalysisItem analysisItem : resultItemList) {
-            if (analysisItem.getIsAccepted()) {
-                editedSamples.add(analysisItem.getResultId());
+            if(analysisItem.getIsAccepted()) {
+                editedAccessionNumber.add(analysisItem.getAccessionNumber());
             }
         }
-        resultPublisher.publish(editedSamples, request.getContextPath());
+        for (String accessionNumber : editedAccessionNumber) {
+            Sample sample = sampleDAO.getSampleByAccessionNumber(accessionNumber);
+            if(sample != null) {
+                editedSampleUuid.add(sample.getUUID());
+            }
+        }
+        accessionPublisher.publish(editedSampleUuid, request.getContextPath());
     }
 
     private void createUpdateList(List<AnalysisItem> analysisItems) {
