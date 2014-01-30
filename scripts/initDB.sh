@@ -12,3 +12,6 @@ if [ "$(psql -Upostgres -lqt | cut -d \| -f 1 | grep -w $DATABASE_NAME | wc -l)"
 else
     echo "The database $DATABASE_NAME already exits"
 fi
+
+echo "Adding required extensions"
+psql -U postgres -d clinlims -f $SCRIPTS_DIR/setupExtensions.sql

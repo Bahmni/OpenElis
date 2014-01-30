@@ -1022,4 +1022,21 @@
             <where>title is null</where>
         </update>
     </changeSet>
+    <changeSet id="73" author="tw" context="bahmni">
+        <comment>Ensure uuid present in sample table</comment>
+        <sql>
+            update clinlims.sample set uuid = uuid_generate_v4() where uuid is null;
+        </sql>
+    </changeSet>
+    <changeSet id="74" author="ict4h" context="bahmni">
+        <addColumn tableName="test_section" schemaName="clinlims">
+            <column name="uuid" type="varchar(40)"></column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="75" author="tw" context="bahmni">
+        <comment>Ensure uuid present in test_section table</comment>
+        <sql>
+            update clinlims.test_section set uuid = uuid_generate_v4() where uuid is null;
+        </sql>
+    </changeSet>
 </databaseChangeLog>
