@@ -276,6 +276,7 @@ public class SampleEditAction extends BaseAction {
             panelItem.addPanelTest(sampleEditItem);
             panelItem.setSortOrder(analysis.getPanel().getSortOrder());
             panelItem.setCanCancel(canCancel(analysis));
+            panelItem.setSampleItemId(sampleEditItem.getSampleItemId());
             analysisSampleItemList.add(panelItem);
         }
     }

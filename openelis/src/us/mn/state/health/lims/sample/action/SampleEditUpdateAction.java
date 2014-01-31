@@ -198,7 +198,7 @@ public class SampleEditUpdateAction extends BaseAction {
 						analysisDAO.insertData(analysis, false); // false--do not check
 						// for duplicates
 					}
-					
+
 					if( sampleTestCollection.initialSampleConditionIdList != null){
 						for( ObservationHistory observation : sampleTestCollection.initialSampleConditionIdList){
 							observation.setSampleItemId(sampleTestCollection.item.getId());
@@ -241,25 +241,25 @@ public class SampleEditUpdateAction extends BaseAction {
 		if( sample == null){
 			sample = sampleDAO.getSampleByAccessionNumber(dynaForm.getString("accessionNumber"));
 		}
-		
+
 		List<SampleTestCollection> sampleItemsTests = new ArrayList<SampleTestCollection>();
 		String receivedDateForDisplay = sample.getReceivedDateForDisplay();
 		String collectionDateFromRecieveDate = null;
 		boolean useReceiveDateForCollectionDate = !FormFields.getInstance().useField(Field.CollectionDate);
-		
+
 		if (useReceiveDateForCollectionDate) {
 			collectionDateFromRecieveDate = receivedDateForDisplay + " 00:00:00";
 		}
-		
+
 		String sampleXML = dynaForm.getString("sampleXML");
 		String maxAccessionNumber = dynaForm.getString("maxAccessionNumber");
-		
+
 		boolean useInitialSampleCondition = FormFields.getInstance().useField(Field.InitialSampleCondition);
 
 		try {
 			Document sampleDom = DocumentHelper.parseText(sampleXML);
 			int sampleItemIdIndex = 0;
-			
+
 			if( !GenericValidator.isBlankOrNull(maxAccessionNumber)){
                 sampleItemIdIndex = AccessionNumberUtil.getSortOrder(maxAccessionNumber);
 			}
@@ -299,7 +299,7 @@ public class SampleEditUpdateAction extends BaseAction {
 						}
 					}
 				}
-				
+
 				SampleItem item = new SampleItem();
 				item.setSample(sample);
 				item.setTypeOfSample(typeOfSampleDAO.getTypeOfSampleById(typeOfSampleId));
@@ -334,39 +334,32 @@ public class SampleEditUpdateAction extends BaseAction {
 	private List<SampleItem> createCancelSampleList(List<SampleEditItem> list, List<Analysis> cancelAnalysisList) {
 		List<SampleItem> cancelList = new ArrayList<SampleItem>();
 
-		boolean cancelTest = false;
+        for (SampleEditItem editItem : list) {
 
-		for (SampleEditItem editItem : list) {
-			if (editItem.getAccessionNumber() != null) {
-				cancelTest = false;
-			}
-			if (cancelTest && !cancelAnalysisListContainsId(editItem.getAnalysisId(), cancelAnalysisList)) {
-				Analysis analysis = getCancelableAnalysis(editItem);
-				cancelAnalysisList.add(analysis);
-			}
+            if (editItem.getAccessionNumber() != null && editItem.isRemoveSample()) {
 
-			if (editItem.isRemoveSample()) {
-                if(editItem.isPanel()){
-                    for (SampleEditItem panelTest : editItem.getPanelTests()) {
-                        addSampleItemToCancelList(cancelList, panelTest);
+                addSampleItemToCancelList(cancelList, editItem);
+
+                if (cancelAnalysisListContainsId(editItem.getAnalysisId(), cancelAnalysisList)) continue;
+
+                if (editItem.isPanel()) {
+                    for (SampleEditItem item : editItem.getPanelTests()) {
+                        Analysis analysis = getCancelableAnalysis(item);
+                        cancelAnalysisList.add(analysis);
                     }
+                } else {
+                    Analysis analysis = getCancelableAnalysis(editItem);
+                    cancelAnalysisList.add(analysis);
                 }
-                else{
-                    addSampleItemToCancelList(cancelList, editItem);
-                }
-				if (!cancelAnalysisListContainsId(editItem.getAnalysisId(), cancelAnalysisList)) {
-					Analysis analysis = getCancelableAnalysis(editItem);
-					cancelAnalysisList.add(analysis);
-				}
-			}
-		}
 
-		return cancelList;
+            }
+
+        }
+
+        return cancelList;
 	}
 
     private void addSampleItemToCancelList(List<SampleItem> cancelList, SampleEditItem editItem) {
-        boolean cancelTest;
-        cancelTest = true;
         SampleItem sampleItem = getCancelableSampleItem(editItem);
         if (sampleItem != null) {
             cancelList.add(sampleItem);
