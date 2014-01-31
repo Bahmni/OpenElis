@@ -1039,4 +1039,26 @@
             update clinlims.test_section set uuid = uuid_generate_v4() where uuid is null;
         </sql>
     </changeSet>
+    <changeSet id="76" author="ict4h" context="bahmni">
+        <addColumn tableName="unit_of_measure" schemaName="clinlims">
+            <column name="uuid" type="varchar(40)"></column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="77" author="tw" context="bahmni">
+        <comment>Ensure uuid present in unit_of_measure table</comment>
+        <sql>
+            update clinlims.unit_of_measure set uuid = uuid_generate_v4() where uuid is null;
+        </sql>
+    </changeSet>
+    <changeSet id="78" author="ict4h" context="bahmni">
+        <addColumn tableName="type_of_sample" schemaName="clinlims">
+            <column name="uuid" type="varchar(40)"></column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="79" author="tw" context="bahmni">
+        <comment>Ensure uuid present in type_of_sample table</comment>
+        <sql>
+            update clinlims.type_of_sample set uuid = uuid_generate_v4() where uuid is null;
+        </sql>
+    </changeSet>
 </databaseChangeLog>
