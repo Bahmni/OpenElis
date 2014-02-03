@@ -16,7 +16,7 @@
 
 package org.bahmni.feed.openelis.feed.service.impl;
 
-import org.bahmni.feed.openelis.feed.domain.LabObject;
+import org.bahmni.feed.openelis.feed.contract.openerp.OpenERPLab;
 import org.bahmni.feed.openelis.feed.service.LabService;
 
 import java.io.IOException;
@@ -24,12 +24,12 @@ import java.io.IOException;
 public class EmptyLabService extends LabService {
 
     @Override
-    protected void delete(LabObject labObject) {
+    protected void delete(OpenERPLab openERPLab) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    protected void save(LabObject labObject) throws IOException {
+    protected void save(OpenERPLab openERPLab) throws IOException {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 }

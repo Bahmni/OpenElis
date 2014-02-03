@@ -14,7 +14,7 @@
 * Copyright (C) The Minnesota Department of Health.  All Rights Reserved.
 */
 
-package org.bahmni.feed.openelis.feed.client;
+package org.bahmni.feed.openelis.feed.job;
 
 public class FeedNames {
     public static final String OPENMRS_PATIENT_FEED_NAME = "openmrs.patient.feed.uri";

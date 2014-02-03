@@ -17,7 +17,7 @@
 package org.bahmni.feed.openelis.feed.mapper;
 
 import junit.framework.Assert;
-import org.bahmni.feed.openelis.feed.domain.LabObject;
+import org.bahmni.feed.openelis.feed.contract.openerp.OpenERPLab;
 import org.ict4h.atomfeed.client.domain.Event;
 import org.junit.Test;
 
@@ -27,11 +27,11 @@ public class OpenERPLabTestMapperTest {
     @Test
     public void shouldMapToTestObject() throws Exception {
         OpenERPLabTestMapper labTestMapper = new OpenERPLabTestMapper();
-        LabObject labObject = labTestMapper.getLabObject(new Event("tag:atomfeed.ict4h.org:05a68ba2-6764-4a31-b28e-21ddfc445e8a", TEST_EVENT_CONTENT), "1");
-        Assert.assertEquals("Test",labObject.getCategory());
-        Assert.assertEquals("ECHO",labObject.getName());
-        Assert.assertEquals("07a5f352-ad6e-4638-9c99-2d5af364a920",labObject.getExternalId());
-        Assert.assertEquals("active", labObject.getStatus());
+        OpenERPLab openERPLab = labTestMapper.getLabObject(new Event("tag:atomfeed.ict4h.org:05a68ba2-6764-4a31-b28e-21ddfc445e8a", TEST_EVENT_CONTENT), "1");
+        Assert.assertEquals("Test", openERPLab.getCategory());
+        Assert.assertEquals("ECHO", openERPLab.getName());
+        Assert.assertEquals("07a5f352-ad6e-4638-9c99-2d5af364a920", openERPLab.getExternalId());
+        Assert.assertEquals("active", openERPLab.getStatus());
 
     }
 

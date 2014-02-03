@@ -14,9 +14,9 @@
 * Copyright (C) The Minnesota Department of Health.  All Rights Reserved.
 */
 
-package org.bahmni.feed.openelis.feed.domain;
+package org.bahmni.feed.openelis.feed.contract.openerp;
 
-public class LabObject {
+public class OpenERPLab {
     private String externalId;
     private String name;
     private String description;
@@ -36,9 +36,9 @@ public class LabObject {
         this.sysUserId = sysUserId;
     }
 
-    public LabObject (){}
+    public OpenERPLab(){}
 
-    public LabObject(String externalId, String name, String description, String sysUserId, String category, String status) {
+    public OpenERPLab(String externalId, String name, String description, String sysUserId, String category, String status) {
         this.externalId = externalId;
         this.name = name;
         this.description = description;

@@ -14,27 +14,21 @@
 * Copyright (C) The Minnesota Department of Health.  All Rights Reserved.
 */
 
-package org.bahmni.feed.openelis.feed.client;
+package org.bahmni.feed.openelis.feed.mapper;
 
-import org.apache.log4j.*;
-import org.quartz.*;
+import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataDepartment;
+import org.codehaus.jackson.map.ObjectMapper;
 
-@DisallowConcurrentExecution
-public class OpenERPLabTestFailedEventsJob extends OpenERPFeedReaderJob {
-    private static Logger logger = Logger.getLogger(OpenERPLabTestFailedEventsJob.class);
-    private static final String FEED_NAME = "openerp.labtest.feed.uri";
+import java.io.IOException;
 
-    public OpenERPLabTestFailedEventsJob() {
-        super(logger);
+public class ReferenceDataDepartmentMapper {
+    private ObjectMapper objectMapper;
+
+    public ReferenceDataDepartmentMapper(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 
-    @Override
-    protected void processEvents() {
-        atomFeedClient.processFailedEvents();
-    }
-
-    @Override
-    protected String getFeedName() {
-        return FEED_NAME;
+    public ReferenceDataDepartment map(String json) throws IOException {
+        return objectMapper.readValue(json, ReferenceDataDepartment.class);
     }
 }

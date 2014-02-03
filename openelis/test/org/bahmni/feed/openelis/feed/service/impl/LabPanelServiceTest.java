@@ -18,7 +18,7 @@ package org.bahmni.feed.openelis.feed.service.impl;
 
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
-import org.bahmni.feed.openelis.feed.domain.LabObject;
+import org.bahmni.feed.openelis.feed.contract.openerp.OpenERPLab;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -49,16 +49,16 @@ public class LabPanelServiceTest {
 
     @Test
     public void shouldInsertNewIfExternalReferenceNotFound() throws Exception {
-        LabObject labObject = new LabObject("193","Lab Panel","lab panel desc","1", "Panel", "active");
+        OpenERPLab openERPLab = new OpenERPLab("193","Lab Panel","lab panel desc","1", "Panel", "active");
         when(externalReferenceDao.getData("193", "Panel")).thenReturn(null);
 
-        labPanelService.process(labObject);
+        labPanelService.process(openERPLab);
 
         ArgumentCaptor<Panel> panelCaptor = ArgumentCaptor.forClass(Panel.class);
         verify(panelDAO).insertData(panelCaptor.capture());
         Panel savedPanel = panelCaptor.getValue();
-        assertEquals(labObject.getName(), savedPanel.getPanelName());
-        assertEquals(labObject.getDescription(), savedPanel.getDescription());
+        assertEquals(openERPLab.getName(), savedPanel.getPanelName());
+        assertEquals(openERPLab.getDescription(), savedPanel.getDescription());
     }
 
     @Test
@@ -69,12 +69,12 @@ public class LabPanelServiceTest {
         Panel panel = new Panel();
         panel.setPanelName("Lab Panel");
         panel.setDescription("Lab Panel");
-        LabObject labObject = new LabObject("193","Lab Panel","lab panel desc new","1", "Panel", "active");
+        OpenERPLab openERPLab = new OpenERPLab("193","Lab Panel","lab panel desc new","1", "Panel", "active");
 
         when(externalReferenceDao.getData("193", "Panel")).thenReturn(reference);
         when(panelDAO.getPanelById("293")).thenReturn(panel);
 
-        labPanelService.process(labObject);
+        labPanelService.process(openERPLab);
 
         verify(panelDAO).updateData(panel);
     }
@@ -84,7 +84,7 @@ public class LabPanelServiceTest {
         ExternalReference reference = new ExternalReference();
         reference.setItemId(293);
         reference.setExternalId("193");
-        LabObject labObject = new LabObject("193","Lab Panel","Lab Panel desc new","1", "Panel","inactive");
+        OpenERPLab openERPLab = new OpenERPLab("193","Lab Panel","Lab Panel desc new","1", "Panel","inactive");
         Panel panel = new Panel();
         panel.setPanelName("Lab Panel");
         panel.setDescription("Lab Panel desc old");
@@ -94,12 +94,12 @@ public class LabPanelServiceTest {
         when(externalReferenceDao.getData("193", "Panel")).thenReturn(reference);
         when(panelDAO.getPanelById("293")).thenReturn(panel);
 
-        labPanelService.save(labObject);
+        labPanelService.save(openERPLab);
 
         ArgumentCaptor<Panel> panelArgumentCaptor = ArgumentCaptor.forClass(Panel.class);
         verify(panelDAO).updateData(panelArgumentCaptor.capture());
         Panel savedPanel = panelArgumentCaptor.getValue();
-        assertEquals(labObject.getDescription(), savedPanel.getDescription());
+        assertEquals(openERPLab.getDescription(), savedPanel.getDescription());
         assertEquals("293", savedPanel.getId());
         assertEquals("N", savedPanel.getIsActive());
     }
@@ -109,7 +109,7 @@ public class LabPanelServiceTest {
         ExternalReference reference = new ExternalReference();
         reference.setItemId(293);
         reference.setExternalId("193");
-        LabObject labObject = new LabObject("193","Lab Panel","Lab Panel desc new","1", "Panel","active");
+        OpenERPLab openERPLab = new OpenERPLab("193","Lab Panel","Lab Panel desc new","1", "Panel","active");
         Panel panel = new Panel();
         panel.setPanelName("Lab Panel");
         panel.setDescription("Lab Panel desc old");
@@ -119,45 +119,45 @@ public class LabPanelServiceTest {
         when(externalReferenceDao.getData("193", "Panel")).thenReturn(reference);
         when(panelDAO.getPanelById("293")).thenReturn(panel);
 
-        labPanelService.save(labObject);
+        labPanelService.save(openERPLab);
 
         ArgumentCaptor<Panel> panelArgumentCaptor = ArgumentCaptor.forClass(Panel.class);
         verify(panelDAO).updateData(panelArgumentCaptor.capture());
         Panel savedPanel = panelArgumentCaptor.getValue();
-        assertEquals(labObject.getDescription(), savedPanel.getDescription());
+        assertEquals(openERPLab.getDescription(), savedPanel.getDescription());
         assertEquals("293", savedPanel.getId());
         assertEquals("Y", savedPanel.getIsActive());
     }
 
     @Test
     public void shouldSaveNewInactivatePanel() throws IOException {
-        LabObject labObject = new LabObject("193","Lab Panel","lab panel desc new","1", "Panel","inactive");
+        OpenERPLab openERPLab = new OpenERPLab("193","Lab Panel","lab panel desc new","1", "Panel","inactive");
         when(externalReferenceDao.getData("193", "Panel")).thenReturn(null);
 
-        labPanelService.save(labObject);
+        labPanelService.save(openERPLab);
 
         ArgumentCaptor<Panel> panelCaptor = ArgumentCaptor.forClass(Panel.class);
         verify(panelDAO).insertData(panelCaptor.capture());
         Panel panelCaptorValue = panelCaptor.getValue();
-        assertEquals(labObject.getName(), panelCaptorValue.getPanelName());
+        assertEquals(openERPLab.getName(), panelCaptorValue.getPanelName());
         assertEquals("N", panelCaptorValue.getIsActive());
     }
 
     @Test
     public void shouldDeletePanelIfNoReferencesExistToPanel() throws Exception {
         ExternalReference reference = new ExternalReference(293, "193", "Panel");
-        LabObject labObject = new LabObject("193","Lab Panel","lab panel desc new","1", "Panel","deleted");
+        OpenERPLab openERPLab = new OpenERPLab("193","Lab Panel","lab panel desc new","1", "Panel","deleted");
         Panel panel = new Panel();
         panel.setPanelName("Lab Panel");
         panel.setDescription("lab panel desc old");
         panel.setId("293");
         panel.setIsActive("N");
-        when(externalReferenceDao.getData(labObject.getExternalId(), labObject.getCategory())).thenReturn(reference);
+        when(externalReferenceDao.getData(openERPLab.getExternalId(), openERPLab.getCategory())).thenReturn(reference);
 
-        labPanelService.process(labObject);
+        labPanelService.process(openERPLab);
 
         verify(externalReferenceDao).deleteData(reference);
-        verify(panelDAO).deleteById("293", labObject.getSysUserId());
+        verify(panelDAO).deleteById("293", openERPLab.getSysUserId());
     }
 
 }

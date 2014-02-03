@@ -1069,4 +1069,26 @@
             FROM sample;
         </sql>
     </changeSet>
+
+    <changeSet id="81" author="tw" context="bahmni">
+        <insert schemaName="clinlims" tableName="quartz_cron_scheduler">
+            <column name="id" valueNumeric=" nextval( 'quartz_cron_scheduler_seq' ) "/>
+            <column name="active" type="boolean" valueBoolean="true"/>
+            <column name="name" value="atom-feed-referencedata"/>
+            <column name="job_name" value="atom-feed-referencedata"/>
+            <column name="display_key" value="schedule.name.atomFeedReferenceData"/>
+            <column name="description_key" value="schedule.name.atomFeedReferenceData"/>
+            <column name="cron_statement" value="0/15 * * * * ?"/>
+        </insert>
+        <insert schemaName="clinlims" tableName="quartz_cron_scheduler">
+            <column name="id" valueNumeric=" nextval( 'quartz_cron_scheduler_seq' ) "/>
+            <column name="active" type="boolean" valueBoolean="true"/>
+            <column name="name" value="atom-feed-referencedata-failed"/>
+            <column name="job_name" value="atom-feed-referencedata-failed"/>
+            <column name="display_key" value="schedule.name.atomFeedReferenceData.failed"/>
+            <column name="description_key" value="schedule.name.atomFeedReferenceDatafailed"/>
+            <column name="cron_statement" value="0/15 * * * * ?"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>

@@ -34,7 +34,9 @@ import java.net.URL;
 import java.util.HashMap;
 
 public class AtomFeedClientFactory {
-    public AtomFeedClient getERPLabTestFeedClient(AtomFeedProperties atomFeedProperties, String feedName, EventWorker eventWorker, ClientCookies cookies) {
+
+    public AtomFeedClient getFeedClient(AtomFeedProperties atomFeedProperties, String feedName,
+                                        EventWorker eventWorker, ClientCookies cookies) {
         String uri = atomFeedProperties.getProperty(feedName);
         try {
             return new AtomFeedClientBuilder().
@@ -42,23 +44,6 @@ public class AtomFeedClientFactory {
                     processedBy(eventWorker).
                     usingConnectionProvider(new OpenElisConnectionProvider()).
                     with(createAtomFeedClientProperties(atomFeedProperties), cookies).
-                    build();
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(String.format("Is not a valid URI - %s", uri));
-        }
-    }
-
-    public AtomFeedClient getMRSFeedClient(AtomFeedProperties atomFeedProperties, String feedName,
-                                           EventWorker patientFeedWorker, ClientCookies cookies) {
-        String uri = atomFeedProperties.getProperty(feedName);
-        try {
-            org.ict4h.atomfeed.client.factory.AtomFeedProperties feedProperties = createAtomFeedClientProperties(atomFeedProperties);
-
-            return new AtomFeedClientBuilder().
-                    forFeedAt(new URI(uri)).
-                    processedBy(patientFeedWorker).
-                    usingConnectionProvider(new OpenElisConnectionProvider()).
-                    with(feedProperties, cookies).
                     build();
         } catch (URISyntaxException e) {
             throw new RuntimeException(String.format("Is not a valid URI - %s", uri));
@@ -73,33 +58,5 @@ public class AtomFeedClientFactory {
         feedProperties.setControlsEventProcessing(true);
         return feedProperties;
     }
-
-    public HttpClient getAuthenticatedOpenMRSWebClient(String authenticationURI, String userName, String password,
-                                                      String connectTimeoutStr, String readTimeoutStr) {
-        int connectTimeout = Integer.parseInt(connectTimeoutStr);
-        int readTimeout = Integer.parseInt(readTimeoutStr);
-
-        ConnectionDetails connectionDetails = new ConnectionDetails(authenticationURI, userName, password, connectTimeout,readTimeout);
-        return new HttpClient(connectionDetails, new OpenMRSLoginAuthenticator(connectionDetails));
-    }
-
-    private static String getURLPrefix(AtomFeedProperties atomFeedProperties, String authenticationURI) {
-        String openMRSAuthURI = atomFeedProperties.getProperty(authenticationURI);
-        URL openMRSAuthURL;
-        try {
-            openMRSAuthURL = new URL(openMRSAuthURI);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("Is not a valid URI - " + openMRSAuthURI);
-        }
-        return String.format("%s://%s", openMRSAuthURL.getProtocol(), openMRSAuthURL.getAuthority());
-    }
-
-    public HttpClient getOpenERPWebClient(String connectionURI, String connectTimeoutStr, String readTimeoutStr) {
-        int connectTimeout = Integer.parseInt(connectTimeoutStr);
-        int readTimeout = Integer.parseInt(readTimeoutStr);
-
-        ConnectionDetails connectionDetails = new ConnectionDetails(connectionURI, null,null, connectTimeout,readTimeout);
-        return new HttpClient(connectionDetails, new AnonymousAuthenticator(connectionDetails));
-
-    }
+    
 }

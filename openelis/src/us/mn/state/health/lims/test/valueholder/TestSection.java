@@ -28,7 +28,9 @@ public class TestSection extends EnumValueItemImpl {
 
 	private String id;
 
-	private String isExternal;
+    private String uuid;
+
+    private String isExternal;
 
 	private Timestamp lastupdated;
 
@@ -167,7 +169,13 @@ public class TestSection extends EnumValueItemImpl {
 	public void setIsActive(String isActive) {
 		this.isActive = isActive;
 	}
-	
-	
+
+    public String getUUID() {
+        return uuid;
+    }
+
+    public void setUUID(String uuid) {
+        this.uuid = uuid;
+    }
 
 }

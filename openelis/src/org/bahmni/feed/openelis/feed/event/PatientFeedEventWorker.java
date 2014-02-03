@@ -31,12 +31,12 @@ import java.io.IOException;
 import java.net.URI;
 
 //analogous to a controller becasue it receives the request which is an event in this case
-public class PatientFeedWorker extends OpenElisEventWorker {
+public class PatientFeedEventWorker extends OpenElisEventWorker {
     private HttpClient webClient;
     private String urlPrefix;
-    private static Logger logger = Logger.getLogger(PatientFeedWorker.class);
+    private static Logger logger = Logger.getLogger(PatientFeedEventWorker.class);
 
-    public PatientFeedWorker(HttpClient webClient, String urlPrefix) {
+    public PatientFeedEventWorker(HttpClient webClient, String urlPrefix) {
         this.webClient = webClient;
         this.urlPrefix = urlPrefix;
     }

@@ -16,20 +16,20 @@
 
 package org.bahmni.feed.openelis.feed.service;
 
-import org.bahmni.feed.openelis.feed.domain.LabObject;
+import org.bahmni.feed.openelis.feed.contract.openerp.OpenERPLab;
 
 import java.io.IOException;
 
 public abstract class LabService {
 
-    public void process(LabObject labObject) throws Exception {
-        if (labObject.getStatus().equals("deleted"))
-            delete(labObject);
+    public void process(OpenERPLab openERPLab) throws Exception {
+        if (openERPLab.getStatus().equals("deleted"))
+            delete(openERPLab);
         else
-            save(labObject);
+            save(openERPLab);
     }
 
-    protected abstract void delete(LabObject labObject) throws IOException;
+    protected abstract void delete(OpenERPLab openERPLab) throws IOException;
 
-    protected abstract void save(LabObject labObject) throws Exception;
+    protected abstract void save(OpenERPLab openERPLab) throws Exception;
 }

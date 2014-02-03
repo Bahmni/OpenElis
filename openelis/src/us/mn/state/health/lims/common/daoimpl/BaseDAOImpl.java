@@ -15,12 +15,15 @@
 */
 package us.mn.state.health.lims.common.daoimpl;
 
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.dao.BaseDAO;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
+import us.mn.state.health.lims.sample.valueholder.Sample;
 
 import java.util.List;
 import java.util.Vector;

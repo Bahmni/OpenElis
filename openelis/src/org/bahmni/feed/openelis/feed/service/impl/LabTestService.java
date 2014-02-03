@@ -21,7 +21,7 @@ import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoImpl;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
-import org.bahmni.feed.openelis.feed.domain.LabObject;
+import org.bahmni.feed.openelis.feed.contract.openerp.OpenERPLab;
 import org.bahmni.feed.openelis.feed.service.LabService;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.test.dao.TestDAO;
@@ -56,13 +56,13 @@ public class LabTestService extends LabService {
     }
 
     @Override
-    public void save(LabObject labObject) throws IOException {
-        Test test = mapToTest(labObject);
-        ExternalReference data = externalReferenceDao.getData(labObject.getExternalId(),labObject.getCategory());
+    public void save(OpenERPLab openERPLab) throws IOException {
+        Test test = mapToTest(openERPLab);
+        ExternalReference data = externalReferenceDao.getData(openERPLab.getExternalId(), openERPLab.getCategory());
         if(data ==null) {
             testDAO.insertData(test);
             if(hasBeenSaved(test)){
-                data = new ExternalReference(Long.parseLong(test.getId()),labObject.getExternalId(),labProductType);
+                data = new ExternalReference(Long.parseLong(test.getId()), openERPLab.getExternalId(),labProductType);
             }
             externalReferenceDao.insertData(data)  ;
         }
@@ -75,18 +75,18 @@ public class LabTestService extends LabService {
     }
 
     @Override
-    protected void delete(LabObject labObject) {
-        ExternalReference externalReference = getExternalReference(labObject);
+    protected void delete(OpenERPLab openERPLab) {
+        ExternalReference externalReference = getExternalReference(openERPLab);
         if(externalReference != null){
             externalReferenceDao.deleteData(externalReference);
             String testId = String.valueOf(externalReference.getItemId());
-            testDAO.deleteById(testId, labObject.getSysUserId());
+            testDAO.deleteById(testId, openERPLab.getSysUserId());
         }
         TypeOfSampleUtil.clearTestCache();
     }
 
-    private ExternalReference getExternalReference(LabObject labObject) {
-        return externalReferenceDao.getData(labObject.getExternalId(),labObject.getCategory());
+    private ExternalReference getExternalReference(OpenERPLab openERPLab) {
+        return externalReferenceDao.getData(openERPLab.getExternalId(), openERPLab.getCategory());
     }
 
     private boolean hasBeenSaved(Test test) {
@@ -94,17 +94,17 @@ public class LabTestService extends LabService {
         return test != null && testId != null && !testId.isEmpty();
     }
 
-    private Test mapToTest(LabObject labObject) throws IOException {
+    private Test mapToTest(OpenERPLab openERPLab) throws IOException {
         Test test = new Test();
-        test.setTestName(labObject.getName());
-        String description = labObject.getDescription();
+        test.setTestName(openERPLab.getName());
+        String description = openERPLab.getDescription();
         if(description == null || description.isEmpty()){
-            description = labObject.getName();
+            description = openERPLab.getName();
         }
         test.setDescription(description);
-        test.setSysUserId(labObject.getSysUserId());
+        test.setSysUserId(openERPLab.getSysUserId());
         test.setOrderable(true);
-        setActiveStatus(test, labObject.getStatus());
+        setActiveStatus(test, openERPLab.getStatus());
         updateSection(test);
         return test;
     }

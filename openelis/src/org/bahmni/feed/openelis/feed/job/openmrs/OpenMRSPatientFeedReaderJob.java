@@ -14,32 +14,26 @@
 * Copyright (C) The Minnesota Department of Health.  All Rights Reserved.
 */
 
-package org.bahmni.feed.openelis.feed.client;
+package org.bahmni.feed.openelis.feed.job.openmrs;
 
 import org.apache.log4j.Logger;
-import org.bahmni.feed.openelis.feed.event.PatientFeedWorker;
+import org.bahmni.feed.openelis.feed.event.PatientFeedEventWorker;
+import org.bahmni.feed.openelis.feed.job.FeedNames;
 import org.bahmni.webclients.HttpClient;
 import org.ict4h.atomfeed.client.service.EventWorker;
 import org.quartz.DisallowConcurrentExecution;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 
 @DisallowConcurrentExecution
-public class OpenMRSPatientFeedFailedEventsJob extends OpenMRSFeedReaderJob {
-    private static Logger logger = Logger.getLogger(OpenMRSPatientFeedFailedEventsJob.class);
+public class OpenMRSPatientFeedReaderJob extends OpenMRSFeedReaderJob {
+    private static Logger logger = Logger.getLogger(OpenMRSPatientFeedReaderJob.class);
 
-    public OpenMRSPatientFeedFailedEventsJob() throws JobExecutionException {
+    public OpenMRSPatientFeedReaderJob() {
         super(logger);
     }
 
     @Override
-    protected void doExecute(JobExecutionContext jobExecutionContext) {
-        processFailedEvents(jobExecutionContext);
-    }
-
-    @Override
     protected EventWorker createWorker(HttpClient authenticatedWebClient, String urlPrefix) {
-        return new PatientFeedWorker(authenticatedWebClient, urlPrefix);
+        return new PatientFeedEventWorker(authenticatedWebClient, urlPrefix);
     }
 
     @Override

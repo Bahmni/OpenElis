@@ -28,6 +28,7 @@ import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
+import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.systemusersection.dao.SystemUserSectionDAO;
 import us.mn.state.health.lims.systemusersection.daoimpl.SystemUserSectionDAOImpl;
 import us.mn.state.health.lims.systemusersection.valueholder.SystemUserSection;
@@ -497,4 +498,17 @@ public class TestSectionDAOImpl extends BaseDAOImpl implements TestSectionDAO {
 		
 		return null;
 	}
+
+    @Override
+    public TestSection getTestSectionByUUID(String uuid) {
+        try{
+            String sql = "from TestSection as ts where ts.uuid = :uuid";
+            Query query = HibernateUtil.getSession().createQuery(sql);
+            query.setParameter("uuid", uuid);
+            return (TestSection) query.uniqueResult();
+        } catch(HibernateException he) {
+            LogEvent.logErrorStack("TestSectionDAOImpl", "getTestSectionByUUID(String uuid)", he);
+            throw new LIMSRuntimeException("Error in TestSection getTestSectionByUUID(String uuid)", he);
+        }
+    }
 }

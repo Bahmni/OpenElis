@@ -17,7 +17,7 @@
 package org.bahmni.feed.openelis.feed.event;
 
 import org.bahmni.feed.openelis.AtomFeedProperties;
-import org.bahmni.feed.openelis.feed.domain.LabObject;
+import org.bahmni.feed.openelis.feed.contract.openerp.OpenERPLab;
 import org.bahmni.feed.openelis.feed.mapper.OpenERPLabTestMapper;
 import org.bahmni.feed.openelis.feed.service.LabService;
 import org.bahmni.feed.openelis.feed.service.LabServiceFactory;
@@ -42,9 +42,9 @@ public class LabTestFeedEventWorker extends OpenElisEventWorker {
 
     public void process(Event event) {
         try {
-            LabObject labObject = labTestMapper.getLabObject(event,auditingService.getSysUserId());
-            LabService labService = LabServiceFactory.getLabService(labObject.getCategory(), AtomFeedProperties.getInstance());
-            labService.process(labObject);
+            OpenERPLab openERPLab = labTestMapper.getLabObject(event,auditingService.getSysUserId());
+            LabService labService = LabServiceFactory.getLabService(openERPLab.getCategory(), AtomFeedProperties.getInstance());
+            labService.process(openERPLab);
         } catch (Exception e) {
             throw new LIMSRuntimeException(e);
         }

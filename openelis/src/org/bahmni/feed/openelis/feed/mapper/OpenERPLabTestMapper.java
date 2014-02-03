@@ -17,7 +17,7 @@
 package org.bahmni.feed.openelis.feed.mapper;
 
 import org.bahmni.feed.openelis.ObjectMapperRepository;
-import org.bahmni.feed.openelis.feed.domain.LabObject;
+import org.bahmni.feed.openelis.feed.contract.openerp.OpenERPLab;
 import org.ict4h.atomfeed.client.domain.Event;
 
 import java.io.IOException;
@@ -25,9 +25,9 @@ import java.util.HashMap;
 
 public class OpenERPLabTestMapper {
 
-    public LabObject getLabObject(Event event, String sysUserId) throws IOException {
+    public OpenERPLab getLabObject(Event event, String sysUserId) throws IOException {
             HashMap<String, Object> paramMap = ObjectMapperRepository.objectMapper.readValue(event.getContent(), HashMap.class);
-            LabObject lab = new LabObject();
+            OpenERPLab lab = new OpenERPLab();
             lab.setName((String) paramMap.get("name"));
             String desc = (String) paramMap.get("name");
             lab.setDescription(desc);

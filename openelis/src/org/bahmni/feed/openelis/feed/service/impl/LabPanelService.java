@@ -20,10 +20,9 @@ import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoImpl;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
-import org.bahmni.feed.openelis.feed.domain.LabObject;
+import org.bahmni.feed.openelis.feed.contract.openerp.OpenERPLab;
 import org.bahmni.feed.openelis.feed.service.LabService;
 import us.mn.state.health.lims.common.action.IActionConstants;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.panel.dao.PanelDAO;
 import us.mn.state.health.lims.panel.daoimpl.PanelDAOImpl;
 import us.mn.state.health.lims.panel.valueholder.Panel;
@@ -48,9 +47,9 @@ public class LabPanelService extends LabService {
     }
 
     @Override
-    protected void save(LabObject labObject) throws IOException {
-        Panel panel = mapToPanel(labObject);
-        String externalId = labObject.getExternalId();
+    protected void save(OpenERPLab openERPLab) throws IOException {
+        Panel panel = mapToPanel(openERPLab);
+        String externalId = openERPLab.getExternalId();
         ExternalReference data = externalReferenceDao.getData(externalId, labProductType);
         if (data == null) {
             panelDAO.insertData(panel);
@@ -68,17 +67,17 @@ public class LabPanelService extends LabService {
     }
 
     @Override
-    protected void delete(LabObject labObject) {
-        ExternalReference externalReference = getExternalReference(labObject);
+    protected void delete(OpenERPLab openERPLab) {
+        ExternalReference externalReference = getExternalReference(openERPLab);
         if(externalReference != null){
             externalReferenceDao.deleteData(externalReference);
             String panelId = String.valueOf(externalReference.getItemId());
-            panelDAO.deleteById(panelId, labObject.getSysUserId());
+            panelDAO.deleteById(panelId, openERPLab.getSysUserId());
         }
     }
 
-    private ExternalReference getExternalReference(LabObject labObject) {
-        return externalReferenceDao.getData(labObject.getExternalId(),labObject.getCategory());
+    private ExternalReference getExternalReference(OpenERPLab openERPLab) {
+        return externalReferenceDao.getData(openERPLab.getExternalId(), openERPLab.getCategory());
     }
 
     private boolean hasId(Panel panel) {
@@ -105,16 +104,16 @@ public class LabPanelService extends LabService {
     }
 
 
-    private Panel mapToPanel(LabObject labObject) throws IOException {
+    private Panel mapToPanel(OpenERPLab openERPLab) throws IOException {
         Panel panel = new us.mn.state.health.lims.panel.valueholder.Panel();
-        panel.setPanelName(labObject.getName());
-        String description = labObject.getDescription();
+        panel.setPanelName(openERPLab.getName());
+        String description = openERPLab.getDescription();
         if(description == null || description.isEmpty()){
-            description = labObject.getName();
+            description = openERPLab.getName();
         }
         panel.setDescription(description);
-        panel.setSysUserId(labObject.getSysUserId());
-        setActiveStatus(panel, labObject.getStatus());
+        panel.setSysUserId(openERPLab.getSysUserId());
+        setActiveStatus(panel, openERPLab.getStatus());
         return panel;
     }
 

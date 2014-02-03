@@ -14,12 +14,15 @@
 * Copyright (C) The Minnesota Department of Health.  All Rights Reserved.
 */
 
-package org.bahmni.feed.openelis.feed.client;
+package org.bahmni.feed.openelis.feed.job.openerp;
 
 import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.AtomFeedProperties;
+import org.bahmni.feed.openelis.feed.client.AtomFeedClientFactory;
 import org.bahmni.feed.openelis.feed.event.LabTestFeedEventWorker;
+import org.bahmni.webclients.AnonymousAuthenticator;
 import org.bahmni.webclients.ClientCookies;
+import org.bahmni.webclients.ConnectionDetails;
 import org.bahmni.webclients.HttpClient;
 import org.ict4h.atomfeed.client.service.AtomFeedClient;
 import org.quartz.*;
@@ -35,14 +38,14 @@ public abstract class OpenERPFeedReaderJob implements Job {
 
     private AtomFeedProperties atomFeedProperties;
 
-    protected OpenERPFeedReaderJob(Logger logger){
+    protected OpenERPFeedReaderJob(Logger logger) {
         this.logger = logger;
     }
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
-            if(atomFeedClient == null){
+            if (atomFeedClient == null) {
                 initializeERPAtomFeedClient();
             }
             logger.info("Started");
@@ -68,18 +71,26 @@ public abstract class OpenERPFeedReaderJob implements Job {
             logger.error("Unable to get cookies");
             cookies = new ClientCookies();
         }
-        atomFeedClient = new AtomFeedClientFactory().getERPLabTestFeedClient(AtomFeedProperties.getInstance(), getFeedName(),
-                new LabTestFeedEventWorker(),cookies);
+        atomFeedClient = new AtomFeedClientFactory().getFeedClient(AtomFeedProperties.getInstance(), getFeedName(),
+                new LabTestFeedEventWorker(), cookies);
     }
 
     protected abstract String getFeedName();
 
     private HttpClient getWebClient() {
-        AtomFeedClientFactory atomFeedClientFactory = new AtomFeedClientFactory();
-        return atomFeedClientFactory.getOpenERPWebClient(
+        return getOpenERPWebClient(
                 atomFeedProperties.getProperty(getFeedName()),
                 atomFeedProperties.getProperty(OPENERP_WEBCLIENT_CONNECT_TIMEOUT),
                 atomFeedProperties.getProperty(OPENERP_WEBCLIENT_READ_TIMEOUT)
         );
     }
+
+    public HttpClient getOpenERPWebClient(String connectionURI, String connectTimeoutStr, String readTimeoutStr) {
+        int connectTimeout = Integer.parseInt(connectTimeoutStr);
+        int readTimeout = Integer.parseInt(readTimeoutStr);
+
+        ConnectionDetails connectionDetails = new ConnectionDetails(connectionURI, null, null, connectTimeout, readTimeout);
+        return new HttpClient(connectionDetails, new AnonymousAuthenticator(connectionDetails));
+    }
+
 }

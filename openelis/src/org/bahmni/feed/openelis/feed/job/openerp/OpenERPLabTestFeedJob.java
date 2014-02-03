@@ -14,9 +14,10 @@
 * Copyright (C) The Minnesota Department of Health.  All Rights Reserved.
 */
 
-package org.bahmni.feed.openelis.feed.client;
+package org.bahmni.feed.openelis.feed.job.openerp;
 
 import org.apache.log4j.*;
+import org.bahmni.feed.openelis.feed.job.openerp.OpenERPFeedReaderJob;
 import org.quartz.*;
 
 @DisallowConcurrentExecution

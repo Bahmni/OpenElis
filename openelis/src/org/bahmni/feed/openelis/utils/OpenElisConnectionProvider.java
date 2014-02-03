@@ -28,16 +28,34 @@ public class OpenElisConnectionProvider implements JdbcConnectionProvider {
     @Override
     public Connection getConnection() throws SQLException {
         Session session = HibernateUtil.getSession();
-        Transaction transaction = session.getTransaction();
-        if (transaction == null || !transaction.isActive()) {
-            session.beginTransaction();
-        }
-        Connection connection = session.connection();
-        return connection;
+        return session.connection();
     }
 
     @Override
     public void closeConnection(Connection connection) throws SQLException {
         HibernateUtil.closeSession();
+    }
+
+    @Override
+    public void startTransaction() {
+        Session session = HibernateUtil.getSession();
+        Transaction transaction = session.getTransaction();
+        if (transaction == null || !transaction.isActive()) {
+            session.beginTransaction();
+        }
+    }
+
+    @Override
+    public void commit() {
+        Session session = HibernateUtil.getSession();
+        Transaction transaction = session.getTransaction();
+        transaction.commit();
+    }
+
+    @Override
+    public void rollback() {
+        Session session = HibernateUtil.getSession();
+        Transaction transaction = session.getTransaction();
+        transaction.rollback();
     }
 }

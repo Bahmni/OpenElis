@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class AtomFeedProperties {
+    
     private static final String LAB_TEST_EVENT = "productType.labTest";
     private static final String PANEL_EVENT = "productType.panel";
 
@@ -50,7 +51,7 @@ public class AtomFeedProperties {
                     propertyStream.close();
                     propertyStream = null;
                 } catch (Exception e) {
-                    LogEvent.logError("AtomFeedProperties","Constructor final",e.toString());
+                    LogEvent.logError("AtomFeedProperties", "Constructor final", e.toString());
                 }
             }
 
@@ -73,19 +74,19 @@ public class AtomFeedProperties {
         return properties.getProperty(feedname);
     }
 
-    public String getProductTypeLabTest(){
+    public String getProductTypeLabTest() {
         return properties.getProperty(LAB_TEST_EVENT);
     }
 
-    public String getProductTypePanel(){
+    public String getProductTypePanel() {
         return properties.getProperty(PANEL_EVENT);
     }
 
-    public String getFeedConnectionTimeout(){
+    public String getFeedConnectionTimeout() {
         return properties.getProperty(FEED_CONNECT_TIMEOUT);
     }
 
-    public String getFeedReplyTimeout(){
+    public String getFeedReplyTimeout() {
         return properties.getProperty(FEED_REPLY_TIMEOUT);
     }
 

@@ -14,27 +14,32 @@
 * Copyright (C) The Minnesota Department of Health.  All Rights Reserved.
 */
 
-package org.bahmni.feed.openelis.feed.client;
+package org.bahmni.feed.openelis.feed.job.openmrs;
 
 import org.apache.log4j.Logger;
+import org.bahmni.feed.openelis.AtomFeedProperties;
+import org.bahmni.feed.openelis.feed.job.FeedNames;
 import org.bahmni.feed.openelis.feed.event.EncounterFeedWorker;
+import org.bahmni.feed.openelis.feed.job.OpenELISFeedFailedEventsJob;
+import org.bahmni.webclients.ConnectionDetails;
 import org.bahmni.webclients.HttpClient;
 import org.ict4h.atomfeed.client.service.EventWorker;
 import org.quartz.DisallowConcurrentExecution;
-import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 @DisallowConcurrentExecution
-public class OpenMRSEncounterFeedFailedEventsJob extends OpenMRSFeedReaderJob {
+public class OpenMRSEncounterFeedFailedEventsJob extends OpenELISFeedFailedEventsJob {
+
+    private static final String AUTH_URI = "openmrs.auth.uri";
+    private static final String OPENMRS_USER = "openmrs.user";
+    private static final String OPENMRS_PASSWORD = "openmrs.password";
+    private static final String OPENMRS_WEBCLIENT_CONNECT_TIMEOUT = "openmrs.connectionTimeoutInMilliseconds";
+    private static final String OPENMRS_WEBCLIENT_READ_TIMEOUT = "openmrs.replyTimeoutInMilliseconds";
+
     private static Logger logger = Logger.getLogger(OpenMRSEncounterFeedFailedEventsJob.class);
 
     public OpenMRSEncounterFeedFailedEventsJob() throws JobExecutionException {
         super(logger);
-    }
-
-    @Override
-    protected void doExecute(JobExecutionContext jobExecutionContext) {
-        processFailedEvents(jobExecutionContext);
     }
 
     @Override
@@ -45,5 +50,15 @@ public class OpenMRSEncounterFeedFailedEventsJob extends OpenMRSFeedReaderJob {
     @Override
     protected String getFeedName() {
         return FeedNames.OPENMRS_ENCOUNTER_FEED_NAME;
+    }
+
+    protected ConnectionDetails getConnectionDetails() {
+        AtomFeedProperties atomFeedProperties = AtomFeedProperties.getInstance();
+        return new ConnectionDetails(
+                atomFeedProperties.getProperty(AUTH_URI),
+                atomFeedProperties.getProperty(OPENMRS_USER),
+                atomFeedProperties.getProperty(OPENMRS_PASSWORD),
+                Integer.parseInt(atomFeedProperties.getProperty(OPENMRS_WEBCLIENT_CONNECT_TIMEOUT)),
+                Integer.parseInt(atomFeedProperties.getProperty(OPENMRS_WEBCLIENT_READ_TIMEOUT)));
     }
 }

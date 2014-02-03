@@ -15,6 +15,9 @@
         <many-to-one name="organization" class="us.mn.state.health.lims.organization.valueholder.Organization" fetch="select">
             <column name="ORG_ID" precision="10" scale="0" />
         </many-to-one>
+        <property name="uuid" type="java.lang.String" access="field">
+            <column name="uuid"/>
+        </property>
         <property name="testSectionName" type="java.lang.String">
             <column name="NAME" length="20" />
         </property>
