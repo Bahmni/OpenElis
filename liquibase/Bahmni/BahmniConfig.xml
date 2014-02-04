@@ -1061,4 +1061,12 @@
             update clinlims.type_of_sample set uuid = uuid_generate_v4() where uuid is null;
         </sql>
     </changeSet>
+    <changeSet id="80" author="tw" context="bahmni">
+        <comment>Add event records for existing accession</comment>
+        <sql>
+            INSERT INTO event_records(uuid,title,timestamp,object,category)
+            SELECT uuid_generate_v4(), 'accession', now(), concat('/openelis/ws/rest/accession/', uuid), 'patient' 
+            FROM sample;
+        </sql>
+    </changeSet>
 </databaseChangeLog>
