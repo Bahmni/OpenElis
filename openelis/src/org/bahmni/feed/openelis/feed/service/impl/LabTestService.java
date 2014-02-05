@@ -43,7 +43,7 @@ public class LabTestService extends LabService {
     private String labProductType;
 
     public LabTestService(){
-        labProductType = AtomFeedProperties.getInstance().getProductTypeLabTest();
+        labProductType = "Test";
         externalReferenceDao = new ExternalReferenceDaoImpl();
         testSectionDAO = new TestSectionDAOImpl();
 

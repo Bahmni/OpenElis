@@ -27,10 +27,10 @@ import java.io.IOException;
 public class LabServiceFactory {
 
     public static LabService getLabService(String type, AtomFeedProperties properties) throws IOException {
-        if(properties.getProductTypeLabTest().equals(type)){
+        if("Test".equals(type)){
             return  new LabTestService();
         }
-        else if(properties.getProductTypePanel().equals(type)){
+        else if("Panel".equals(type)){
             return  new LabPanelService();
         }
         return  new EmptyLabService();

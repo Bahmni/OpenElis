@@ -37,7 +37,7 @@ public class LabPanelService extends LabService {
     private String labProductType;
 
     public LabPanelService() {
-        labProductType = AtomFeedProperties.getInstance().getProductTypePanel();
+        labProductType = "Test";
     }
 
     LabPanelService(PanelDAO panelDAO, ExternalReferenceDao externalReferenceDao) {

@@ -20,7 +20,9 @@ import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataDepartment;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataSample;
+import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataTest;
 import org.bahmni.feed.openelis.feed.service.impl.TestSectionService;
+import org.bahmni.feed.openelis.feed.service.impl.TestService;
 import org.bahmni.feed.openelis.feed.service.impl.TypeOfSampleService;
 import org.bahmni.webclients.HttpClient;
 import org.ict4h.atomfeed.client.domain.Event;
@@ -37,10 +39,12 @@ public class ReferenceDataFeedEventWorker extends OpenElisEventWorker {
     private static Logger logger = Logger.getLogger(PatientFeedEventWorker.class);
     private TestSectionService testSectionService;
     private TypeOfSampleService typeOfSampleService;
+    private TestService testService;
 
     protected enum title {
         department,
         sample,
+        test,
         panel,
         drug,
         drug_form
@@ -51,24 +55,27 @@ public class ReferenceDataFeedEventWorker extends OpenElisEventWorker {
         this.urlPrefix = urlPrefix;
         this.testSectionService = new TestSectionService();
         this.typeOfSampleService = new TypeOfSampleService();
+        this.testService = new TestService();
     }
 
     @Override
     public void process(Event event) {
         try {
             String content = event.getContent();
-            
-            
             AtomFeedProperties atomFeedProperties = AtomFeedProperties.getInstance();
 
             if (title.department.name().equals(event.getTitle())) {
                 ReferenceDataDepartment department = webClient.get(urlPrefix + content, ReferenceDataDepartment.class);
                 logger.info(String.format("Processing department with UUID=%s", department.getId()));
                 testSectionService.createOrUpdate(department, atomFeedProperties.getProperty(REFERENCE_DATA_DEFAULT_ORGANIZATION));
-            } else if (title.sample.name().equals(event.getTitle())){
+            } else if (title.sample.name().equals(event.getTitle())) {
                 ReferenceDataSample sample = webClient.get(urlPrefix + content, ReferenceDataSample.class);
                 logger.info(String.format("Processing sample with UUID=%s", sample.getId()));
                 typeOfSampleService.createOrUpdate(sample);
+            } else if (title.test.name().equals(event.getTitle())) {
+                ReferenceDataTest test = webClient.get(urlPrefix + content, ReferenceDataTest.class);
+                logger.info(String.format("Processing test with UUID=%s", test.getId()));
+                testService.createOrUpdate(test);
             }
         } catch (Exception e) {
             throw new LIMSRuntimeException(e);

@@ -23,9 +23,6 @@ import java.util.Properties;
 
 public class AtomFeedProperties {
     
-    private static final String LAB_TEST_EVENT = "productType.labTest";
-    private static final String PANEL_EVENT = "productType.panel";
-
     private static final String FEED_CONNECT_TIMEOUT = "feed.connectionTimeoutInMilliseconds";
     private static final String FEED_REPLY_TIMEOUT = "feed.replyTimeoutInMilliseconds";
     private static final String FEED_MAX_FAILED_EVENTS = "feed.maxFailedEvents";
@@ -72,14 +69,6 @@ public class AtomFeedProperties {
 
     public String getProperty(String feedname) {
         return properties.getProperty(feedname);
-    }
-
-    public String getProductTypeLabTest() {
-        return properties.getProperty(LAB_TEST_EVENT);
-    }
-
-    public String getProductTypePanel() {
-        return properties.getProperty(PANEL_EVENT);
     }
 
     public String getFeedConnectionTimeout() {

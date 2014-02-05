@@ -304,7 +304,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
     }
 
     private List<Test> getTest(String labTestName, String externalReferenceTestOrPanelUUID) {
-        String productTypeTest = AtomFeedProperties.getInstance().getProductTypeLabTest();
+        String productTypeTest = "Test";
         ExternalReference data = externalReferenceDao.getData(externalReferenceTestOrPanelUUID, productTypeTest);
         if (data == null) {
             throw new RuntimeException(
@@ -321,7 +321,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
 
     private List<Test> getTestsForPanel(String panelName, String externalReferencePanelUUID, FeedProcessState processState) {
         List<Test> tests = new ArrayList<>();
-        String productTypePanel = AtomFeedProperties.getInstance().getProductTypePanel();
+        String productTypePanel = "Panel";
         ExternalReference data = externalReferenceDao.getData(externalReferencePanelUUID, productTypePanel);
         if (data == null) {
             throw new RuntimeException(
