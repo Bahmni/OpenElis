@@ -28,6 +28,8 @@ public class TypeOfSample extends BaseObject {
 
 	private String id;
 
+    private String uuid;
+    
 	private String description;
 
 	private String domain;
@@ -107,5 +109,12 @@ public class TypeOfSample extends BaseObject {
 		this.sortOrder = sortOrder;
 	}
 
-	
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 }

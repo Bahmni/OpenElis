@@ -71,4 +71,6 @@ public interface TypeOfSampleDAO extends BaseDAO {
 
 	public List<TypeOfSample> getTypesForDomainBySortOrder(SampleDomain human) throws LIMSRuntimeException;
 
+    public TypeOfSample getTypeOfSampleByUUID(String uuid);
+
 }

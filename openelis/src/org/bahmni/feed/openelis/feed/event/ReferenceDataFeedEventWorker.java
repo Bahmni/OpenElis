@@ -18,28 +18,15 @@ package org.bahmni.feed.openelis.feed.event;
 
 import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.AtomFeedProperties;
-import org.bahmni.feed.openelis.ObjectMapperRepository;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataDepartment;
-import org.bahmni.feed.openelis.feed.contract.openerp.OpenERPLab;
-import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPatient;
-import org.bahmni.feed.openelis.feed.mapper.OpenERPLabTestMapper;
-import org.bahmni.feed.openelis.feed.mapper.OpenMRSPatientMapper;
-import org.bahmni.feed.openelis.feed.mapper.ReferenceDataDepartmentMapper;
-import org.bahmni.feed.openelis.feed.service.LabService;
-import org.bahmni.feed.openelis.feed.service.LabServiceFactory;
-import org.bahmni.feed.openelis.feed.service.impl.BahmniPatientService;
+import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataSample;
 import org.bahmni.feed.openelis.feed.service.impl.TestSectionService;
-import org.bahmni.feed.openelis.utils.AuditingService;
+import org.bahmni.feed.openelis.feed.service.impl.TypeOfSampleService;
 import org.bahmni.webclients.HttpClient;
 import org.ict4h.atomfeed.client.domain.Event;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.hibernate.ElisHibernateSession;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
-import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
-import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
-
-import java.io.IOException;
-import java.net.URI;
 
 public class ReferenceDataFeedEventWorker extends OpenElisEventWorker {
 
@@ -48,9 +35,12 @@ public class ReferenceDataFeedEventWorker extends OpenElisEventWorker {
     private String urlPrefix;
 
     private static Logger logger = Logger.getLogger(PatientFeedEventWorker.class);
+    private TestSectionService testSectionService;
+    private TypeOfSampleService typeOfSampleService;
 
     protected enum title {
         department,
+        sample,
         panel,
         drug,
         drug_form
@@ -59,6 +49,8 @@ public class ReferenceDataFeedEventWorker extends OpenElisEventWorker {
     public ReferenceDataFeedEventWorker(HttpClient webClient, String urlPrefix) {
         this.webClient = webClient;
         this.urlPrefix = urlPrefix;
+        this.testSectionService = new TestSectionService();
+        this.typeOfSampleService = new TypeOfSampleService();
     }
 
     @Override
@@ -72,9 +64,11 @@ public class ReferenceDataFeedEventWorker extends OpenElisEventWorker {
             if (title.department.name().equals(event.getTitle())) {
                 ReferenceDataDepartment department = webClient.get(urlPrefix + content, ReferenceDataDepartment.class);
                 logger.info(String.format("Processing department with UUID=%s", department.getId()));
-
-                TestSectionService testSectionService = new TestSectionService();
                 testSectionService.createOrUpdate(department, atomFeedProperties.getProperty(REFERENCE_DATA_DEFAULT_ORGANIZATION));
+            } else if (title.sample.name().equals(event.getTitle())){
+                ReferenceDataSample sample = webClient.get(urlPrefix + content, ReferenceDataSample.class);
+                logger.info(String.format("Processing sample with UUID=%s", sample.getId()));
+                typeOfSampleService.createOrUpdate(sample);
             }
         } catch (Exception e) {
             throw new LIMSRuntimeException(e);

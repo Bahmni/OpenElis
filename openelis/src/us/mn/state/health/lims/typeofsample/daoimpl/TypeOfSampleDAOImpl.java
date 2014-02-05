@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
@@ -339,8 +340,22 @@ public class TypeOfSampleDAOImpl extends BaseDAOImpl implements TypeOfSampleDAO 
 		return list;
 	
 	}
-	
-	private String getKeyForDomain(SampleDomain domain) {
+
+    @Override
+    public TypeOfSample getTypeOfSampleByUUID(String uuid) {
+        try{
+            String sql = "from TypeOfSample as ts where ts.uuid = :uuid";
+            Query query = HibernateUtil.getSession().createQuery(sql);
+            query.setParameter("uuid", uuid);
+            return (TypeOfSample) query.uniqueResult();
+        } catch(HibernateException he) {
+            LogEvent.logErrorStack("TypeOfSampleDAOImpl", "getTypeOfSampleByUUID(String uuid)", he);
+            throw new LIMSRuntimeException("Error in TypeOfSample getTypeOfSampleByUUID(String uuid)", he);
+        }
+
+    }
+
+    private String getKeyForDomain(SampleDomain domain) {
 		String domainKey = "H";
 		switch (domain) {
 		case ANIMAL: {
