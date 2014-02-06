@@ -17,12 +17,9 @@
 package us.mn.state.health.lims.scheduler;
 
 import org.apache.log4j.Logger;
-import org.bahmni.feed.openelis.feed.client.*;
 import org.bahmni.feed.openelis.feed.job.bahmnireferencedata.ReferenceDataFeedFailedEventsJob;
 import org.bahmni.feed.openelis.feed.job.bahmnireferencedata.ReferenceDataFeedReaderJob;
 import org.bahmni.feed.openelis.feed.job.event.EventRecordsNumberOffsetMarkerTask;
-import org.bahmni.feed.openelis.feed.job.openerp.OpenERPLabTestFailedEventsJob;
-import org.bahmni.feed.openelis.feed.job.openerp.OpenERPLabTestFeedJob;
 import org.bahmni.feed.openelis.feed.job.openmrs.OpenMRSEncounterFeedFailedEventsJob;
 import org.bahmni.feed.openelis.feed.job.openmrs.OpenMRSEncounterFeedReaderJob;
 import org.bahmni.feed.openelis.feed.job.openmrs.OpenMRSPatientFeedFailedEventsJob;
