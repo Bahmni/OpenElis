@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.feed.client.*;
 import org.bahmni.feed.openelis.feed.job.bahmnireferencedata.ReferenceDataFeedFailedEventsJob;
 import org.bahmni.feed.openelis.feed.job.bahmnireferencedata.ReferenceDataFeedReaderJob;
+import org.bahmni.feed.openelis.feed.job.event.EventRecordsNumberOffsetMarkerTask;
 import org.bahmni.feed.openelis.feed.job.openerp.OpenERPLabTestFailedEventsJob;
 import org.bahmni.feed.openelis.feed.job.openerp.OpenERPLabTestFeedJob;
 import org.bahmni.feed.openelis.feed.job.openmrs.OpenMRSEncounterFeedFailedEventsJob;
@@ -67,6 +68,8 @@ public class LateStartScheduler {
 
         scheduleJobMap.put("atom-feed-referencedata", ReferenceDataFeedReaderJob.class);
         scheduleJobMap.put("atom-feed-referencedata-failed", ReferenceDataFeedFailedEventsJob.class);
+
+        scheduleJobMap.put("atom-feed-events-offset-marker", EventRecordsNumberOffsetMarkerTask.class);
     }
 
     public void restartSchedules() {

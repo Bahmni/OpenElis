@@ -80,7 +80,7 @@
         </jrc>
     </target>
 
-    <target name="dist" depends="clean, compile"
+    <target name="dist" depends="clean, compile, migrationScripts"
             description="generate the distribution">
         <mkdir dir="${dist}/lib"/>
         <copy todir="${target}">
@@ -100,6 +100,10 @@
             <fileset file="${dist}/LICENSE"/>            
             <lib dir="${dist}/lib"/>
         </war>
+    </target>
+
+    <target name="migrationScripts">
+        <zip destfile="OpenElis.zip" basedir="../" includes="OpenElis**/**" excludes="**/.idea/**,*.iml,*.git*,**/dist/*,**/target/*,*.svn*,**/out/**,**/openelis/**,**/src/**,**/logs/**,**/junit/*,**/OpenElis.zip" />
     </target>
 
     <target name="build" depends="clean, compile, resetDB, test, report, dist"/>
