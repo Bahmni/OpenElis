@@ -1103,4 +1103,10 @@
         </insert>
     </changeSet>
 
+    <changeSet id="83" author="tw" context="bahmni">
+        <delete schemaName="clinlims" tableName="quartz_cron_scheduler">
+            <where>job_name in ('atom-feed-openerp-test', 'atom-feed-openerp-test-failed')</where>
+        </delete>
+    </changeSet>
+
 </databaseChangeLog>

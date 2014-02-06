@@ -57,9 +57,6 @@ public class LateStartScheduler {
         scheduleJobMap.put("sendSiteIndicators", AggregateReportJob.class);
         scheduleJobMap.put("sendMalariaSurviellanceReport", MalariaSurveilanceJob.class);
 
-        scheduleJobMap.put("atom-feed-openerp-test", OpenERPLabTestFeedJob.class);
-        scheduleJobMap.put("atom-feed-openerp-test-failed", OpenERPLabTestFailedEventsJob.class);
-
         scheduleJobMap.put("atom-feed-openmrs-patient", OpenMRSPatientFeedReaderJob.class);
         scheduleJobMap.put("atom-feed-openmrs-patient-failed", OpenMRSPatientFeedFailedEventsJob.class);
 
