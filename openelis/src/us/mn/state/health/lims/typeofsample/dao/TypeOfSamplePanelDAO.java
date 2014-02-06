@@ -20,6 +20,7 @@ import java.util.List;
 import us.mn.state.health.lims.common.dao.BaseDAO;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSamplePanel;
+import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSampleTest;
 
 public interface TypeOfSamplePanelDAO extends BaseDAO {
 	
@@ -39,5 +40,7 @@ public interface TypeOfSamplePanelDAO extends BaseDAO {
 
 	public Integer getTotalTypeOfSamplePanelCount() throws LIMSRuntimeException;	
 	
-	public List<TypeOfSamplePanel> getTypeOfSamplePanelsForSampleType(String sampleType);	
+	public List<TypeOfSamplePanel> getTypeOfSamplePanelsForSampleType(String sampleType);
+
+    public TypeOfSamplePanel getTypeOfSamplePanelForPanel(String panelId);
 }

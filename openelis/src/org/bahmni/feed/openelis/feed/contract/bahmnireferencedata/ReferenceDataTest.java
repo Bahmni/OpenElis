@@ -3,18 +3,15 @@ package org.bahmni.feed.openelis.feed.contract.bahmnireferencedata;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 import java.util.Date;
-import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ReferenceDataTest {
     private String id;
-    private Date dateCreated;
     private ReferenceDataDepartment department;
     private String description;
     private Boolean isActive;
     private Date lastUpdated;
     private String name;
-    private List<ReferenceDataPanel> panel;
     private ReferenceDataSample sample;
     private String shortName;
     private Integer sortOrder;
@@ -25,14 +22,6 @@ public class ReferenceDataTest {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public Date getDateCreated() {
-        return dateCreated;
-    }
-
-    public void setDateCreated(Date dateCreated) {
-        this.dateCreated = dateCreated;
     }
 
     public ReferenceDataDepartment getDepartment() {
@@ -65,14 +54,6 @@ public class ReferenceDataTest {
 
     public void setLastUpdated(Date lastUpdated) {
         this.lastUpdated = lastUpdated;
-    }
-
-    public List<ReferenceDataPanel> getPanel() {
-        return panel;
-    }
-
-    public void setPanel(List<ReferenceDataPanel> panel) {
-        this.panel = panel;
     }
 
     public ReferenceDataSample getSample() {
