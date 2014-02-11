@@ -1108,5 +1108,14 @@
             <where>job_name in ('atom-feed-openerp-test', 'atom-feed-openerp-test-failed')</where>
         </delete>
     </changeSet>
-
+    <changeSet id="84" author="tw" context="bahmni">
+        <comment>Set system user id from non_user_name</comment>
+        <sql>
+            update result_signature as rs 
+            set system_user_id = su.id 
+            from system_user su 
+            where rs.non_user_name = concat(su.first_name, ' ', su.last_name) 
+                and rs.system_user_id is null;
+        </sql>
+    </changeSet>
 </databaseChangeLog>
