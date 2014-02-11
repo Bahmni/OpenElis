@@ -204,6 +204,10 @@ public class Result extends EnumValueItemImpl {
         return this.testResult != null && this.testResult.canHaveMultipleValues();
     }
 
+    public boolean isDictionary() {
+        return resultType != null && resultType.equals("D");
+    }
+
     @Override
     public String toString() {
         return "Result{" +
@@ -235,5 +239,12 @@ public class Result extends EnumValueItemImpl {
 
     public void addResultSignature(ResultSignature resultSignature) {
         getResultSignatures().add(resultSignature);
+    }
+
+    public boolean isValid() {
+        if (resultType.equals("N")) return value != null;
+        if (resultType.equals("D")) return value != "0";
+        if (resultType.equals("R")) return value != null && !resultType.isEmpty();
+        return false;
     }
 }

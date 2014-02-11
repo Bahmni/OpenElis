@@ -139,9 +139,9 @@ public class AccessionService {
 
 
     private String getResultValue(Result result) {
-        if (result.getResultType().equals("D"))
-            return dictionaryDAO.getDataForId(result.getValue()).getDictEntry();
-        else return result.getValue();
+        if (!result.isValid()) return null;
+        if (result.isDictionary()) return dictionaryDAO.getDataForId(result.getValue()).getDictEntry();
+        return result.getValue();
     }
 
     private void setExternalIds(Analysis analysis, TestDetail tr) {
