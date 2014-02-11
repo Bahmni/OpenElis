@@ -1118,4 +1118,10 @@
                 and rs.system_user_id is null;
         </sql>
     </changeSet>
+    <changeSet id="85" author="tw" context="bahmni">
+        <comment>Remove all event records incorrectly created with category result</comment>
+        <sql>
+            delete from event_records where category = 'result';
+        </sql>
+    </changeSet>
 </databaseChangeLog>
