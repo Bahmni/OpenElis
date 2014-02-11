@@ -243,7 +243,7 @@ public class Result extends EnumValueItemImpl {
 
     public boolean isValid() {
         if (resultType.equals("N")) return value != null;
-        if (resultType.equals("D")) return value != "0";
+        if (resultType.equals("D")) return !value.equals("0");
         if (resultType.equals("R")) return value != null && !resultType.isEmpty();
         return false;
     }
