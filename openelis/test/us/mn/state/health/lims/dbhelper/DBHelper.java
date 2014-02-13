@@ -43,6 +43,7 @@ import us.mn.state.health.lims.test.valueholder.TestSection;
 import us.mn.state.health.lims.testresult.daoimpl.TestResultDAOImpl;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -98,6 +99,7 @@ public class DBHelper {
     public static Sample createSample(String accessionNumber) {
         Sample startedSample = new Sample();
         startedSample.setAccessionNumber(accessionNumber);
+        startedSample.setEnteredDate(new Date());
         startedSample.setStatusId("1");
         startedSample.setSysUserId("1");
         startedSample.setUUID(UUID.randomUUID().toString());
