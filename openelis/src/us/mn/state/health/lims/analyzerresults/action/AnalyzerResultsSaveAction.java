@@ -390,7 +390,7 @@ public class AnalyzerResultsSaveAction extends BaseAction {
 		List<Note> noteList = new ArrayList<Note>();
 
 		// we're not setting the sample status because this doesn't change it.
-		sample.setEnteredDate(new Date(new java.util.Date().getTime()));
+		sample.setEnteredDate(new java.util.Date());
 		sample.setSysUserId(sysUserId);
 
 		createAndAddItems_Analysis_Results(groupedAnalyzerResultItems, analysisList, resultList, resultToUserSelectionMap, noteList);
@@ -464,7 +464,7 @@ public class AnalyzerResultsSaveAction extends BaseAction {
 		if (StatusOfSampleUtil.getStatusID(OrderStatus.Entered).equals(sample.getStatusId())) {
 			sample.setStatusId(StatusOfSampleUtil.getStatusID(OrderStatus.Started));
 		}
-		sample.setEnteredDate(new Date(new java.util.Date().getTime()));
+		sample.setEnteredDate(new java.util.Date());
 		sample.setSysUserId(sysUserId);
 
 
@@ -499,7 +499,7 @@ public class AnalyzerResultsSaveAction extends BaseAction {
 		if (StatusOfSampleUtil.getStatusID(OrderStatus.Entered).equals(sample.getStatusId())) {
 			sample.setStatusId(StatusOfSampleUtil.getStatusID(OrderStatus.Started));
 		}
-		sample.setEnteredDate(new Date(new java.util.Date().getTime()));
+		sample.setEnteredDate(new java.util.Date());
 		sample.setSysUserId(sysUserId);
 
 		SampleItem sampleItem = null;
@@ -605,7 +605,7 @@ public class AnalyzerResultsSaveAction extends BaseAction {
 		sample.setAccessionNumber(groupedAnalyzerResultItems.get(0).getAccessionNumber());
 		sample.setDomain("H");
 		sample.setStatusId(StatusOfSampleUtil.getStatusID(OrderStatus.Started));
-		sample.setEnteredDate(new Date(new java.util.Date().getTime()));
+		sample.setEnteredDate(new java.util.Date());
 		sample.setReceivedDate(new Date(new java.util.Date().getTime()));
 		sample.setSysUserId(sysUserId);
 

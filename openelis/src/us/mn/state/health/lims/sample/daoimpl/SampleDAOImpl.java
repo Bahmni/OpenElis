@@ -181,8 +181,9 @@ public class SampleDAOImpl extends BaseDAOImpl implements SampleDAO {
 			if (samp != null) {
 				// set the display dates for STARTED_DATE, COMPLETED_DATE
 				String locale = SystemConfiguration.getInstance().getDefaultLocale().toString();
-				samp.setEnteredDateForDisplay(DateUtil.convertSqlDateToStringDate(samp.getEnteredDate(), locale));
-				samp.setReceivedDateForDisplay(DateUtil.convertSqlDateToStringDate(samp.getReceivedDate(), locale));
+                samp.setEnteredDateForDisplay(DateUtil.convertSqlDateToStringDate(
+                        new java.sql.Date(samp.getEnteredDate().getTime()), locale));
+                samp.setReceivedDateForDisplay(DateUtil.convertSqlDateToStringDate(samp.getReceivedDate(), locale));
 				Timestamp ts = samp.getCollectionDate();
 				samp.setCollectionDateForDisplay(DateUtil.convertTimestampToStringDate(ts, locale));
 
@@ -230,7 +231,7 @@ public class SampleDAOImpl extends BaseDAOImpl implements SampleDAO {
 			if (samp != null) {
 				// set the display dates for STARTED_DATE, COMPLETED_DATE
 				String locale = SystemConfiguration.getInstance().getDefaultLocale().toString();
-				samp.setEnteredDateForDisplay(DateUtil.convertSqlDateToStringDate(samp.getEnteredDate(), locale));
+				samp.setEnteredDateForDisplay(DateUtil.convertSqlDateToStringDate(new java.sql.Date(samp.getEnteredDate().getTime()), locale));
 				samp.setReceivedDateForDisplay(DateUtil.convertSqlDateToStringDate(samp.getReceivedDate(),locale));
 				Timestamp ts = samp.getCollectionDate();
 				samp.setCollectionDateForDisplay(DateUtil.convertTimestampToStringDate(ts, locale));
@@ -284,8 +285,8 @@ public class SampleDAOImpl extends BaseDAOImpl implements SampleDAO {
 				// System.out.println("Getallsamples 3");
 				samp = (Sample) samples.get(i);
 				samp.setEnteredDateForDisplay(DateUtil
-						.convertSqlDateToStringDate(samp.getEnteredDate(),
-								locale));
+						.convertSqlDateToStringDate(new java.sql.Date(samp.getEnteredDate().getTime()),
+                                locale));
 				samp.setReceivedDateForDisplay(DateUtil
 						.convertSqlDateToStringDate(samp.getReceivedDate(),
 								locale));
@@ -334,7 +335,7 @@ public class SampleDAOImpl extends BaseDAOImpl implements SampleDAO {
 			for (int i = 0; i < samples.size(); i++) {
 				samp = (Sample) samples.get(i);
 				samp.setEnteredDateForDisplay(DateUtil
-						.convertSqlDateToStringDate(samp.getEnteredDate(),
+						.convertSqlDateToStringDate(new java.sql.Date(samp.getEnteredDate().getTime()),
 								locale));
 				samp.setReceivedDateForDisplay(DateUtil
 						.convertSqlDateToStringDate(samp.getReceivedDate(),

@@ -75,6 +75,7 @@ public class QuickEntryAction
 		
 		sample.setReceivedDateForDisplay(dateAsText);
 		sample.setEnteredDateForDisplay(dateAsText);
+        sample.setEnteredDate(new java.util.Date());
 		sample.setReferredCultureFlag(sysConfig.getQuickEntryDefaultReferredCultureFlag());
 		sample.setStickerReceivedFlag(sysConfig.getQuickEntryDefaultStickerReceivedFlag());
 		

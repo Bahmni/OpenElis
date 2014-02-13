@@ -38,6 +38,7 @@ import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.unitofmeasure.valueholder.UnitOfMeasure;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,7 +85,7 @@ public class AccessionService {
         String finalizedStatusId = getFinalizedStatus();
         accessionDetail.setAccessionUuid(sample.getUUID());
         //too many dates in sample table. We just picked the one that can be closest to what we need.
-        accessionDetail.setDateTime(sample.getLastupdated());
+        accessionDetail.setDateTime(new java.sql.Timestamp(sample.getEnteredDate().getTime()));
         List<TestDetail> testDetails = new ArrayList<>();
         for (SampleItem sampleItem : sample.getSampleItems()) {
             mapSampleItem(finalizedStatusId, testDetails, sampleItem);

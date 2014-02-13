@@ -28,14 +28,8 @@ import static us.mn.state.health.lims.sample.util.CI.ProjectForm.SPECIAL_REQUEST
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -220,7 +214,7 @@ public abstract class Accessioner {
 	protected StatusSet statusSet;
 	ActionMessages messages = new ActionMessages();
 
-	protected java.sql.Date today;
+	protected java.util.Date today;
 	protected String todayAsText;
 	protected String sysUserId;
 	protected ProjectForm projectForm;
@@ -277,7 +271,7 @@ public abstract class Accessioner {
 	}
 
 	public Accessioner() {
-		today = new java.sql.Date(System.currentTimeMillis());
+		today = new Date();
 		todayAsText = DateUtil.formatDateAsText(today);
 	}
 

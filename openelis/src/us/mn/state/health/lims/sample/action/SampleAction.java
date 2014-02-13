@@ -110,6 +110,7 @@ public class SampleAction extends BaseAction {
 
 			sample.setReceivedDateForDisplay(dateAsText);
 			sample.setEnteredDateForDisplay(dateAsText);
+            sample.setEnteredDate(new java.util.Date());
 
 			// default referredCultureFlag to 'N'
 			sample.setReferredCultureFlag("S");

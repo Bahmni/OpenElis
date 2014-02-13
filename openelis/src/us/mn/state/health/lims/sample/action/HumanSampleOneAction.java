@@ -86,6 +86,7 @@ public class HumanSampleOneAction extends BaseAction {
 
 		sample.setReceivedDateForDisplay(dateAsText);
 		sample.setEnteredDateForDisplay(dateAsText);
+        sample.setEnteredDate(new java.util.Date());
 
 		sample.setReferredCultureFlag(SystemConfiguration.getInstance()
 				.getHumanSampleOneDefaultReferredCultureFlag());

@@ -17,6 +17,7 @@
 package us.mn.state.health.lims.common.util;
 
 import org.apache.commons.validator.GenericValidator;
+import org.joda.time.DateTime;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.ConfigurationProperties.Property;
@@ -62,9 +63,9 @@ public class DateUtil {
 	
 	
 	public static String formatDateAsText(Date date) {
-		String locale = SystemConfiguration.getInstance().getDefaultLocale().toString();
-		return formatDateAsText(date, new Locale(locale));
-	}
+        String locale = SystemConfiguration.getInstance().getDefaultLocale().toString();
+        return formatDateAsText(date, new Locale(locale));
+    }
 
 	public static String formatDateAsText(Date date, Locale locale) {
 		String pattern = ResourceLocator.getInstance().getMessageResources().getMessage(locale, "date.format.formatKey");
@@ -384,7 +385,11 @@ public class DateUtil {
 		return (int) d.getTime();
 	}
 
-	public static Timestamp formatStringToTimestamp(String ts, String stringLocale) {
+    public static Timestamp formatStringToTimestamp(String ts, String stringLocale) {
+        return formatStringToTimestamp(ts, stringLocale, null);
+    }
+
+	public static Timestamp formatStringToTimestamp(String ts, String stringLocale, String formatPattern) {
 
 		StringBuffer tssb = new StringBuffer();
 		tssb.append(ts);
@@ -397,7 +402,10 @@ public class DateUtil {
 		ts = tssb.toString();
 
 		Locale locale = new Locale(stringLocale);
-		String pattern = ResourceLocator.getInstance().getMessageResources().getMessage(locale, "timestamp.format.formatKey");
+        String pattern = formatPattern;
+        if (pattern == null) {
+		   pattern = ResourceLocator.getInstance().getMessageResources().getMessage(locale, "timestamp.format.formatKey");
+        }
 		SimpleDateFormat format = new SimpleDateFormat(pattern, locale);
 
 		Timestamp tsToReturn = null;
@@ -642,4 +650,10 @@ public class DateUtil {
         return convertStringDateToTimestamp(date);
 
 	}
+
+    public static java.util.Date formatStringToDateTime(String enteredDateForDisplay) {
+        String locale = SystemConfiguration.getInstance().getDefaultLocale().toString();
+        String pattern = ResourceLocator.getInstance().getMessageResources().getMessage(locale, "dateTimeWithSec.format.formatKey");
+        return formatStringToTimestamp(enteredDateForDisplay, locale,pattern);
+    }
 }

@@ -248,7 +248,7 @@ public class SampleConfirmationUpdateAction extends BaseSampleEntryAction {
 		sample.setCollectionDateForDisplay(recievedDate); //note there really is no collection date but other code thinks there is
 		sample.setSysUserId(currentUserId);
 		sample.setDomain("H");
-		sample.setEnteredDate(DateUtil.getNowAsSqlDate());
+		sample.setEnteredDate(new java.util.Date());
 		sample.setStatusId(StatusOfSampleUtil.getStatusID(OrderStatus.Entered));
 
 		sampleHuman = new SampleHuman();

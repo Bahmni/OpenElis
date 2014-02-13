@@ -351,7 +351,8 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         sample.setSampleSource(sampleSourceDAO.getByName("OPD"));
 
         // TODO : Mujir - remove this hardcoding???? Read this from the event????
-        sample.setEnteredDate(nowAsSqlDate);
+        // TODO: Aarthy - Send encounter Date Time as part of event
+        sample.setEnteredDate(new java.util.Date());
         sample.setReceivedDate(nowAsSqlDate);
 //        if (useReceiveDateForCollectionDate) {
 //            sample.setCollectionDateForDisplay(collectionDateFromRecieveDate);

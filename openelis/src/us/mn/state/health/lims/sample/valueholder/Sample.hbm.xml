@@ -27,8 +27,8 @@
         <property name="revision" type="us.mn.state.health.lims.hibernate.resources.usertype.LIMSStringNumberUserType">
             <column name="REVISION" precision="22" scale="0" />
         </property>
-        <property name="enteredDate" type="java.sql.Date">
-            <column name="ENTERED_DATE" length="7" not-null="true" />
+        <property name="enteredDate" type="java.util.Date">
+            <column name="ENTERED_DATE" length="19" not-null="true" />
         </property>
         <property name="receivedTimestamp" type="java.sql.Timestamp">
             <column name="RECEIVED_DATE" length="7" not-null="true" />

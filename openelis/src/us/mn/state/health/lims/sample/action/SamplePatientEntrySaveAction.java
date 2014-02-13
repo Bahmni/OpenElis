@@ -514,7 +514,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
         sample.setSampleSource(sampleSource);
         sample.setUUID(UUID.randomUUID().toString());
 
-        sample.setEnteredDate(DateUtil.getNowAsSqlDate());
+        sample.setEnteredDate(new java.util.Date());
 		if (useReceiveTimestamp) {
 			sample.setReceivedTimestamp(DateUtil.convertStringDateToTimestamp(receivedDate));
 		} else {

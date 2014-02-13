@@ -55,10 +55,10 @@ public class SamplePersisterService {
             Sample sample = new Sample();
             sample.setAccessionNumber(csvSample.accessionNumber);
             SimpleDateFormat datetimeFormatter = new SimpleDateFormat("dd-MM-yyyy");
-            Date parsedDate = datetimeFormatter.parse(csvSample.sampleDate);
+            java.util.Date parsedDate = datetimeFormatter.parse(csvSample.sampleDate);
             Timestamp timestamp = new Timestamp(parsedDate.getTime());
             sample.setCollectionDate(timestamp);
-            sample.setEnteredDate(new java.sql.Date(parsedDate.getTime()));
+            sample.setEnteredDate(parsedDate);
             sample.setReceivedTimestamp(timestamp);
             sample.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.OrderStatus.Finished));
             sample.setDomain(SystemConfiguration.getInstance().getHumanDomain());

@@ -180,6 +180,7 @@ public class QuickEntryUpdateAction extends BatchSampleProcessingBaseAction {
 					String dateAsText = DateUtil.formatDateAsText(today,
 							locale);
 					sample.setEnteredDateForDisplay(dateAsText);
+                    sample.setEnteredDate(new java.util.Date());
 					
 					//bugzilla 2528
 					String newbornTypeOfSample = SystemConfiguration.getInstance().getNewbornTypeOfSample();

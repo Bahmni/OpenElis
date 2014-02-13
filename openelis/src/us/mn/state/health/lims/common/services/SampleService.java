@@ -55,6 +55,6 @@ public class SampleService {
 	}
 	
 	public Date getOrderedDate(){
-		return sample.getEnteredDate();
+		return new java.sql.Date(sample.getEnteredDate().getTime());
 	}
 }
