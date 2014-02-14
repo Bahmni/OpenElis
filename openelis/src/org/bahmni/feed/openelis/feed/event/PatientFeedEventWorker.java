@@ -29,6 +29,7 @@ import us.mn.state.health.lims.hibernate.HibernateUtil;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Date;
 
 //analogous to a controller becasue it receives the request which is an event in this case
 public class PatientFeedEventWorker extends OpenElisEventWorker {

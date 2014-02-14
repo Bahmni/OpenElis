@@ -21,6 +21,7 @@ import java.util.List;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 
+import org.hibernate.Session;
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
 import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
 import us.mn.state.health.lims.common.action.IActionConstants;
@@ -81,17 +82,16 @@ public class CronSchedulerDAOImpl extends BaseDAOImpl implements CronSchedulerDA
 	@Override
 	public void update(CronScheduler cronSchedule) throws LIMSRuntimeException {
 		CronScheduler oldData = readCronScheduler(cronSchedule.getId());
-
 		try {
 			AuditTrailDAO auditDAO = new AuditTrailDAOImpl();
-
 			auditDAO.saveHistory(cronSchedule, oldData, cronSchedule.getSysUserId(), IActionConstants.AUDIT_TRAIL_UPDATE, "QUARTZ_CRON_SCHEDULER");
-
-			HibernateUtil.getSession().merge(cronSchedule);
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
-			HibernateUtil.getSession().evict(cronSchedule);
-			HibernateUtil.getSession().refresh(cronSchedule);
+			//HibernateUtil.getSession().merge(cronSchedule);
+            Session session = HibernateUtil.getSession();
+            session.merge(cronSchedule);
+            session.flush();
+			session.clear();
+			session.evict(cronSchedule);
+			session.refresh(cronSchedule);
 		} catch (Exception e) {
 			handleException(e, "update");
 		}

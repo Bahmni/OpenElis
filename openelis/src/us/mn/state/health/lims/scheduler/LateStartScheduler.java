@@ -24,19 +24,23 @@ import org.bahmni.feed.openelis.feed.job.openmrs.OpenMRSEncounterFeedFailedEvent
 import org.bahmni.feed.openelis.feed.job.openmrs.OpenMRSEncounterFeedReaderJob;
 import org.bahmni.feed.openelis.feed.job.openmrs.OpenMRSPatientFeedFailedEventsJob;
 import org.bahmni.feed.openelis.feed.job.openmrs.OpenMRSPatientFeedReaderJob;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.listeners.JobListenerSupport;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.dataexchange.MalariaSurveilance.MalariaSurveilanceJob;
 import us.mn.state.health.lims.dataexchange.aggregatereporting.AggregateReportJob;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
+import us.mn.state.health.lims.scheduler.dao.CronSchedulerDAO;
 import us.mn.state.health.lims.scheduler.daoimpl.CronSchedulerDAOImpl;
 import us.mn.state.health.lims.scheduler.valueholder.CronScheduler;
+import static org.quartz.impl.matchers.EverythingMatcher.*;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
@@ -46,6 +50,7 @@ public class LateStartScheduler {
     private static final String NEVER = "never";
     private static Map<String, Class<? extends Job>> scheduleJobMap;
     private static Logger logger = Logger.getLogger(LateStartScheduler.class);
+    private CronSchedulerDAOImpl cronSchedulerDAO = new CronSchedulerDAOImpl();
 
     private Scheduler scheduler;
 
@@ -85,10 +90,11 @@ public class LateStartScheduler {
     public void checkAndStartScheduler() {
         try {
             scheduler = StdSchedulerFactory.getDefaultScheduler();
-            List<CronScheduler> schedulers = new CronSchedulerDAOImpl().getAllCronSchedules();
+            List<CronScheduler> schedulers = cronSchedulerDAO.getAllCronSchedules();
             for (CronScheduler schedule : schedulers) {
                 scheduleJob(schedule);
             }
+            scheduler.getListenerManager().addJobListener(new ElisJobListener(), allJobs());
             scheduler.startDelayed(120);
         } catch (SchedulerException | ParseException e) {
             throw new LIMSRuntimeException(e);
@@ -120,5 +126,50 @@ public class LateStartScheduler {
 
     public void shutdown() throws SchedulerException {
             scheduler.shutdown(true);
+    }
+
+    private class ElisJobListener extends JobListenerSupport {
+        @Override
+        public String getName() {
+            return "Elis Job Listener";
+        }
+
+        @Override
+        public void jobWasExecuted(JobExecutionContext context, JobExecutionException jobException) {
+            super.jobWasExecuted(context, jobException);
+            Class<? extends Job> jobClass = context.getJobDetail().getJobClass();
+
+            Set<String> keys = scheduleJobMap.keySet();
+            String matchingJobName = null;
+            for (String key : keys) {
+                if (scheduleJobMap.get(key).equals(jobClass)) {
+                    matchingJobName = key;
+                    break;
+                }
+            }
+
+            if (matchingJobName != null) {
+                Transaction transaction = null;
+                try{
+                    logger.info("executed the job : " + matchingJobName);
+                    transaction = HibernateUtil.getSession().beginTransaction();
+                    CronSchedulerDAO schedulerDAO = new CronSchedulerDAOImpl();
+                    CronScheduler cronSchedule = schedulerDAO.getCronScheduleByJobName(matchingJobName);
+                    Date previousFireTime = context.getFireTime();
+                    if (previousFireTime == null) {
+                        previousFireTime = new Date();
+                    }
+                    cronSchedule.setLastRun(new Timestamp(previousFireTime.getTime()));
+                    cronSchedule.setSysUserId("1");
+                    schedulerDAO.update(cronSchedule);
+                    transaction.commit();
+                } catch (Exception e) {
+                    if (transaction != null) {
+                        transaction.rollback();
+                    }
+                    logger.error("error in updating quartz scheduler last run", e);
+                }
+            }
+        }
     }
 }
