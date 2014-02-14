@@ -38,11 +38,11 @@ import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.unitofmeasure.valueholder.UnitOfMeasure;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AccessionService {
+    private String[] finalizedStatusIds;
     private SampleDAO sampleDao;
     private SampleHumanDAO sampleHumanDAO;
     private ExternalReferenceDao externalReferenceDao;
@@ -57,6 +57,7 @@ public class AccessionService {
         this.externalReferenceDao = externalReferenceDao;
         this.noteDao = noteDao;
         this.dictionaryDAO = dictionaryDAO;
+        this.finalizedStatusIds = new String[] {getFinalizedStatus(), getFinalizedROStatus()};
     }
 
     public AccessionDetail getAccessionDetailFor(String sampleUuid) {
@@ -82,25 +83,24 @@ public class AccessionService {
     }
 
     private void mapSample(Sample sample, AccessionDetail accessionDetail) {
-        String finalizedStatusId = getFinalizedStatus();
         accessionDetail.setAccessionUuid(sample.getUUID());
         //too many dates in sample table. We just picked the one that can be closest to what we need.
         accessionDetail.setDateTime(new java.sql.Timestamp(sample.getEnteredDate().getTime()));
         List<TestDetail> testDetails = new ArrayList<>();
         for (SampleItem sampleItem : sample.getSampleItems()) {
-            mapSampleItem(finalizedStatusId, testDetails, sampleItem);
+            mapSampleItem(testDetails, sampleItem);
         }
 
         accessionDetail.setTestDetails(testDetails);
     }
 
-    private void mapSampleItem(String finalizedStatusId, List<TestDetail> testDetails, SampleItem sampleItem) {
+    private void mapSampleItem(List<TestDetail> testDetails, SampleItem sampleItem) {
         for (Analysis analysis : sampleItem.getAnalyses()) {
-            mapAnalysis(finalizedStatusId, testDetails, analysis);
+            mapAnalysis(testDetails, analysis);
         }
     }
 
-    private void mapAnalysis(String finalizedStatusId, List<TestDetail> testDetails, Analysis analysis) {
+    private void mapAnalysis(List<TestDetail> testDetails, Analysis analysis) {
         TestDetail testDetail = new TestDetail();
         testDetails.add(testDetail);
         Test test = analysis.getTest();
@@ -110,19 +110,22 @@ public class AccessionService {
 
         setExternalIds(analysis, testDetail);
 
-        mapResults(finalizedStatusId, analysis, testDetail);
+        mapResults(analysis, testDetail);
     }
 
-    private void mapResults(String finalizedStatusId, Analysis analysis, TestDetail testDetail) {
+    private void mapResults(Analysis analysis, TestDetail testDetail) {
         testDetail.setStatus(getStatus(analysis.getStatusId()));
         for (Result result : analysis.getResults()) {
-            mapResult(finalizedStatusId, analysis, testDetail, result);
+            mapResult(analysis, testDetail, result);
         }
     }
 
-    private void mapResult(String finalizedStatusId, Analysis analysis, TestDetail testDetail, Result result) {
-        if (finalizedStatusId.equals(analysis.getStatusId())) {
-            setResultDetail(testDetail, result);
+    private void mapResult(Analysis analysis, TestDetail testDetail, Result result) {
+        for (String statusId : finalizedStatusIds) {
+            if (statusId.equals(analysis.getStatusId())) {
+                setResultDetail(testDetail, result);
+                break;
+            }
         }
     }
 
@@ -169,6 +172,10 @@ public class AccessionService {
 
     protected String getFinalizedStatus() {
         return StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.Finalized);
+    }
+
+    private String getFinalizedROStatus() {
+        return StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.FinalizedRO);
     }
 
     protected String getStatus(String statusId) {
