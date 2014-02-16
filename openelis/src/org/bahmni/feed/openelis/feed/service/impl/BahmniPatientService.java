@@ -122,7 +122,7 @@ public class BahmniPatientService {
         }
 
         populatePatient(sysUserId, openMRSPerson, patient);
-        setHealthCenterForPatient(openMRSPerson, patient, openMRSPatient.getIdentifiers().get(0).getIdentifier());
+        patient.setHealthCenter(findHealthCenterForPatient(openMRSPatient));
 
         PatientIdentityTypes patientIdentityTypes = new PatientIdentityTypes(patientIdentityTypeDAO.getAllPatientIdenityTypes());
         PatientIdentities patientIdentities = new PatientIdentities(patientIdentityDAO.getPatientIdentitiesForPatient(patient.getId()));
@@ -173,7 +173,7 @@ public class BahmniPatientService {
         Patient patient = new Patient();
         patient.setPerson(person);
         populatePatient(sysUserId, openMRSPerson, patient);
-        setHealthCenterForPatient(openMRSPerson, patient, openMRSPatient.getIdentifiers().get(0).getIdentifier());
+        patient.setHealthCenter(findHealthCenterForPatient(openMRSPatient));
         patientDAO.insertData(patient);
 
         PatientIdentityTypes patientIdentityTypes = new PatientIdentityTypes(patientIdentityTypeDAO.getAllPatientIdenityTypes());
@@ -201,10 +201,10 @@ public class BahmniPatientService {
         patient.setUuid(openMRSPerson.getUuid());
     }
 
-    private void setHealthCenterForPatient(OpenMRSPerson openMRSPerson, Patient patient, String identifier) {
-        OpenMRSPersonAttribute healthCenterAttribute = openMRSPerson.findAttributeByAttributeTypeDisplayName(OpenMRSPersonAttributeType.HEALTH_CENTER);
-        if (healthCenterAttribute != null)
-            patient.setHealthCenter(healthCenterById(healthCenterAttribute.getValue()));
+    private HealthCenter findHealthCenterForPatient(OpenMRSPatient openMRSPatient) {
+        String identifier = openMRSPatient.getIdentifiers().get(0).getIdentifier();
+        String healthCenterName = identifier.substring(0, 3);
+        return healthCenterByName(healthCenterName);
     }
 
     private OpenMRSPerson populatePerson(OpenMRSPatient openMRSPatient, String sysUserId, Person person) {
