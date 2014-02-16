@@ -25,11 +25,11 @@ import java.util.List;
 public class AccessionDetail {
     private String accessionUuid;
     private String patientUuid;
+    private String patientIdentifier;
     private String patientFirstName;
     private String patientLastName;
     private Timestamp dateTime;
     private List<TestDetail> testDetails;
-    private String patientIdentifier;
 
     public String getAccessionUuid() {
         return accessionUuid;
