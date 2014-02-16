@@ -122,6 +122,7 @@ public class BahmniPatientService {
         }
 
         populatePatient(sysUserId, openMRSPerson, patient);
+        setHealthCenterForPatient(openMRSPerson, patient, openMRSPatient.getIdentifiers().get(0).getIdentifier());
 
         PatientIdentityTypes patientIdentityTypes = new PatientIdentityTypes(patientIdentityTypeDAO.getAllPatientIdenityTypes());
         PatientIdentities patientIdentities = new PatientIdentities(patientIdentityDAO.getPatientIdentitiesForPatient(patient.getId()));
@@ -172,6 +173,7 @@ public class BahmniPatientService {
         Patient patient = new Patient();
         patient.setPerson(person);
         populatePatient(sysUserId, openMRSPerson, patient);
+        setHealthCenterForPatient(openMRSPerson, patient, openMRSPatient.getIdentifiers().get(0).getIdentifier());
         patientDAO.insertData(patient);
 
         PatientIdentityTypes patientIdentityTypes = new PatientIdentityTypes(patientIdentityTypeDAO.getAllPatientIdenityTypes());
@@ -197,9 +199,12 @@ public class BahmniPatientService {
         }
         patient.setSysUserId(sysUserId);
         patient.setUuid(openMRSPerson.getUuid());
+    }
+
+    private void setHealthCenterForPatient(OpenMRSPerson openMRSPerson, Patient patient, String identifier) {
         OpenMRSPersonAttribute healthCenterAttribute = openMRSPerson.findAttributeByAttributeTypeDisplayName(OpenMRSPersonAttributeType.HEALTH_CENTER);
         if (healthCenterAttribute != null)
-            patient.setHealthCenter(healthCenterOf(healthCenterAttribute.getValue()));
+            patient.setHealthCenter(healthCenterById(healthCenterAttribute.getValue()));
     }
 
     private OpenMRSPerson populatePerson(OpenMRSPatient openMRSPatient, String sysUserId, Person person) {
@@ -210,11 +215,18 @@ public class BahmniPatientService {
         return openMRSPerson;
     }
 
-    private HealthCenter healthCenterOf(String healthCenterString) {
-        if (isNullOrEmpty(healthCenterString)) return null;
-        HealthCenter healthCenter = healthCenterDAO.get(healthCenterString);
+    private HealthCenter healthCenterById(String healthCenterId) {
+        if (isNullOrEmpty(healthCenterId)) return null;
+        HealthCenter healthCenter = healthCenterDAO.get(healthCenterId);
         if (healthCenter != null) return healthCenter;
-        throw new LIMSRuntimeException(String.format("HealthCenter %s is not configured in OpenELIS", healthCenterString));
+        throw new LIMSRuntimeException(String.format("HealthCenter %s is not configured in OpenELIS", healthCenterId));
+    }
+
+    private HealthCenter healthCenterByName(String healthCenterName) {
+        if (isNullOrEmpty(healthCenterName)) return null;
+        HealthCenter healthCenter = healthCenterDAO.getByName(healthCenterName.toUpperCase());
+        if (healthCenter != null) return healthCenter;
+        throw new LIMSRuntimeException(String.format("HealthCenter %s is not configured in OpenELIS", healthCenterName));
     }
 
     private boolean isNullOrEmpty(String healthCenterString) {
