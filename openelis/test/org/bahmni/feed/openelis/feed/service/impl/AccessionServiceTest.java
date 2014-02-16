@@ -29,6 +29,9 @@ import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
 import us.mn.state.health.lims.note.dao.NoteDAO;
 import us.mn.state.health.lims.note.valueholder.Note;
 import us.mn.state.health.lims.patient.valueholder.Patient;
+import us.mn.state.health.lims.patientidentity.dao.PatientIdentityDAO;
+import us.mn.state.health.lims.patientidentitytype.dao.PatientIdentityTypeDAO;
+import us.mn.state.health.lims.patientidentitytype.valueholder.PatientIdentityType;
 import us.mn.state.health.lims.result.dao.ResultSignatureDAO;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.valueholder.Sample;
@@ -58,30 +61,38 @@ public class AccessionServiceTest {
     private DictionaryDAO dictionaryDao;
     @Mock
     private ResultSignatureDAO resultSignatureDao;
+    @Mock
+    private PatientIdentityDAO patientIdentityDAO;
+    @Mock
+    private PatientIdentityTypeDAO patientIdentityTypeDAO;
+
 
     private Sample sample;
     private Patient patient;
+    private PatientIdentityType patienIdentityType;
 
     @Before
     public void setUp() {
         initMocks(this);
         sample = DBHelper.createEntireSampleTreeWithResults();
         patient = DBHelper.createPatient();
+        patienIdentityType = new PatientIdentityType();
     }
 
     @Test
     public void shouldReturnAccessionDetails() {
-        AccessionService accessionService = new TestableAccessionService(sampleDao, sampleHumanDAO, externalReferenceDao, noteDao, dictionaryDao);
+        AccessionService accessionService = new TestableAccessionService(sampleDao, sampleHumanDAO, externalReferenceDao, noteDao, dictionaryDao, patientIdentityDAO, patientIdentityTypeDAO);
         when(sampleDao.getSampleByUUID(sample.getUUID())).thenReturn(sample);
         when(sampleHumanDAO.getPatientForSample(sample)).thenReturn(patient);
         when(externalReferenceDao.getDataByItemId(anyString(), anyString())).thenReturn(new ExternalReference(456789, "Ex Id", "type"));
+        when(patientIdentityTypeDAO.getNamedIdentityType("ST")).thenReturn(patienIdentityType);
         AccessionDetail accessionDetail = accessionService.getAccessionDetailFor(sample.getUUID());
         assertNotNull(accessionDetail);
     }
 
     @Test
     public void shouldGetAccessionDetailsForUuid() {
-        AccessionService accessionService = new TestableAccessionService(sampleDao, sampleHumanDAO, externalReferenceDao, noteDao, dictionaryDao);
+        AccessionService accessionService = new TestableAccessionService(sampleDao, sampleHumanDAO, externalReferenceDao, noteDao, dictionaryDao, patientIdentityDAO, patientIdentityTypeDAO);
         ExternalReference externalReferences = new ExternalReference(98743123, "ExternalId", "Type");
 
         when(sampleDao.getSampleByUUID(sample.getUUID())).thenReturn(sample);
@@ -90,6 +101,7 @@ public class AccessionServiceTest {
         when(externalReferenceDao.getDataByItemId(analysis.getTest().getId(), "Test")).thenReturn(externalReferences);
         when(externalReferenceDao.getDataByItemId(analysis.getPanel().getId(), "Panel")).thenReturn(externalReferences);
         when(noteDao.getNoteByRefIAndRefTableAndSubject(anyString(), anyString(), anyString())).thenReturn(new ArrayList<Note>());
+        when(patientIdentityTypeDAO.getNamedIdentityType("ST")).thenReturn(patienIdentityType);
 
         AccessionDetail accessionDetail = accessionService.getAccessionDetailFor(sample.getUUID());
 
@@ -101,8 +113,10 @@ public class AccessionServiceTest {
 
     private class TestableAccessionService extends AccessionService {
 
-        public TestableAccessionService(SampleDAO sampleDao, SampleHumanDAO sampleHumanDAO, ExternalReferenceDao externalReferenceDao, NoteDAO noteDao, DictionaryDAO dictionaryDao) {
-            super(sampleDao, sampleHumanDAO, externalReferenceDao, noteDao, dictionaryDao);
+        public TestableAccessionService(SampleDAO sampleDao, SampleHumanDAO sampleHumanDAO,
+                                        ExternalReferenceDao externalReferenceDao, NoteDAO noteDao, DictionaryDAO dictionaryDao,
+                                        PatientIdentityDAO patientIdentityDAO, PatientIdentityTypeDAO patientIdentityTypeDAO) {
+            super(sampleDao, sampleHumanDAO, externalReferenceDao, noteDao, dictionaryDao, patientIdentityDAO, patientIdentityTypeDAO);
         }
 
         @Override

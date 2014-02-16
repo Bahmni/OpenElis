@@ -29,6 +29,7 @@ public class AccessionDetail {
     private String patientLastName;
     private Timestamp dateTime;
     private List<TestDetail> testDetails;
+    private String patientIdentifier;
 
     public String getAccessionUuid() {
         return accessionUuid;
@@ -77,5 +78,13 @@ public class AccessionDetail {
     @JsonSerialize(using=JsonTimeSerializer.class)
     public Timestamp getDateTime() {
         return dateTime;
+    }
+
+    public String getPatientIdentifier() {
+        return patientIdentifier;
+    }
+
+    public void setPatientIdentifier(String patientIdentifier) {
+        this.patientIdentifier = patientIdentifier;
     }
 }

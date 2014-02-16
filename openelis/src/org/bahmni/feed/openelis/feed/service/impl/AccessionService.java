@@ -26,6 +26,10 @@ import us.mn.state.health.lims.note.dao.NoteDAO;
 import us.mn.state.health.lims.note.valueholder.Note;
 import us.mn.state.health.lims.panel.valueholder.Panel;
 import us.mn.state.health.lims.patient.valueholder.Patient;
+import us.mn.state.health.lims.patientidentity.dao.PatientIdentityDAO;
+import us.mn.state.health.lims.patientidentity.valueholder.PatientIdentity;
+import us.mn.state.health.lims.patientidentitytype.dao.PatientIdentityTypeDAO;
+import us.mn.state.health.lims.patientidentitytype.valueholder.PatientIdentityType;
 import us.mn.state.health.lims.person.valueholder.Person;
 import us.mn.state.health.lims.result.action.util.ResultsLoadUtility;
 import us.mn.state.health.lims.result.valueholder.Result;
@@ -48,15 +52,19 @@ public class AccessionService {
     private ExternalReferenceDao externalReferenceDao;
     private NoteDAO noteDao;
     private DictionaryDAO dictionaryDAO;
+    private PatientIdentityDAO patientIdentityDAO;
+    private PatientIdentityTypeDAO patientIdentityTypeDAO;
 
     public AccessionService(SampleDAO sampleDao, SampleHumanDAO sampleHumanDAO, ExternalReferenceDao externalReferenceDao,
-                            NoteDAO noteDao, DictionaryDAO dictionaryDAO) {
+                            NoteDAO noteDao, DictionaryDAO dictionaryDAO, PatientIdentityDAO patientIdentityDAO, PatientIdentityTypeDAO patientIdentityTypeDAO) {
 
         this.sampleDao = sampleDao;
         this.sampleHumanDAO = sampleHumanDAO;
         this.externalReferenceDao = externalReferenceDao;
         this.noteDao = noteDao;
         this.dictionaryDAO = dictionaryDAO;
+        this.patientIdentityDAO = patientIdentityDAO;
+        this.patientIdentityTypeDAO = patientIdentityTypeDAO;
         this.finalizedStatusIds = new String[] {getFinalizedStatus(), getFinalizedROStatus()};
     }
 
@@ -80,6 +88,12 @@ public class AccessionService {
         accessionDetail.setPatientUuid(patient.getUuid());
         accessionDetail.setPatientFirstName(person.getFirstName());
         accessionDetail.setPatientLastName(person.getLastName());
+        accessionDetail.setPatientIdentifier(findPatientIdentity(patient));
+    }
+
+    private String findPatientIdentity(Patient patient) {
+        PatientIdentity patientIdentity = patientIdentityDAO.getPatitentIdentityForPatientAndType(patient.getId(), primaryIdentityType().getId());
+        return patientIdentity != null ? patientIdentity.getIdentityData() : "";
     }
 
     private void mapSample(Sample sample, AccessionDetail accessionDetail) {
@@ -164,6 +178,10 @@ public class AccessionService {
         for (Note note : notes) {
             testResult.addNotes(note.getText());
         }
+    }
+
+    private PatientIdentityType primaryIdentityType() {
+        return patientIdentityTypeDAO.getNamedIdentityType("ST");
     }
 
     protected String getResultReferenceTableId() {
