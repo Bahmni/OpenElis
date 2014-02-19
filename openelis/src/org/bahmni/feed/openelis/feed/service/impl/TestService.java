@@ -94,6 +94,7 @@ public class TestService {
         test.setName(referenceDataTest.getName());
         test.setSysUserId(sysUserId);
         test.setOrderable(true);
+        test.setSortOrder(String.valueOf(referenceDataTest.getSortOrder()));
         return test;
     }
 
