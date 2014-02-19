@@ -1124,4 +1124,13 @@
             delete from event_records where category = 'result';
         </sql>
     </changeSet>
+
+    <changeSet id="86" author="Banka" context="bahmni">
+        <comment>Add unique constraint for uuid in patient</comment>
+        <addUniqueConstraint
+            columnNames="uuid"
+            schemaName="clinlims"
+            tableName="patient"
+            constraintName="unique_uuid_constraint"/>
+    </changeSet>
 </databaseChangeLog>
