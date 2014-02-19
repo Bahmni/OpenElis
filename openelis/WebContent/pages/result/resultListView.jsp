@@ -320,9 +320,11 @@ function enableOnlyForRemark(index, resultType) {
 function  /*void*/ savePage()
 {
     for(i=1; i< <%= testCount%>; i++) {
-        $("abnormalId_" + i).disabled = false;
+        var element = $("abnormalId_" + i);
+        if(element){
+            element.disabled = false;
+        }
     }
-
 
     jQuery("#saveButtonId").attr("disabled", "disabled");
 	window.onbeforeunload = null; // Added to flag that formWarning alert isn't needed.
