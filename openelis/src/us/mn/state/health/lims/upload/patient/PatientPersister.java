@@ -130,10 +130,12 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
 
             patientFeedEventPublisher.publish(csvPatient.healthCenter + csvPatient.registrationNumber, contextPath);
 
-            transaction.commit();
+            if (transaction.isActive()) {
+                transaction.commit();
+            }
         } catch (Exception e) {
             logger.warn(e);
-            if (transaction != null) transaction.rollback();
+            if (transaction != null && transaction.isActive()) transaction.rollback();
 
             return new RowResult<>(csvPatient, e);
         }
