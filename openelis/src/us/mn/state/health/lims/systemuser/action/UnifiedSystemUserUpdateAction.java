@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class UnifiedSystemUserUpdateAction extends BaseAction {
 
@@ -233,11 +234,11 @@ public class UnifiedSystemUserUpdateAction extends BaseAction {
 		if( GenericValidator.isBlankOrNull(loginUserId)){
 			return false;
 		}
-		
+
 		Login login = new Login();
 		login.setId(loginUserId);
 		loginDAO.getData(login);
-		
+
 		return !newName.equals(login.getLoginName());
 	}
 
@@ -284,16 +285,17 @@ public class UnifiedSystemUserUpdateAction extends BaseAction {
 
 		SystemUser systemUser = new SystemUser();
 
-		if (!systemUserNew) {
-			systemUser.setId(systemUserId);
-		}
+        if (systemUserNew) {
+            systemUser.setExternalId(UUID.randomUUID().toString());
+        } else {
+            systemUser.setId(systemUserId);
+        }
 
 		systemUser.setFirstName(dynaForm.getString("userFirstName"));
 		systemUser.setLastName(dynaForm.getString("userLastName"));
 		systemUser.setLoginName(userLoginName);
 		systemUser.setIsActive(dynaForm.getString("accountActive"));
 		systemUser.setIsEmployee("Y");
-		systemUser.setExternalId("1");
 		String initial = systemUser.getFirstName().substring(0, 1) + systemUser.getLastName().substring(0, 1);
 		systemUser.setInitials(initial);
 		systemUser.setSysUserId(loggedOnUserId);
