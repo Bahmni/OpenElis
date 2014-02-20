@@ -16,6 +16,7 @@
 
 package us.mn.state.health.lims.upload.service;
 
+import org.bahmni.feed.openelis.feed.service.impl.OpenElisUrlPublisher;
 import org.bahmni.feed.openelis.utils.AuditingService;
 import org.junit.Before;
 import org.mockito.Mock;
@@ -32,6 +33,7 @@ import us.mn.state.health.lims.upload.sample.CSVTestResult;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -55,17 +57,21 @@ public class TestResultPersisterServiceTest {
     private AuditingService auditingService;
     @Mock
     private TestDAO testDAO;
+    @Mock
+    private OpenElisUrlPublisher accessionPublisher;
 
     private TestResultPersisterService testResultPersisterService;
+    private String contextPath;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        testResultPersisterService = new TestResultPersisterService(samplePersisterService, sampleHumanPersisterService, analysisPersisterService, sampleItemPersisterService, resultPersisterService, patientDAO, testDAO, auditingService);
+        contextPath = "/openelis";
+        testResultPersisterService = new TestResultPersisterService(contextPath, samplePersisterService, sampleHumanPersisterService, analysisPersisterService, sampleItemPersisterService, resultPersisterService, patientDAO, testDAO, auditingService, accessionPublisher);
     }
 
     @org.junit.Test
-    public void shouldPersistAllEntitiesForTestResults() throws Exception {
+    public void shouldPersistAllEntitiesForTestResultsAndPublishFeed() throws Exception {
         String sampleDate = "25-02-2012";
         final String sampleSource = "source";
         String testName1 = "test1";
@@ -78,6 +84,7 @@ public class TestResultPersisterServiceTest {
         String accessionNumber = "123";
         Sample sample = new Sample();
         sample.setId("1");
+        sample.setUUID(UUID.randomUUID().toString());
         String patientRegistrationNumber = "patientRegistrationNumber";
         String patientId = "patientId";
         String healthCenter = "gan";
@@ -128,5 +135,6 @@ public class TestResultPersisterServiceTest {
         verify(resultPersisterService).save(analysis1, test1, result1, patient, sysUserId);
         verify(resultPersisterService).save(analysis2, test2, result2, patient, sysUserId);
         verifyNoMoreInteractions(resultPersisterService);
+        verify(accessionPublisher).publish(sample.getUUID(), contextPath);
     }
 }

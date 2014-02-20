@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -74,6 +75,7 @@ public class SamplePersisterServiceTest {
         assertEquals(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.OrderStatus.Finished), persistedSample.getStatusId());
         assertEquals("H", persistedSample.getDomain());
         assertEquals(sampleSource, persistedSample.getSampleSource().getName());
+        assertNotNull(persistedSample.getUUID());
     }
 
     @Test

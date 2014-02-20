@@ -32,6 +32,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 public class SamplePersisterService {
     private List<SampleSource> sampleSources;
@@ -64,6 +65,7 @@ public class SamplePersisterService {
             sample.setDomain(SystemConfiguration.getInstance().getHumanDomain());
             sample.setSysUserId(sysUserId);
             sample.setSampleSource(getSampleSource(csvSample.sampleSource));
+            sample.setUUID(UUID.randomUUID().toString());
             sampleDAO.insertDataWithAccessionNumber(sample);
             return sample;
         }

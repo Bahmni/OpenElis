@@ -18,6 +18,8 @@ package us.mn.state.health.lims.upload.service;
 
 import org.apache.log4j.Logger;
 import org.bahmni.csv.RowResult;
+import org.bahmni.feed.openelis.feed.service.EventPublishers;
+import org.bahmni.feed.openelis.feed.service.impl.OpenElisUrlPublisher;
 import org.bahmni.feed.openelis.utils.AuditingService;
 import org.hibernate.Transaction;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
@@ -40,7 +42,9 @@ import us.mn.state.health.lims.upload.sample.CSVTestResult;
 public class TestResultPersisterService {
     private String sysUserId;
     private AuditingService auditingService;
+    private OpenElisUrlPublisher accessionPublisher;
     private PatientDAO patientDAO;
+    private String contextPath;
     private SamplePersisterService samplePersisterService;
     private SampleHumanPersisterService sampleHumanPersisterService;
     private AnalysisPersisterService analysisPersisterService;
@@ -49,14 +53,15 @@ public class TestResultPersisterService {
     private TestDAO testDAO;
     private static Logger logger = Logger.getLogger(TestResultPersisterService.class);
 
-    public TestResultPersisterService() {
-        this(new SamplePersisterService(), new SampleHumanPersisterService(), new AnalysisPersisterService(), new SampleItemPersisterService(), new ResultPersisterService(),
-                new PatientDAOImpl(), new TestDAOImpl(), new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl()));
+    public TestResultPersisterService(String contextPath) {
+        this(contextPath, new SamplePersisterService(), new SampleHumanPersisterService(), new AnalysisPersisterService(), new SampleItemPersisterService(), new ResultPersisterService(),
+                new PatientDAOImpl(), new TestDAOImpl(), new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl()), new EventPublishers().accessionPublisher());
     }
 
-    public TestResultPersisterService(SamplePersisterService samplePersisterService, SampleHumanPersisterService sampleHumanPersisterService,
+    public TestResultPersisterService(String contextPath, SamplePersisterService samplePersisterService, SampleHumanPersisterService sampleHumanPersisterService,
                                       AnalysisPersisterService analysisPersisterService, SampleItemPersisterService sampleItemPersisterService,
-                                      ResultPersisterService resultPersisterService, PatientDAO patientDAO, TestDAO testDAO, AuditingService auditingService) {
+                                      ResultPersisterService resultPersisterService, PatientDAO patientDAO, TestDAO testDAO, AuditingService auditingService, OpenElisUrlPublisher accessionPublisher) {
+        this.contextPath = contextPath;
         this.samplePersisterService = samplePersisterService;
         this.sampleHumanPersisterService = sampleHumanPersisterService;
         this.analysisPersisterService = analysisPersisterService;
@@ -65,6 +70,7 @@ public class TestResultPersisterService {
         this.patientDAO = patientDAO;
         this.testDAO = testDAO;
         this.auditingService = auditingService;
+        this.accessionPublisher = accessionPublisher;
         this.sysUserId = null;
     }
 
@@ -100,13 +106,14 @@ public class TestResultPersisterService {
                     }
                 }
             }
+            accessionPublisher.publish(sample.getUUID(), contextPath);
             if (hasFailed) {
                 transaction.rollback();
                 return new RowResult<>(csvSample, errorMessageBuilder.toString());
-
             }
-            transaction.commit();
-
+            if (transaction.isActive()) {
+                transaction.commit();
+            }
         } catch (Exception e) {
             logger.warn(e);
             if (transaction != null) transaction.rollback();

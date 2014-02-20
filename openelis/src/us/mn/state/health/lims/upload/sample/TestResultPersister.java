@@ -19,6 +19,7 @@ package us.mn.state.health.lims.upload.sample;
 import org.apache.commons.lang3.StringUtils;
 import org.bahmni.csv.EntityPersister;
 import org.bahmni.csv.RowResult;
+import org.bahmni.feed.openelis.feed.service.impl.OpenElisUrlPublisher;
 import us.mn.state.health.lims.healthcenter.dao.HealthCenterDAO;
 import us.mn.state.health.lims.healthcenter.daoimpl.HealthCenterDAOImpl;
 import us.mn.state.health.lims.healthcenter.valueholder.HealthCenter;
@@ -44,8 +45,8 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
     private ArrayList<String> sampleSourceNames;
     private TestDAO testDAO;
 
-    public TestResultPersister() {
-        this(new HealthCenterDAOImpl(), new SampleSourceDAOImpl(), new TestDAOImpl(), new TestResultPersisterService());
+    public TestResultPersister(String contextPath) {
+        this(new HealthCenterDAOImpl(), new SampleSourceDAOImpl(), new TestDAOImpl(), new TestResultPersisterService(contextPath));
     }
 
     public TestResultPersister(HealthCenterDAO healthCenterDAO, SampleSourceDAO sampleSourceDAO, TestDAO testDAO, TestResultPersisterService testResultPersisterService) {

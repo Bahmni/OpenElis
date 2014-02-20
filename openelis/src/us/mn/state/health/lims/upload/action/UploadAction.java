@@ -73,7 +73,7 @@ public class UploadAction extends BaseAction {
                     return mapping.findForward(IActionConstants.FWD_VALIDATION_ERROR);
                 }
             } else if (importType.equals("sample")) {
-                TestResultPersister testResultPersister = new TestResultPersister();
+                TestResultPersister testResultPersister = new TestResultPersister(request.getContextPath());
                 FileImporter <CSVSample> fileImporter = new FileImporter<>();
                 boolean hasStartedUpload = fileImporter.importCSV(fileName, downloadedFile, testResultPersister, CSVSample.class, new ELISJDBCConnectionProvider(), userSessionData.getLoginName());
                 if (!hasStartedUpload) {
