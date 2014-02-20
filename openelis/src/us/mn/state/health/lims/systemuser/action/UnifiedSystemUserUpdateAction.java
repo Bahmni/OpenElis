@@ -19,7 +19,11 @@ package us.mn.state.health.lims.systemuser.action;
 
 import org.apache.commons.validator.GenericValidator;
 import org.apache.struts.Globals;
-import org.apache.struts.action.*;
+import org.apache.struts.action.ActionErrors;
+import org.apache.struts.action.ActionForm;
+import org.apache.struts.action.ActionForward;
+import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.ActionMessages;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.BaseActionForm;
 import us.mn.state.health.lims.common.action.IActionConstants;
@@ -45,7 +49,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class UnifiedSystemUserUpdateAction extends BaseAction {
 
@@ -285,9 +288,7 @@ public class UnifiedSystemUserUpdateAction extends BaseAction {
 
 		SystemUser systemUser = new SystemUser();
 
-        if (systemUserNew) {
-            systemUser.setExternalId(UUID.randomUUID().toString());
-        } else {
+        if (!systemUserNew) {
             systemUser.setId(systemUserId);
         }
 

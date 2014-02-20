@@ -15,24 +15,23 @@
 */
 package us.mn.state.health.lims.systemuser.daoimpl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-
 import org.apache.commons.beanutils.PropertyUtils;
-
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
 import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.daoimpl.BaseDAOImpl;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
+import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
-import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.systemuser.dao.SystemUserDAO;
 import us.mn.state.health.lims.systemuser.valueholder.SystemUser;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.Vector;
 
 /**
  * @author diane benz
@@ -88,9 +87,13 @@ public class SystemUserDAOImpl extends BaseDAOImpl implements SystemUserDAO {
 				throw new LIMSDuplicateRecordException(
 						"Duplicate record exists for " + systemUser.getFirstName() + BLANK + systemUser.getFirstName());
 			}
+
+            if(systemUser.getExternalId() == null) {
+                systemUser.setExternalId(UUID.randomUUID().toString());
+            }
 			String id = (String)HibernateUtil.getSession().save(systemUser);
 			systemUser.setId(id);
-			
+
 			//bugzilla 1824 inserts will be logged in history table
 			AuditTrailDAO auditDAO = new AuditTrailDAOImpl();
 			String sysUserId = systemUser.getSysUserId();
@@ -124,6 +127,7 @@ public class SystemUserDAOImpl extends BaseDAOImpl implements SystemUserDAO {
 		
 		SystemUser oldData = (SystemUser)readSystemUser(systemUser.getId());
 		SystemUser newData = systemUser;
+        systemUser.setExternalId(oldData.getExternalId());
 
 		//add to audit trail
 		try {
