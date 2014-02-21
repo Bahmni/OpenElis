@@ -25,10 +25,14 @@ import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.result.action.util.ResultsLoadUtility;
 import us.mn.state.health.lims.result.dao.ResultDAO;
 import us.mn.state.health.lims.result.daoimpl.ResultDAOImpl;
+import us.mn.state.health.lims.result.daoimpl.ResultSignatureDAOImpl;
 import us.mn.state.health.lims.result.valueholder.Result;
+import us.mn.state.health.lims.result.valueholder.ResultSignature;
 import us.mn.state.health.lims.resultlimits.dao.ResultLimitDAO;
 import us.mn.state.health.lims.resultlimits.daoimpl.ResultLimitDAOImpl;
 import us.mn.state.health.lims.resultlimits.valueholder.ResultLimit;
+import us.mn.state.health.lims.systemuser.daoimpl.SystemUserDAOImpl;
+import us.mn.state.health.lims.systemuser.valueholder.SystemUser;
 import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.testresult.dao.TestResultDAO;
 import us.mn.state.health.lims.testresult.daoimpl.TestResultDAOImpl;
@@ -50,17 +54,21 @@ public class ResultPersisterService {
     private Map<String, String> typeOfTestResultsTypeToIdMap;
     private TypeOfTestResultDAO typeOfTestResultDAO;
     private final String NUMERIC_RESULT_TYPE;
+    private ResultSignatureDAOImpl resultSignatureDAO;
+    private SystemUserDAOImpl systemUserDAO;
 
     public ResultPersisterService() {
-        this(new TestResultDAOImpl(), new DictionaryDAOImpl(), new ResultDAOImpl(), new ResultLimitDAOImpl(), new TypeOfTestResultDAOImpl(), new ResultsLoadUtility());
+        this(new TestResultDAOImpl(), new DictionaryDAOImpl(), new ResultDAOImpl(), new ResultLimitDAOImpl(), new TypeOfTestResultDAOImpl(), new ResultSignatureDAOImpl(), new SystemUserDAOImpl(), new ResultsLoadUtility());
     }
 
-    public ResultPersisterService(TestResultDAO testResultDAO, DictionaryDAO dictionaryDAO, ResultDAO resultDAO, ResultLimitDAO resultLimitDAO, TypeOfTestResultDAO typeOfTestResultDAO, ResultsLoadUtility resultsLoadUtility) {
+    public ResultPersisterService(TestResultDAO testResultDAO, DictionaryDAO dictionaryDAO, ResultDAO resultDAO, ResultLimitDAO resultLimitDAO, TypeOfTestResultDAO typeOfTestResultDAO, ResultSignatureDAOImpl resultSignatureDAO, SystemUserDAOImpl systemUserDAO, ResultsLoadUtility resultsLoadUtility) {
         this.testResultDAO = testResultDAO;
         this.dictionaryDAO = dictionaryDAO;
         this.resultDAO = resultDAO;
         this.resultLimitDAO = resultLimitDAO;
         this.typeOfTestResultDAO = typeOfTestResultDAO;
+        this.resultSignatureDAO = resultSignatureDAO;
+        this.systemUserDAO = systemUserDAO;
         this.resultsLoadUtility = resultsLoadUtility;
         this.typeOfTestResultsTypeToIdMap = new HashMap<>();
         NUMERIC_RESULT_TYPE = "N";
@@ -102,6 +110,14 @@ public class ResultPersisterService {
                 saveNumericTestResult(result, testResultValue, test, patient);
             }
         }
+
+        SystemUser systemUser = systemUserDAO.getUserById(sysUserId);
+        ResultSignature resultSignature = new ResultSignature();
+        resultSignature.setIsSupervisor(false);
+        resultSignature.setResultId(result.getId());
+        resultSignature.setNonUserName(systemUser.getName());
+        resultSignature.setSystemUser(systemUser);
+        resultSignatureDAO.insertData(resultSignature);
     }
 
     private String getResultTypesId(String testResultType) {

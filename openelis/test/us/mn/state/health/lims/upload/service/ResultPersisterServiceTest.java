@@ -25,10 +25,13 @@ import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
 import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.result.action.util.ResultsLoadUtility;
 import us.mn.state.health.lims.result.dao.ResultDAO;
+import us.mn.state.health.lims.result.daoimpl.ResultSignatureDAOImpl;
 import us.mn.state.health.lims.result.valueholder.Result;
 import us.mn.state.health.lims.resultlimits.dao.ResultLimitDAO;
 import us.mn.state.health.lims.resultlimits.valueholder.ResultLimit;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
+import us.mn.state.health.lims.systemuser.daoimpl.SystemUserDAOImpl;
+import us.mn.state.health.lims.systemuser.valueholder.SystemUser;
 import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.testresult.dao.TestResultDAO;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
@@ -38,6 +41,7 @@ import us.mn.state.health.lims.typeoftestresult.valueholder.TypeOfTestResult;
 import java.util.Arrays;
 
 import static junit.framework.Assert.assertEquals;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -55,6 +59,10 @@ public class ResultPersisterServiceTest {
     private ResultLimitDAO resultLimitDAO;
     @Mock
     private TypeOfTestResultDAO typeOfTestResultDAO;
+    @Mock
+    private ResultSignatureDAOImpl resultSignatureDAO;
+    @Mock
+    private SystemUserDAOImpl systemUserDAO;
 
     private String sysUserId;
     private String testId1;
@@ -93,7 +101,10 @@ public class ResultPersisterServiceTest {
         typeOfTestResult2.setTestResultType("D");
         typeOfTestResult2.setId("2");
 
-        resultPersisterService = new ResultPersisterService(testResultDAO, dictionaryDAO, resultDAO, resultLimitDAO, typeOfTestResultDAO, utility);
+        resultPersisterService = new ResultPersisterService(testResultDAO, dictionaryDAO, resultDAO, resultLimitDAO, typeOfTestResultDAO, resultSignatureDAO, systemUserDAO, utility);
+        SystemUser systemUser = new SystemUser();
+        systemUser.setName("someName");
+        when(systemUserDAO.getUserById(anyString())).thenReturn(systemUser);
     }
 
     @org.junit.Test
