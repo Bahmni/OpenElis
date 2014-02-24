@@ -333,11 +333,12 @@ public class SampleEditUpdateAction extends BaseAction {
 
 	private List<SampleItem> createCancelSampleList(List<SampleEditItem> list, List<Analysis> cancelAnalysisList) {
 		List<SampleItem> cancelList = new ArrayList<SampleItem>();
-
+        List<String> sampleTypesToRemove = new ArrayList<String>();
         for (SampleEditItem editItem : list) {
-
-            if (editItem.getAccessionNumber() != null && editItem.isRemoveSample()) {
-
+            if(editItem.isRemoveSample()){
+                sampleTypesToRemove.add(editItem.getSampleType());
+            }
+            if (sampleTypesToRemove.contains(editItem.getSampleType())) {
                 addSampleItemToCancelList(cancelList, editItem);
 
                 if (cancelAnalysisListContainsId(editItem.getAnalysisId(), cancelAnalysisList)) continue;
@@ -351,9 +352,7 @@ public class SampleEditUpdateAction extends BaseAction {
                     Analysis analysis = getCancelableAnalysis(editItem);
                     cancelAnalysisList.add(analysis);
                 }
-
             }
-
         }
 
         return cancelList;
@@ -362,6 +361,10 @@ public class SampleEditUpdateAction extends BaseAction {
     private void addSampleItemToCancelList(List<SampleItem> cancelList, SampleEditItem editItem) {
         SampleItem sampleItem = getCancelableSampleItem(editItem);
         if (sampleItem != null) {
+            for (SampleItem item : cancelList) {
+                if(item.getId() == sampleItem.getId())
+                    return;
+            }
             cancelList.add(sampleItem);
         }
     }
