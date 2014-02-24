@@ -36,6 +36,7 @@ public class SampleEditItem {
     private String panelName;
     private boolean isPanel = false;
     private List<SampleEditItem> panelTests = new ArrayList<SampleEditItem>();
+    private boolean shouldDisplaySampleTypeInformation;
 
     public String getAccessionNumber() {
 		return accessionNumber;
@@ -142,5 +143,13 @@ public class SampleEditItem {
 
     public void addPanelTest(SampleEditItem sampleItem) {
         this.panelTests.add(sampleItem);
+    }
+
+    public boolean shouldDisplaySampleTypeInformation() {
+        return shouldDisplaySampleTypeInformation;
+    }
+
+    public void setShouldDisplaySampleTypeInformation(boolean shouldDisplaySampleTypeInformation) {
+        this.shouldDisplaySampleTypeInformation = shouldDisplaySampleTypeInformation;
     }
 }
