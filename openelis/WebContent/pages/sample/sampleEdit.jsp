@@ -275,7 +275,9 @@ function processAccessionFailure(xhr)
 			<span class="itemNumber" ><bean:write name="existingTests" property="accessionNumber"/></span>
 		</td>
 		<td>
-			<bean:write name="existingTests" property="sampleType"/>
+            <% if(existingTests.shouldDisplaySampleTypeInformation()){ %>
+			    <bean:write name="existingTests" property="sampleType"/>
+            <% } %>
 		</td>
 		<logic:equal name='<%=formName%>' property="isEditable" value="true" >
 		    <td>

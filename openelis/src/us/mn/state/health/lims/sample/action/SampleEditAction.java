@@ -240,6 +240,7 @@ public class SampleEditAction extends BaseAction {
 			sampleEditItem.setAnalysisId(analysis.getId());
 			sampleEditItem.setStatus(StatusOfSampleUtil.getStatusNameFromId(analysis.getStatusId()));
 			sampleEditItem.setSortOrder(analysis.getTest().getSortOrder());
+            sampleEditItem.setSampleType(typeOfSample.getLocalizedName());
             if (isPanelItem(analysis)) {
                 handleTestsBelongingToPanel(analysisSampleItemList, analysis, sampleEditItem);
             }else{
@@ -251,7 +252,7 @@ public class SampleEditAction extends BaseAction {
 			Collections.sort(analysisSampleItemList, testComparator);
 
 			analysisSampleItemList.get(0).setAccessionNumber(accessionNumber + "-" + sampleItem.getSortOrder());
-			analysisSampleItemList.get(0).setSampleType(typeOfSample.getLocalizedName());
+			analysisSampleItemList.get(0).setShouldDisplaySampleTypeInformation(true);
 			analysisSampleItemList.get(0).setCanRemoveSample(canRemoveSample);
 			maxAccessionNumber = analysisSampleItemList.get(0).getAccessionNumber();
 			currentTestList.addAll(analysisSampleItemList);
@@ -277,6 +278,7 @@ public class SampleEditAction extends BaseAction {
             panelItem.setSortOrder(analysis.getPanel().getSortOrder());
             panelItem.setCanCancel(canCancel(analysis));
             panelItem.setSampleItemId(sampleEditItem.getSampleItemId());
+            panelItem.setSampleType(sampleEditItem.getSampleType());
             analysisSampleItemList.add(panelItem);
         }
     }
