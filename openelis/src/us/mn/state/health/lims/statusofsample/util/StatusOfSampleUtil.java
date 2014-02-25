@@ -314,6 +314,10 @@ public class StatusOfSampleUtil {
         observationHistoryDAO.delete(records);
     }
 
+    public static boolean isPublishableAnalysis(String statusId) {
+        return statusId.equals(getStatusID(AnalysisStatus.Finalized)) || statusId.equals(getStatusID(AnalysisStatus.ReferedOut));
+    }
+
     private static void insertOrUpdateStatus(Sample sample, Patient patient, RecordStatus status, String sysUserId, ObservationHistory record, String historyTypeId) {
 
         if (record == null) {

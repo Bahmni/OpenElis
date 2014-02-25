@@ -290,7 +290,7 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
 
         setSuccessFlag(request, forward);
 
-        if(referer != null && referer.matches("LabDashboard")) {
+        if (referer != null && referer.matches("LabDashboard")) {
             return mapping.findForward(FWD_DASHBOARD);
         }
 
@@ -305,14 +305,19 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
     }
 
     private void publishFinalizedResultAccessionNumber(List<ResultSet> resultSets, HttpServletRequest request) {
-        Set<String> accessionNumbers = new HashSet<>();
+        accessionPublisher.publish(getAccessionNumbersToPublish(resultSets), request.getContextPath());
+    }
+
+    private Set<String> getAccessionNumbersToPublish(List<ResultSet> resultSets) {
+        Set<String> accessionNumbers = new HashSet();
         for (ResultSet resultSet : resultSets) {
-            if(resultSet.result.getAnalysis().getStatusId().equals(StatusOfSampleUtil.getStatusID(AnalysisStatus.Finalized))) {
+            if (StatusOfSampleUtil.isPublishableAnalysis(resultSet.result.getAnalysis().getStatusId())) {
                 accessionNumbers.add(resultSet.sample.getUUID());
             }
         }
-        accessionPublisher.publish(accessionNumbers, request.getContextPath());
+        return accessionNumbers;
     }
+
 
     private void insertNewReferralAndReferralResult(ResultSet resultSet) {
         referralDAO.insertData(resultSet.newReferral);
