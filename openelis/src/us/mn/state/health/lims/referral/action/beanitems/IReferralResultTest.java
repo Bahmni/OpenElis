@@ -46,4 +46,8 @@ public interface IReferralResultTest {
 
     public abstract String getReferralId();
     public abstract void setReferralId(String referralId);
+
+    public abstract boolean isAbnormal();
+
+    public abstract void setAbnormal(boolean abnormal);
 }

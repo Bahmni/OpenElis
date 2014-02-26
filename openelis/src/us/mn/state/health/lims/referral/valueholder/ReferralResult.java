@@ -16,8 +16,6 @@
  */
 package us.mn.state.health.lims.referral.valueholder;
 
-import java.sql.Timestamp;
-
 import org.apache.commons.validator.GenericValidator;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.util.DateUtil;
@@ -28,6 +26,8 @@ import us.mn.state.health.lims.referral.action.beanitems.IReferralResultTest;
 import us.mn.state.health.lims.result.valueholder.Result;
 import us.mn.state.health.lims.result.valueholder.ResultType;
 import us.mn.state.health.lims.resultlimits.valueholder.ResultLimit;
+
+import java.sql.Timestamp;
 
 public class ReferralResult extends BaseObject {
 
@@ -93,6 +93,7 @@ public class ReferralResult extends BaseObject {
         setResultValues(referralItem, currentUserId, limit, referredResultType);
 
         getResult().getAnalysis().readyForTechnicalAcceptance();
+        getResult().setAbnormal(referralItem.isAbnormal());
     }
 
     private void setReferredResultReportDate(String referredReportDate) throws LIMSRuntimeException {

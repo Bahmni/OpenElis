@@ -454,6 +454,7 @@ function showAllTests() {
     <th><bean:message key="test.testName"/></th>
     <th width="16px">&nbsp;</th>
     <th><bean:message key="result.result"/></th>
+    <th><bean:message key="result.abnormal"/></th>
     <th><bean:message key="referral.report.date"/></th>
     <th><bean:message key="label.button.cancel.referral"/></th>
 	<th width="5%"><bean:message key="result.notes"/></th>  
@@ -590,6 +591,13 @@ function showAllTests() {
 			</select>
 			<html:hidden name="referralItems"  indexed="true" property="referredMultiDictionaryResult" styleId='<%= "resultMultiSelect_" + index %>' />
 		</td>
+        <td>
+            <html:checkbox
+                    name='referralItems'
+                    indexed="true"
+                    value='y'
+                    onchange='<%="markModified(\'" + index + "\'); " %>' property="abnormal"/>
+        </td>
 		<td>
 			<html:text name='referralItems'
 					   property="referredReportDate"

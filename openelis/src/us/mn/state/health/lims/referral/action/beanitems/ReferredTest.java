@@ -16,10 +16,9 @@
 */
 package us.mn.state.health.lims.referral.action.beanitems;
 
-import java.util.List;
-
 import us.mn.state.health.lims.common.util.IdValuePair;
-import us.mn.state.health.lims.referral.valueholder.ReferralResult;
+
+import java.util.List;
 
 
 public class ReferredTest implements IReferralResultTest {
@@ -35,6 +34,7 @@ public class ReferredTest implements IReferralResultTest {
 	private String referralResultId;
 	private boolean remove = false;
     private String referredMultiDictionaryResult;
+    private boolean abnormal;
 
     public String getReferralId() {
         return referralId;
@@ -43,7 +43,7 @@ public class ReferredTest implements IReferralResultTest {
     public void setReferralId(String referralId) {
         this.referralId = referralId;
     }
-    
+
     public void setReferredTestId(String referredTestId) {
 		this.referredTestId = referredTestId;
 	}
@@ -112,5 +112,15 @@ public class ReferredTest implements IReferralResultTest {
 
     public void setReferredMultiDictionaryResult(String referredMultiDictionaryResult) {
         this.referredMultiDictionaryResult = referredMultiDictionaryResult;
+    }
+
+    @Override
+    public boolean isAbnormal() {
+        return abnormal;
+    }
+
+    @Override
+    public void setAbnormal(boolean abnormal) {
+        this.abnormal = abnormal;
     }
 }

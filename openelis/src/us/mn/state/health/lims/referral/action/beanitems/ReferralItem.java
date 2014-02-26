@@ -53,6 +53,7 @@ public class ReferralItem implements IReferralResultTest, Serializable {
     private String casualResultId;
     private boolean failedValidation = false;
     private String patientNumber;
+    private boolean abnormal;
 
     public String getReferralId() {
         return referralId;
@@ -276,5 +277,15 @@ public class ReferralItem implements IReferralResultTest, Serializable {
 
     public void setPatientNumber(String patientNumber) {
         this.patientNumber = patientNumber;
+    }
+
+    @Override
+    public boolean isAbnormal() {
+        return abnormal;
+    }
+
+    @Override
+    public void setAbnormal(boolean abnormal) {
+        this.abnormal = abnormal;
     }
 }
