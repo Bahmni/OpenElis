@@ -283,11 +283,12 @@ function /*boolean*/ handleEnterEvent(){
 	return false;
 }
 
-function enableOnlyForRemark(index, resultType) {
-    if(resultType === 'R') {
-        $("abnormalId_" + index).disabled = false;
-    } else {
+function enableOnlyForRemark(index, resultType, isReferredOut) {
+    if(resultType !== 'R' && !isReferredOut){
         $("abnormalId_" + index).disabled = true;
+    }
+    else{
+        $("abnormalId_" + index).disabled = false;
     }
 }
 
@@ -527,7 +528,7 @@ function enableOnlyForRemark(index, resultType) {
 
                     <html:hidden property='<%="resultList["+index+"].abnormal"%>' value="false"/> <!-- To submit checkbox value when unchecked -->
                     <script language="JavaScript">
-                        enableOnlyForRemark(<%=index%>,'<%=resultList.getResultType()%>');
+                        enableOnlyForRemark(<%=index%>,'<%=resultList.getResultType()%>',<%= resultList.isReferredOut() %>);
                     </script>
 
                 </td>
