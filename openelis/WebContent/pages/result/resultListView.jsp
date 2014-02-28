@@ -243,10 +243,10 @@ function /*void*/ autofill( sourceElement ){
 	    boxCount = techBoxes.length,
 	    value = sourceElement.value;
 	    i = 0;
-	
+
 	for( ; i < boxCount; ++i){
 		techBoxes[i].value = value;
-	}	
+	}
 }
 function validateForm(){
 	return true;
@@ -338,10 +338,10 @@ function updateReflexChild( group){
  	var reflexGroup = $$(".reflexGroup_" + group);
 	var childReflex = $$(".childReflex_" + group);
  	var i, childId, rowId, resultIds = "", values="", requestString = "";
- 	
+
  	if( childReflex ){
  		childId = childReflex[0].id.split("_")[1];
- 		
+
 		for( i = 0; i < reflexGroup.length; i++ ){
 			if( childReflex[0] != reflexGroup[i]){
 				rowId = reflexGroup[i].id.split("_")[1];
@@ -349,7 +349,7 @@ function updateReflexChild( group){
 				values += "," + reflexGroup[i].value;
 			}
 		}
-		
+
 		requestString +=   "results=" +resultIds.slice(1) + "&values=" + values.slice(1) + "&childRow=" + childId;
 
 		new Ajax.Request (
@@ -382,7 +382,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 		success = true;
 		childRow = formField.getElementsByTagName("childRow").item(0).childNodes[0].nodeValue;
 		value = formField.getElementsByTagName("value").item(0).childNodes[0].nodeValue;
-		
+
 		if( value && value.length > 0){
 			$("results_" + childRow).value = value;
 		}
@@ -413,7 +413,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 <% if(!depersonalize){ %>
 <table width="100%" >
 	<tr>
-		
+
 		<% if(useSTNumber){ %>
 		<th width="15%">
 			<bean:message key="patient.ST.number" />
@@ -508,7 +508,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 
 <div style="float: right" >
 	<div><img src="./images/nonconforming.gif" /> = <bean:message key="result.nonconforming.item"/></div>
-<% if(failedValidationMarks){ %> 
+<% if(failedValidationMarks){ %>
 <img src="./images/validation-rejected.gif" /> = <bean:message key="result.validation.failed"/>&nbsp;&nbsp;&nbsp;&nbsp;
 <% } %>
 </div>
@@ -868,20 +868,20 @@ function /*void*/ processTestReflexCD4Success(xhr)
 		<% if( ableToRefer ){ %>
 		<td style="white-space: nowrap" class="ruled">
 		<html:hidden name="testResult" property="referralId" indexed='true'/>
-		<% if(GenericValidator.isBlankOrNull(testResult.getReferralId()) || testResult.isReferralCanceled()){  %>
-			<html:checkbox name="testResult"
-						   property="referredOut"
-						   indexed="true"
-						   styleId='<%="referralId_" + index %>'
+            <% if ((GenericValidator.isBlankOrNull(testResult.getReferralId()) || testResult.isReferralCanceled()) && (testResult.getResult() == null || testResult.isResultValueBlankOrNull())) {%>
+            <html:checkbox name="testResult"
+                           property="referredOut"
+                           indexed="true"
+                           styleId='<%="referralId_" + index %>'
                            styleClass="referralCheckBox"
-						   onchange='<%="markUpdated(" + index + "); handleReferralCheckChange(this)" %>'/>
-		<% } else {%>
-			<html:checkbox name="testResult"
-						   property="referredOut"
+                           onchange='<%="markUpdated(" + index + "); handleReferralCheckChange(this)" %>'/>
+            <% } else {%>
+            <html:checkbox name="testResult"
+                           property="referredOut"
                            styleClass="referralCheckBox"
-						   indexed="true"
-						   disabled="true" />
-		<% } %>
+                           indexed="true"
+                           disabled="true"/>
+            <% } %>
 			<select name="<%="testResult[" + index + "].referralReasonId" %>"
 			        id='<%="referralReasonId_" + index%>'
                     class="referralReason"
@@ -931,10 +931,10 @@ function /*void*/ processTestReflexCD4Success(xhr)
 	<tr id='<%="noteRow_" + index %>'
 		class='<%= rowColor %>'
 		style="display: none;">
-		<td colspan="4" valign="top" align="right"><% if(noteRequired && 
-														 !(GenericValidator.isBlankOrNull(testResult.getMultiSelectResultValues()) && 
+		<td colspan="4" valign="top" align="right"><% if(noteRequired &&
+														 !(GenericValidator.isBlankOrNull(testResult.getMultiSelectResultValues()) &&
 														   GenericValidator.isBlankOrNull(testResult.getResultValue()))){ %>
-													  <bean:message key="note.required.result.change"/>		
+													  <bean:message key="note.required.result.change"/>
 													<% } else {%>
 													<bean:message key="note.note"/>
 													<% } %>

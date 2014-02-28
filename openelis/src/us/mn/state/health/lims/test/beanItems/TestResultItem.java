@@ -17,6 +17,7 @@
 */
 package us.mn.state.health.lims.test.beanItems;
 
+import org.apache.commons.validator.GenericValidator;
 import us.mn.state.health.lims.common.util.IdValuePair;
 import us.mn.state.health.lims.result.action.util.ResultItem;
 import us.mn.state.health.lims.result.valueholder.Result;
@@ -47,7 +48,9 @@ public class TestResultItem implements ResultItem, Serializable{
 	@SuppressWarnings("unused")
 	private static String YES = "yes";
 
-
+    public boolean isResultValueBlankOrNull() {
+        return GenericValidator.isBlankOrNull(getResult().getValue());
+    }
 
     public enum Method{ DNA, MANUAL, AUTO; }
 	public enum ResultDisplayType { TEXT, POS_NEG, POS_NEG_IND, HIV, SYPHILIS; }
@@ -440,6 +443,7 @@ public class TestResultItem implements ResultItem, Serializable{
 	public Result getResult() {
 		return result;
 	}
+
 	
 	public void setUserChoiceReflex(boolean isUserChoiceReflex) {
 		this.isUserChoiceReflex = isUserChoiceReflex;
