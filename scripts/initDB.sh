@@ -3,7 +3,7 @@
 SCRIPTS_DIR=`dirname $0`
 ROOT_DIR="$SCRIPTS_DIR/.."
 DATABASE_NAME="clinlims"
-set -e
+# set -e
 
 if [ "$(psql -Upostgres -lqt | cut -d \| -f 1 | grep -w $DATABASE_NAME | wc -l)" -eq 0 ]; then
     echo "Creating database : $DATABASE_NAME"
