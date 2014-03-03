@@ -25,6 +25,7 @@ import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleDAOImpl;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSample;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 public class TypeOfSampleService {
 
@@ -70,7 +71,7 @@ public class TypeOfSampleService {
         String isActive = sample.getIsActive() ? "Y" : "N";
         typeOfSample.setIsActive(isActive);
         typeOfSample.setSortOrder(sample.getSortOrder());
-        typeOfSample.setLastupdated(new Timestamp(sample.getLastUpdated().getTime()));
+        typeOfSample.setLastupdated(new Timestamp(new Date().getTime()));
         typeOfSample.setSysUserId(sysUserId);
         typeOfSample.setDomain(DEFAULT_DOMAIN);
         return typeOfSample;

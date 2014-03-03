@@ -29,6 +29,7 @@ import us.mn.state.health.lims.test.daoimpl.TestSectionDAOImpl;
 import us.mn.state.health.lims.test.valueholder.TestSection;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 public class TestSectionService {
 
@@ -83,7 +84,7 @@ public class TestSectionService {
         String isActive = department.getIsActive() ? "Y" : "N";
         testSection.setIsActive(isActive);
         testSection.setSortOrderInt(department.getSortOrder());
-        testSection.setLastupdated(new Timestamp(department.getLastUpdated().getTime()));
+        testSection.setLastupdated(new Timestamp(new Date().getTime()));
         testSection.setSysUserId(sysUserId);
         testSection.setOrganization(organization);
         return testSection;

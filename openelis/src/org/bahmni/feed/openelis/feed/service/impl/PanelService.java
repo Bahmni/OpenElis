@@ -45,6 +45,7 @@ import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSamplePanel;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 public class PanelService {
@@ -101,7 +102,7 @@ public class PanelService {
         panel.setDescription(description);
         panel.setSysUserId(sysUserId);
         panel.setIsActive(referenceDataPanel.getIsActive() ? IActionConstants.YES : IActionConstants.NO);
-        panel.setLastupdated(new Timestamp(referenceDataPanel.getLastUpdated().getTime()));
+        panel.setLastupdated(new Timestamp(new Date().getTime()));
         panel.setSortOrderInt(referenceDataPanel.getSortOrder());
         return panel;
     }

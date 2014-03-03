@@ -42,6 +42,7 @@ import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSampleTest;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.Date;
 
 public class TestService {
 
@@ -116,7 +117,7 @@ public class TestService {
         test.setTestSection(section);
         test.setDescription(referenceDataTest.getDescription());
         test.setIsActive(referenceDataTest.getIsActive() ? IActionConstants.YES : IActionConstants.NO);
-        test.setLastupdated(new Timestamp(referenceDataTest.getLastUpdated().getTime()));
+        test.setLastupdated(new Timestamp(new Date().getTime()));
         test.setName(referenceDataTest.getName());
         test.setSysUserId(sysUserId);
         test.setOrderable(true);
