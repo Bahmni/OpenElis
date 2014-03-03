@@ -145,6 +145,8 @@
     </target>
 
     <target name="dropDB">
+        <echo message="DROPPING OpenELIS database ......"/>
+        <sleep seconds="4" description="Waiting for few seconds in case the person does not want to delete the DB."/>
         <chmod file="scripts/dropDB.sh" perm="a+x"/>
         <exec executable="scripts/dropDB.sh"/>
     </target>
