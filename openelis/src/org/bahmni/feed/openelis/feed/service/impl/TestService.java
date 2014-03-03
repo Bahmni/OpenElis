@@ -23,6 +23,7 @@ import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataTest;
 import org.bahmni.feed.openelis.utils.AuditingService;
 import us.mn.state.health.lims.common.action.IActionConstants;
+import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
 import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 import us.mn.state.health.lims.test.dao.TestDAO;
@@ -46,18 +47,38 @@ public class TestService {
 
     public static final String CATEGORY_TEST = "Test";
     private AuditingService auditingService;
-    private TestDAO testDAO = new TestDAOImpl();
+    private TestDAO testDAO;
     private ExternalReferenceDao externalReferenceDao;
     private TestSectionDAO testSectionDAO;
     private TypeOfSampleDAO typeOfSampleDAO;
     private TypeOfSampleTestDAO typeOfSampleTestDAO;
 
     public TestService() {
+        this.testDAO = new TestDAOImpl();
         this.externalReferenceDao = new ExternalReferenceDaoImpl();
         this.testSectionDAO = new TestSectionDAOImpl();
         this.auditingService = new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl());
         this.typeOfSampleDAO = new TypeOfSampleDAOImpl();
         this.typeOfSampleTestDAO = new TypeOfSampleTestDAOImpl();
+    }
+
+    /**
+     * Exposed a constructor which takes all params for unit-testing purposes.
+     */
+    public TestService(ExternalReferenceDao externalReferenceDao,
+                       TestDAO testDAO,
+                       TestSectionDAO testSectionDAO,
+                       AuditingService auditingService,
+                       TypeOfSampleDAO typeOfSampleDAO,
+                       TypeOfSampleTestDAO typeOfSampleTestDAO){
+
+        this.externalReferenceDao = externalReferenceDao;
+        this.testDAO = testDAO;
+        this.testSectionDAO = testSectionDAO;
+        this.auditingService = auditingService;
+        this.typeOfSampleDAO = typeOfSampleDAO;
+        this.typeOfSampleTestDAO = typeOfSampleTestDAO;
+
     }
 
     public void createOrUpdate(ReferenceDataTest referenceDataTest) throws IOException {
@@ -86,7 +107,12 @@ public class TestService {
 
     private Test populateTest(Test test, ReferenceDataTest referenceDataTest, String sysUserId) throws IOException {
         test.setTestName(referenceDataTest.getName());
-        TestSection section = testSectionDAO.getTestSectionByUUID(referenceDataTest.getDepartment().getId());
+        String sectionID = referenceDataTest.getDepartment().getId();
+        TestSection section = testSectionDAO.getTestSectionByUUID(sectionID);
+        //Need to check if section is null, then throw exception and don't proceed ahead
+        if(sectionID==null || section == null){
+           throw new LIMSRuntimeException("Cannot save test since no section exists with ID:"+ sectionID);
+        }
         test.setTestSection(section);
         test.setDescription(referenceDataTest.getDescription());
         test.setIsActive(referenceDataTest.getIsActive() ? IActionConstants.YES : IActionConstants.NO);
