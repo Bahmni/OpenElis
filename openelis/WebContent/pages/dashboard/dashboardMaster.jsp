@@ -62,7 +62,7 @@ basePath = request.getScheme() + "://" + request.getServerName() + ":" + request
                     <input id="refreshButton" type="button" value="Refresh">
                 </td>
                 <td>
-                    <div class="arrow-text"> Today's Stats</div><div class="arrow-right"></div>
+                    <div class="arrow-text"> Today&#39;s Stats</div><div class="arrow-right"></div>
                 </td>
                 <td>
                     <span>Awaiting Testing : </span>
