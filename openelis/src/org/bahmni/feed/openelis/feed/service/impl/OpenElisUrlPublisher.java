@@ -18,6 +18,8 @@ package org.bahmni.feed.openelis.feed.service.impl;
 
 import org.ict4h.atomfeed.server.service.Event;
 import org.ict4h.atomfeed.server.service.EventService;
+import org.ict4h.atomfeed.transaction.AFTransactionManager;
+import org.ict4h.atomfeed.transaction.AFTransactionWorkWithoutResult;
 import org.joda.time.DateTime;
 
 import java.net.URI;
@@ -25,12 +27,16 @@ import java.util.Collection;
 import java.util.UUID;
 
 public class OpenElisUrlPublisher {
+
+    public final String URL_PREFIX = "/ws/rest/";
+    
+    private AFTransactionManager transactionManager;
     private EventService eventService;
     private String category;
     private String messageType;
-    private final String URL_PREFIX = "/ws/rest/";
 
-    public OpenElisUrlPublisher(EventService eventService, String category, String messageType) {
+    public OpenElisUrlPublisher(AFTransactionManager transactionManager, EventService eventService, String category, String messageType) {
+        this.transactionManager = transactionManager;
         this.eventService = eventService;
         this.category = category;
         this.messageType = messageType;
@@ -38,13 +44,40 @@ public class OpenElisUrlPublisher {
 
     public void publish(String resourcePath, String contextPath) {
         String contentUrl = getContentUrlFor(resourcePath, contextPath);
-        eventService.notify(new Event(UUID.randomUUID().toString(), messageType, DateTime.now(), (URI) null, contentUrl, category));
+        final Event event = new Event(UUID.randomUUID().toString(), messageType, DateTime.now(), (URI) null, contentUrl, category);
+        transactionManager.executeWithTransaction(
+                new AFTransactionWorkWithoutResult() {
+                    @Override
+                    protected void doInTransaction() {
+                        eventService.notify(event);
+                    }
+
+                    @Override
+                    public PropagationDefinition getTxPropagationDefinition() {
+                        return PropagationDefinition.PROPAGATION_REQUIRED;
+                    }
+                }
+        );
+        
     }
 
     public void publish(Collection<String> resourcePaths, String contextPath) {
         for (String resourcePath : resourcePaths) {
             String contentUrl = getContentUrlFor(resourcePath, contextPath);
-            eventService.notify(new Event(UUID.randomUUID().toString(), messageType, DateTime.now(), (URI) null, contentUrl, category));
+            final Event event = new Event(UUID.randomUUID().toString(), messageType, DateTime.now(), (URI) null, contentUrl, category);
+
+            transactionManager.executeWithTransaction(
+                    new AFTransactionWorkWithoutResult() {
+                        @Override
+                        protected void doInTransaction() {
+                            eventService.notify(event);
+                        }
+                        @Override
+                        public PropagationDefinition getTxPropagationDefinition() {
+                            return PropagationDefinition.PROPAGATION_REQUIRED;
+                        }
+                    }
+            );
         }
     }
 

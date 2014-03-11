@@ -16,12 +16,14 @@
 
 package org.bahmni.feed.openelis.feed.service.impl;
 
+import org.bahmni.feed.openelis.feed.transaction.support.AtomFeedHibernateTransactionManager;
 import org.ict4h.atomfeed.server.service.Event;
 import org.ict4h.atomfeed.server.service.EventService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import us.mn.state.health.lims.hibernate.HibernateUtil;
 
 import static junit.framework.Assert.*;
 import static org.mockito.Mockito.verify;
@@ -37,7 +39,8 @@ public class OpenElisUrlPublisherTest {
     @Before
     public void setUp() {
         initMocks(this);
-        openElisUrlPublisher = new OpenElisUrlPublisher(eventService, "patient", "accession");
+        AtomFeedHibernateTransactionManager transactionManager = new AtomFeedHibernateTransactionManager();
+        openElisUrlPublisher = new OpenElisUrlPublisher(transactionManager, eventService, "patient", "accession");
     }
 
     @Test

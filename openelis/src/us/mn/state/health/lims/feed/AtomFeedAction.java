@@ -21,10 +21,14 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.bahmni.feed.openelis.feed.FeedGeneratorFactory;
-import org.bahmni.feed.openelis.utils.OpenElisConnectionProvider;
+import org.bahmni.feed.openelis.feed.transaction.support.AtomFeedHibernateTransactionManager;
+import org.ict4h.atomfeed.server.repository.jdbc.AllEventRecordsJdbcImpl;
+import org.ict4h.atomfeed.server.repository.jdbc.AllEventRecordsOffsetMarkersJdbcImpl;
+import org.ict4h.atomfeed.server.repository.jdbc.ChunkingEntriesJdbcImpl;
 import org.ict4h.atomfeed.server.service.EventFeedServiceImpl;
 import org.ict4h.atomfeed.server.service.helper.EventFeedServiceHelper;
+import org.ict4h.atomfeed.server.service.helper.ResourceHelper;
+import us.mn.state.health.lims.hibernate.HibernateUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,13 +36,19 @@ import java.io.IOException;
 
 public class AtomFeedAction extends Action {
 
+    private AtomFeedHibernateTransactionManager transactionManager;
     private EventFeedServiceImpl eventFeedService;
     private Logger logger = Logger.getLogger(this.getClass());
 
 
     public AtomFeedAction() {
         super();
-        this.eventFeedService = new EventFeedServiceImpl(new FeedGeneratorFactory().get(new OpenElisConnectionProvider()));
+        this.transactionManager = new AtomFeedHibernateTransactionManager();
+        this.eventFeedService = new EventFeedServiceImpl(new org.ict4h.atomfeed.server.service.feedgenerator.FeedGeneratorFactory().getFeedGenerator(
+                new AllEventRecordsJdbcImpl(transactionManager),
+                new AllEventRecordsOffsetMarkersJdbcImpl(transactionManager),
+                new ChunkingEntriesJdbcImpl(transactionManager),
+                new ResourceHelper()));
     }
 
     @Override
@@ -54,12 +64,12 @@ public class AtomFeedAction extends Action {
 
     public String getRecentFeed(AtomFeedUrlParser parser, String requestUrl) throws IOException {
         String category = parser.getCategory();
-        return EventFeedServiceHelper.getRecentFeed(eventFeedService, requestUrl, category, logger);
+        return EventFeedServiceHelper.getRecentFeed(eventFeedService, requestUrl, category, logger, transactionManager);
     }
 
     public String getEventFeed(AtomFeedUrlParser parser, String requestURL) throws IOException {
         String category = parser.getCategory();
         int feedMarker = parser.getFeedMarker();
-        return EventFeedServiceHelper.getEventFeed(eventFeedService, requestURL, category, feedMarker, logger);
+        return EventFeedServiceHelper.getEventFeed(eventFeedService, requestURL, category, feedMarker, logger, transactionManager);
     }
 }

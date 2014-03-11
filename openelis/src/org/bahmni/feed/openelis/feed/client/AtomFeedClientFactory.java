@@ -17,41 +17,42 @@
 package org.bahmni.feed.openelis.feed.client;
 
 import org.bahmni.feed.openelis.AtomFeedProperties;
-import org.bahmni.feed.openelis.utils.OpenElisConnectionProvider;
-import org.bahmni.webclients.AnonymousAuthenticator;
+import org.bahmni.feed.openelis.feed.transaction.support.AtomFeedHibernateTransactionManager;
 import org.bahmni.webclients.ClientCookies;
-import org.bahmni.webclients.ConnectionDetails;
-import org.bahmni.webclients.HttpClient;
-import org.bahmni.webclients.openmrs.OpenMRSLoginAuthenticator;
-import org.ict4h.atomfeed.client.factory.AtomFeedClientBuilder;
+import org.ict4h.atomfeed.client.repository.AllFeeds;
+import org.ict4h.atomfeed.client.repository.jdbc.AllFailedEventsJdbcImpl;
+import org.ict4h.atomfeed.client.repository.jdbc.AllMarkersJdbcImpl;
 import org.ict4h.atomfeed.client.service.AtomFeedClient;
 import org.ict4h.atomfeed.client.service.EventWorker;
+import org.ict4h.atomfeed.client.service.FeedClient;
 
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.HashMap;
 
 public class AtomFeedClientFactory {
 
-    public AtomFeedClient getFeedClient(AtomFeedProperties atomFeedProperties, String feedName,
+    public FeedClient getFeedClient(AtomFeedProperties atomFeedProperties, String feedName,
                                         EventWorker eventWorker, ClientCookies cookies) {
         String uri = atomFeedProperties.getProperty(feedName);
         try {
-            return new AtomFeedClientBuilder().
-                    forFeedAt(new URI(uri)).
-                    processedBy(eventWorker).
-                    usingConnectionProvider(new OpenElisConnectionProvider()).
-                    with(createAtomFeedClientProperties(atomFeedProperties), cookies).
-                    build();
+
+            AtomFeedHibernateTransactionManager transactionManager = new AtomFeedHibernateTransactionManager();
+            org.ict4h.atomfeed.client.AtomFeedProperties atomFeedClientProperties = createAtomFeedClientProperties(atomFeedProperties);
+            
+            AllFeeds allFeeds = new AllFeeds(atomFeedClientProperties, cookies);
+            AllMarkersJdbcImpl allMarkers = new AllMarkersJdbcImpl(transactionManager);
+            AllFailedEventsJdbcImpl allFailedEvents = new AllFailedEventsJdbcImpl(transactionManager);
+
+            return new AtomFeedClient(allFeeds, allMarkers, allFailedEvents,
+                    atomFeedClientProperties, transactionManager, new URI(uri), eventWorker);
+            
         } catch (URISyntaxException e) {
             throw new RuntimeException(String.format("Is not a valid URI - %s", uri));
         }
     }
 
-    private org.ict4h.atomfeed.client.factory.AtomFeedProperties createAtomFeedClientProperties(AtomFeedProperties atomFeedProperties) {
-        org.ict4h.atomfeed.client.factory.AtomFeedProperties feedProperties = new org.ict4h.atomfeed.client.factory.AtomFeedProperties();
+    private org.ict4h.atomfeed.client.AtomFeedProperties createAtomFeedClientProperties(AtomFeedProperties atomFeedProperties) {
+        org.ict4h.atomfeed.client.AtomFeedProperties feedProperties = new org.ict4h.atomfeed.client.AtomFeedProperties();
         feedProperties.setConnectTimeout(Integer.parseInt(atomFeedProperties.getFeedConnectionTimeout()));
         feedProperties.setReadTimeout(Integer.parseInt(atomFeedProperties.getFeedReplyTimeout()));
         feedProperties.setMaxFailedEvents(Integer.parseInt(atomFeedProperties.getMaxFailedEvents()));

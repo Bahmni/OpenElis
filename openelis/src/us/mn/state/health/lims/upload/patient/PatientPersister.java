@@ -135,7 +135,9 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
             }
         } catch (Exception e) {
             logger.warn(e);
-            if (transaction != null && transaction.isActive()) transaction.rollback();
+            if (transaction != null && transaction.isActive()) { 
+                transaction.rollback();
+            }
 
             return new RowResult<>(csvPatient, e);
         }

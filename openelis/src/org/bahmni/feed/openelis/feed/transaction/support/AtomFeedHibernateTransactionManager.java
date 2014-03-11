@@ -1,0 +1,80 @@
+package org.bahmni.feed.openelis.feed.transaction.support;
+
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.ict4h.atomfeed.jdbc.JdbcConnectionProvider;
+import org.ict4h.atomfeed.transaction.AFTransactionManager;
+import org.ict4h.atomfeed.transaction.AFTransactionWork;
+import us.mn.state.health.lims.hibernate.HibernateUtil;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+
+
+public class AtomFeedHibernateTransactionManager implements AFTransactionManager, JdbcConnectionProvider {
+
+    private enum TxStatus {ONGOING, NEW}
+    
+    @Override
+    public <T> T executeWithTransaction(AFTransactionWork<T> action) throws RuntimeException {
+        TxStatus transactionStatus = null;
+        try {
+            transactionStatus = getTransactionStatus();
+            if (transactionStatus.equals(TxStatus.NEW)) {
+                startTransaction();
+            }
+            T result = action.execute();
+            if (transactionStatus.equals(TxStatus.NEW)) {
+                commit();
+            }
+            return result;
+        } catch (Exception e) {
+            if ((transactionStatus != null) && (transactionStatus.equals(TxStatus.NEW))) { 
+                rollback();
+            }
+            throw new RuntimeException(e);
+        }
+    }
+
+    private TxStatus getTransactionStatus() {
+        Transaction transaction = getCurrentSession().getTransaction();
+        if (transaction != null) {
+            if (transaction.isActive()) {
+                return TxStatus.ONGOING;
+            }
+        }
+        return TxStatus.NEW;
+    }
+
+    @Override
+    public Connection getConnection() throws SQLException {
+        //TODO: ensure that only connection associated with current thread current transaction is given
+        return getCurrentSession().connection();
+    }
+
+    public void startTransaction() {
+        Transaction transaction = getCurrentSession().getTransaction();
+        if (transaction == null || !transaction.isActive()) {
+            getCurrentSession().beginTransaction();
+        }
+    }
+
+    public void commit() {
+        Transaction transaction = getCurrentSession().getTransaction();
+        if (!transaction.wasCommitted()) {
+            transaction.commit();
+        }
+    }
+
+    public void rollback() {
+        Transaction transaction = getCurrentSession().getTransaction();
+        if (!transaction.wasRolledBack()) {
+            transaction.rollback();
+        }
+    }
+
+    private Session getCurrentSession() {
+        return HibernateUtil.getSession();
+    }
+
+}

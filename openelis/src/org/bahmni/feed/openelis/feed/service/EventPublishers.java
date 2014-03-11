@@ -17,30 +17,32 @@
 package org.bahmni.feed.openelis.feed.service;
 
 import org.bahmni.feed.openelis.feed.service.impl.OpenElisUrlPublisher;
-import org.bahmni.feed.openelis.utils.OpenElisConnectionProvider;
+import org.bahmni.feed.openelis.feed.transaction.support.AtomFeedHibernateTransactionManager;
 import org.ict4h.atomfeed.server.repository.jdbc.AllEventRecordsJdbcImpl;
 import org.ict4h.atomfeed.server.service.EventService;
 import org.ict4h.atomfeed.server.service.EventServiceImpl;
+import us.mn.state.health.lims.hibernate.HibernateUtil;
 
 public class EventPublishers {
+    
+    private final AtomFeedHibernateTransactionManager transactionManager;
+
     private static final String PATIENT = "patient";
     private static final String PATIENT_CATEGORY = "patient";
     private static final String ACCESSION = "accession";
     private EventService eventService;
 
     public EventPublishers() {
-        this(new EventServiceImpl(new AllEventRecordsJdbcImpl(new OpenElisConnectionProvider())));
-    }
-
-    public EventPublishers(EventService eventService) {
-        this.eventService = eventService;
+        this.transactionManager = new AtomFeedHibernateTransactionManager();
+        AllEventRecordsJdbcImpl records = new AllEventRecordsJdbcImpl(transactionManager);
+        this.eventService = new EventServiceImpl(records);
     }
 
     public OpenElisUrlPublisher patientPublisher() {
-        return new OpenElisUrlPublisher(eventService, PATIENT_CATEGORY, PATIENT);
+        return new OpenElisUrlPublisher(transactionManager, eventService, PATIENT_CATEGORY, PATIENT);
     }
 
     public OpenElisUrlPublisher accessionPublisher() {
-        return new OpenElisUrlPublisher(eventService, PATIENT_CATEGORY, ACCESSION);
+        return new OpenElisUrlPublisher(transactionManager, eventService, PATIENT_CATEGORY, ACCESSION);
     }
 }

@@ -24,8 +24,8 @@ import org.bahmni.webclients.Authenticator;
 import org.bahmni.webclients.ClientCookies;
 import org.bahmni.webclients.ConnectionDetails;
 import org.bahmni.webclients.HttpClient;
-import org.ict4h.atomfeed.client.service.AtomFeedClient;
 import org.ict4h.atomfeed.client.service.EventWorker;
+import org.ict4h.atomfeed.client.service.FeedClient;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -39,7 +39,7 @@ import java.util.Map;
 
 public abstract class OpenELISFeedReaderJob implements Job {
 
-    protected static Map<Class, AtomFeedClient> atomFeedClients = new HashMap<>();
+    protected static Map<Class, FeedClient> atomFeedClients = new HashMap<>();
     private final Logger logger;
 
     protected OpenELISFeedReaderJob(Logger logger) {
@@ -73,26 +73,26 @@ public abstract class OpenELISFeedReaderJob implements Job {
     protected void processEvents(JobExecutionContext jobExecutionContext) {
         if (atomFeedClients.get(this.getClass()) == null)
             initializeAtomFeedClient();
-        AtomFeedClient atomFeedClient = atomFeedClients.get(this.getClass());
+        FeedClient atomFeedClient = atomFeedClients.get(this.getClass());
         atomFeedClient.processEvents();
     }
 
     protected void processFailedEvents(JobExecutionContext jobExecutionContext) {
         if (atomFeedClients.get(this.getClass()) == null)
             initializeAtomFeedClient();
-        AtomFeedClient atomFeedClient = atomFeedClients.get(this.getClass());
+        FeedClient atomFeedClient = atomFeedClients.get(this.getClass());
         atomFeedClient.processFailedEvents();
     }
 
     private void initializeAtomFeedClient() {
-        AtomFeedClient atomFeedClient = createAtomFeedClient(AtomFeedProperties.getInstance(), new AtomFeedClientFactory());
+        FeedClient atomFeedClient = createAtomFeedClient(AtomFeedProperties.getInstance(), new AtomFeedClientFactory());
 
         if (atomFeedClient != null) {
             atomFeedClients.put(this.getClass(), atomFeedClient);
         }
     }
 
-    private AtomFeedClient createAtomFeedClient(AtomFeedProperties atomFeedProperties, AtomFeedClientFactory atomFeedClientFactory) {
+    private FeedClient createAtomFeedClient(AtomFeedProperties atomFeedProperties, AtomFeedClientFactory atomFeedClientFactory) {
         ConnectionDetails connectionDetails = getConnectionDetails();
         
         String authUri = connectionDetails.getAuthUrl();
