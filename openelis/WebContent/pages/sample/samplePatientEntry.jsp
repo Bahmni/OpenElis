@@ -44,7 +44,7 @@
     boolean allHealthCenter = true;
     request.setAttribute("allHealthCenter",allHealthCenter);
 	String path = request.getContextPath();
-	basePath = request.getScheme() + "://" + request.getServerName() + ":"	+ request.getServerPort() + path + "/";
+	basePath = path + "/";
 	useSTNumber =  FormFields.getInstance().useField(FormFields.Field.StNumber);
 	useMothersName = FormFields.getInstance().useField(FormFields.Field.MothersName);
 	useReferralSiteList = FormFields.getInstance().useField(FormFields.Field.RequesterSiteList);

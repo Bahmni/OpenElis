@@ -21,8 +21,7 @@
 %>
 <%
 	path = request.getContextPath();
-	basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path
-	+ "/";
+	basePath = path + "/";
 	bannerStyle = SystemConfiguration.getInstance().getBannerStyle();
 	languageSwitch = "true".equals(ConfigurationProperties.getInstance().getPropertyValue(Property.languageSwitch));
 %>

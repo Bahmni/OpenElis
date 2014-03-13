@@ -25,7 +25,7 @@
 %>
 <%
 	String path = request.getContextPath();
-	basePath = request.getScheme() + "://" + request.getServerName() + ":"	+ request.getServerPort() + path + "/";
+    basePath = path + "/";
 	
 	HashSet accessMap = (HashSet)request.getSession().getAttribute(IActionConstants.PERMITTED_ACTIONS_MAP);
 	boolean isAdmin = userModuleDAO.isUserAdmin(request);

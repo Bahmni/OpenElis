@@ -96,7 +96,7 @@ String resultConfirm = "";
 %>
 <%
 path = request.getContextPath();
-basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+basePath = path + "/";
 
 if (request.getAttribute(IActionConstants.ALLOW_EDITS_KEY) != null) {
  allowEdits = (String)request.getAttribute(IActionConstants.ALLOW_EDITS_KEY);
@@ -822,17 +822,6 @@ function saveThis(form) {
 if (showpopup == "true") {
     //if  no errors otherwise on page -> go to add test popup
 	var context = '<%= request.getContextPath() %>';
-	var server = '<%= request.getServerName() %>';
-	var port = '<%= request.getServerPort() %>';
-	var scheme = '<%= request.getScheme() %>';
-	
-	
-	var hostStr = scheme + "://" + server;
-	if ( port != 80 && port != 443 )
-	{
-		hostStr = hostStr + ":" + port;
-	}
-	hostStr = hostStr + context;
 
 	// Get the sessionID
 	 var sessionid = '';
@@ -1008,17 +997,6 @@ function linkToParentPopup(button) {
     var analysisId = button.name;
     var accessionNumber = document.forms[0].accessionNumber.value;
 	var context = '<%= request.getContextPath() %>';
-	var server = '<%= request.getServerName() %>';
-	var port = '<%= request.getServerPort() %>';
-	var scheme = '<%= request.getScheme() %>';
-	
-	
-	var hostStr = scheme + "://" + server;
-	if ( port != 80 && port != 443 )
-	{
-		hostStr = hostStr + ":" + port;
-	}
-	hostStr = hostStr + context;
 
 	// Get the sessionID
 	 var sessionid = '';
@@ -1081,17 +1059,6 @@ function resultsEntryHistoryPopup (form, analysisId) {
    
     //if  no errors otherwise on page -> go to add test popup
 	var context = '<%= request.getContextPath() %>';
-	var server = '<%= request.getServerName() %>';
-	var port = '<%= request.getServerPort() %>';
-	var scheme = '<%= request.getScheme() %>';
-	
-	
-	var hostStr = scheme + "://" + server;
-	if ( port != 80 && port != 443 )
-	{
-		hostStr = hostStr + ":" + port;
-	}
-	hostStr = hostStr + context;
 
 	// Get the sessionID
 	 var sessionid = '';

@@ -80,7 +80,7 @@ public class UploadDashboardAction extends BaseAction {
         String errorFileName = uploadStatus.getErrorFileName();
         if (!StringUtils.isEmpty(errorFileName)) {
             String name = FilenameUtils.getName(errorFileName);
-            String urlForErrorFile = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + uploadedFilesDirectory + name;
+            String urlForErrorFile = "/" + uploadedFilesDirectory + name;
             uploadStatus.setErrorFileName(urlForErrorFile);
         }
     }

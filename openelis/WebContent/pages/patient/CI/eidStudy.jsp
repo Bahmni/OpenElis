@@ -14,7 +14,7 @@
 <bean:define id="formName"  value='<%=(String) request.getAttribute(IActionConstants.FORM_NAME)%>' />
 <%
 String path = request.getContextPath();
-String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+String basePath = path + "/";
 %>
 
 <script type="text/javascript" language="JavaScript1.2">

@@ -42,7 +42,7 @@ if (QaEventLineListingRoutingSwitchSessionHandler.isSwitchOn(IActionConstants.QA
 java.util.Locale locale = (java.util.Locale)request.getSession().getAttribute(org.apache.struts.Globals.LOCALE_KEY);
 				
 path = request.getContextPath();
-basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+basePath = path + "/";
 					
 %>
 <script language="JavaScript1.2">

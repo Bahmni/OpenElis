@@ -33,7 +33,7 @@ String fullScreenSection = "";
 %>
 <% 
 path = request.getContextPath();
-basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+basePath = path + "/";
 locale = (java.util.Locale)request.getSession().getAttribute(org.apache.struts.Globals.LOCALE_KEY);
 
 String resultsEntryForCircularReferenceDisabled = IActionConstants.FALSE;

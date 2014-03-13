@@ -19,8 +19,7 @@
  %>
 <%
 	String path = request.getContextPath();
-	basePath = request.getScheme() + "://" + request.getServerName() + ":"
-			+ request.getServerPort() + path + "/";
+    basePath = path + "/";
 
 %>
 

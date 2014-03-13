@@ -43,7 +43,7 @@
  						request.getAttribute(IActionConstants.ACCESSION_SEARCH_WITH_PATIENT) == IActionConstants.TRUE);
 	accessionNumberValidator = new AccessionNumberValidatorFactory().getValidator();
 	String path = request.getContextPath();
-	basePath = request.getScheme() + "://" + request.getServerName() + ":"	+ request.getServerPort() + path + "/";
+    basePath = path + "/";
 	supportfirstNameFirst = FormFields.getInstance().useField(Field.FirstNameFirst);
     supportHealthCenter = FormFields.getInstance().useField(Field.HealthCenter);
 

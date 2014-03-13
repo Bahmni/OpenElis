@@ -949,15 +949,6 @@ function checkValidCityZipCodeCombination() {
 function loadPDF() {
     var field = document.forms[0].selectedAccessionNumberOne.value;
 	var context = '<%= request.getContextPath() %>';
-	var server = '<%= request.getServerName() %>';
-	var port = '<%= request.getServerPort() %>';
-	var scheme = '<%= request.getScheme() %>';	
-	var hostStr = scheme + "://" + server;
-	if (port != 80 && port != 443)
-	{
-		hostStr = hostStr + ":" + port;
-	}
-	hostStr = hostStr + context;
 	var href = context+"/ViewPDF.do?accessionNumber="+field;
 	createPopup(href, 880, 500);
 }

@@ -14,7 +14,7 @@ String basePath = "";
 %>
 <%
 path = request.getContextPath();
-basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+basePath = path + "/";
 String saveDisabled = (String)request.getAttribute(IActionConstants.SAVE_DISABLED);
 %>
 

@@ -24,8 +24,7 @@
 %>
 <%
 	path = request.getContextPath();
-	basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path
-			+ "/";
+	basePath = path + "/";
 	useCollectionDate = FormFields.getInstance().useField(Field.CollectionDate);
 	useInitialSampleCondition = FormFields.getInstance().useField(Field.InitialSampleCondition);
 	useCollector = FormFields.getInstance().useField(Field.SampleEntrySampleCollector);

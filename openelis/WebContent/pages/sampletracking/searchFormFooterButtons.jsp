@@ -252,15 +252,6 @@ function moreSamplePopup(form)
    var field13 = $("selectedSpecimenOrIsolate"); 
    
 	var context = '<%= request.getContextPath() %>';
-	var server = '<%= request.getServerName() %>';
-	var port = '<%= request.getServerPort() %>';
-	var scheme = '<%= request.getScheme() %>';	
-	var hostStr = scheme + "://" + server;
-	if (port != 80 && port != 443)
-	{
-		hostStr = hostStr + ":" + port;
-	}
-	hostStr = hostStr + context;
 
 	// Get the sessionID
 	var sessionid = '';
@@ -297,16 +288,6 @@ function clearForm (form) {
    
     //if  no errors otherwise on page -> go to add test popup
 	var context = '<%= request.getContextPath() %>';
-	var server = '<%= request.getServerName() %>';
-	var port = '<%= request.getServerPort() %>';
-	var scheme = '<%= request.getScheme() %>';	
-	
-	var hostStr = scheme + "://" + server;
-	if ( port != 80 && port != 443 )
-	{
-		hostStr = hostStr + ":" + port;
-	}
-	hostStr = hostStr + context;
 
 	// Get the sessionID
 	 var sessionid = '';

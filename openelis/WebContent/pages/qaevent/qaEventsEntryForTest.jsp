@@ -49,7 +49,7 @@ String externalNotesHeading = "";
 %>
 <%
 path = request.getContextPath();
-basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+basePath = path + "/";
 
 if (request.getAttribute(IActionConstants.ALLOW_EDITS_KEY) != null) {
  allowEdits = (String)request.getAttribute(IActionConstants.ALLOW_EDITS_KEY);
@@ -86,15 +86,6 @@ function myPopupNotesForTest(form, actionId, externalNotesDisabled) {
 function popupAddEventsToTest(form) {
   	var myfield = document.getElementById("accessionNumber");
 	var context = '<%= request.getContextPath() %>';
-	var server = '<%= request.getServerName() %>';
-	var port = '<%= request.getServerPort() %>';
-	var scheme = '<%= request.getScheme() %>';	
-	var hostStr = scheme + "://" + server;
-	if (port != 80 && port != 443)
-	{
-		hostStr = hostStr + ":" + port;
-	}
-	hostStr = hostStr + context;
 
 	// Get the sessionID
 	var sessionid = '';
@@ -119,15 +110,6 @@ function popupAddEventsToTest(form) {
 function popupAddActionsToTest(form) {
    	var myfield = document.getElementById("accessionNumber");
 	var context = '<%= request.getContextPath() %>';
-	var server = '<%= request.getServerName() %>';
-	var port = '<%= request.getServerPort() %>';
-	var scheme = '<%= request.getScheme() %>';	
-	var hostStr = scheme + "://" + server;
-	if (port != 80 && port != 443)
-	{
-		hostStr = hostStr + ":" + port;
-	}
-	hostStr = hostStr + context;
 
 	// Get the sessionID
 	var sessionid = '';

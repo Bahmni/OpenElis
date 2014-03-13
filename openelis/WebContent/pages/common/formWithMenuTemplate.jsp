@@ -20,7 +20,7 @@ String basePath = "";
 %>
 <%
 path = request.getContextPath();
-basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+basePath = path + "/";
 
 
 String form = (String)request.getAttribute(IActionConstants.FORM_NAME);

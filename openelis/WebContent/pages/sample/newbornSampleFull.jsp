@@ -21,7 +21,7 @@
 	String dot_dob = us.mn.state.health.lims.common.util.resources.ResourceLocator.getInstance().getMessageResources().getMessage(locale,"newborn.sample.error.dot.dob");
 	
 	String path = request.getContextPath();
-	String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+	String basePath = path + "/";
 
 	String errorSelectCombo = us.mn.state.health.lims.common.util.resources.ResourceLocator.getInstance().getMessageResources().getMessage(locale,"humansampleone.cityStateZipPopup.selectone.error");
 	String gramKey = us.mn.state.health.lims.common.util.resources.ResourceLocator.getInstance().getMessageResources().getMessage(locale,"page.default.gram.option");

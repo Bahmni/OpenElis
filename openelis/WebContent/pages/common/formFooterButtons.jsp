@@ -19,7 +19,7 @@ String basePath = "";
 <%--bugzilla 1908 changed some disabled values for Vietnam tomcat/linux--%>
 	<%
 	       path = request.getContextPath();
-           basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+           basePath = path + "/";
 
 		    String previousDisabled = "false";
             String nextDisabled = "false";

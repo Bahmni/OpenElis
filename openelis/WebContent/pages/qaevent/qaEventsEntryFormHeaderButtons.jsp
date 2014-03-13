@@ -96,7 +96,7 @@ errorMessageStatusOfSample = us.mn.state.health.lims.common.util.resources.Resou
 					"error.invalid.sample.status");
 					
 path = request.getContextPath();
-basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+basePath = path + "/";
 					
 //bugzilla 2501
 String previousDisabled = "false";

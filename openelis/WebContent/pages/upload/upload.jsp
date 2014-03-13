@@ -16,7 +16,7 @@ String basePath = "";
 
 <%
 path = request.getContextPath();
-basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+basePath = path + "/";
 %>
 
 <link rel="stylesheet" type="text/css" href="<%=basePath%>css/slickgrid/examples.css" />

@@ -35,7 +35,7 @@ String noResultFound = "";
 
 <%
 path = request.getContextPath();
-basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+basePath = path + "/";
 
 if (request.getAttribute(IActionConstants.ALLOW_EDITS_KEY) != null) {
  allowEdits = (String)request.getAttribute(IActionConstants.ALLOW_EDITS_KEY);
@@ -88,17 +88,6 @@ function resultsEntryHistoryBySamplePopup (form, accessionNumber) {
    
     //if  no errors otherwise on page -> go to add test popup
 	var context = '<%= request.getContextPath() %>';
-	var server = '<%= request.getServerName() %>';
-	var port = '<%= request.getServerPort() %>';
-	var scheme = '<%= request.getScheme() %>';
-	
-	
-	var hostStr = scheme + "://" + server;
-	if ( port != 80 && port != 443 )
-	{
-		hostStr = hostStr + ":" + port;
-	}
-	hostStr = hostStr + context;
 
 	// Get the sessionID
 	 var sessionid = '';
@@ -252,17 +241,6 @@ function previewReport(accessionNumber) {
     
    var form = document.forms[0];
    var context = '<%= request.getContextPath() %>';
-   var server = '<%= request.getServerName() %>';
-   var port = '<%= request.getServerPort() %>';
-   var scheme = '<%= request.getScheme() %>';
-	
-	
-   var hostStr = scheme + "://" + server;
-   if ( port != 80 && port != 443 )
-	{
-		hostStr = hostStr + ":" + port;
-	}
-	hostStr = hostStr + context;
 
 	// Get the sessionID
 	 var sessionid = '';

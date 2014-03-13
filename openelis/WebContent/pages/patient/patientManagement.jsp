@@ -57,8 +57,7 @@
     }
 
     String path = request.getContextPath();
-	basePath = request.getScheme() + "://" + request.getServerName() + ":"
-			+ request.getServerPort() + path + "/";
+    basePath = path + "/";
 	supportSTNumber = FormFields.getInstance().useField(Field.StNumber);
 	supportAKA = FormFields.getInstance().useField(Field.AKA);
 	supportMothersName = FormFields.getInstance().useField(Field.MothersName);

@@ -130,15 +130,6 @@ function addTestPopup(form)
 
 	var myfield = document.getElementById("accessionNumber");
 	var context = '<%= request.getContextPath() %>';
-	var server = '<%= request.getServerName() %>';
-	var port = '<%= request.getServerPort() %>';
-	var scheme = '<%= request.getScheme() %>';	
-	var hostStr = scheme + "://" + server;
-	if (port != 80 && port != 443)
-	{
-		hostStr = hostStr + ":" + port;
-	}
-	hostStr = hostStr + context;
 
 	// Get the sessionID
 	var sessionid = '';
@@ -166,15 +157,6 @@ function editSamplePopup(form)
 
 	var myfield = document.getElementById("accessionNumber");
 	var context = '<%= request.getContextPath() %>';
-	var server = '<%= request.getServerName() %>';
-	var port = '<%= request.getServerPort() %>';
-	var scheme = '<%= request.getScheme() %>';	
-	var hostStr = scheme + "://" + server;
-	if (port != 80 && port != 443)
-	{
-		hostStr = hostStr + ":" + port;
-	}
-	hostStr = hostStr + context;
 
 	// Get the sessionID
 	var sessionid = '';
