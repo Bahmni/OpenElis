@@ -190,7 +190,7 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
 
             }
 
-            publishFinalizedResultAccessionNumber(newResults, request);
+
 
             for (ResultSet resultSet : modifiedResults) {
                 resultDAO.updateData(resultSet.result);
@@ -235,7 +235,7 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
 
             }
 
-            publishFinalizedResultAccessionNumber(modifiedResults, request);
+
 
             for (Analysis analysis : modifiedAnalysis) {
                 analysisDAO.updateData(analysis);
@@ -246,6 +246,9 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
             setTestReflexes();
 
             setSampleStatus();
+
+            publishFinalizedResultAccessionNumber(newResults, request);
+            publishFinalizedResultAccessionNumber(modifiedResults, request);
 
             for (IResultUpdate updater : updaters) {
                 updater.transactionalUpdate(this);

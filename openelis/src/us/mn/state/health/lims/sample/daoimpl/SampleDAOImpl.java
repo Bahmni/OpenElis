@@ -197,8 +197,8 @@ public class SampleDAOImpl extends BaseDAOImpl implements SampleDAO {
 				Query query = HibernateUtil.getSession().createQuery(sql);
 				query.setParameter("sampleId", Integer.parseInt(samp.getId()));
 				List list = query.list();
-				HibernateUtil.getSession().flush();
-				HibernateUtil.getSession().clear();
+//				HibernateUtil.getSession().flush();
+//				HibernateUtil.getSession().clear();
 
 				samp.setSampleProjects(list);
 				// set the display date for RECEIVED_DATE
@@ -363,8 +363,8 @@ public class SampleDAOImpl extends BaseDAOImpl implements SampleDAO {
 		Sample samp = null;
 		try {
 			samp = (Sample) HibernateUtil.getSession().get(Sample.class, idString);
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
+//			HibernateUtil.getSession().flush();
+//			HibernateUtil.getSession().clear();
 		} catch (Exception e) {
 			//bugzilla 2154
 			LogEvent.logError("SampleDAOImpl","readSample()",e.toString());
