@@ -29,6 +29,7 @@ import org.bahmni.feed.openelis.feed.mapper.encounter.OpenMRSEncounterMapper;
 import org.bahmni.feed.openelis.utils.AuditingService;
 import org.bahmni.webclients.HttpClient;
 import org.ict4h.atomfeed.client.domain.Event;
+import org.joda.time.DateTime;
 import us.mn.state.health.lims.address.valueholder.OrganizationAddress;
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
@@ -353,7 +354,9 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         // TODO : Mujir - remove this hardcoding???? Read this from the event????
         // TODO: Aarthy - Send encounter Date Time as part of event
         sample.setEnteredDate(new java.util.Date());
-        sample.setReceivedDate(nowAsSqlDate);
+        Date receivedDate =new Date(new DateTime(nowAsSqlDate).withTime(0,0,0,0).getMillis());
+        sample.setReceivedDate(receivedDate);
+
 //        if (useReceiveDateForCollectionDate) {
 //            sample.setCollectionDateForDisplay(collectionDateFromRecieveDate);
 //        }
