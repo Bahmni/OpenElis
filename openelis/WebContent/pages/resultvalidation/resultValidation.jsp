@@ -43,7 +43,7 @@
 
 	String basePath = "";
 	String path = request.getContextPath();
-	basePath = path + "/"
+	basePath = path + "/";
 	currentAccessionNumber="";
 	accessionNumberValidator = new AccessionNumberValidatorFactory().getValidator();
 	searchTerm = request.getParameter("searchTerm");
