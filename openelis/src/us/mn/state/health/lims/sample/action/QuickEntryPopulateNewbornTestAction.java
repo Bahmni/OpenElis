@@ -15,6 +15,7 @@
 */
 package us.mn.state.health.lims.sample.action;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -106,6 +107,8 @@ public class QuickEntryPopulateNewbornTestAction extends BaseAction {
 		SystemConfiguration sysConfig = SystemConfiguration.getInstance();
 		
 		sample.setReceivedDateForDisplay(dateAsText);
+        sample.setReceivedTimestamp(new Timestamp(today.getTime()));
+
 		sample.setEnteredDateForDisplay(dateAsText);
         sample.setEnteredDate(new java.util.Date());
 		sample.setReferredCultureFlag(sysConfig.getQuickEntryDefaultReferredCultureFlag());

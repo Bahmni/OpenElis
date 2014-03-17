@@ -30,6 +30,7 @@ import org.apache.commons.validator.GenericValidator;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 
+import org.hibernate.Session;
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
 import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
 import us.mn.state.health.lims.common.action.IActionConstants;
@@ -162,11 +163,12 @@ public class SampleDAOImpl extends BaseDAOImpl implements SampleDAO {
 		}
 
 		try {
-			HibernateUtil.getSession().merge(sample);
-			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();
-			HibernateUtil.getSession().evict(sample);
-			HibernateUtil.getSession().refresh(sample);
+            Session session = HibernateUtil.getSession();
+            session.merge(sample);
+			session.flush();
+			session.clear();
+			session.evict(sample);
+			session.refresh(sample);
 		} catch (Exception e) {
 			//bugzilla 2154
 			LogEvent.logError("SampleDAOImpl","updateData()",e.toString());
@@ -282,25 +284,12 @@ public class SampleDAOImpl extends BaseDAOImpl implements SampleDAO {
 			// set the display dates for ENTERED_DATE, RECEIVED_DATE,
 			// COLLECTION_DATE, RELEASED_DATE, TRANSMISSION_DATE
 			for (int i = 0; i < samples.size(); i++) {
-				// System.out.println("Getallsamples 3");
 				samp = (Sample) samples.get(i);
-				samp.setEnteredDateForDisplay(DateUtil
-						.convertSqlDateToStringDate(new java.sql.Date(samp.getEnteredDate().getTime()),
-                                locale));
-				samp.setReceivedDateForDisplay(DateUtil
-						.convertSqlDateToStringDate(samp.getReceivedDate(),
-								locale));
-				// System.out.println("Getallsamples 4");
-				samp.setCollectionDateForDisplay(DateUtil
-						.convertTimestampToStringDate(samp.getCollectionDate(),
-								locale));
-				// System.out.println("Getallsamples 5");
-				samp.setTransmissionDateForDisplay(DateUtil
-						.convertSqlDateToStringDate(samp.getTransmissionDate(),
-								locale));
-				samp.setReleasedDateForDisplay(DateUtil
-						.convertSqlDateToStringDate(samp.getReleasedDate(),
-								locale));
+				samp.setEnteredDateForDisplay(DateUtil.convertSqlDateToStringDate(new java.sql.Date(samp.getEnteredDate().getTime()), locale));
+				samp.setReceivedDateForDisplay(DateUtil.convertSqlDateToStringDate(samp.getReceivedDate(), locale));
+				samp.setCollectionDateForDisplay(DateUtil.convertTimestampToStringDate(samp.getCollectionDate(), locale));
+				samp.setTransmissionDateForDisplay(DateUtil.convertSqlDateToStringDate(samp.getTransmissionDate(), locale));
+				samp.setReleasedDateForDisplay(DateUtil.convertSqlDateToStringDate(samp.getReleasedDate(), locale));
 			}
 		} catch (Exception e) {
 			//bugzilla 2154

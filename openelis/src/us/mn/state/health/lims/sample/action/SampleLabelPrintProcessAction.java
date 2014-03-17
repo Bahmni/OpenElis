@@ -39,6 +39,7 @@ import us.mn.state.health.lims.sample.valueholder.Sample;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.sql.Timestamp;
 import java.util.*;
 
 /**
@@ -106,12 +107,13 @@ public class SampleLabelPrintProcessAction extends BaseAction {
 		SampleDAO sampleDAO = new SampleDAOImpl();
 		Sample sample = new Sample();
 		Date today = Calendar.getInstance().getTime();
-		Locale locale = (Locale) request.getSession().getAttribute(
-		"org.apache.struts.action.LOCALE");
+		Locale locale = (Locale) request.getSession().getAttribute("org.apache.struts.action.LOCALE");
 
 		String dateAsText = DateUtil.formatDateAsText(today, locale);
 
 		sample.setReceivedDateForDisplay(dateAsText);
+        sample.setReceivedTimestamp(new Timestamp(today.getTime()));
+
 		sample.setEnteredDateForDisplay(dateAsText);
         sample.setEnteredDate(new java.util.Date());
 //		bgm - bugzilla 1586 remove setting collection date here in quick entry.

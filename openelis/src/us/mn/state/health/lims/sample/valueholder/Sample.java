@@ -292,7 +292,6 @@ public class Sample extends EnumValueItemImpl {
 
 	public void setReceivedDateForDisplay(String receivedDateForDisplay) {
 		this.receivedDateForDisplay = receivedDateForDisplay;
-		this.receivedTimestamp =  DateUtil.convertStringDateToTruncatedTimestamp(receivedDateForDisplay);
 	}
 
 	public String getReleasedDateForDisplay() {

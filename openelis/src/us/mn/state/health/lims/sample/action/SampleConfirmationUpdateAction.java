@@ -34,6 +34,8 @@ import us.mn.state.health.lims.common.formfields.FormFields;
 import us.mn.state.health.lims.common.formfields.FormFields.Field;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.StringUtil;
+import us.mn.state.health.lims.common.util.SystemConfiguration;
+import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 import us.mn.state.health.lims.note.dao.NoteDAO;
 import us.mn.state.health.lims.note.daoimpl.NoteDAOImpl;
 import us.mn.state.health.lims.note.util.NoteUtil;
@@ -86,8 +88,10 @@ import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleDAOImpl;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * The SampleEntryAction class represents the initial Action for the SampleEntry
@@ -244,7 +248,12 @@ public class SampleConfirmationUpdateAction extends BaseSampleEntryAction {
 
 		sample = new Sample();
 		sample.setAccessionNumber(accessionNumber);
-		sample.setReceivedDateForDisplay(recievedDate);
+
+        sample.setReceivedDateForDisplay(recievedDate);
+        Locale locale = SystemConfiguration.getInstance().getDefaultLocale();
+        String datePattern = ResourceLocator.getInstance().getMessageResources().getMessage(locale, "date.format.formatKey");
+        sample.setReceivedTimestamp(DateUtil.convertStringDateToTimestampWithPatternNoLocale(recievedDate, datePattern));
+
 		sample.setCollectionDateForDisplay(recievedDate); //note there really is no collection date but other code thinks there is
 		sample.setSysUserId(currentUserId);
 		sample.setDomain("H");

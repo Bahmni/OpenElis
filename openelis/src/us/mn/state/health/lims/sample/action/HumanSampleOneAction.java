@@ -15,6 +15,7 @@
 */
 package us.mn.state.health.lims.sample.action;
 
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -79,12 +80,13 @@ public class HumanSampleOneAction extends BaseAction {
 		// this is a new sample
 		// default received date and entered date to today's date
 		Date today = Calendar.getInstance().getTime();
-		Locale locale = (Locale) request.getSession().getAttribute(
-				"org.apache.struts.action.LOCALE");
+		Locale locale = (Locale) request.getSession().getAttribute("org.apache.struts.action.LOCALE");
 
 		String dateAsText = DateUtil.formatDateAsText(today, locale);
 
 		sample.setReceivedDateForDisplay(dateAsText);
+		sample.setReceivedTimestamp(new Timestamp(today.getTime()));
+
 		sample.setEnteredDateForDisplay(dateAsText);
         sample.setEnteredDate(new java.util.Date());
 

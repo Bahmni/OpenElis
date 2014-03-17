@@ -38,6 +38,7 @@ import us.mn.state.health.lims.common.provider.validation.QuickEntrySampleTypeVa
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
+import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 import us.mn.state.health.lims.common.util.validator.ActionError;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
@@ -64,6 +65,7 @@ import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSample;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.sql.Timestamp;
 import java.util.*;
 
 /**
@@ -169,16 +171,17 @@ public class QuickEntryUpdateAction extends BatchSampleProcessingBaseAction {
 					}
 
 					sample.setAccessionNumber((String) accessionNumbers.get(j));
-					sample.setStatus(SystemConfiguration.getInstance()
-							.getSampleStatusQuickEntryComplete());
+					sample.setStatus(SystemConfiguration.getInstance().getSampleStatusQuickEntryComplete());
+
 					sample.setReceivedDateForDisplay(receivedDate);
+                    Locale locale = (Locale) request.getSession().getAttribute("org.apache.struts.action.LOCALE");
+                    String datePattern = ResourceLocator.getInstance().getMessageResources().getMessage(locale, "date.format.formatKey");
+                    sample.setReceivedTimestamp(DateUtil.convertStringDateToTimestampWithPatternNoLocale(receivedDate, datePattern));
+
 					sample.setCollectionTimeForDisplay("00:00");
 					// Set entered date to today's date
 					Date today = Calendar.getInstance().getTime();
-					Locale locale = (Locale) request.getSession().getAttribute(
-							"org.apache.struts.action.LOCALE");
-					String dateAsText = DateUtil.formatDateAsText(today,
-							locale);
+					String dateAsText = DateUtil.formatDateAsText(today, locale);
 					sample.setEnteredDateForDisplay(dateAsText);
                     sample.setEnteredDate(new java.util.Date());
 					

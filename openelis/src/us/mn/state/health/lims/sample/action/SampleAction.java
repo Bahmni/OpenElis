@@ -15,6 +15,7 @@
 */
 package us.mn.state.health.lims.sample.action;
 
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -109,6 +110,8 @@ public class SampleAction extends BaseAction {
 			String dateAsText = DateUtil.formatDateAsText(today, locale);
 
 			sample.setReceivedDateForDisplay(dateAsText);
+            sample.setReceivedTimestamp(new Timestamp(today.getTime()));
+
 			sample.setEnteredDateForDisplay(dateAsText);
             sample.setEnteredDate(new java.util.Date());
 

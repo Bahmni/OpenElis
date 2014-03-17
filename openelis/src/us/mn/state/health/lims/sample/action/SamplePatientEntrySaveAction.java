@@ -44,6 +44,7 @@ import us.mn.state.health.lims.common.util.ConfigurationProperties;
 import us.mn.state.health.lims.common.util.ConfigurationProperties.Property;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
+import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 import us.mn.state.health.lims.common.util.validator.ActionError;
 import us.mn.state.health.lims.laborder.dao.LabOrderTypeDAO;
 import us.mn.state.health.lims.laborder.daoimpl.LabOrderTypeDAOImpl;
@@ -83,6 +84,7 @@ import us.mn.state.health.lims.upload.action.AddSampleService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Timestamp;
 import java.util.*;
 
 import static org.apache.commons.validator.GenericValidator.isBlankOrNull;
@@ -519,6 +521,10 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 			sample.setReceivedTimestamp(DateUtil.convertStringDateToTimestamp(receivedDate));
 		} else {
 			sample.setReceivedDateForDisplay(receivedDate);
+
+            Locale locale = SystemConfiguration.getInstance().getDefaultLocale();
+            String datePattern = ResourceLocator.getInstance().getMessageResources().getMessage(locale, "date.format.formatKey");
+            sample.setReceivedTimestamp(DateUtil.convertStringDateToTimestampWithPatternNoLocale(receivedDate, datePattern));
 		}
 		if (useReceiveDateForCollectionDate) {
 			sample.setCollectionDateForDisplay(collectionDateFromRecieveDate);
