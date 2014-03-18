@@ -31,7 +31,6 @@
 <bean:define id="pagingSearch" name='<%=formName%>' property="paging.searchTermToPage" type="List<IdValuePair>" /> 
 
 <bean:size id="resultCount" name="results" />
-
 <%!
 	boolean showAccessionNumber = false;
 	String currentAccessionNumber = "";
@@ -594,7 +593,7 @@ function enableOnlyForRemark(index, resultType, isReferredOut) {
 	</logic:equal>
 </Table>
 <div class="btn-block">
-   <logic:notEqual name="resultCount" value="0">
+    <logic:notEqual name="resultCount" value="0">
 		<html:hidden styleId="currentPageID" name="<%=formName%>" property="paging.currentPage"/>
 		<bean:define id="total" name="<%=formName%>" property="paging.totalPages"/>
 		<bean:define id="currentPage" name="<%=formName%>" property="paging.currentPage"/>
@@ -614,4 +613,15 @@ function enableOnlyForRemark(index, resultType, isReferredOut) {
 		<bean:write name="<%=formName%>" property="paging.currentPage"/> of
 		<bean:write name="<%=formName%>" property="paging.totalPages"/>
 	</logic:notEqual>
+</div>
+<div>
+    <bean:define id="capture" name="<%=formName%>" property="canCaptureAccessionNotes"/>
+    <logic:notEqual name="resultCount" value="0">
+        <%if (Boolean.TRUE.equals(capture)) {%>
+        <div>
+            <bean:message key="note.accession"/>:
+            <html:textarea name="<%=formName%>" property="accessionNotes"/>
+        </div>
+        <% } %>
+    </logic:notEqual>
 </div>

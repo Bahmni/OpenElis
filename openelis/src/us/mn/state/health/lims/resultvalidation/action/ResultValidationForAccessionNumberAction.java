@@ -16,6 +16,7 @@
 
 package us.mn.state.health.lims.resultvalidation.action;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -43,10 +44,8 @@ public class ResultValidationForAccessionNumberAction extends BaseResultValidati
 
         List<AnalysisItem> resultList = new ResultsValidationUtility().getResultValidationListByAccessionNumber(
                 getToBeValidatedStatuses(), accessionNumber);
-
         paging.setDatabaseResults(request, dynaForm, resultList);
-
+        PropertyUtils.setProperty(dynaForm, "canCaptureAccessionNotes", Boolean.TRUE);
         return mapping.findForward(FWD_SUCCESS);
     }
-
 }
