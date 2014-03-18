@@ -3,8 +3,9 @@ OpenElis
 
 forked from OpenElis_v3.1_r2013_02_21 branch in svn
 
-`ant dist`  Creates OpenELIS War
-`ant vagrant-deploy` Create OpenELIS War and deploys it to your vagrant's tomcat
+*To build OpenElis run*
+* `ant dist`  Creates OpenELIS War
+* `ant vagrant-deploy` Create OpenELIS War and deploys it to your vagrant's tomcat
 
 Technical issues with the codebase
 ======================================
