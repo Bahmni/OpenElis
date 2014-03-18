@@ -123,6 +123,19 @@
         </exec>
     </target>
 
+    <target name="vagrant-deploy" depends="dist">
+
+        <condition property="script_extension" value="sh" else="bat">
+            <os family="unix" />
+        </condition>
+
+        <echo message="Deploying OpenElis.war to Vagrant Tomcat"/>
+        <exec executable="${basedir}/scripts/vagrant-deploy.${script_extension}" failonerror="true">
+            <arg line="${basedir} ${dist}/openelis.war"/>
+        </exec>
+    </target>
+
+
     <target name="clean">
         <delete dir="${target}"/>
         <delete dir="${dist}"/>
