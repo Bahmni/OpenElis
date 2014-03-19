@@ -74,7 +74,10 @@ import java.util.*;
 
 public class ResultsValidationUtility {
 
-	public enum TestSectionType {
+    public static final String SAMPLE_TABLE_NAME = "SAMPLE";
+    public static final String ACCESSION_NOTE_SUBJECT = "Accession Note";
+
+    public enum TestSectionType {
 		UNKNOWN, IMMUNOLOGY, HEMATOLOGY, BIOCHEMISTRY, SEROLOGY, VIROLOGY;
 	}
 
@@ -852,11 +855,10 @@ public class ResultsValidationUtility {
 		return test.getId();
 	}
 
-    public String getAccessionNotes(String accessionNumber) {
+    public List<Note> getAccessionNotes(String accessionNumber) {
         Sample sample = sampleDAO.getSampleByAccessionNumber(accessionNumber);
-        List<Note> notes = noteDAO.getNoteByRefIAndRefTableAndSubject(sample.getId(), NoteUtil.getTableReferenceId("SAMPLE"), "Accession Note");
-        if(notes!=null && notes.size()>0)
-            return notes.get(0).getText();
-        return null;
+        String tableReferenceId = NoteUtil.getTableReferenceId(SAMPLE_TABLE_NAME);
+        List<Note> notes = noteDAO.getNoteByRefIAndRefTableAndSubject(sample.getId(), tableReferenceId, ACCESSION_NOTE_SUBJECT);
+        return notes;
     }
 }

@@ -21,6 +21,7 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.note.valueholder.Note;
 import us.mn.state.health.lims.resultvalidation.action.util.ResultValidationPaging;
 import us.mn.state.health.lims.resultvalidation.bean.AnalysisItem;
 import us.mn.state.health.lims.resultvalidation.util.ResultsValidationUtility;
@@ -44,9 +45,9 @@ public class ResultValidationForAccessionNumberAction extends BaseResultValidati
         setRequestType(BaseResultValidationAction.VALIDATION_BY_ACCESSION_NUMBER); // this sets the page title/subtitle
         List<AnalysisItem> resultList = resultsValidationUtility.getResultValidationListByAccessionNumber(getToBeValidatedStatuses(), accessionNumber);
         paging.setDatabaseResults(request, dynaForm, resultList);
-        String accessionNotes = resultsValidationUtility.getAccessionNotes(accessionNumber);
+        List<Note> accessionNotes = resultsValidationUtility.getAccessionNotes(accessionNumber);
 
-        PropertyUtils.setProperty(dynaForm, "accessionNotes", accessionNotes);
+        PropertyUtils.setProperty(dynaForm, "savedAccessionNotes", accessionNotes);
         PropertyUtils.setProperty(dynaForm, "canCaptureAccessionNotes", Boolean.TRUE);
 
         return mapping.findForward(FWD_SUCCESS);

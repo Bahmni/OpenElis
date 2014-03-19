@@ -326,7 +326,10 @@ public class NoteDAOImpl extends BaseDAOImpl implements NoteDAO {
     @SuppressWarnings("unchecked")
 	@Override
 	public List<Note> getNoteByRefIAndRefTableAndSubject(String refId, String table_id, String subject) throws LIMSRuntimeException {
-		String sql = "FROM Note n where n.referenceId = :refId and n.referenceTableId = :tableId and  n.subject = :subject";
+		String sql = "FROM Note n where n.referenceId = :refId " +
+                "and n.referenceTableId = :tableId " +
+                "and n.subject = :subject " +
+                "order by n.lastupdated desc";
 
 		try{
 			Query query = HibernateUtil.getSession().createQuery(sql);

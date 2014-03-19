@@ -310,6 +310,7 @@
             <form-property name="testSection" type="java.lang.String" initial=""/>
             <form-property name="testName" type="java.lang.String" initial=""/>
             <form-property name="accessionNotes" type="java.lang.String" initial=""/>
+            <form-property name="savedAccessionNotes" type="java.util.List"/>
             <form-property name="canCaptureAccessionNotes" type="java.lang.Boolean" initial=""/>
         </form-bean>
 

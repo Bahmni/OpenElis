@@ -40,6 +40,7 @@ import us.mn.state.health.lims.result.daoimpl.ResultDAOImpl;
 import us.mn.state.health.lims.result.valueholder.Result;
 import us.mn.state.health.lims.resultvalidation.action.util.ResultValidationPaging;
 import us.mn.state.health.lims.resultvalidation.bean.AnalysisItem;
+import us.mn.state.health.lims.resultvalidation.util.ResultsValidationUtility;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
 import us.mn.state.health.lims.sample.valueholder.Sample;
@@ -82,7 +83,6 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 
 	private static final String RESULT_TYPE = "I";
 	private static final String RESULT_SUBJECT = "Result Note";
-	private static final String ACCESSION_SUBJECT = "Accession Note";
 
     @Override
 	protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
@@ -169,9 +169,9 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
         if(shouldSaveAccessionNotes(accessionNotes, referer)){
             Note note = new Note();
             note.setReferenceId(sampleDAO.getSampleByAccessionNumber(accessionNumber).getId());
-            note.setReferenceTableId(NoteUtil.getTableReferenceId("SAMPLE"));
+            note.setReferenceTableId(NoteUtil.getTableReferenceId(ResultsValidationUtility.SAMPLE_TABLE_NAME));
             note.setNoteType(RESULT_TYPE);
-            note.setSubject(ACCESSION_SUBJECT);
+            note.setSubject(ResultsValidationUtility.ACCESSION_NOTE_SUBJECT);
             note.setText(accessionNotes);
             note.setSysUserId(currentUserId);
             note.setSystemUser(systemUser);

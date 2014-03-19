@@ -9,9 +9,11 @@
 	us.mn.state.health.lims.common.provider.validation.AccessionNumberValidatorFactory,
 	us.mn.state.health.lims.common.provider.validation.IAccessionNumberValidator,
 	us.mn.state.health.lims.resultvalidation.bean.AnalysisItem,
+	us.mn.state.health.lims.note.valueholder.Note,
 	us.mn.state.health.lims.common.util.IdValuePair,
 	us.mn.state.health.lims.common.util.StringUtil,
     us.mn.state.health.lims.common.util.Versioning,
+    us.mn.state.health.lims.common.util.validator.GenericValidator,
 	java.text.DecimalFormat" %>
 
 <%@ taglib uri="/tags/struts-bean"		prefix="bean" %>
@@ -618,10 +620,16 @@ function enableOnlyForRemark(index, resultType, isReferredOut) {
     <bean:define id="capture" name="<%=formName%>" property="canCaptureAccessionNotes"/>
     <logic:notEqual name="resultCount" value="0">
         <%if (Boolean.TRUE.equals(capture)) {%>
-        <div>
-            <bean:message key="note.accession"/>:
-            <html:textarea name="<%=formName%>" property="accessionNotes"/>
-        </div>
+            <div>
+                <bean:message key="note.accession"/>:
+                <html:textarea name="<%=formName%>" property="accessionNotes" onchange="markUpdated(); makeDirty();"/>
+            </div>
+
+            <logic:iterate id="savedAccessionNotes" name="<%=formName%>"  property="savedAccessionNotes" type="Note" indexId="foo">
+                <div class="notes-block">
+                    <bean:write name="savedAccessionNotes" property="text"/>
+                </div>
+            </logic:iterate>
         <% } %>
     </logic:notEqual>
 </div>
