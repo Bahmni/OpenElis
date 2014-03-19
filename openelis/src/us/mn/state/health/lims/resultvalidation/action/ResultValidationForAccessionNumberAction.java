@@ -34,6 +34,7 @@ public class ResultValidationForAccessionNumberAction extends BaseResultValidati
     @Override
     protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request,
                                           HttpServletResponse response) throws Exception {
+        ResultsValidationUtility resultsValidationUtility = new ResultsValidationUtility();
         BaseActionForm dynaForm = (BaseActionForm) form;
         String accessionNumber = request.getParameter("accessionNumber");
         ResultValidationPaging paging = new ResultValidationPaging();
@@ -41,11 +42,13 @@ public class ResultValidationForAccessionNumberAction extends BaseResultValidati
         dynaForm.initialize(mapping);
 
         setRequestType(BaseResultValidationAction.VALIDATION_BY_ACCESSION_NUMBER); // this sets the page title/subtitle
-
-        List<AnalysisItem> resultList = new ResultsValidationUtility().getResultValidationListByAccessionNumber(
-                getToBeValidatedStatuses(), accessionNumber);
+        List<AnalysisItem> resultList = resultsValidationUtility.getResultValidationListByAccessionNumber(getToBeValidatedStatuses(), accessionNumber);
         paging.setDatabaseResults(request, dynaForm, resultList);
+        String accessionNotes = resultsValidationUtility.getAccessionNotes(accessionNumber);
+
+        PropertyUtils.setProperty(dynaForm, "accessionNotes", accessionNotes);
         PropertyUtils.setProperty(dynaForm, "canCaptureAccessionNotes", Boolean.TRUE);
+
         return mapping.findForward(FWD_SUCCESS);
     }
 }

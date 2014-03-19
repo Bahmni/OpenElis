@@ -34,6 +34,8 @@ import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
 import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
 import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
+import us.mn.state.health.lims.note.dao.NoteDAO;
+import us.mn.state.health.lims.note.daoimpl.NoteDAOImpl;
 import us.mn.state.health.lims.note.util.NoteUtil;
 import us.mn.state.health.lims.note.valueholder.Note;
 import us.mn.state.health.lims.observationhistory.dao.ObservationHistoryDAO;
@@ -88,6 +90,8 @@ public class ResultsValidationUtility {
 	private final TestResultDAO testResultDAO = new TestResultDAOImpl();
 	private final TestDAO testDAO = new TestDAOImpl();
 	private final SampleDAO sampleDAO = new SampleDAOImpl();
+	private final NoteDAO noteDAO = new NoteDAOImpl();
+
 	private final ObservationHistoryDAO observationHistoryDAO = new ObservationHistoryDAOImpl();
 	private static String RESULT_TABLE_ID;
 	private static String SAMPLE_STATUS_OBSERVATION_HISTORY_TYPE_ID;
@@ -848,4 +852,11 @@ public class ResultsValidationUtility {
 		return test.getId();
 	}
 
+    public String getAccessionNotes(String accessionNumber) {
+        Sample sample = sampleDAO.getSampleByAccessionNumber(accessionNumber);
+        List<Note> notes = noteDAO.getNoteByRefIAndRefTableAndSubject(sample.getId(), NoteUtil.getTableReferenceId("SAMPLE"), "Accession Note");
+        if(notes!=null && notes.size()>0)
+            return notes.get(0).getText();
+        return null;
+    }
 }

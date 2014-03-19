@@ -32,6 +32,7 @@ import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.note.dao.NoteDAO;
 import us.mn.state.health.lims.note.daoimpl.NoteDAOImpl;
+import us.mn.state.health.lims.note.util.NoteUtil;
 import us.mn.state.health.lims.note.valueholder.Note;
 import us.mn.state.health.lims.result.action.util.ResultsLoadUtility;
 import us.mn.state.health.lims.result.dao.ResultDAO;
@@ -81,6 +82,7 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 
 	private static final String RESULT_TYPE = "I";
 	private static final String RESULT_SUBJECT = "Result Note";
+	private static final String ACCESSION_SUBJECT = "Accession Note";
 
     @Override
 	protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
@@ -88,6 +90,7 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 
 		String forward = FWD_SUCCESS;
         String referer = request.getParameter("referer");
+        String accessionNumber = request.getParameter(ACCESSION_NUMBER);
 
         request.getSession().setAttribute(SAVE_DISABLED, "true");
 
@@ -99,6 +102,7 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 
 		String testSectionName = (String) dynaForm.get("testSection");
 		String testName = (String) dynaForm.get("testName");
+		String accessionNotes = (String) dynaForm.get("accessionNotes");
 
 		createSystemUser();
 
@@ -121,6 +125,7 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 				resultDAO.updateData(result);
 			}
 			checkAndUpdateStatusOfFinishedSamples(resultItemList);
+            createOrUpdateAccessionNotes(accessionNotes, accessionNumber, referer);
             createOrUpdateNotes(noteUpdateList);
             publishEditedAccessionNumbers(resultItemList, request);
 		} catch (LIMSRuntimeException lre) {
@@ -135,7 +140,6 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 		if (GenericValidator.isBlankOrNull(testSectionName)) {
             Map<String, String> params = new HashMap<>();
 
-            String accessionNumber = request.getParameter(ACCESSION_NUMBER);
             if (accessionNumber != null && !accessionNumber.trim().isEmpty()) {
                 forward =  FWD_SUCCESS_FOR_ACCESSION_NUMBER;
                 params.put(ACCESSION_NUMBER, accessionNumber);
@@ -149,7 +153,6 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 			params.put("type", testSectionName);
 			params.put("test", testName);
 
-            String accessionNumber = request.getParameter(ACCESSION_NUMBER);
             if (accessionNumber != null && !accessionNumber.trim().isEmpty()) {
                 forward =  FWD_SUCCESS_FOR_ACCESSION_NUMBER;
                 params.put(ACCESSION_NUMBER, accessionNumber);
@@ -161,6 +164,26 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 		}
 
 	}
+
+    private void createOrUpdateAccessionNotes(String accessionNotes, String accessionNumber, String referer) {
+        if(shouldSaveAccessionNotes(accessionNotes, referer)){
+            Note note = new Note();
+            note.setReferenceId(sampleDAO.getSampleByAccessionNumber(accessionNumber).getId());
+            note.setReferenceTableId(NoteUtil.getTableReferenceId("SAMPLE"));
+            note.setNoteType(RESULT_TYPE);
+            note.setSubject(ACCESSION_SUBJECT);
+            note.setText(accessionNotes);
+            note.setSysUserId(currentUserId);
+            note.setSystemUser(systemUser);
+            note.setSystemUserId(currentUserId);
+            noteUpdateList.add(note);
+        }
+    }
+
+    private boolean shouldSaveAccessionNotes(String accessionNotes, String referer) {
+        return referer.equals("LabDashboard") && !GenericValidator.isBlankOrNull(accessionNotes);
+    }
+
 
     private void createOrUpdateNotes(ArrayList<Note> noteUpdateList) {
         for (Note note : noteUpdateList) {
