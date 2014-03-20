@@ -5,7 +5,8 @@ forked from OpenElis_v3.1_r2013_02_21 branch in svn
 
 *To build OpenElis run*
 * `ant dist`  Creates OpenELIS War
-* `ant vagrant-deploy` Create OpenELIS War and deploys it to your vagrant's tomcat
+* `./scripts/vagrant-deploy.sh` Create OpenELIS War and deploys it to your vagrant's tomcat
+* `./scripts/vagrant-database.sh` Runs Liquibase migration script in your vagrant 
 
 Technical issues with the codebase
 ======================================

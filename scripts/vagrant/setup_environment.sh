@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -x
 
 TEMP_LOCATION=/tmp/deploy_openelis
 
