@@ -620,7 +620,7 @@ function enableOnlyForRemark(index, resultType, isReferredOut) {
     <bean:define id="capture" name="<%=formName%>" property="canCaptureAccessionNotes"/>
     <logic:notEqual name="resultCount" value="0">
         <%if (Boolean.TRUE.equals(capture)) {%>
-            <div>
+            <div class="lab-results-notes">
                 <bean:message key="note.accession"/>:
                 <html:textarea name="<%=formName%>" property="accessionNotes" onchange="markUpdated(); makeDirty();"/>
             </div>

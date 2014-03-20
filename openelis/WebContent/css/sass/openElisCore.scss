@@ -1221,10 +1221,15 @@ p{
 .results-page-block,.btn-block{
   padding:10px 20px 10px 0px;
 }
+.results-page-block,.lab-results-notes {
+    margin-bottom: 10px;
+}
 .results-page-block,.notes-block{
-  border: 1px #cecece dotted;
-  padding: 10px 20px 10px 5px;
-  margin-right: 75px;
+    border-bottom: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    width: 96.5%;
+    box-sizing: border-box;
 }
 table{
   th{
