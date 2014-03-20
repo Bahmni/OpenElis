@@ -4,7 +4,7 @@
 TEMP_ELIS_WAR_FOLDER=/tmp/deploy_openelis
 MACHINE_IP=192.168.33.10
 CWD=$1
-SCRIPTS_DIR=$CWD/scripts
+SCRIPTS_DIR=$CWD/scripts/vagrant
 KEY_FILE=~/.vagrant.d/insecure_private_key
 
 # Setup environment

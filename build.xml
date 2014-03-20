@@ -130,7 +130,7 @@
         </condition>
 
         <echo message="Deploying OpenElis.war to Vagrant Tomcat"/>
-        <exec executable="${basedir}/scripts/vagrant-deploy.${script_extension}" failonerror="true">
+        <exec executable="${basedir}/scripts/vagrant/vagrant-deploy.${script_extension}" failonerror="true">
             <arg line="${basedir} ${dist}/openelis.war"/>
         </exec>
     </target>
