@@ -7,6 +7,7 @@ forked from OpenElis_v3.1_r2013_02_21 branch in svn
 
 *To build OpenElis run*
 * `ant dist`  Creates OpenELIS War
+* `ant setupDB test dist`  Creates clinlims database in postgres, runs tests, and then creates OpenELIS War
 * `./scripts/vagrant-deploy.sh` Create OpenELIS War and deploys it to your vagrant's tomcat
 * `./scripts/vagrant-database.sh` Runs Liquibase migration script in your vagrant 
 
