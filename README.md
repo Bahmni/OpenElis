@@ -1,6 +1,8 @@
 OpenElis
 ========
 
+[![Build Status](https://travis-ci.org/Bhamni/OpenElis.svg?branch=master)](https://travis-ci.org/Bhamni/OpenElis)
+
 forked from OpenElis_v3.1_r2013_02_21 branch in svn
 
 *To build OpenElis run*
