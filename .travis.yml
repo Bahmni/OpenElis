@@ -5,6 +5,6 @@ addons:
   postgresql: "9.3"
 before_install:
  - gem install compass
-script: ant test dist
+script: ant setupDB test dist
 notifications:
    email: false
