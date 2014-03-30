@@ -87,7 +87,7 @@
             <fileset dir="${src}" includes="**/*.properties"/>
         </copy>
         <copy tofile="${dist}/LICENSE">
-            <fileset dir="${src}" file="for-licensing-purpose"/>
+            <fileset dir="${src}" file="LICENSE"/>
         </copy>
         <propertyMerge
                 inputpropertyfile="${target}/MessageResources.properties"
