@@ -147,8 +147,8 @@ public class AccessionService {
         ResultSignature resultSignature = (ResultSignature) result.getResultSignatures().toArray()[0];
         testDetail.setProviderUuid(resultSignature.getSystemUser().getExternalId());
         addNotes(result.getId(), testDetail);
-        testDetail.setMinNormal(result.getMinNormal() == Double.NEGATIVE_INFINITY ? null : result.getMinNormal());
-        testDetail.setMaxNormal(result.getMinNormal() == Double.POSITIVE_INFINITY ? null : result.getMaxNormal());
+        testDetail.setMinNormal(result.getMinNormal() != null && result.getMinNormal() != Double.NEGATIVE_INFINITY ? result.getMinNormal() : null;
+        testDetail.setMaxNormal(result.getMaxNormal() != null && result.getMaxNormal() != Double.POSITIVE_INFINITY ? result.getMaxNormal() : null);
         testDetail.setResult(getResultValue(result));
         testDetail.setResultType(result.getResultType());
         testDetail.setIsAbnormal(result.getAbnormal());
