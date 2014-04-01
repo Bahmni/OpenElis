@@ -65,7 +65,7 @@ public class AccessionService {
         this.dictionaryDAO = dictionaryDAO;
         this.patientIdentityDAO = patientIdentityDAO;
         this.patientIdentityTypeDAO = patientIdentityTypeDAO;
-        this.finalizedStatusIds = new String[] {getFinalizedStatus(), getFinalizedROStatus()};
+        this.finalizedStatusIds = new String[]{getFinalizedStatus(), getFinalizedROStatus()};
     }
 
     public AccessionDetail getAccessionDetailFor(String sampleUuid) {
@@ -147,8 +147,8 @@ public class AccessionService {
         ResultSignature resultSignature = (ResultSignature) result.getResultSignatures().toArray()[0];
         testDetail.setProviderUuid(resultSignature.getSystemUser().getExternalId());
         addNotes(result.getId(), testDetail);
-        testDetail.setMinNormal(result.getMinNormal());
-        testDetail.setMaxNormal(result.getMaxNormal());
+        testDetail.setMinNormal(result.getMinNormal() == Double.NEGATIVE_INFINITY ? null : result.getMinNormal());
+        testDetail.setMaxNormal(result.getMinNormal() == Double.POSITIVE_INFINITY ? null : result.getMaxNormal());
         testDetail.setResult(getResultValue(result));
         testDetail.setResultType(result.getResultType());
         testDetail.setIsAbnormal(result.getAbnormal());
