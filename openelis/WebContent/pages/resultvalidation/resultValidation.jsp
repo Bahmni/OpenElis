@@ -627,7 +627,7 @@ function enableOnlyForRemark(index, resultType, isReferredOut) {
 
             <logic:iterate id="savedAccessionNotes" name="<%=formName%>"  property="savedAccessionNotes" type="Note" indexId="foo">
                 <div class="notes-block">
-                    <bean:write name="savedAccessionNotes" property="text"/>
+                    <pre><bean:write name="savedAccessionNotes" property="text"/></pre>
                 </div>
             </logic:iterate>
         <% } %>

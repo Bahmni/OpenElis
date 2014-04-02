@@ -927,7 +927,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 		<tr class='<%= rowColor %>' >
 			<td colspan="2" align="right" valign="top"><bean:message key="label.prior.note" />: </td>
 			<td colspan="6" align="left">
-				<%= testResult.getPastNotes() %>
+                <pre><%= testResult.getPastNotes() %></pre>
 			</td>
 		</tr>
 	</logic:notEmpty>

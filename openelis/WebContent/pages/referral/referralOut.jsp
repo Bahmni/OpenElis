@@ -720,7 +720,7 @@ function showAllTests() {
 		<tr class='<%= rowColor %>'>
 			<td  valign="top" align="right">Prior Notes:</td>
 			<td colspan="6" align="left" >
-				<%= referralItems.getPastNotes() %>
+				<pre><%= referralItems.getPastNotes() %></pre>
 			</td>
 		</tr>
 	</logic:notEmpty>
