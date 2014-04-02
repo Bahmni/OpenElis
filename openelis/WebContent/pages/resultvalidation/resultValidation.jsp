@@ -280,7 +280,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 differently.  Overrides formTemplate.jsp handleEnterEvent
 */
 function /*boolean*/ handleEnterEvent(){
-	return false;
+	return true;
 }
 
 function enableOnlyForRemark(index, resultType, isReferredOut) {

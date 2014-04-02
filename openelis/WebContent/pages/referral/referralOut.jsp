@@ -60,6 +60,10 @@ function showNotesWhenReferralOutWasRejected(object){
 
 }
 
+function /*boolean*/ handleEnterEvent(){
+    return true;
+}
+
 function findRowIndexFromId( id ) {
      var us = id.lastIndexOf("_");
      var index;

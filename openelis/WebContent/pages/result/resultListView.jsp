@@ -167,6 +167,10 @@ function handleMultiSelectChange( e, data ){
 	}
 }
 
+function /*boolean*/ handleEnterEvent(){
+    return true;
+}
+
 function appendValueToElementValue( e, addString ){
 	if( e.value && e.value.length > 1 ){
 			e.value += ',';
