@@ -210,6 +210,7 @@ public class BahmniPatientService {
     private OpenMRSPerson populatePerson(OpenMRSPatient openMRSPatient, String sysUserId, Person person) {
         OpenMRSPerson openMRSPerson = openMRSPatient.getPerson();
         person.setFirstName(openMRSPerson.getPreferredName().getGivenName());
+        person.setMiddleName(openMRSPerson.getPreferredName().getMiddleName());
         person.setLastName(openMRSPerson.getPreferredName().getFamilyName());
         person.setSysUserId(sysUserId);
         return openMRSPerson;
