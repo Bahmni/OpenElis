@@ -33,7 +33,7 @@ public class PatientSearchLocalAndClinicWorker extends PatientSearchWorker {
      * @see us.mn.state.health.lims.common.provider.query.workerObjects.PatientSearchWorker#createSearchResultXML(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.StringBuilder)
      */
     @Override
-    public String createSearchResultXML(String lastName, String firstName,
+    public String createSearchResultXML(String lastName, String firstName, String middleName,
                                         String STNumber, String subjectNumber, String nationalID, String patientID, StringBuilder xml) {
 
         // just to make the name shorter
@@ -43,6 +43,7 @@ public class PatientSearchLocalAndClinicWorker extends PatientSearchWorker {
 
         if (GenericValidator.isBlankOrNull(lastName)
                 && GenericValidator.isBlankOrNull(firstName)
+                && GenericValidator.isBlankOrNull(middleName)
                 && GenericValidator.isBlankOrNull(STNumber)
                 && GenericValidator.isBlankOrNull(subjectNumber)
                 && GenericValidator.isBlankOrNull(nationalID)
@@ -55,7 +56,7 @@ public class PatientSearchLocalAndClinicWorker extends PatientSearchWorker {
 
         List<PatientSearchResults> localResults;
         SearchResultsDAO localSearch = createLocalSearchResultDAOImp();
-        localResults = localSearch.getSearchResults(lastName, firstName, STNumber, subjectNumber, nationalID, nationalID, patientID);
+        localResults = localSearch.getSearchResults(lastName, firstName, middleName, STNumber, subjectNumber, nationalID, nationalID, patientID);
 
         setLocalSourceIndicators(localResults);
 

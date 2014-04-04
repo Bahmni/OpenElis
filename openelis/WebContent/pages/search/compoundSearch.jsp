@@ -25,7 +25,7 @@
 	boolean supportSTNumber = true;
 	boolean supportSubjectNumber = true;
 	boolean supportNationalID = true;
-	boolean supportfirstNameFirst;
+	boolean supportFirstNameFirst;
  %>
 <%
 	String path = request.getContextPath();
@@ -35,7 +35,7 @@ basePath = path + "/";
 	supportSTNumber = FormFields.getInstance().useField(Field.StNumber);
  	supportSubjectNumber = FormFields.getInstance().useField(Field.SubjectNumber);
  	supportNationalID = FormFields.getInstance().useField(Field.NationalID);
- 	supportfirstNameFirst = FormFields.getInstance().useField(Field.FirstNameFirst);
+ 	supportFirstNameFirst = FormFields.getInstance().useField(Field.FirstNameFirst);
 %>
 
 <script type="text/javascript" src="<%=basePath%>scripts/utilities.js?ver=<%= Versioning.getBuildNumber() %>" ></script>
@@ -43,6 +43,7 @@ basePath = path + "/";
 
 <script type="text/javascript" >
 var NO_VALUE = "";
+var supportFirstNameFirst = <%= supportFirstNameFirst %>;
 var supportSTNumber = <%= supportSTNumber %>;
 var supportSubjectNumber = <%= supportSubjectNumber %>;
 var supportNationalID = <%= supportNationalID %>;
@@ -69,7 +70,7 @@ function doSelectionSearch(){
 	
 //	if( requestDate == null || requestDate == ""){
 var patientIdentifier = $("patientID").value;
-		patientSearch($("lastName").value, $("firstName").value, patientIdentifier, patientIdentifier, patientIdentifier, NO_VALUE, processSearchSuccess, processSearchFailure);
+		patientSearch($("lastName").value, $("firstName").value, $("middleName").value, patientIdentifier, patientIdentifier, patientIdentifier, NO_VALUE, processSearchSuccess, processSearchFailure);
 //	}else{ }
 }
 
@@ -113,6 +114,7 @@ function addPatientToSearch(table, result ){
 	var patient = result.getElementsByTagName("patient")[0];
 
 	var firstName = getValueFromXmlElement( patient, "first");
+	var middleName = getValueFromXmlElement( patient, "middle");
 	var lastName = getValueFromXmlElement( patient, "last");
 	var gender = getValueFromXmlElement( patient, "gender");
 	var DOB = getValueFromXmlElement( patient, "dob");
@@ -121,7 +123,7 @@ function addPatientToSearch(table, result ){
 	var nationalID = getValueFromXmlElement( patient, "nationalID");
 	var pk = getValueFromXmlElement( result, "id");
 
-	var row = createRow( table, firstName, lastName, gender, DOB, stNumber, subjectNumber, nationalID, pk );
+	var row = createRow( table, firstName, middleName, lastName, gender, DOB, stNumber, subjectNumber, nationalID, pk );
 
 	if( row == 1 ){
 		patientSelectID = pk;
@@ -137,7 +139,7 @@ function getValueFromXmlElement( parent, tag ){
 	return (element && element.length > 0) ? element[0].firstChild.nodeValue : "";
 }
 
-function createRow(table, firstName, lastName, gender, DOB, stNumber, subjectNumber, nationalID, pk){
+function createRow(table, firstName, middleName, lastName, gender, DOB, stNumber, subjectNumber, nationalID, pk){
 
 		var row = table.rows.length;
 
@@ -148,8 +150,15 @@ function createRow(table, firstName, lastName, gender, DOB, stNumber, subjectNum
 		var cellCounter = -1;
 
 		var selectionCell = newRow.insertCell(++cellCounter);
-		var lastNameCell = newRow.insertCell(++cellCounter);
-		var firstNameCell = newRow.insertCell(++cellCounter);
+        if (supportFirstNameFirst) {
+            var firstNameCell = newRow.insertCell(++cellCounter);
+            var middleNameCell = newRow.insertCell(++cellCounter);
+            var lastNameCell = newRow.insertCell(++cellCounter);
+        } else {
+            var lastNameCell = newRow.insertCell(++cellCounter);
+            var firstNameCell = newRow.insertCell(++cellCounter);
+            var middleNameCell = newRow.insertCell(++cellCounter);
+        }
 		var genderCell = newRow.insertCell(++cellCounter);
 		var dobCell = newRow.insertCell(++cellCounter);
 		var stCell = supportSTNumber ? newRow.insertCell(++cellCounter) : null;
@@ -159,6 +168,7 @@ function createRow(table, firstName, lastName, gender, DOB, stNumber, subjectNum
 		selectionCell.innerHTML = getSelectionHtml( row, pk );
 		lastNameCell.innerHTML = nonNullString( lastName );
 		firstNameCell.innerHTML = nonNullString( firstName );
+		middleNameCell.innerHTML = nonNullString( middleName );
 		genderCell.innerHTML = nonNullString( gender );
 		if( supportSTNumber){stCell.innerHTML = nonNullString( stNumber );}
 		if( supportSubjectNumber){subjectNumberCell.innerHTML = nonNullString( subjectNumber );}
@@ -242,16 +252,18 @@ jQuery(function(){
 	<table style="width:100%" class="edit-sample">
 	<tr>
 		<th rowspan="2" id="accession"><%=StringUtil.getContextualMessageForKey("quick.entry.accession.number")%></th>
-		<th colspan="3" id="patient" >Patient</th>
+		<th colspan="4" id="patient" >Patient</th>
 <!-- 		<th rowspan="2" id="receptionDate" >Reception Date</th>  -->
 	</tr>
 	<tr>
-        <% if(supportfirstNameFirst) { %>
+        <% if(supportFirstNameFirst) { %>
             <th><bean:message key="patient.epiFirstName"/></th>
+            <th><bean:message key="patient.epiMiddleName"/></th>
             <th><bean:message key="patient.epiLastName"/></th>
         <% } else { %>
             <th><bean:message key="patient.epiLastName"/></th>
             <th><bean:message key="patient.epiFirstName"/></th>
+            <th><bean:message key="patient.epiMiddleName"/></th>
         <% } %>
 		<th><%=StringUtil.getContextualMessageForKey("patient.search.all_IDs") %></th>
 	</tr>
@@ -266,50 +278,69 @@ jQuery(function(){
 			       class="text"
 			       type="text">
 		</td>
-		<% if(supportfirstNameFirst) { %>
-
-		<td headers="patient" >
-			<input name="searchPatientFirstName"
-				   style="display:table-cell; width:96%"
-			       id="firstName"
-			       class="text"
-			       type="text"
-			       onkeyup="setSearch(); "
-			       onblur="makeExclusive(this);"
-			       >
-		</td>
-		<td headers="patient" >
-        			<input name="searchPatientLastName"
-        			       style="display:table-cell; width:96%"
-        			       id="lastName"
-        			       class="text"
-        			       type="text"
-        			       onkeyup="setSearch(); "
-        			       onblur="makeExclusive(this);"
-        			       >
-        		</td>
-		   <%} else {%>
-		        <td headers="patient" >
-                     <input name="searchPatientLastName"
-                            style="display:table-cell; width:96%"
-                           id="lastName"
-                           class="text"
-                           type="text"
-                           onkeyup="setSearch(); "
-                           onblur="makeExclusive(this);"
-                           >
+		<% if(supportFirstNameFirst) { %>
+            <td headers="patient" >
+                <input name="searchPatientFirstName"
+                       style="display:table-cell; width:96%"
+                       id="firstName"
+                       class="text"
+                       type="text"
+                       onkeyup="setSearch(); "
+                       onblur="makeExclusive(this);"
+                       >
+            </td>
+            <td headers="patient" >
+                <input name="searchPatientMiddleName"
+                       style="display:table-cell; width:96%"
+                       id="middleName"
+                       class="text"
+                       type="text"
+                       onkeyup="setSearch(); "
+                       onblur="makeExclusive(this);"
+                       >
+            </td>
+            <td headers="patient" >
+                <input name="searchPatientLastName"
+                       style="display:table-cell; width:96%"
+                       id="lastName"
+                       class="text"
+                       type="text"
+                       onkeyup="setSearch(); "
+                       onblur="makeExclusive(this);"
+                       >
+            </td>
+        <%} else {%>
+            <td headers="patient" >
+                <input name="searchPatientLastName"
+                       style="display:table-cell; width:96%"
+                      id="lastName"
+                      class="text"
+                      type="text"
+                      onkeyup="setSearch(); "
+                      onblur="makeExclusive(this);"
+                      >
+            </td>
+            <td headers="patient" >
+                <input name="searchPatientFirstName"
+                       style="display:table-cell; width:96%"
+                       id="firstName"
+                       class="text"
+                       type="text"
+                       onkeyup="setSearch(); "
+                       onblur="makeExclusive(this);"
+                       >
                 </td>
-               <td headers="patient" >
-                        <input name="searchPatientFirstName"
-                               style="display:table-cell; width:96%"
-                               id="firstName"
-                               class="text"
-                               type="text"
-                               onkeyup="setSearch(); "
-                               onblur="makeExclusive(this);"
-                               >
-                    </td>
-              <% } %>
+            <td headers="patient" >
+                <input name="searchPatientMiddleName"
+                       style="display:table-cell; width:96%"
+                       id="middleName"
+                       class="text"
+                       type="text"
+                       onkeyup="setSearch(); "
+                       onblur="makeExclusive(this);"
+                       >
+            </td>
+        <% } %>
 		<td headers="patient">
 			<input name="searchPatientID"
 			       style="display:table-cell; width:96%"
@@ -341,9 +372,12 @@ jQuery(function(){
 		<table id="searchResultTable" style="width:100%">
 			<tr>
 				<th width="2%"></th>
-				<% if(supportfirstNameFirst){ %>
+				<% if(supportFirstNameFirst){ %>
                     <th width="15%">
                         <bean:message key="patient.epiFirstName"/>
+                    </th>
+                    <th width="15%">
+                        <bean:message key="patient.epiMiddleName"/>
                     </th>
                     <th width="18%">
                         <bean:message key="patient.epiLastName"/>
@@ -354,6 +388,9 @@ jQuery(function(){
                     </th>
                     <th width="15%">
                         <bean:message key="patient.epiFirstName"/>
+                    </th>
+                    <th width="15%">
+                        <bean:message key="patient.epiMiddleName"/>
                     </th>
                   <% } %>
 				<th width="5%">

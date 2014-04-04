@@ -185,10 +185,10 @@ basePath = path + "/";
 
     });
 
-    var showPatientDetails = function(stNumber, firstName, lastName, primaryRelative, village, gender, age) {
+    var showPatientDetails = function(stNumber, firstName, middleName, lastName, primaryRelative, village, gender, age) {
         jQuery("#patientDetails").show();
         jQuery("#patientId").text(stNumber);
-        jQuery("#name").text(firstName + " " + lastName);
+        jQuery("#name").text(firstName + " " + (middleName ? middleName + " " : "") + lastName);
         jQuery("#primaryRelative").text(primaryRelative?primaryRelative:"N/A");
         jQuery("#village").text(village?village:"N/A");
         jQuery("#gender").text(gender);
@@ -210,6 +210,7 @@ basePath = path + "/";
         showPatientDetails(
             OpenElis.Utils.getXMLValue(xhr.responseXML, 'ST_ID'),
             OpenElis.Utils.getXMLValue(xhr.responseXML, 'firstName'),
+            OpenElis.Utils.getXMLValue(xhr.responseXML, 'middleName'),
             OpenElis.Utils.getXMLValue(xhr.responseXML, 'lastName'),
             OpenElis.Utils.getXMLValue(xhr.responseXML, 'primaryRelative'),
             getAddressValue(xhr.responseXML, villageIndex),

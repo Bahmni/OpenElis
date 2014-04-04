@@ -26,7 +26,7 @@ function order(div, orderArray, generateLink, getColumns) {
             this.orders = jQuery.map(this.orderArray, function(order, i) {
                 order.id= i;
                 order.link = generateLink(order);
-                order.name = order.firstName + " " + order.lastName;
+                order.name = order.firstName + " " + (order.middleName ? order.middleName + " " : "") + order.lastName;
                 return order;
             });
 

@@ -303,9 +303,10 @@ public class TestSetup {
         return typeOfSampleTest;
     }
 
-    public static Patient createPatient(String firstName, String lastName, String patientIdentityData, String uuid) {
+    public static Patient createPatient(String firstName, String middleName, String lastName, String patientIdentityData, String uuid) {
         Person person = new Person();
         person.setFirstName(firstName);
+        person.setMiddleName(middleName);
         person.setLastName(lastName);
         person.setSysUserId("1");
         new PersonDAOImpl().insertData(person);

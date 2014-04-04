@@ -25,6 +25,7 @@ public class Order {
     private String accessionNumber;
     private String stNumber;
     private String firstName;
+    private String middleName;
     private String lastName;
     private String source;
     private int pendingTestCount;
@@ -37,11 +38,12 @@ public class Order {
     public Order() {
     }
 
-    public Order(String accessionNumber, String stNumber, String firstName, String lastName, String source, boolean isCompleted, boolean isPrinted,
+    public Order(String accessionNumber, String stNumber, String firstName, String middleName, String lastName, String source, boolean isCompleted, boolean isPrinted,
                  int pendingTestCount, int pendingValidationCount, int totalTestCount, Date collectionDate) {
         this.accessionNumber = accessionNumber;
         this.stNumber = stNumber;
         this.firstName = firstName;
+        this.middleName = middleName;
         this.lastName = lastName;
         this.source = source;
         this.isCompleted = isCompleted;
@@ -120,6 +122,14 @@ public class Order {
         return isCompleted;
     }
 
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
+
     @JsonSerialize(using=JsonTimeSerializer.class)
     public Date getCollectionDate() {
         return collectionDate;
@@ -143,6 +153,7 @@ public class Order {
             return false;
         if (firstName != null ? !firstName.equals(order.firstName) : order.firstName != null) return false;
         if (lastName != null ? !lastName.equals(order.lastName) : order.lastName != null) return false;
+        if (middleName != null ? !middleName.equals(order.middleName) : order.middleName != null) return false;
         if (source != null ? !source.equals(order.source) : order.source != null) return false;
         if (stNumber != null ? !stNumber.equals(order.stNumber) : order.stNumber != null) return false;
 
@@ -154,6 +165,7 @@ public class Order {
         int result = accessionNumber != null ? accessionNumber.hashCode() : 0;
         result = 31 * result + (stNumber != null ? stNumber.hashCode() : 0);
         result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
+        result = 31 * result + (middleName != null ? middleName.hashCode() : 0);
         result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
         result = 31 * result + (source != null ? source.hashCode() : 0);
         result = 31 * result + pendingTestCount;

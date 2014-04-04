@@ -23,7 +23,7 @@ public class AccessionHandlerIT extends IT{
     @Test
     public void shouldRetrieveAccessionBasedOnUuid() throws IOException {
 
-        Patient patient = createPatient("First", "Last", "GAN9897889009", null);
+        Patient patient = createPatient("First", "Middle", "Last", "GAN9897889009", null);
         Sample sample = createSample("10102013-001", new Date());
         createSampleHuman(sample, patient);
         SampleItem sampleItem = createSampleItem(sample);

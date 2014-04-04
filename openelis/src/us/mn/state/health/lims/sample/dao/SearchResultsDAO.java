@@ -24,5 +24,5 @@ import us.mn.state.health.lims.common.provider.query.PatientSearchResults;
 
 public interface SearchResultsDAO extends BaseDAO {
 
-	public List<PatientSearchResults> getSearchResults( String lastName, String firstName, String STNumber, String subjectNumber, String nationalID, String externalID, String patientID) throws LIMSRuntimeException;
+	public List<PatientSearchResults> getSearchResults(String lastName, String firstName, String middleName, String STNumber, String subjectNumber, String nationalID, String externalID, String patientID) throws LIMSRuntimeException;
 }

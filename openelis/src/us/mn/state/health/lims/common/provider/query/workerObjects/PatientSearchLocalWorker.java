@@ -17,26 +17,26 @@
 */
 package us.mn.state.health.lims.common.provider.query.workerObjects;
 
-import java.util.List;
-
 import org.apache.commons.validator.GenericValidator;
-
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.provider.query.PatientSearchResults;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.sample.dao.SearchResultsDAO;
 import us.mn.state.health.lims.sample.daoimpl.SearchResultsDAOImp;
 
+import java.util.List;
+
 public class PatientSearchLocalWorker extends PatientSearchWorker {
 
 	@Override
-	public String createSearchResultXML(String lastName, String firstName, String STNumber, String subjectNumber, String nationalID,
+	public String createSearchResultXML(String lastName, String firstName, String middleName, String STNumber, String subjectNumber, String nationalID,
 			String patientID, StringBuilder xml)  {
 
 		String success = IActionConstants.VALID;
 
 		if( GenericValidator.isBlankOrNull(lastName) &&
 				GenericValidator.isBlankOrNull(firstName) &&
+				GenericValidator.isBlankOrNull(middleName) &&
 				GenericValidator.isBlankOrNull(STNumber) &&
 				GenericValidator.isBlankOrNull(subjectNumber) &&
 				GenericValidator.isBlankOrNull(nationalID) &&
@@ -47,7 +47,7 @@ public class PatientSearchLocalWorker extends PatientSearchWorker {
 		}
 
 		SearchResultsDAO search = createSearchResultDAOImp();
-		List<PatientSearchResults> results = search.getSearchResults(lastName, firstName, STNumber, subjectNumber, nationalID, nationalID, patientID);
+		List<PatientSearchResults> results = search.getSearchResults(lastName, firstName, middleName, STNumber, subjectNumber, nationalID, nationalID, patientID);
 
 		sortPatients(results);
 

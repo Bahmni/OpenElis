@@ -85,7 +85,7 @@ public class EncounterFeedWorkerIT extends IT {
         firstName = "firstName";
         lastName = "lastName";
         patientUUID = UUID.randomUUID().toString();
-        patient = createPatient(firstName, lastName, identifier, patientUUID);
+        patient = createPatient(firstName, "middleName", lastName, identifier, patientUUID);
 
         bloodSample = createTypeOfSample("blood", "BLD");
         urineSample = createTypeOfSample("URINE", "URN");

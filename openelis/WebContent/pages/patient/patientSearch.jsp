@@ -78,6 +78,7 @@ function searchPatients()
 
 	var lastName = $("searchLastNameID").value;
 	var firstName = $("searchFirstNameID").value;
+	var middleName = $("searchMiddleNameID").value;
     var STNumber = supportSTNumber ? $("searchSTID").value : "";
     if(supportHealthCenter){
         STNumber = STNumber.toUpperCase();
@@ -85,7 +86,7 @@ function searchPatients()
     var subjectNumber = supportSubjectNumber ? $("searchSubjectNumberID").value : "";
     var nationalID = supportNationalID ? $("searchNationalID").value : "";
     var labNumber = supportLabNumber ? $("searchLabNumber").value : "";
-	patientSearch(lastName, firstName, STNumber, subjectNumber, nationalID, labNumber, processSearchSuccess, processSearchFailure);
+	patientSearch(lastName, firstName, middleName, STNumber, subjectNumber, nationalID, labNumber, processSearchSuccess, processSearchFailure);
 }
 
 function processSearchSuccess(xhr)
@@ -141,6 +142,7 @@ function addPatientToSearch(table, result ){
 	var patient = result.getElementsByTagName("patient")[0];
 
 	var firstName = getValueFromXmlElement( patient, "first");
+	var middleName = getValueFromXmlElement( patient, "middle");
 	var lastName = getValueFromXmlElement( patient, "last");
 	var gender = getValueFromXmlElement( patient, "gender");
 	var DOB = getValueFromXmlElement( patient, "dob");
@@ -152,7 +154,7 @@ function addPatientToSearch(table, result ){
 	var dataSourceName = getValueFromXmlElement( result, "dataSourceName");
 
 
-	var row = createRow( table, firstName, lastName, gender, DOB, stNumber, subjectNumber, nationalID, mother, pk, dataSourceName );
+	var row = createRow( table, firstName, middleName, lastName, gender, DOB, stNumber, subjectNumber, nationalID, mother, pk, dataSourceName );
 	addToPatientInfo( firstName, lastName, gender, DOB, stNumber, subjectNumber, nationalID, mother, pk );
 
 	if( row == 1 ){
@@ -168,7 +170,7 @@ function getValueFromXmlElement( parent, tag ){
 	return element ? element.firstChild.nodeValue : "";
 }
 
-function createRow(table, firstName, lastName, gender, DOB, stNumber, subjectNumber, nationalID, mother, pk,  dataSourceName){
+function createRow(table, firstName, middleName, lastName, gender, DOB, stNumber, subjectNumber, nationalID, mother, pk,  dataSourceName){
 
 		var row = table.rows.length;
 
@@ -182,10 +184,12 @@ function createRow(table, firstName, lastName, gender, DOB, stNumber, subjectNum
         var stCell = supportSTNumber ? newRow.insertCell(++cellCounter) : null;
         if (supportfirstNameFirst) {
             var firstNameCell = newRow.insertCell(++cellCounter);
+            var middleNameCell = newRow.insertCell(++cellCounter);
             var lastNameCell = newRow.insertCell(++cellCounter);
         } else {
             var lastNameCell = newRow.insertCell(++cellCounter);
             var firstNameCell = newRow.insertCell(++cellCounter);
+            var middleNameCell = newRow.insertCell(++cellCounter);
         }
 		var genderCell = newRow.insertCell(++cellCounter);
 		var dobCell = newRow.insertCell(++cellCounter);
@@ -196,6 +200,7 @@ function createRow(table, firstName, lastName, gender, DOB, stNumber, subjectNum
 		selectionCell.innerHTML = getSelectionHtml( row, pk );
 		lastNameCell.innerHTML = nonNullString( lastName );
 		firstNameCell.innerHTML = nonNullString( firstName );
+		middleNameCell.innerHTML = nonNullString(middleName);
 		genderCell.innerHTML = nonNullString( gender );
 		if( supportSTNumber){stCell.innerHTML = nonNullString( stNumber );}
 		if( supportSubjectNumber){subjectNumberCell.innerHTML = nonNullString( subjectNumber );}
@@ -283,40 +288,46 @@ function /*void*/ dirtySearchInfo(e){
 
 	<table width="70%">
 	<tr >
-	 <% if(supportfirstNameFirst) { %>
-		<td class="searchFirstName" width="25%">
-			<bean:message key="patient.epiFirstName"/>
-		</td>
-		<td class="searchLastName" width="30%">
-        			<bean:message key="patient.epiLastName"/>
-        		</td>
-		 <% } else { %>
-		 <td class="searchLastName" width="30%">
-         			<bean:message key="patient.epiLastName"/>
-         		</td>
-         		<td class="searchFirstName" width="25%">
-         			<bean:message key="patient.epiFirstName"/>
-         		</td>
-          <% } %>
+        <% if(supportfirstNameFirst) { %>
+            <td class="searchFirstName" width="25%">
+                <bean:message key="patient.epiFirstName"/>
+            </td>
+            <td class="searchMiddleName" width="25%">
+                <bean:message key="patient.epiMiddleName"/>
+            </td>
+            <td class="searchLastName" width="30%">
+                <bean:message key="patient.epiLastName"/>
+            </td>
+        <% } else { %>
+            <td class="searchLastName" width="30%">
+                <bean:message key="patient.epiLastName"/>
+            </td>
+            <td class="searchFirstName" width="25%">
+                <bean:message key="patient.epiFirstName"/>
+            </td>
+            <td class="searchMiddleName" width="25%">
+                <bean:message key="patient.epiMiddleName"/>
+            </td>
+        <% } %>
 		<% if( supportSTNumber ){ %>
-		<td class="searchST" width="20%">
-			<bean:message key="patient.ST.number"/>
-		</td>
-		<%} %>
+            <td class="searchST" width="20%">
+                <bean:message key="patient.ST.number"/>
+            </td>
+        <%} %>
 		<% if( supportSubjectNumber ){ %>
-		<td width="20%">
-			<%=StringUtil.getContextualMessageForKey("patient.subject.number") %>
-		</td>
+            <td width="20%">
+                <%=StringUtil.getContextualMessageForKey("patient.subject.number") %>
+            </td>
 		<%} %>
 		<% if( supportNationalID ){ %>
-		<td class="nationalID" width="20%">
-			<%=StringUtil.getContextualMessageForKey("patient.NationalID") %>
-		</td>
+            <td class="nationalID" width="20%">
+                <%=StringUtil.getContextualMessageForKey("patient.NationalID") %>
+            </td>
 		<%} %>
 		<% if( supportLabNumber ){ %>
-		<td width="20%">
-			<%=StringUtil.getContextualMessageForKey("resultsentry.accessionNumber") %>
-		</td>
+            <td width="20%">
+                <%=StringUtil.getContextualMessageForKey("resultsentry.accessionNumber") %>
+            </td>
 		<%} %>
 		<td></td>
 	</tr>
@@ -326,17 +337,23 @@ function /*void*/ dirtySearchInfo(e){
         <td class="searchFirstName">
             <input name="searchFirstName" size="30" value="" id="searchFirstNameID" class="text" type="text" onkeyup="dirtySearchInfo( event )" >
         </td>
+        <td class="searchMiddleName">
+            <input name="searchMiddleName" size="30" value="" id="searchMiddleNameID" class="text" type="text" onkeyup="dirtySearchInfo( event )" >
+        </td>
         <td class="searchLastName" >
             <input name="searchLastName" size="30" value="" id="searchLastNameID" class="text" type="text" onkeyup="dirtySearchInfo( event )">
         </td>
-     <%} else {%>
-      <td class="searchLastName" >
+    <%} else {%>
+        <td class="searchLastName" >
           <input name="searchLastName" size="30" value="" id="searchLastNameID" class="text" type="text" onkeyup="dirtySearchInfo( event )">
-      </td>
-      <td class="searchFirstName">
+        </td>
+        <td class="searchFirstName">
           <input name="searchFirstName" size="30" value="" id="searchFirstNameID" class="text" type="text" onkeyup="dirtySearchInfo( event )" >
-      </td>
-       <% } %>
+        </td>
+        <td class="searchMiddleName">
+          <input name="searchMiddleName" size="30" value="" id="searchMiddleNameID" class="text" type="text" onkeyup="dirtySearchInfo( event )" >
+        </td>
+    <% } %>
 
 	<% if(supportSTNumber){ %>
 	<td class="searchST">
@@ -388,6 +405,9 @@ function /*void*/ dirtySearchInfo(e){
                 <th class="firstName" width="15%">
                     <bean:message key="patient.epiFirstName"/>
                 </th>
+                <th class="middleName" width="15%">
+                    <bean:message key="patient.epiMiddleName"/>
+                </th>
                 <th class="lastName" width="18%">
                     <bean:message key="patient.epiLastName"/>
                 </th>
@@ -397,6 +417,9 @@ function /*void*/ dirtySearchInfo(e){
                 </th>
                 <th class="firstName" width="15%">
                     <bean:message key="patient.epiFirstName"/>
+                </th>
+                <th class="middleName" width="15%">
+                    <bean:message key="patient.epiMiddleName"/>
                 </th>
                 <% } %>
 				<th width="5%">

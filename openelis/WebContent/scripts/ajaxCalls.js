@@ -68,7 +68,7 @@ function validateNonConformityRecordNumberOnServer( field, success, failure){
 
 }
 
-function patientSearch(lastName, firstName, STNumber, subjectNumber, nationalId, labNumber, success, failure){
+function patientSearch(lastName, firstName, middleName, STNumber, subjectNumber, nationalId, labNumber, success, failure){
 	if( !failure){failure = defaultFailure;	}
 	
 	new Ajax.Request (
@@ -77,6 +77,7 @@ function patientSearch(lastName, firstName, STNumber, subjectNumber, nationalId,
                method: 'get', //http method
                parameters: "provider=PatientSearchProvider&lastName=" + lastName +
                			  "&firstName=" + firstName +
+               			  "&middleName=" + middleName +
                			  "&STNumber=" + STNumber +
                			  "&subjectNumber=" + subjectNumber +
                			  "&nationalID=" + nationalId +

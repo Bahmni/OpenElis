@@ -50,6 +50,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "sample.accession_number AS accession_number, \n" +
                 "sample.collection_date AS collection_date, \n" +
                 "person.first_name AS first_name, \n" +
+                "person.middle_name AS middle_name, \n" +
                 "person.last_name AS last_name, \n" +
                 "patient_identity.identity_data AS st_number, \n" +
                 "sample_source.name AS sample_source, \n" +
@@ -71,7 +72,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "INNER JOIN test ON test.id = analysis.test_id\n" +
                 "LEFT OUTER JOIN document_track as document_track ON sample.id = document_track.row_id AND document_track.name = 'patientHaitiClinical' and document_track.parent_id is null \n" +
                 "WHERE analysis.status_id IN (" + getAllNonReferredAnalysisStatus() + ") \n" +
-                "GROUP BY sample.accession_number, sample.collection_date, sample.lastupdated, person.first_name, person.last_name, sample_source.name, patient_identity.identity_data, document_track.report_generation_time \n" +
+                "GROUP BY sample.accession_number, sample.collection_date, sample.lastupdated, person.first_name, person.middle_name, person.last_name, sample_source.name, patient_identity.identity_data, document_track.report_generation_time \n" +
                 "ORDER BY sample.accession_number DESC\n" +
                 "LIMIT 1000;";
         PreparedStatement preparedStatement = null;
@@ -101,6 +102,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "sample.accession_number AS accession_number, \n" +
                 "sample.collection_date AS collection_date, \n" +
                 "person.first_name AS first_name, \n" +
+                "person.middle_name AS middle_name, \n" +
                 "person.last_name AS last_name, \n" +
                 "patient_identity.identity_data AS st_number, \n" +
                 "sample_source.name AS sample_source, \n" +
@@ -121,7 +123,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "INNER JOIN test ON test.id = analysis.test_id\n" +
                 "LEFT OUTER JOIN document_track as document_track ON sample.id = document_track.row_id AND document_track.name = 'patientHaitiClinical' and document_track.parent_id is null\n" +
                 "WHERE analysis.status_id IN (" + getAllNonReferredAnalysisStatus() + ") \n" +
-                "GROUP BY sample.accession_number, sample.collection_date, person.first_name, person.last_name, sample_source.name, patient_identity.identity_data, document_track.report_generation_time\n" +
+                "GROUP BY sample.accession_number, sample.collection_date, person.first_name, person.middle_name, person.last_name, sample_source.name, patient_identity.identity_data, document_track.report_generation_time\n" +
                 "ORDER BY sample.accession_number DESC\n" +
                 "LIMIT 1000;";
 
@@ -176,6 +178,7 @@ public class OrderListDAOImpl implements OrderListDAO {
         return new Order(accessionResultSet.getString("accession_number"),
                             accessionResultSet.getString("st_number"),
                             accessionResultSet.getString("first_name"),
+                            accessionResultSet.getString("middle_name"),
                             accessionResultSet.getString("last_name"),
                             accessionResultSet.getString("sample_source"),
                             completed,

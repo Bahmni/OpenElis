@@ -80,6 +80,7 @@ public class PatientXmlCreator {
         XMLUtil.appendKeyValue("subjectNumber", identityMap.getIdentityValue(identityList, "SUBJECT"), xml);
         XMLUtil.appendKeyValue("lastName", getLastNameForResponse(person), xml);
         XMLUtil.appendKeyValue("firstName", person.getFirstName(), xml);
+        XMLUtil.appendKeyValue("middleName", person.getMiddleName(), xml);
         XMLUtil.appendKeyValue("mother", identityMap.getIdentityValue(identityList, "MOTHER"), xml);
         XMLUtil.appendKeyValue("aka", identityMap.getIdentityValue(identityList, "AKA"), xml);
         XMLUtil.appendKeyValue("street", person.getStreetAddress(), xml);

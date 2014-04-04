@@ -17,12 +17,7 @@
 */
 package us.mn.state.health.lims.common.provider.query.workerObjects;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 import org.apache.commons.validator.GenericValidator;
-
 import us.mn.state.health.lims.common.provider.query.PatientSearchResults;
 import us.mn.state.health.lims.common.util.XMLUtil;
 import us.mn.state.health.lims.patient.util.PatientUtil;
@@ -31,9 +26,13 @@ import us.mn.state.health.lims.patientidentity.daoimpl.PatientIdentityDAOImpl;
 import us.mn.state.health.lims.patientidentity.valueholder.PatientIdentity;
 import us.mn.state.health.lims.patientidentitytype.util.PatientIdentityTypeMap;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 abstract public class PatientSearchWorker {
 
-	abstract public String createSearchResultXML(String lastName, String firstName, String STNumber, String subjectNumber, String nationalID,
+	abstract public String createSearchResultXML(String lastName, String firstName, String middleName, String STNumber, String subjectNumber, String nationalID,
 			String patientID, StringBuilder xml);
 
 	protected void appendSearchResultRow(PatientSearchResults searchResults, StringBuilder xml) {
@@ -52,6 +51,7 @@ abstract public class PatientSearchWorker {
 		PatientIdentityTypeMap identityMap = PatientIdentityTypeMap.getInstance();
 
 		XMLUtil.appendKeyValue("first", result.getFirstName(), xml);
+		XMLUtil.appendKeyValue("middle", result.getMiddleName(), xml);
 		XMLUtil.appendKeyValue("last", result.getLastName(), xml);
 		XMLUtil.appendKeyValue("gender", result.getGender(), xml);
 		XMLUtil.appendKeyValue("dob", PatientUtil.getDisplayDOBForPatient(result.getPatientID(), result.getDOB()), xml);

@@ -503,6 +503,7 @@ function  /*void*/ processSearchPopulateSuccess(xhr)
 	var subjectNumberValue = getXMLValue(response, "subjectNumber");
 	var lastNameValue = getXMLValue(response, "lastName");
 	var firstNameValue = getXMLValue(response, "firstName");
+	var middleNameValue = getXMLValue(response, "middleName");
 	var akaValue = getXMLValue(response, "aka");
 	var motherValue = getXMLValue(response, "mother");
 	var motherInitialValue = getXMLValue(response, "motherInitial");
@@ -532,6 +533,7 @@ function  /*void*/ processSearchPopulateSuccess(xhr)
 					subjectNumberValue,
 					lastNameValue,
 					firstNameValue,
+					middleNameValue,
 					akaValue,
 					motherValue,
 					streetValue,
@@ -614,7 +616,7 @@ function /*void*/ clearErrors(){
 
 }
 
-function  /*void*/ setPatientInfo(nationalID, ST_ID, subjectNumber, lastName, firstName, aka, mother, street, city, dob, gender,
+function  /*void*/ setPatientInfo(nationalID, ST_ID, subjectNumber, lastName, firstName, middleName, aka, mother, street, city, dob, gender,
 		patientType, insurance, occupation, patientUpdated, personUpdated, motherInitial, commune, addressDept, educationId, nationalId, nationalOther,
 		maritialStatusId, healthRegionId, healthDistrictId, primaryRelative ) {
 
@@ -625,6 +627,7 @@ function  /*void*/ setPatientInfo(nationalID, ST_ID, subjectNumber, lastName, fi
 	if(supportSubjectNumber){ $("subjectNumberID").value = subjectNumber == undefined ? "" : subjectNumber; }
 	$("lastNameID").value = lastName == undefined ? "" : lastName;
 	$("firstNameID").value = firstName == undefined ? "" : firstName;
+	$("middleNameID").value = middleName == undefined ? "" : middleName;
 	if(supportAKA){$("akaID").value = aka == undefined ? "" : aka; }
 	if(supportMothersName){$("motherID").value = mother == undefined ? "" : mother; }
 	if(supportMothersInitial){$("motherInitialID").value = (motherInitial == undefined ? "" : motherInitial); }
@@ -944,6 +947,18 @@ jQuery(function(){
 					  onchange="updatePatientEditStatus();"
 					  styleId="firstNameID"/>
 		</td>
+		<td class="middleNameLabel" width="10%" align="right">
+			<bean:message key="patient.epiMiddleName" />
+			:
+		</td>
+		<td class="middleName" width="20%">
+			<nested:text name='<%=formName%>'
+					  property="patientProperties.middleName"
+					  styleClass="text"
+					  size="40"
+					  onchange="updatePatientEditStatus();"
+					  styleId="middleNameID"/>
+		</td>
 		<td class="lastNameLabel" align="right" width="15%">
         			<bean:message key="patient.epiLastName" />
         			:
@@ -990,6 +1005,18 @@ jQuery(function(){
           					  onchange="updatePatientEditStatus();"
           					  styleId="firstNameID"/>
           		</td>
+                <td class="middleNameLabel" width="10%" align="right">
+                    <bean:message key="patient.epiMiddleName" />
+                    :
+                </td>
+                <td class="middleName" width="20%">
+                    <nested:text name='<%=formName%>'
+                              property="patientProperties.middleName"
+                              styleClass="text"
+                              size="40"
+                              onchange="updatePatientEditStatus();"
+                              styleId="middleNameID"/>
+                </td>
            <% } %>
 
 	</tr>

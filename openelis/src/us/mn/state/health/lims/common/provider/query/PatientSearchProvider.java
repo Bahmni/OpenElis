@@ -45,6 +45,7 @@ public class PatientSearchProvider extends BaseQueryProvider {
 
 		String lastName = request.getParameter("lastName");
 		String firstName = request.getParameter("firstName");
+		String middleName = request.getParameter("middleName");
 		String STNumber = request.getParameter("STNumber");
 		String subjectNumber = request.getParameter("subjectNumber"); //N.B. This is a bad name, it is other than STnumber
 		String nationalID = request.getParameter("nationalID");
@@ -69,7 +70,7 @@ public class PatientSearchProvider extends BaseQueryProvider {
 		String result = VALID;
 
 		if (worker != null) {
-			result = worker.createSearchResultXML(lastName, firstName, STNumber, subjectNumber, nationalID, patientID, xml);
+			result = worker.createSearchResultXML(lastName, firstName, middleName, STNumber, subjectNumber, nationalID, patientID, xml);
 		} else {
 			result = INVALID;
 			xml.append("System is not configured correctly for searching for patients. Contact Administrator");

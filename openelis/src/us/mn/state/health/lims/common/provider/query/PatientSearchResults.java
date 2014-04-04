@@ -17,16 +17,17 @@
 */
 package us.mn.state.health.lims.common.provider.query;
 
+import us.mn.state.health.lims.common.util.DateUtil;
+
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-
-import us.mn.state.health.lims.common.util.DateUtil;
 
 public class PatientSearchResults {
 
 	private String id;
 	private String GUID;
 	private String firstName;
+	private String middleName;
 	private String lastName;
 	private String gender;
 	private String birthdate;
@@ -40,10 +41,11 @@ public class PatientSearchResults {
 
 	public PatientSearchResults(){}
 
-	public PatientSearchResults( BigDecimal id, String first, String last, String gender, Timestamp dob, String nationalId, String externalId, String stNumber, String subjectNumber, String guid)
+	public PatientSearchResults( BigDecimal id, String first, String middle, String last, String gender, Timestamp dob, String nationalId, String externalId, String stNumber, String subjectNumber, String guid)
 	{
 		this.id = id.toPlainString();
 		firstName = first;
+        middleName = middle;
 		lastName = last;
 		this.gender = gender;
 		birthdate = dob == null ? null : DateUtil.convertTimestampToStringDate(dob);
@@ -165,5 +167,13 @@ public class PatientSearchResults {
 	public String getExternalId() {
 		return externalId;
 	}
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
 }
 

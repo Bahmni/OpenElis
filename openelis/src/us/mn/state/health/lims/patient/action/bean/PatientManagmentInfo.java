@@ -45,6 +45,7 @@ public class PatientManagmentInfo implements Serializable {
 	private String nationalId;
 	private String lastName;
 	private String firstName;
+	private String middleName;
 	private String aka;
 	private String mothersName;
 	private String mothersInitial;
@@ -369,5 +370,13 @@ public class PatientManagmentInfo implements Serializable {
 
     public void setPrimaryRelative(String primaryRelative) {
         this.primaryRelative = primaryRelative;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
     }
 }
