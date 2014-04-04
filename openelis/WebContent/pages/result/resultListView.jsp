@@ -287,7 +287,7 @@ function updateAbnormalCheck(isNormal, index) {
     }
 }
 function isNormalForNumeric(value, lowerBound, upperBound) {
-    if(value) {
+    if(value && upperBound !== lowerBound) {
         return value <= upperBound && value >= lowerBound;
     } else {
         return true;
