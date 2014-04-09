@@ -18,6 +18,7 @@ package org.bahmni.openelis.domain;
 
 import org.bahmni.feed.openelis.utils.JsonTimeSerializer;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import us.mn.state.health.lims.note.valueholder.Note;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -29,7 +30,17 @@ public class AccessionDetail {
     private String patientFirstName;
     private String patientLastName;
     private Timestamp dateTime;
+    private List<String> accessionNotes;
     private List<TestDetail> testDetails;
+
+    public List<String> getAccessionNotes() {
+        return accessionNotes;
+    }
+
+    public void setAccessionNotes(List<String> accessionNotes) {
+        this.accessionNotes = accessionNotes;
+    }
+
 
     public String getAccessionUuid() {
         return accessionUuid;
@@ -75,7 +86,7 @@ public class AccessionDetail {
         this.dateTime = dateTime;
     }
 
-    @JsonSerialize(using=JsonTimeSerializer.class)
+    @JsonSerialize(using = JsonTimeSerializer.class)
     public Timestamp getDateTime() {
         return dateTime;
     }
