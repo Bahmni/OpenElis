@@ -34,6 +34,7 @@ import us.mn.state.health.lims.person.valueholder.Person;
 import us.mn.state.health.lims.result.action.util.ResultsLoadUtility;
 import us.mn.state.health.lims.result.valueholder.Result;
 import us.mn.state.health.lims.result.valueholder.ResultSignature;
+import us.mn.state.health.lims.resultvalidation.util.ResultsValidationUtility;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.samplehuman.dao.SampleHumanDAO;
@@ -54,6 +55,7 @@ public class AccessionService {
     private DictionaryDAO dictionaryDAO;
     private PatientIdentityDAO patientIdentityDAO;
     private PatientIdentityTypeDAO patientIdentityTypeDAO;
+    private ResultsValidationUtility resultsValidationUtility;
 
     public AccessionService(SampleDAO sampleDao, SampleHumanDAO sampleHumanDAO, ExternalReferenceDao externalReferenceDao,
                             NoteDAO noteDao, DictionaryDAO dictionaryDAO, PatientIdentityDAO patientIdentityDAO, PatientIdentityTypeDAO patientIdentityTypeDAO) {
@@ -66,6 +68,7 @@ public class AccessionService {
         this.patientIdentityDAO = patientIdentityDAO;
         this.patientIdentityTypeDAO = patientIdentityTypeDAO;
         this.finalizedStatusIds = new String[]{getFinalizedStatus(), getFinalizedROStatus()};
+        this.resultsValidationUtility = new ResultsValidationUtility();
     }
 
     public AccessionDetail getAccessionDetailFor(String sampleUuid) {
@@ -98,6 +101,8 @@ public class AccessionService {
 
     private void mapSample(Sample sample, AccessionDetail accessionDetail) {
         accessionDetail.setAccessionUuid(sample.getUUID());
+        List<Note> accessionNotes = resultsValidationUtility.getAccessionNotes(sample.getAccessionNumber());
+        accessionDetail.setAccessionNotes(mapNotesToString(accessionNotes));
         //too many dates in sample table. We just picked the one that can be closest to what we need.
         accessionDetail.setDateTime(new java.sql.Timestamp(sample.getEnteredDate().getTime()));
         List<TestDetail> testDetails = new ArrayList<>();
@@ -106,6 +111,14 @@ public class AccessionService {
         }
 
         accessionDetail.setTestDetails(testDetails);
+    }
+
+    private List<String> mapNotesToString(List<Note> accessionNotes) {
+        List<String> accessionNotesString = new ArrayList<>();
+        for (Note accessionNote : accessionNotes) {
+            accessionNotesString.add(accessionNote.getText());
+        }
+        return accessionNotesString;
     }
 
     private void mapSampleItem(List<TestDetail> testDetails, SampleItem sampleItem) {
