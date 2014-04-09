@@ -19,6 +19,7 @@ package org.bahmni.feed.openelis.feed.service.impl;
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import org.bahmni.openelis.domain.AccessionDetail;
+import org.bahmni.openelis.domain.AccessionNote;
 import org.bahmni.openelis.domain.TestDetail;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
@@ -113,12 +114,12 @@ public class AccessionService {
         accessionDetail.setTestDetails(testDetails);
     }
 
-    private List<String> mapNotesToString(List<Note> accessionNotes) {
-        List<String> accessionNotesString = new ArrayList<>();
+    private List<AccessionNote> mapNotesToString(List<Note> accessionNotes) {
+        List<AccessionNote> accessionNotesToPublish = new ArrayList<>();
         for (Note accessionNote : accessionNotes) {
-            accessionNotesString.add(accessionNote.getText());
+            accessionNotesToPublish.add(new AccessionNote(accessionNote.getText(),accessionNote.getSystemUser().getExternalId()));
         }
-        return accessionNotesString;
+        return accessionNotesToPublish;
     }
 
     private void mapSampleItem(List<TestDetail> testDetails, SampleItem sampleItem) {

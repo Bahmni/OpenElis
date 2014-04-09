@@ -36,7 +36,8 @@ public class AccessionHandler implements Handler<AccessionDetail>{
                 new NoteDAOImpl(),
                 new DictionaryDAOImpl(),
                 new PatientIdentityDAOImpl(),
-                new PatientIdentityTypeDAOImpl()));
+                new PatientIdentityTypeDAOImpl()
+        ));
     }
 
     public AccessionHandler(AccessionService accessionService) {
