@@ -857,8 +857,11 @@ public class ResultsValidationUtility {
 
     public List<Note> getAccessionNotes(String accessionNumber) {
         Sample sample = sampleDAO.getSampleByAccessionNumber(accessionNumber);
-        String tableReferenceId = NoteUtil.getTableReferenceId(SAMPLE_TABLE_NAME);
-        List<Note> notes = noteDAO.getNoteByRefIAndRefTableAndSubject(sample.getId(), tableReferenceId, ACCESSION_NOTE_SUBJECT);
-        return notes;
+        if(sample != null){
+            String tableReferenceId = NoteUtil.getTableReferenceId(SAMPLE_TABLE_NAME);
+            List<Note> notes = noteDAO.getNoteByRefIAndRefTableAndSubject(sample.getId(), tableReferenceId, ACCESSION_NOTE_SUBJECT);
+            return notes;
+        }
+        return Collections.EMPTY_LIST;
     }
 }

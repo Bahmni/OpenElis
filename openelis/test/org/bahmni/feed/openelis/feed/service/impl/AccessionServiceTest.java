@@ -40,6 +40,7 @@ import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
 import us.mn.state.health.lims.systemuser.dao.SystemUserDAO;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.anyString;
@@ -83,9 +84,11 @@ public class AccessionServiceTest {
     public void shouldReturnAccessionDetails() {
         AccessionService accessionService = new TestableAccessionService(sampleDao, sampleHumanDAO, externalReferenceDao, noteDao, dictionaryDao, patientIdentityDAO, patientIdentityTypeDAO);
         when(sampleDao.getSampleByUUID(sample.getUUID())).thenReturn(sample);
+        when(sampleDao.getSampleByAccessionNumber(anyString())).thenReturn(sample);
         when(sampleHumanDAO.getPatientForSample(sample)).thenReturn(patient);
         when(externalReferenceDao.getDataByItemId(anyString(), anyString())).thenReturn(new ExternalReference(456789, "Ex Id", "type"));
         when(patientIdentityTypeDAO.getNamedIdentityType("ST")).thenReturn(patienIdentityType);
+        when(noteDao.getNoteByRefIAndRefTableAndSubject(anyString(),anyString(),anyString())).thenReturn(Collections.EMPTY_LIST);
         AccessionDetail accessionDetail = accessionService.getAccessionDetailFor(sample.getUUID());
         assertNotNull(accessionDetail);
     }
