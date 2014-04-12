@@ -16,6 +16,7 @@
 
 package org.bahmni.feed.openelis.feed.event;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataDepartment;
@@ -33,7 +34,6 @@ import us.mn.state.health.lims.hibernate.ElisHibernateSession;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 
 public class ReferenceDataFeedEventWorker extends OpenElisEventWorker {
-
     public static final String REFERENCE_DATA_DEFAULT_ORGANIZATION = "reference.data.default.organization";
     private HttpClient webClient;
     private String urlPrefix;
@@ -72,7 +72,7 @@ public class ReferenceDataFeedEventWorker extends OpenElisEventWorker {
             if (title.department.name().equals(event.getTitle())) {
                 ReferenceDataDepartment department = webClient.get(urlPrefix + content, ReferenceDataDepartment.class);
                 logger.info(String.format("Processing department with UUID=%s", department.getId()));
-                testSectionService.createOrUpdate(department, atomFeedProperties.getProperty(REFERENCE_DATA_DEFAULT_ORGANIZATION));
+                testSectionService.createOrUpdate(department, getDefaultOrganization(atomFeedProperties));
             } else if (title.sample.name().equals(event.getTitle())) {
                 ReferenceDataSample sample = webClient.get(urlPrefix + content, ReferenceDataSample.class);
                 logger.info(String.format("Processing sample with UUID=%s", sample.getId()));
@@ -91,6 +91,24 @@ public class ReferenceDataFeedEventWorker extends OpenElisEventWorker {
         } finally {
             ElisHibernateSession session = (ElisHibernateSession) HibernateUtil.getSession();
             session.clearSession();
+        }
+    }
+
+    /**
+     * Provide the ability to override the property via environment variable, so that different
+     * implementations can specify their own value.
+     *
+     * @param atomFeedProperties
+     * @return The default organization value (from env variable, else from atomfeed.properties)
+     */
+    private String getDefaultOrganization(AtomFeedProperties atomFeedProperties) {
+        final String ELIS_DEF_ORG_ENVIRONMENT_VARIABLE = "ELIS_DEFAULT_ORGANIZATION_NAME";
+        String envValue = System.getenv(ELIS_DEF_ORG_ENVIRONMENT_VARIABLE);
+        if(StringUtils.isNotEmpty(envValue)){
+            logger.info("Environment variable "+ ELIS_DEF_ORG_ENVIRONMENT_VARIABLE +" found with value: " + envValue);
+            return envValue;
+        }else{
+            return atomFeedProperties.getProperty(REFERENCE_DATA_DEFAULT_ORGANIZATION);
         }
     }
 

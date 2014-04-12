@@ -67,19 +67,19 @@ public class AtomFeedProperties {
     }
 
 
-    public String getProperty(String feedname) {
-        return properties.getProperty(feedname);
+    public String getProperty(String propertyName) {
+        return properties.getProperty(propertyName);
     }
 
     public String getFeedConnectionTimeout() {
-        return properties.getProperty(FEED_CONNECT_TIMEOUT);
+        return getProperty(FEED_CONNECT_TIMEOUT);
     }
 
     public String getFeedReplyTimeout() {
-        return properties.getProperty(FEED_REPLY_TIMEOUT);
+        return getProperty(FEED_REPLY_TIMEOUT);
     }
 
     public String getMaxFailedEvents() {
-        return properties.getProperty(FEED_MAX_FAILED_EVENTS);
+        return getProperty(FEED_MAX_FAILED_EVENTS);
     }
 }
