@@ -211,6 +211,7 @@
                 </fileset>
             </batchtest>
         </junit>
+        <antcall target="report"/>
         <fail message="Test failure detected, check test results." if="test.failed"/>
     </target>
 
@@ -222,5 +223,7 @@
             </fileset>
             <report todir="${junit.output.dir}/html"/>
         </junitreport>
+        <property name="absolute.report.path" location="${junit.output.dir}/html"/>
+        <echo message=">> Junit HTML Report generated in location: '${absolute.report.path}/index.html'"/>
     </target>
 </project>
