@@ -16,6 +16,7 @@
 
 package org.bahmni.feed.openelis.feed.service.impl;
 
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import org.bahmni.openelis.domain.AccessionDetail;
@@ -44,6 +45,7 @@ import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.unitofmeasure.valueholder.UnitOfMeasure;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,7 +105,7 @@ public class AccessionService {
     private void mapSample(Sample sample, AccessionDetail accessionDetail) {
         accessionDetail.setAccessionUuid(sample.getUUID());
         List<Note> accessionNotes = resultsValidationUtility.getAccessionNotes(sample.getAccessionNumber());
-        accessionDetail.setAccessionNotes(mapNotesToString(accessionNotes));
+        accessionDetail.setAccessionNotes(mapToAccessionNotes(accessionNotes));
         //too many dates in sample table. We just picked the one that can be closest to what we need.
         accessionDetail.setDateTime(new java.sql.Timestamp(sample.getEnteredDate().getTime()));
         List<TestDetail> testDetails = new ArrayList<>();
@@ -114,12 +116,16 @@ public class AccessionService {
         accessionDetail.setTestDetails(testDetails);
     }
 
-    private List<AccessionNote> mapNotesToString(List<Note> accessionNotes) {
+    private List<AccessionNote> mapToAccessionNotes(List<Note> accessionNotes) {
         List<AccessionNote> accessionNotesToPublish = new ArrayList<>();
         for (Note accessionNote : accessionNotes) {
-            accessionNotesToPublish.add(new AccessionNote(accessionNote.getText(),accessionNote.getSystemUser().getExternalId()));
+            accessionNotesToPublish.add(new AccessionNote(accessionNote.getText(),accessionNote.getSystemUser().getExternalId(), toISODateFormat(accessionNote.getLastupdated())));
         }
         return accessionNotesToPublish;
+    }
+
+    private String toISODateFormat(Timestamp timestamp){
+        return DateFormatUtils.format(timestamp.getTime(),DateFormatUtils.ISO_DATETIME_TIME_ZONE_FORMAT.getPattern());
     }
 
     private void mapSampleItem(List<TestDetail> testDetails, SampleItem sampleItem) {
