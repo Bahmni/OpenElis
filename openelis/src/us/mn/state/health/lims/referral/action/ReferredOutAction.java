@@ -153,6 +153,7 @@ public class ReferredOutAction extends BaseAction {
 
         List<Referral> referralList;
         if (StringUtils.isNotBlank(patientSTNumber)) {
+            patientSTNumber = patientSTNumber.toUpperCase();
             referralList = referralDAO.getAllUncanceledOpenReferralsByPatientSTNumber(patientSTNumber);
         } else {
             referralList = referralDAO.getAllUncanceledOpenReferrals();
