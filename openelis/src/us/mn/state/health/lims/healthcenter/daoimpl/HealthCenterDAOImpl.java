@@ -23,6 +23,7 @@ import us.mn.state.health.lims.healthcenter.dao.HealthCenterDAO;
 import us.mn.state.health.lims.healthcenter.valueholder.HealthCenter;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class HealthCenterDAOImpl implements HealthCenterDAO {
@@ -40,6 +41,16 @@ public class HealthCenterDAOImpl implements HealthCenterDAO {
             LogEvent.logErrorStack("HealthCenterDAOImpl", "getAll()", e);
             throw new LIMSRuntimeException("Error in HealthCenterDAOImpl getAll()", e);
         }
+    }
+
+    @Override
+    public List<String> getAllHealthCenterNames() throws LIMSRuntimeException{
+        List<HealthCenter> allHealthCenters = getAll();
+        List<String> healthCenterNames = new ArrayList<>();
+        for (HealthCenter healthCenter : allHealthCenters) {
+            healthCenterNames.add(healthCenter.getName());
+        }
+        return healthCenterNames;
     }
 
     @Override

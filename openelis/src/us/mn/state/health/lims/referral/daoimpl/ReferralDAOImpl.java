@@ -36,6 +36,8 @@ import us.mn.state.health.lims.referral.valueholder.Referral;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.statusofsample.valueholder.StatusOfSample;
 
+import static us.mn.state.health.lims.common.services.PatientService.getHealthPrefixedList;
+
 /*
  */
 public class ReferralDAOImpl extends BaseDAOImpl implements ReferralDAO {
@@ -108,11 +110,11 @@ public class ReferralDAOImpl extends BaseDAOImpl implements ReferralDAO {
                 " where r.analysis.sampleItem.sample.id = sh.sampleId" +
                 " and r.analysis.statusId in (" + StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.ReferedOut) + "," + StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.BiologistRejectedRO) + ")" +
                 " and sh.patientId = pi.patientId and pi.identityTypeId = "+ PatientIdentityTypeMap.getInstance().getIDForType("ST") +
-                " and pi.identityData = :patientSTNumber" +
+                " and pi.identityData in ( :patientSTNumber )" +
                 " and r.canceled = 'false' order by r.id";
         try {
             Query query = HibernateUtil.getSession().createQuery(sql);
-            query.setParameter("patientSTNumber", patientSTNumber);
+            query.setParameterList("patientSTNumber", getHealthPrefixedList(patientSTNumber));
             List<Referral> referrals = query.list();
             closeSession();
             return referrals;

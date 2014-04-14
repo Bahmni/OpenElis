@@ -20,6 +20,8 @@ package us.mn.state.health.lims.sample.daoimpl;
 import org.apache.commons.validator.GenericValidator;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.provider.query.PatientSearchResults;
+import us.mn.state.health.lims.healthcenter.dao.HealthCenterDAO;
+import us.mn.state.health.lims.healthcenter.daoimpl.HealthCenterDAOImpl;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.patientidentitytype.util.PatientIdentityTypeMap;
 import us.mn.state.health.lims.sample.dao.SearchResultsDAO;
@@ -28,6 +30,8 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import static us.mn.state.health.lims.common.services.PatientService.getHealthPrefixedList;
+
 
 public class SearchResultsDAOImp implements SearchResultsDAO {
 
@@ -39,6 +43,7 @@ public class SearchResultsDAOImp implements SearchResultsDAO {
 	private static final String ST_NUMBER_PARAM = "stNumber";
 	private static final String SUBJECT_NUMBER_PARAM = "subjectNumber";
 	private static final String ID_PARAM = "id";
+
 
 	public List<PatientSearchResults> getSearchResults(String lastName, String firstName, String middleName, String STNumber, String subjectNumber,
                                                        String nationalID, String externalID, String patientID) throws LIMSRuntimeException {
@@ -77,7 +82,7 @@ public class SearchResultsDAOImp implements SearchResultsDAO {
 				query.setString(EXTERNAL_ID_PARAM, nationalID.toLowerCase());
 			}
 			if (querySTNumber) {
-				query.setString(ST_NUMBER_PARAM, STNumber);
+				query.setParameterList(ST_NUMBER_PARAM, getHealthPrefixedList(STNumber));
 			}
 			if (querySubjectNumber) {
 				query.setString(SUBJECT_NUMBER_PARAM, subjectNumber);
@@ -179,9 +184,7 @@ public class SearchResultsDAOImp implements SearchResultsDAO {
 		}
 
 		if (STNumber) {
-			queryBuilder.append(" pi.identity_data like :");
-			queryBuilder.append(ST_NUMBER_PARAM);
-			queryBuilder.append(" or");
+            queryBuilder.append(" pi.identity_data in ( :" + ST_NUMBER_PARAM + " ) or ");
 		}
 
 		if (subjectNumber) {
@@ -209,7 +212,9 @@ public class SearchResultsDAOImp implements SearchResultsDAO {
 		return queryBuilder.toString();
 	}
 
-	public List getNextRecord(String id, String table, Class clazz) throws LIMSRuntimeException {
+
+
+    public List getNextRecord(String id, String table, Class clazz) throws LIMSRuntimeException {
 		// TODO Auto-generated method stub
 		return null;
 	}

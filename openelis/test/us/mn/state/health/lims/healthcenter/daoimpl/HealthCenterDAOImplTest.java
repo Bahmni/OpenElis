@@ -38,6 +38,18 @@ public class HealthCenterDAOImplTest extends IT {
     }
 
     @Test
+    public void shouldGetAllHealthCenterNames() throws Exception {
+        HealthCenter tst1 = new HealthCenter("TST1", "Test 1");
+        HealthCenter tst2 = new HealthCenter("TST2", "Test 2");
+        healthCenterDAO.add(tst1);
+        healthCenterDAO.add(tst2);
+
+        List<String> allHealthCenterNames = healthCenterDAO.getAllHealthCenterNames();
+        assertTrue(allHealthCenterNames.contains("TST1"));
+        assertTrue(allHealthCenterNames.contains("TST2"));
+    }
+
+    @Test
     public void shouldAddHealthCenter(){
         HealthCenter healthCenter = new HealthCenter("TST", "Test");
         assertNull(healthCenter.getId());
