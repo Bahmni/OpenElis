@@ -63,21 +63,7 @@ public class OpenElisUrlPublisher {
 
     public void publish(Collection<String> resourcePaths, String contextPath) {
         for (String resourcePath : resourcePaths) {
-            String contentUrl = getContentUrlFor(resourcePath, contextPath);
-            final Event event = new Event(UUID.randomUUID().toString(), messageType, DateTime.now(), (URI) null, contentUrl, category);
-
-            transactionManager.executeWithTransaction(
-                    new AFTransactionWorkWithoutResult() {
-                        @Override
-                        protected void doInTransaction() {
-                            eventService.notify(event);
-                        }
-                        @Override
-                        public PropagationDefinition getTxPropagationDefinition() {
-                            return PropagationDefinition.PROPAGATION_REQUIRED;
-                        }
-                    }
-            );
+            publish(resourcePath, contextPath);
         }
     }
 

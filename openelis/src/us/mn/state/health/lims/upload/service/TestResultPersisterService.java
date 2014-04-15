@@ -16,6 +16,8 @@
 
 package us.mn.state.health.lims.upload.service;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.bahmni.csv.RowResult;
 import org.bahmni.feed.openelis.feed.service.EventPublishers;
@@ -38,6 +40,9 @@ import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.upload.sample.CSVSample;
 import us.mn.state.health.lims.upload.sample.CSVTestResult;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TestResultPersisterService {
     private String sysUserId;
@@ -86,7 +91,7 @@ public class TestResultPersisterService {
             Patient patient = patientDAO.getPatientById(sampleHuman.getPatientId());
 
             boolean hasFailed = false;
-            StringBuilder errorMessageBuilder = new StringBuilder();
+            List<String> errors = new ArrayList<>();
             for (CSVTestResult testResult : csvSample.testResults) {
                 try {
                     if (testResult.isEmpty())
@@ -99,17 +104,14 @@ public class TestResultPersisterService {
                     }
                 } catch (LIMSRuntimeException e) {
                     hasFailed = true;
-                    if (errorMessageBuilder.length() > 0) {
-                        errorMessageBuilder.append(",").append(e.getMessage());
-                    } else {
-                        errorMessageBuilder.append(e.getMessage());
-                    }
+                    errors.add(ExceptionUtils.getFullStackTrace(e));
                 }
             }
-            accessionPublisher.publish(sample.getUUID(), contextPath);
             if (hasFailed) {
                 transaction.rollback();
-                return new RowResult<>(csvSample, errorMessageBuilder.toString());
+                return new RowResult<>(csvSample, StringUtils.join(errors, ", "));
+            } else {
+                accessionPublisher.publish(sample.getUUID(), contextPath);
             }
             if (transaction.isActive()) {
                 transaction.commit();
