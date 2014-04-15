@@ -104,6 +104,7 @@ public class TestResultPersisterService {
                     }
                 } catch (LIMSRuntimeException e) {
                     hasFailed = true;
+                    logger.warn(e);
                     errors.add(ExceptionUtils.getFullStackTrace(e));
                 }
             }
