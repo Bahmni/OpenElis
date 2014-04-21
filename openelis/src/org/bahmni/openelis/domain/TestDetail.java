@@ -4,8 +4,6 @@ import org.bahmni.feed.openelis.utils.JsonTimeSerializer;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TestDetail {
     private String testName;
@@ -15,7 +13,7 @@ public class TestDetail {
     private Double minNormal;
     private Double maxNormal;
     private String result;
-    private List<String> notes;
+    private String notes;
     private String resultType;
     private String providerUuid;
     private Boolean isAbnormal;
@@ -78,17 +76,12 @@ public class TestDetail {
         this.result = result;
     }
 
-    public List<String> getNotes() {
-        if (notes == null) notes = new ArrayList<>();
+    public String getNotes() {
         return notes;
     }
 
-    public void setNotes(List<String> notes) {
-        this.notes = notes;
-    }
-
-    public void addNotes(String note) {
-        getNotes().add(note);
+    public void setNotes(String latestNotes) {
+        this.notes = latestNotes;
     }
 
     public String getResultType() {

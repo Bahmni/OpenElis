@@ -20,6 +20,7 @@ import junit.framework.Assert;
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import org.bahmni.openelis.domain.AccessionDetail;
+import org.bahmni.openelis.domain.TestDetail;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -39,9 +40,11 @@ import us.mn.state.health.lims.samplehuman.dao.SampleHumanDAO;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
 import us.mn.state.health.lims.systemuser.dao.SystemUserDAO;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
@@ -97,21 +100,27 @@ public class AccessionServiceTest {
     public void shouldGetAccessionDetailsForUuid() {
         AccessionService accessionService = new TestableAccessionService(sampleDao, sampleHumanDAO, externalReferenceDao, noteDao, dictionaryDao, patientIdentityDAO, patientIdentityTypeDAO);
         ExternalReference externalReferences = new ExternalReference(98743123, "ExternalId", "Type");
+        Note oldNote = new Note();
+        oldNote.setText("note 1");
+        Note latestNote = new Note();
+        latestNote.setText("note latest");
 
         when(sampleDao.getSampleByUUID(sample.getUUID())).thenReturn(sample);
         when(sampleHumanDAO.getPatientForSample(sample)).thenReturn(patient);
         Analysis analysis = (Analysis) ((SampleItem) sample.getSampleItems().toArray()[0]).getAnalyses().toArray()[0];
         when(externalReferenceDao.getDataByItemId(analysis.getTest().getId(), "Test")).thenReturn(externalReferences);
         when(externalReferenceDao.getDataByItemId(analysis.getPanel().getId(), "Panel")).thenReturn(externalReferences);
-        when(noteDao.getNoteByRefIAndRefTableAndSubject(anyString(), anyString(), anyString())).thenReturn(new ArrayList<Note>());
+        when(noteDao.getNoteByRefIAndRefTableAndSubject(anyString(), anyString(), anyString())).thenReturn(Arrays.asList(latestNote, oldNote));
         when(patientIdentityTypeDAO.getNamedIdentityType("ST")).thenReturn(patienIdentityType);
 
         AccessionDetail accessionDetail = accessionService.getAccessionDetailFor(sample.getUUID());
 
         Assert.assertEquals(accessionDetail.getAccessionUuid(), sample.getUUID());
-        Assert.assertNotNull(accessionDetail.getTestDetails());
+        List<TestDetail> testDetails = accessionDetail.getTestDetails();
+        Assert.assertNotNull(testDetails);
         Assert.assertNotNull(accessionDetail.getPatientUuid());
         Assert.assertEquals(accessionDetail.getPatientUuid(), patient.getUuid());
+        assertEquals(latestNote.getText(), testDetails.get(0).getNotes());
     }
 
     private class TestableAccessionService extends AccessionService {

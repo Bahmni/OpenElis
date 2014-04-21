@@ -166,7 +166,7 @@ public class AccessionService {
     private void setResultDetail(TestDetail testDetail, Result result) {
         ResultSignature resultSignature = (ResultSignature) result.getResultSignatures().toArray()[0];
         testDetail.setProviderUuid(resultSignature.getSystemUser().getExternalId());
-        addNotes(result.getId(), testDetail);
+        addRecentNotes(result.getId(), testDetail);
         testDetail.setMinNormal(result.getMinNormal() != null && result.getMinNormal() != Double.NEGATIVE_INFINITY ? result.getMinNormal() : null);
         testDetail.setMaxNormal(result.getMaxNormal() != null && result.getMaxNormal() != Double.POSITIVE_INFINITY ? result.getMaxNormal() : null);
         testDetail.setResult(getResultValue(result));
@@ -193,10 +193,11 @@ public class AccessionService {
         }
     }
 
-    private void addNotes(String resultId, TestDetail testResult) {
+    private void addRecentNotes(String resultId, TestDetail testResult) {
         List<Note> notes = noteDao.getNoteByRefIAndRefTableAndSubject(resultId, getResultReferenceTableId(), "Result Note");
-        for (Note note : notes) {
-            testResult.addNotes(note.getText());
+        if(!notes.isEmpty()){
+            Note latestNote = notes.get(0);
+            testResult.setNotes(latestNote.getText());
         }
     }
 
