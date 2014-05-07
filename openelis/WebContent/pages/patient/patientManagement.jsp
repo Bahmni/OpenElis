@@ -1,12 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=utf-8" %>
 <%@ page import="us.mn.state.health.lims.common.action.IActionConstants,
-                 us.mn.state.health.lims.common.util.SystemConfiguration,
                  us.mn.state.health.lims.common.formfields.FormFields,
                  us.mn.state.health.lims.common.formfields.FormFields.Field,
+                 us.mn.state.health.lims.common.util.ConfigurationProperties,
                  us.mn.state.health.lims.common.util.StringUtil,
+                 us.mn.state.health.lims.common.util.SystemConfiguration,
                  us.mn.state.health.lims.common.util.Versioning,
-                 us.mn.state.health.lims.patient.action.bean.PatientManagmentInfo,
-                 us.mn.state.health.lims.patient.action.bean.AddressPartForm" %>
+                 us.mn.state.health.lims.patient.action.bean.AddressPartForm,
+                 us.mn.state.health.lims.patient.action.bean.PatientManagmentInfo" %>
 
 
 <%@ taglib uri="/tags/struts-bean"		prefix="bean" %>
@@ -49,6 +50,7 @@
     boolean supportHealthCenters = false;
     boolean supportPrimaryRelative = false;
     boolean allHealthCenter = false;
+    String stNumberFormat = ConfigurationProperties.getInstance().getPropertyValue(ConfigurationProperties.Property.ST_NUMBER_FORMAT);
  %>
 <%
     allHealthCenter = false;
@@ -85,7 +87,7 @@
 	    patientAgeRequired = FormFields.getInstance().useField(Field.PatientAgeRequired_SampleEntry );
 		patientGenderRequired = FormFields.getInstance().useField(Field.PatientGenderRequired_SampleEntry);
 	}
-	
+
 	patientNamesRequired = FormFields.getInstance().useField(Field.PatientNameRequired);
 %>
 
@@ -132,8 +134,8 @@ if( patientGenderRequired){
 	pt_requiredFields.push("genderID");
 }
 if( patientNamesRequired){
-	pt_requiredFields.push("firstNameID"); 
-	pt_requiredFields.push("lastNameID"); 
+	pt_requiredFields.push("firstNameID");
+	pt_requiredFields.push("lastNameID");
 }
 
 var pt_requiredOneOfFields = new Array();
@@ -201,13 +203,13 @@ function /*boolean*/ patientFormValid(){
 }
 
 function pt_patientRequiredFieldsAllEmpty() {
-	
+
 	for( var i = 0; i < pt_requiredFields.length; ++i ){
 		if( !$(pt_requiredFields[i]).value.blank() ){
 			return false;
 		}
 	}
-	
+
 	for( var i = 0; i < pt_requiredOneOfFields.length; ++i ){
 		if( !($(pt_requiredOneOfFields[i]).value.blank()) ){
 			return false;
@@ -339,7 +341,7 @@ function  /*void*/ processValidateDateSuccess(xhr){
 	}else if( message == "<%=IActionConstants.INVALID_TO_LARGE%>" ){
 		alert( '<bean:message key="error.date.birthInPast" />' );
 	}
-	
+
 	pt_setSave();
 }
 
@@ -471,7 +473,8 @@ function  /*void*/ getDetailedPatientInfo()
 	$("patientPK_ID").value = patientSelectID;
     jQuery(".required-message").addClass("hide");
 
-	new Ajax.Request (
+	//noinspection JSUnresolvedVariable
+    new Ajax.Request (
                        'ajaxQueryXML',  //url
                         {//options
                           method: 'get', //http method
@@ -639,18 +642,18 @@ function  /*void*/ setPatientInfo(nationalID, ST_ID, subjectNumber, lastName, fi
 	$("patientLastUpdated").value = patientUpdated == undefined ? "" : patientUpdated;
 	$("personLastUpdated").value = personUpdated == undefined ? "" : personUpdated;
 	if(supportPatientNationality){
-		$("nationalityID").selectedIndex = nationalId == undefined ? 0 : nationalId; 
+		$("nationalityID").selectedIndex = nationalId == undefined ? 0 : nationalId;
 		$("nationalityOtherId").value = nationalOther == undefined ? "" : nationalOther;}
 	if( supportEducation){ $("educationID").selectedIndex =  educationId == undefined ? 0 : educationId;}
 	if( supportMaritialStatus){ $("maritialStatusID").selectedIndex = maritialStatusId == undefined ? 0 : maritialStatusId;}
-	if( supportHealthRegion){ 
-		var healthRegion = $("healthRegionID"); 
+	if( supportHealthRegion){
+		var healthRegion = $("healthRegionID");
 		healthRegion.selectedIndex = healthRegionId == undefined ? 0 : healthRegionId;
 		$("shadowHealthRegion").value = healthRegion.options[healthRegion.selectedIndex].label;}
 	if( supportHealthDistrict){
 		if($("healthRegionID").selectedIndex != 0){
 			getDistrictsForRegion( $("healthRegionID").value, healthDistrictId, healthDistrictSuccess, null);
-		} 
+		}
 	}
     if(supportPrimaryRelative) {
         $("primaryRelativeID").value = primaryRelative == undefined ? "" : primaryRelative;
@@ -735,7 +738,7 @@ function /*void*/ makeDirty(){
 		showSuccessMessage(false); //refers to last save
 	}
 	// Adds warning when leaving page if content has been entered into makeDirty form fields
-	function formWarning(){ 
+	function formWarning(){
     return "<bean:message key="banner.menu.dataLossWarning"/>";
 	}
 	window.onbeforeunload = formWarning;
@@ -810,7 +813,7 @@ function healthDistrictSuccess( xhr ){
 			healthDistrict.options[i + 1] = new Option(districts[i].attributes.getNamedItem("value").value, districts[i].attributes.getNamedItem("value").value);
 		}
 	}
-	
+
 	if( selected){
 		healthDistrict.selectedIndex = getSelectIndexFor( "healthDistrictID", selected.childNodes[0].nodeValue);
 	}
@@ -937,7 +940,7 @@ jQuery(function(){
 			:
 			<% if( patientNamesRequired){ %>
 				<span class="requiredlabel">*</span>
-			<% } %>	
+			<% } %>
 		</td>
 		<td class="firstName" width="20%">
 			<nested:text name='<%=formName%>'
@@ -1205,8 +1208,8 @@ jQuery(function(){
 			<option value="0" ></option>
 			<html:optionsCollection name="<%=formName %>" property="patientProperties.healthRegions" label="value" value="id" />
 			</html:select>
-		</td>	
-	</tr>		
+		</td>
+	</tr>
 	<% } %>
 	<% if( FormFields.getInstance().useField(Field.PatientHealthDistrict)){ %>
 	<tr>
@@ -1220,8 +1223,8 @@ jQuery(function(){
 			<option value="0" ></option>
 
 			</html:select>
-		</td>	
-	</tr>		
+		</td>
+	</tr>
 	<% } %>
 	</table>
 
@@ -1324,8 +1327,8 @@ jQuery(function(){
 					<option value="0" ></option>
 					<html:optionsCollection name="<%=formName %>" property="patientProperties.educationList" label="value" value="value" />
 					</html:select>
-				</td>	
-			</tr>	
+				</td>
+			</tr>
 	<% } %>
 	<% if( FormFields.getInstance().useField(Field.PatientMarriageStatus)){ %>
 		<tr>
@@ -1337,8 +1340,8 @@ jQuery(function(){
 					<option value="0" ></option>
 					<html:optionsCollection name="<%=formName %>" property="patientProperties.maritialList" label="value" value="value" />
 					</html:select>
-				</td>	
-			</tr>	
+				</td>
+			</tr>
 	<% } %>
 	<% if( FormFields.getInstance().useField(Field.PatientNationality)){ %>
 		<tr>
@@ -1354,8 +1357,8 @@ jQuery(function(){
 				<td><bean:message key="specify"/>:</td>
 				<td>
 					<html:text name='<%=formName %>'  property="patientProperties.otherNationality" styleId="nationalityOtherId" />
-				</td>	
-			</tr>	
+				</td>
+			</tr>
 	<% } %>
 	</table>
 	</div>
@@ -1392,10 +1395,10 @@ function pageOnLoad() {
 }
 
 function validatePatientId(){
-    var patientId = $("ST_ID").value;
+    var patientId = $("healthCenterName").value + $("ST_ID").value;
     if(patientId){
-        if(patientId.search(/\D/) !== -1 ){
-            alert("Only numbers allowed in the PatientID");
+        if(patientId.search(<%= stNumberFormat %>) == -1 ){
+            alert("PatientID does not conform to the allowed format.");
             $("ST_ID").value = "";
             makeDirty();
         }
@@ -1423,7 +1426,7 @@ function populateHealthCenter() {
 function splitSTNumber() {
     var stNumber = $('ST_ID').value;
     if(stNumber && !stNumber.blank()) {
-        var match = stNumber.match(/([a-zA-Z]*)(\d+)/);
+        var match = stNumber.match(<%=stNumberFormat%>);
         $('healthCenterName').value = match[1];
         $('hiddenhealthCenterName').value =  $('healthCenterName').value;
         $('ST_ID').value = match[2];
