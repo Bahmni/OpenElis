@@ -1133,4 +1133,18 @@
             tableName="patient"
             constraintName="unique_uuid_constraint"/>
     </changeSet>
+    <changeSet id="87" author="arathy" context="bahmni" runOnChange="true">
+        <comment>Adding site information for logo image name</comment>
+        <update schemaName="clinlims" tableName="site_information">
+            <column name="value" valueBoolean="true"/>
+            <where>name='useLogoInReport'</where>
+        </update>
+    </changeSet>
+    <changeSet id="88" author="arathy" context="bahmni" runOnChange="true">
+        <comment>Changing value_type of additional info</comment>
+        <update schemaName="clinlims" tableName="site_information">
+            <column name="value_type" value="text"/>
+            <where>name='additional site info'</where>
+        </update>
+    </changeSet>
 </databaseChangeLog>
