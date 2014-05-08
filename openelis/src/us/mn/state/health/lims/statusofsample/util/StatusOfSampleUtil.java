@@ -17,14 +17,7 @@
  */
 package us.mn.state.health.lims.statusofsample.util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.apache.commons.validator.GenericValidator;
-
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
@@ -48,6 +41,12 @@ import us.mn.state.health.lims.samplehuman.valueholder.SampleHuman;
 import us.mn.state.health.lims.statusofsample.dao.StatusOfSampleDAO;
 import us.mn.state.health.lims.statusofsample.daoimpl.StatusOfSampleDAOImpl;
 import us.mn.state.health.lims.statusofsample.valueholder.StatusOfSample;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /*
  * This is the union of all the status of all instances of global OpenELIS.  Please do not remove a
@@ -315,7 +314,9 @@ public class StatusOfSampleUtil {
     }
 
     public static boolean isPublishableAnalysis(String statusId) {
-        return statusId.equals(getStatusID(AnalysisStatus.Finalized)) || statusId.equals(getStatusID(AnalysisStatus.ReferedOut));
+        return statusId.equals(getStatusID(AnalysisStatus.Finalized))
+                || statusId.equals(getStatusID(AnalysisStatus.FinalizedRO))
+                || statusId.equals(getStatusID(AnalysisStatus.ReferedOut));
     }
 
     private static void insertOrUpdateStatus(Sample sample, Patient patient, RecordStatus status, String sysUserId, ObservationHistory record, String historyTypeId) {

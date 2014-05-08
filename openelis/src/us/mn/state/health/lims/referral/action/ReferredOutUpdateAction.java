@@ -20,7 +20,13 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.GenericValidator;
 import org.apache.struts.Globals;
-import org.apache.struts.action.*;
+import org.apache.struts.action.ActionErrors;
+import org.apache.struts.action.ActionForm;
+import org.apache.struts.action.ActionForward;
+import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.ActionMessages;
+import org.bahmni.feed.openelis.feed.service.EventPublishers;
+import org.bahmni.feed.openelis.feed.service.impl.OpenElisUrlPublisher;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -32,6 +38,7 @@ import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
+import us.mn.state.health.lims.common.util.ConfigurationProperties;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.validator.ActionError;
 import us.mn.state.health.lims.note.dao.NoteDAO;
@@ -71,7 +78,11 @@ import us.mn.state.health.lims.testresult.valueholder.TestResult;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public class ReferredOutUpdateAction extends BaseAction {
     private List<ReferralItem> modifiedItems;
@@ -84,6 +95,8 @@ public class ReferredOutUpdateAction extends BaseAction {
     private final ReferralResultDAO referralResultDAO = new ReferralResultDAOImpl();
     private final OrganizationDAO organizationDAO = new OrganizationDAOImpl();
 
+    private boolean alwaysValidate = ConfigurationProperties.getInstance().isPropertyValueEqual(ConfigurationProperties.Property.ALWAYS_VALIDATE_RESULTS, "true");
+
     private final SampleDAO sampleDAO = new SampleDAOImpl();
     private final AnalysisDAO analysisDAO = new AnalysisDAOImpl();
     private final NoteDAO noteDAO = new NoteDAOImpl();
@@ -93,6 +106,8 @@ public class ReferredOutUpdateAction extends BaseAction {
     private TestDAO testDAO = new TestDAOImpl();
     private ResultsLoadUtility resultsLoadUtility;
     private SampleHumanDAO sampleHumanDAO = new SampleHumanDAOImpl();
+    private OpenElisUrlPublisher accessionPublisher = new EventPublishers().accessionPublisher();
+
 
     @Override
     protected String getPageSubtitleKey() {
@@ -136,25 +151,7 @@ public class ReferredOutUpdateAction extends BaseAction {
         }
 
         try {
-            for (ReferralSet referralSet : referralSets) {
-                referralDAO.updateData(referralSet.referral);
-
-                for (ReferralResult referralResult : referralSet.existingReferralResults) {
-                    referralResultDAO.saveOrUpdateData(referralResult);
-                }
-
-                for (ReferralResult referralResult : referralSet.newReferralResults) {
-                    referralResultDAO.saveOrUpdateData(referralResult);
-                }
-
-                if (referralSet.note != null) {
-                    if (referralSet.note.getId() == null) {
-                        noteDAO.insertData(referralSet.note);
-                    } else {
-                        noteDAO.updateData(referralSet.note);
-                    }
-                }
-            }
+            saveOrUpdateReferralResult(referralSets, request.getContextPath());
 
             for (ReferralResult referralResult : removableReferralResults) {
                 referralResult.setSysUserId(currentUserId);
@@ -186,6 +183,47 @@ public class ReferredOutUpdateAction extends BaseAction {
         }
 
         return mapping.findForward(IActionConstants.FWD_SUCCESS);
+    }
+
+    private void saveOrUpdateReferralResult(ArrayList<ReferralSet> referralSets, String contextPath) {
+        Set<String> accessionsToPublish = new HashSet<>();
+        for (ReferralSet referralSet : referralSets) {
+            referralDAO.updateData(referralSet.referral);
+            for (ReferralResult referralResult : referralSet.existingReferralResults) {
+                referralResultDAO.saveOrUpdateData(referralResult);
+                addToPublishSet(referralResult,accessionsToPublish);
+            }
+
+            for (ReferralResult referralResult : referralSet.newReferralResults) {
+                referralResultDAO.saveOrUpdateData(referralResult);
+                addToPublishSet(referralResult,accessionsToPublish);
+            }
+
+            if (referralSet.note != null) {
+                if (referralSet.note.getId() == null) {
+                    noteDAO.insertData(referralSet.note);
+                } else {
+                    noteDAO.updateData(referralSet.note);
+                }
+            }
+        }
+
+        publishSavedReferralResult(accessionsToPublish,contextPath);
+
+    }
+
+    private void addToPublishSet(ReferralResult referralResult, Set<String> accessionsToPublish) {
+        if(canPublishReferralResult(referralResult)){
+            accessionsToPublish.add(referralResult.getResult().getAnalysis().getSampleItem().getSample().getUUID());
+        }
+    }
+
+    private boolean canPublishReferralResult(ReferralResult referralResult) {
+        return StatusOfSampleUtil.isPublishableAnalysis(referralResult.getResult().getAnalysis().getStatusId());
+    }
+
+    private void publishSavedReferralResult(Set<String> accessionsToPublish,String contextPath) {
+        accessionPublisher.publish(accessionsToPublish,contextPath);
     }
 
     private void selectModifiedAndCanceledItems(List<ReferralItem> referralItems) {
@@ -358,6 +396,9 @@ public class ReferredOutUpdateAction extends BaseAction {
         } else {
             ReferralResult referralResult = referralSet.getNextReferralResult();
             referralResult.fillResult(referralItem, currentUserId, limit, referredResultType);
+            if(!alwaysValidate){
+                referralResult.getResult().getAnalysis().finalizeResult();
+            }
         }
     }
 

@@ -198,20 +198,20 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
     }
 
     private void publishEditedAccessionNumbers(List<AnalysisItem> resultItemList, HttpServletRequest request) {
-        Set<String> editedAccessionNumber = new HashSet<>();
-        Set<String> editedSampleUuid = new HashSet<>();
+        Set<String> editedAccessionNumbers = new HashSet<>();
+        Set<String> editedSampleUuids = new HashSet<>();
         for (AnalysisItem analysisItem : resultItemList) {
             if(analysisItem.getIsAccepted()) {
-                editedAccessionNumber.add(analysisItem.getAccessionNumber());
+                editedAccessionNumbers.add(analysisItem.getAccessionNumber());
             }
         }
-        for (String accessionNumber : editedAccessionNumber) {
+        for (String accessionNumber : editedAccessionNumbers) {
             Sample sample = sampleDAO.getSampleByAccessionNumber(accessionNumber);
             if(sample != null) {
-                editedSampleUuid.add(sample.getUUID());
+                editedSampleUuids.add(sample.getUUID());
             }
         }
-        accessionPublisher.publish(editedSampleUuid, request.getContextPath());
+        accessionPublisher.publish(editedSampleUuids, request.getContextPath());
     }
 
     private void createUpdateList(List<AnalysisItem> analysisItems) {
