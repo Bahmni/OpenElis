@@ -17,6 +17,7 @@
 package us.mn.state.health.lims.menu.util;
 
 import org.apache.commons.validator.GenericValidator;
+import us.mn.state.health.lims.common.util.ConfigurationProperties;
 import us.mn.state.health.lims.menu.daoimpl.MenuDAOImpl;
 import us.mn.state.health.lims.menu.valueholder.Menu;
 import us.mn.state.health.lims.test.daoimpl.TestSectionDAOImpl;
@@ -30,6 +31,7 @@ import java.util.Map;
 public class MenuUtil {
 
     public static final String MENU_RESULTS_LOGBOOK = "menu_results_logbook";
+    private static final String VALIDATION_MENU = "menu_resultvalidation";
     private static List<MenuItem> root;
 	
 	public static List<MenuItem> getMenuTree(){
@@ -45,10 +47,12 @@ public class MenuUtil {
         AddTestSectionsInLogBookMenu(menuToMenuItemMap);
 
         for( Menu menu : menuList){
-            if( menu.getParent() == null){
-                rootWrapper.addChild(menuToMenuItemMap.get(menu));
-            }else{
-                createTreeWithMenuItems(menuToMenuItemMap, menu);
+            if(canBeAdded(menu)){
+                if( menu.getParent() == null){
+                    rootWrapper.addChild(menuToMenuItemMap.get(menu));
+                }else{
+                    createTreeWithMenuItems(menuToMenuItemMap, menu);
+                }
             }
         }
 
@@ -78,10 +82,20 @@ public class MenuUtil {
         Map<Menu, MenuItem> menuToMenuItemMap = new HashMap<>();
 
         for( Menu menu : menuList){
-            MenuItem menuItem = MenuItem.create(menu);
-            menuToMenuItemMap.put(menu, menuItem);
+            if(canBeAdded(menu)){
+                MenuItem menuItem = MenuItem.create(menu);
+                menuToMenuItemMap.put(menu, menuItem);
+            }
         }
         return menuToMenuItemMap;
+    }
+
+    private static boolean canBeAdded(Menu menu) {
+        boolean alwaysValidate = Boolean.valueOf(ConfigurationProperties.getInstance().getPropertyValue(ConfigurationProperties.Property.ALWAYS_VALIDATE_RESULTS));
+        if(menu.getElementId().contains(VALIDATION_MENU) && !alwaysValidate){
+            return false;
+        }
+        return true;
     }
 
     private static List<MenuItem> getTestSectionMenuItems(List<TestSection> allTestSections) {
