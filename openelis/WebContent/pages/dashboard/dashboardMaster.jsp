@@ -4,6 +4,7 @@
 	java.text.SimpleDateFormat,
 	us.mn.state.health.lims.common.util.SystemConfiguration,
 	us.mn.state.health.lims.common.action.IActionConstants" %>
+<%@ page import="us.mn.state.health.lims.common.util.ConfigurationProperties" %>
 
 <%@ taglib uri="/tags/struts-bean" prefix="bean" %>
 <%@ taglib uri="/tags/struts-html" prefix="html" %>
@@ -17,6 +18,7 @@
 String path = "";
 String basePath = "";
 String serverNow = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
+Boolean alwaysValidate = ConfigurationProperties.getInstance().isPropertyValueEqual(ConfigurationProperties.Property.ALWAYS_VALIDATE_RESULTS, "true");
 %>
 
 <%
@@ -150,12 +152,12 @@ basePath = path + "/";
 
         showStats(todayStats)
 
-        var todayOrdersObject = new order("#todayListContainer-slick-grid", todayOrderList, generateAllLinksForOrder, getColumnsForTodayOrder);
+        var todayOrdersObject = new order("#todayListContainer-slick-grid", todayOrderList, generateAllLinksForOrder, getColumnsForTodayOrder, <%= alwaysValidate%>);
         var dataViewForTodayTab = new Slick.Data.DataView({ inlineFilters: true });
         var gridForTodayOrder = new Slick.Grid(todayOrdersObject.div, dataViewForTodayTab, todayOrdersObject.columns,options);
         createGrid(gridForTodayOrder, dataViewForTodayTab, todayOrdersObject, onRowSelection);
 
-        var backlogOrdersObject = new order("#backlogListContainer-slick-grid", backlogOrderList, generateAllLinksForOrder, getColumnsForBacklogOrder);
+        var backlogOrdersObject = new order("#backlogListContainer-slick-grid", backlogOrderList, generateAllLinksForOrder, getColumnsForBacklogOrder, <%= alwaysValidate%>);
         var dataViewForBacklogTab = new Slick.Data.DataView({ inlineFilters: true });
         var gridForBacklogOrder = new Slick.Grid(backlogOrdersObject.div, dataViewForBacklogTab, backlogOrdersObject.columns,options);
         createGrid(gridForBacklogOrder, dataViewForBacklogTab, backlogOrdersObject, onRowSelection);

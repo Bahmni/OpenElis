@@ -1,5 +1,5 @@
 
-function order(div, orderArray, generateLink, getColumns) {
+function order(div, orderArray, generateLink, getColumns, alwaysValidate) {
      this.div = div;
      this.orderArray = orderArray;
      this.columns = getColumns();
@@ -25,7 +25,7 @@ function order(div, orderArray, generateLink, getColumns) {
 
             this.orders = jQuery.map(this.orderArray, function(order, i) {
                 order.id= i;
-                order.link = generateLink(order);
+                order.link = generateLink(order, alwaysValidate);
                 order.name = order.firstName + " " + (order.middleName ? order.middleName + " " : "") + order.lastName;
                 return order;
             });
@@ -38,11 +38,14 @@ function generateLinkForPrint(order){
     return "<a target='_blank' href='ReportPrint.do?type=patient&report=patientHaitiClinical&accessionDirect="+ order.accessionNumber +"&patientNumberDirect=" + order.stNumber + "'>Print</a>";
 }
 
-function generateAllLinksForOrder(order){
+function generateAllLinksForOrder(order, alwaysValidate){
     var enterResultLink = "<a href='AccessionResults.do?accessionNumber=" + order.accessionNumber + "&referer=LabDashboard'>Result</a>";
-    //TODO: &type= is required in the url because of a bug I can't find the source of. The bug causes people without
-    var validationLink = "<a href='ResultValidationForAccessionNumber.do?accessionNumber=" + order.accessionNumber + "&patientId=" + order.stNumber + "&referer=LabDashboard&type=&test='>Validate</a>";
-    return enterResultLink + " | " + validationLink + " | " + generateLinkForPrint(order);
+    if(alwaysValidate){
+        //TODO: &type= is required in the url because of a bug I can't find the source of. The bug causes people without
+        var validationLink = "<a href='ResultValidationForAccessionNumber.do?accessionNumber=" + order.accessionNumber + "&patientId=" + order.stNumber + "&referer=LabDashboard&type=&test='>Validate</a>";
+        return enterResultLink + " | " + validationLink + " | " + generateLinkForPrint(order);
+    }
+    return enterResultLink + " | " + generateLinkForPrint(order);
 }
 
 function getColumnsForTodayOrder() {
