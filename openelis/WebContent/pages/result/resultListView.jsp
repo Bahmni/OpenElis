@@ -319,15 +319,21 @@ function enableOnlyForRemark(index, resultType) {
     }
 }
 
+function initializeAbnormalValue(index, resultType) {
+    $("realAbnormalId_" + index).value = $("abnormalId_" + index).value;
+}
+
+function setAbnormalValues() {
+    $$('.testValueAbnormal').forEach(function(element) {
+        var hiddenElementId = element.id.replace('abnormalId', 'realAbnormalId');
+        $(hiddenElementId).value = element.checked;
+    });
+}
+
 //this overrides the form in utilities.jsp
 function  /*void*/ savePage()
 {
-    for(i=1; i< <%= testCount%>; i++) {
-        var element = $("abnormalId_" + i);
-        if(element){
-            element.disabled = false;
-        }
-    }
+    setAbnormalValues();
 
     jQuery("#saveButtonId").attr("disabled", "disabled");
 	window.onbeforeunload = null; // Added to flag that formWarning alert isn't needed.
@@ -862,9 +868,10 @@ function /*void*/ processTestReflexCD4Success(xhr)
                            indexed="true"
                            styleId='<%="abnormalId_" + index %>'
             onchange='<%="markUpdated(" + index + ");"%>'/>
-            <html:hidden property='<%="testResult["+index+"].abnormal"%>' value="false"/> <!-- To submit checkbox value when unchecked -->
+            <html:hidden property='<%="testResult["+index+"].abnormal"%>' value="false" styleId='<%="realAbnormalId_" + index %>'/> <!-- To submit checkbox value when unchecked -->
             <script language="JavaScript">
                 enableOnlyForRemark(<%=index%>,'<%=testResult.getResultType()%>');
+                initializeAbnormalValue(<%=index%>,'<%=testResult.getResultType()%>');
             </script>
 
         </td>
