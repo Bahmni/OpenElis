@@ -32,6 +32,7 @@ import us.mn.state.health.lims.address.daoimpl.AddressPartDAOImpl;
 import us.mn.state.health.lims.address.daoimpl.PersonAddressDAOImpl;
 import us.mn.state.health.lims.address.valueholder.AddressParts;
 import us.mn.state.health.lims.address.valueholder.PersonAddress;
+import us.mn.state.health.lims.common.util.ConfigurationProperties;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.gender.dao.GenderDAO;
 import us.mn.state.health.lims.gender.daoimpl.GenderDAOImpl;
@@ -148,6 +149,9 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
     public RowResult<CSVPatient> validate(CSVPatient csvPatient) {
         logger.debug("Validating " + csvPatient);
 
+        String registrationNumberFormat = ConfigurationProperties.getInstance().getPropertyValue(ConfigurationProperties.Property.ST_NUMBER_FORMAT);
+        registrationNumberFormat = registrationNumberFormat.substring(1, registrationNumberFormat.length()-1);
+        String fullRegistrationNumber = csvPatient.healthCenter + csvPatient.registrationNumber;
         StringBuilder errorMessage = new StringBuilder();
 
         if (isEmpty(csvPatient.healthCenter))
@@ -164,7 +168,8 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
             errorMessage.append("Village is mandatory.\n");
         if (areBothEmpty(csvPatient.age, csvPatient.dob))
             errorMessage.append("Either Age or DOB is mandatory.\n");
-
+        if(!fullRegistrationNumber.matches(registrationNumberFormat))
+            errorMessage.append("PatientID does not conform to the allowed format.\n");
         try {
             if (!isEmpty(csvPatient.dob)) {
                 Date parsedDate = getSimpleDateFormat().parse(csvPatient.dob);
@@ -181,11 +186,6 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
                 Integer.parseInt(csvPatient.age);
         } catch (NumberFormatException e) {
             errorMessage.append("Age should be a number.\n");
-        }
-        try {
-            Integer.parseInt(csvPatient.registrationNumber);
-        } catch (NumberFormatException e) {
-            errorMessage.append("Registration number should be a number.\n");
         }
 
         if (!isValidGender(csvPatient.gender)) {
@@ -299,6 +299,7 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
         Person person = new Person();
         person.setFirstName(csvPatient.firstName);
         person.setLastName(csvPatient.lastName);
+        person.setMiddleName(csvPatient.middleName);
         person.setSysUserId(getSysUserId());
         return person;
     }

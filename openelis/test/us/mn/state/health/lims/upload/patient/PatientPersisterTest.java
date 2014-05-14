@@ -20,6 +20,7 @@ import junit.framework.Assert;
 import org.bahmni.csv.RowResult;
 import org.junit.Before;
 import org.junit.Test;
+import us.mn.state.health.lims.common.util.ConfigurationProperties;
 import us.mn.state.health.lims.gender.dao.GenderDAO;
 import us.mn.state.health.lims.gender.valueholder.Gender;
 import us.mn.state.health.lims.healthcenter.dao.HealthCenterDAO;
@@ -155,7 +156,7 @@ public class PatientPersisterTest {
 
         String[] rowWithErrorColumn = rowResultForValidPatient.getRowWithErrorColumn();
         String errorMessage = rowWithErrorColumn[rowWithErrorColumn.length - 1];
-        Assert.assertTrue("Registration number should be a number", errorMessage.contains("Registration number should be a number"));
+        Assert.assertTrue(errorMessage.contains("PatientID does not conform to the allowed format."));
     }
 
     @Test
@@ -173,6 +174,28 @@ public class PatientPersisterTest {
         Assert.assertTrue("Mandatory fields need to be populated", errorMessage.contains("Gender is mandatory"));
         Assert.assertTrue("Mandatory fields need to be populated", errorMessage.contains("Village is mandatory"));
         Assert.assertTrue("Mandatory fields need to be populated", errorMessage.contains("Either Age or DOB is mandatory"));
+    }
+    
+    @Test
+    public void shouldValidatePatientIdentifierAgainstConfiguration() {
+        CSVPatient csvPatient = new CSVPatient();
+        csvPatient.dob = "85";
+        csvPatient.cityVillage = "ganiyari";
+        csvPatient.district = "ganiyari";
+        csvPatient.firstName = "firstName";
+        csvPatient.registrationNumber = "12345";
+        csvPatient.gender = VALID_GENDER_TYPE;
+        csvPatient.healthCenter = VALID_HEALTH_CENTRE;
+        ConfigurationProperties.getInstance().setPropertyValue(ConfigurationProperties.Property.ST_NUMBER_FORMAT, "/([a-zA-Z]*)(\\d+\\/\\d+)/");
+
+        RowResult<CSVPatient> rowResultForValidPatient = patientPersister.validate(csvPatient);
+
+        Assert.assertFalse("Registration Number is invalid", rowResultForValidPatient.isSuccessful());
+
+        String[] rowWithErrorColumn = rowResultForValidPatient.getRowWithErrorColumn();
+        String errorMessage = rowWithErrorColumn[rowWithErrorColumn.length - 1];
+        Assert.assertTrue(errorMessage.contains("PatientID does not conform to the allowed format."));
+
     }
 
     private void checkForValidDate(String dateArg, boolean isValid) {

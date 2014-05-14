@@ -19,7 +19,7 @@ package us.mn.state.health.lims.upload.sample;
 import org.apache.commons.lang3.StringUtils;
 import org.bahmni.csv.EntityPersister;
 import org.bahmni.csv.RowResult;
-import org.bahmni.feed.openelis.feed.service.impl.OpenElisUrlPublisher;
+import us.mn.state.health.lims.common.util.ConfigurationProperties;
 import us.mn.state.health.lims.healthcenter.dao.HealthCenterDAO;
 import us.mn.state.health.lims.healthcenter.daoimpl.HealthCenterDAOImpl;
 import us.mn.state.health.lims.healthcenter.valueholder.HealthCenter;
@@ -33,7 +33,8 @@ import us.mn.state.health.lims.upload.service.TestResultPersisterService;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TestResultPersister implements EntityPersister<CSVSample> {
     private HealthCenterDAO healthCenterDAO;
@@ -64,7 +65,11 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
 
     @Override
     public RowResult<CSVSample> validate(CSVSample csvSample) {
+        String registrationNumberFormat = ConfigurationProperties.getInstance().getPropertyValue(ConfigurationProperties.Property.ST_NUMBER_FORMAT);
+        registrationNumberFormat = registrationNumberFormat.substring(1, registrationNumberFormat.length()-1);
+        String fullRegistrationNumber = csvSample.healthCenter + csvSample.patientRegistrationNumber;
         StringBuilder errorMessage = new StringBuilder();
+
         if (isEmpty(csvSample.healthCenter) || !getHealthCenterCodes().contains(csvSample.healthCenter)) {
             errorMessage.append("Invalid Subcenter code.\n");
         }
@@ -72,11 +77,8 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
         if (isEmpty(csvSample.patientRegistrationNumber))
             errorMessage.append("Registration Number is mandatory.\n");
 
-        try {
-            Integer.parseInt(csvSample.patientRegistrationNumber);
-        } catch (NumberFormatException e) {
-            errorMessage.append("Registration number should be a number.\n");
-        }
+        if(!fullRegistrationNumber.matches(registrationNumberFormat))
+            errorMessage.append("PatientID does not conform to the allowed format.\n");
 
         if (isEmpty(csvSample.sampleSource) || !getSampleSources().contains(csvSample.sampleSource)) {
             errorMessage.append("Invalid Sample source.\n");

@@ -26,6 +26,8 @@ public class CSVPatient extends CSVEntity {
     public String registrationNumber;
     @CSVHeader(name="First Name")
     public String firstName;
+    @CSVHeader(name="Middle Name")
+    public String middleName;
     @CSVHeader(name="Last Name")
     public String lastName;
     @CSVHeader(name="Age")
