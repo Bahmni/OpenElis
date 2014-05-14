@@ -1,17 +1,29 @@
 #/bin/sh
-cd ..
+# Adds license information to all java files
+
+PATH_OF_CURRENT_SCRIPT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ROOT_DIR=$PATH_OF_CURRENT_SCRIPT/..
+
 
 #get all java files that do not have the word Mozilla in them
-grep -RL Mozilla . | grep -v svn-base | grep "^.*\.java$" > ../javafiles
+echo "Finding files that do not have license information"
+grep -RL Mozilla $ROOT_DIR | grep -v svn-base | grep "^.*\.java$" | grep -v BarbecueRenderer > /tmp/javafiles
+echo Number of files found: `cat /tmp/javafiles | wc -l ` 
+cat /tmp/javafiles
+
 
 #put license information into them
-for file in `cat ../javafiles`; do cat ~/license-java $file > /tmp/tempfile; mv /tmp/tempfile $file; done
+echo "Adding license information to files"
+for file in `cat /tmp/javafiles`; do cat $ROOT_DIR/scripts/license-java $file > /tmp/tempfile; mv /tmp/tempfile $file; done
 
 #find all java files
-find . -name *.java > ../javafiles
+find $ROOT_DIR -name *.java > /tmp/javafiles
 
 #Replace /** with /* so that it shows up as license/comments and not javadoc
-for file in `cat ../javafiles`; do sed -i -e '1s|/\*\*|/\*|g' $file; done
+for file in `cat /tmp/javafiles`; do sed -i -e '1s|/\*\*|/\*|g' $file; done
 
 #Remove all sed temp files
-find . -name *-e | xargs rm
+echo "Cleaning up"
+find $ROOT_DIR -name *-e | xargs rm
+
+echo "Done"
