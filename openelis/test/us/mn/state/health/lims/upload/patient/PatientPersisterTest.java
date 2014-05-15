@@ -18,13 +18,19 @@ package us.mn.state.health.lims.upload.patient;
 
 import junit.framework.Assert;
 import org.bahmni.csv.RowResult;
+import org.bahmni.feed.openelis.feed.service.impl.OpenElisUrlPublisher;
+import org.bahmni.feed.openelis.utils.AuditingService;
 import org.junit.Before;
 import org.junit.Test;
-import us.mn.state.health.lims.common.util.ConfigurationProperties;
+import us.mn.state.health.lims.address.dao.PersonAddressDAO;
 import us.mn.state.health.lims.gender.dao.GenderDAO;
 import us.mn.state.health.lims.gender.valueholder.Gender;
 import us.mn.state.health.lims.healthcenter.dao.HealthCenterDAO;
 import us.mn.state.health.lims.healthcenter.valueholder.HealthCenter;
+import us.mn.state.health.lims.patient.dao.PatientDAO;
+import us.mn.state.health.lims.patientidentity.dao.PatientIdentityDAO;
+import us.mn.state.health.lims.patientidentitytype.dao.PatientIdentityTypeDAO;
+import us.mn.state.health.lims.person.dao.PersonDAO;
 
 import java.util.Arrays;
 
@@ -34,7 +40,7 @@ import static org.mockito.Mockito.when;
 public class PatientPersisterTest {
     public static final String VALID_GENDER_TYPE = "M";
     public static final String VALID_HEALTH_CENTRE = "GAN";
-    private PatientPersister patientPersister;
+    private TestablePatientPersister patientPersister;
 
     @Before
     public void setup() {
@@ -48,7 +54,7 @@ public class PatientPersisterTest {
         validHealthCenter.setName(VALID_HEALTH_CENTRE);
         when(healthCenterDAO.getAll()).thenReturn(Arrays.asList(validHealthCenter));
 
-        patientPersister = new PatientPersister(null, null, null, null, null, null, healthCenterDAO, genderDao, null);
+        patientPersister = new TestablePatientPersister(null, null, null, null, null, null, healthCenterDAO, genderDao, null);
     }
 
     @Test
@@ -186,7 +192,7 @@ public class PatientPersisterTest {
         csvPatient.registrationNumber = "12345";
         csvPatient.gender = VALID_GENDER_TYPE;
         csvPatient.healthCenter = VALID_HEALTH_CENTRE;
-        ConfigurationProperties.getInstance().setPropertyValue(ConfigurationProperties.Property.ST_NUMBER_FORMAT, "/([a-zA-Z]*)(\\d+\\/\\d+)/");
+        patientPersister.setStNumberFormat("/([a-zA-Z]*)(\\d+\\/\\d+)/");
 
         RowResult<CSVPatient> rowResultForValidPatient = patientPersister.validate(csvPatient);
 
@@ -220,5 +226,22 @@ public class PatientPersisterTest {
         String[] rowWithErrorColumn = rowResultForValidPatient.getRowWithErrorColumn();
         String errorMessage = rowWithErrorColumn[rowWithErrorColumn.length - 1];
         Assert.assertTrue("DOB should be dd-mm-yyyy", errorMessage.contains("DOB should be dd-mm-yyyy and should be a valid date"));
+    }
+
+    public class TestablePatientPersister extends PatientPersister{
+        private String stNumberFormat = "/([a-zA-Z]*)(\\d+)/";
+
+        public TestablePatientPersister(AuditingService auditingService, PersonDAO personDAO,PersonAddressDAO personAddressDAO, PatientDAO patientDAO,PatientIdentityDAO patientIdentityDAO, PatientIdentityTypeDAO patientIdentityTypeDAO,HealthCenterDAO healthCenterDAO, GenderDAO genderDao,OpenElisUrlPublisher patientFeedEventPublisher) {
+            super(auditingService, personDAO, personAddressDAO, patientDAO, patientIdentityDAO, patientIdentityTypeDAO, healthCenterDAO, genderDao, patientFeedEventPublisher);
+        }
+
+        @Override
+        protected String getStNumberFormat() {
+            return stNumberFormat;
+        }
+
+        public void setStNumberFormat(String stNumberFormat) {
+            this.stNumberFormat = stNumberFormat;
+        }
     }
 }

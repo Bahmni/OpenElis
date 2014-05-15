@@ -65,7 +65,7 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
 
     @Override
     public RowResult<CSVSample> validate(CSVSample csvSample) {
-        String registrationNumberFormat = ConfigurationProperties.getInstance().getPropertyValue(ConfigurationProperties.Property.ST_NUMBER_FORMAT);
+        String registrationNumberFormat = getStNumberFormat();
         registrationNumberFormat = registrationNumberFormat.substring(1, registrationNumberFormat.length()-1);
         String fullRegistrationNumber = csvSample.healthCenter + csvSample.patientRegistrationNumber;
         StringBuilder errorMessage = new StringBuilder();
@@ -108,6 +108,10 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
             return new RowResult<>(csvSample);
 
         return new RowResult<>(csvSample, errorMessage.toString());
+    }
+
+    protected String getStNumberFormat() {
+        return ConfigurationProperties.getInstance().getPropertyValue(ConfigurationProperties.Property.ST_NUMBER_FORMAT);
     }
 
     private List<String> getSampleSources() {

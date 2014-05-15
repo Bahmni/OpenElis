@@ -36,7 +36,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class TestResultPersisterTest {
+public class TestResultPersisterTest{
 
     @Mock
     private HealthCenterDAO healthCenterDAO;
@@ -47,7 +47,7 @@ public class TestResultPersisterTest {
     @Mock
     private SampleSourceDAO sampleSourceDAO;
 
-    private TestResultPersister testResultPersister;
+    private TestableTestResultPersister testResultPersister;
     private String validSubscenterNameGAN;
     private List<CSVTestResult> validTestResults;
     private String validAccessionNumber;
@@ -67,7 +67,7 @@ public class TestResultPersisterTest {
         when(testDAO.getAllActiveTests(false)).thenReturn(Arrays.asList(createTest(testName1), createTest(testName2)));
         when(sampleSourceDAO.getAll()).thenReturn(Arrays.<SampleSource>asList(new SampleSource() {{this.setName("sub center");}}));
 
-        testResultPersister = new TestResultPersister(healthCenterDAO, sampleSourceDAO, testDAO, testResultPersisterService);
+        testResultPersister = new TestableTestResultPersister(healthCenterDAO, sampleSourceDAO, testDAO, testResultPersisterService);
     }
 
     @org.junit.Test
@@ -209,6 +209,20 @@ public class TestResultPersisterTest {
         String[] rowWithErrorColumn = rowResult.getRowWithErrorColumn();
         String errorMessage = rowWithErrorColumn[rowWithErrorColumn.length - 1];
         assertTrue(errorMessage.contains("Invalid Sample source.\n"));
+    }
+
+    public class TestableTestResultPersister extends TestResultPersister{
+
+        private String stNumberFormat = "/([a-zA-Z]*)(\\d+)/";
+
+        public TestableTestResultPersister(HealthCenterDAO healthCenterDAO, SampleSourceDAO sampleSourceDAO, TestDAO testDAO, TestResultPersisterService testResultPersisterService) {
+            super(healthCenterDAO, sampleSourceDAO, testDAO, testResultPersisterService);
+        }
+
+        @Override
+        protected String getStNumberFormat() {
+            return stNumberFormat;
+        }
     }
 
     private Test createTest(final String testName) {

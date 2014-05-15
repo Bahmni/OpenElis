@@ -149,7 +149,7 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
     public RowResult<CSVPatient> validate(CSVPatient csvPatient) {
         logger.debug("Validating " + csvPatient);
 
-        String registrationNumberFormat = ConfigurationProperties.getInstance().getPropertyValue(ConfigurationProperties.Property.ST_NUMBER_FORMAT);
+        String registrationNumberFormat = getStNumberFormat();
         registrationNumberFormat = registrationNumberFormat.substring(1, registrationNumberFormat.length()-1);
         String fullRegistrationNumber = csvPatient.healthCenter + csvPatient.registrationNumber;
         StringBuilder errorMessage = new StringBuilder();
@@ -200,6 +200,10 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
             return new RowResult<>(csvPatient);
 
         return new RowResult<>(csvPatient, errorMessage.toString());
+    }
+
+    protected String getStNumberFormat() {
+        return ConfigurationProperties.getInstance().getPropertyValue(ConfigurationProperties.Property.ST_NUMBER_FORMAT);
     }
 
     private SimpleDateFormat getSimpleDateFormat() {
