@@ -222,12 +222,7 @@ public class TestSetup {
         if (dictionaryByDictEntry != null) {
             return dictionaryByDictEntry;
         }
-        Dictionary dictionary = new Dictionary();
-        dictionary.setDictEntry(dictEntry);
-        dictionary.setSysUserId("1");
-        dictionary.setIsActive("Y");
-        dictionaryDAO.insertData(dictionary);
-        return dictionary;
+        return createDictionary(dictEntry, dictEntry);
     }
 
     public static Result createResult(Analysis analysis, String value, ResultLimit resultLimit) {
@@ -354,6 +349,31 @@ public class TestSetup {
             unitOfMeasure = unitOfMeasureByName;
         }
         return unitOfMeasure;
+    }
+
+    public static Dictionary createDictionary(String dictEntry, String localAbbrev) {
+        Dictionary dictionary = new Dictionary();
+        dictionary.setDictEntry(dictEntry);
+        dictionary.setLocalAbbreviation(localAbbrev);
+
+        dictionary.setSysUserId("1");
+        dictionary.setIsActive("Y");
+        new DictionaryDAOImpl().insertData(dictionary);
+        return dictionary;
+    }
+
+    public static TestResult createTestResult(Test test, String testResultType, Dictionary value) {
+        TestResult testResult = new TestResult();
+        testResult.setTest(test);
+        testResult.setTestResultType(testResultType);
+
+        if(testResultType.equals("D")) {
+            testResult.setValue(value.getId());
+        }
+
+        testResult.setSysUserId("1");
+        new TestResultDAOImpl().insertData(testResult);
+        return testResult;
     }
 
     public static Note createResultNote(Result result, String noteText) {
