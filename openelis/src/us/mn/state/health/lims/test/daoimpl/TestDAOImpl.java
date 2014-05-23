@@ -1033,31 +1033,33 @@ public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
 
     @Override
     public List<NonNumericTests> getAllNonNumericTests(List<Integer> testIds) {
-        String sql = "Select t.id, tr.testResultType, tr.value, d.dictEntry From Test t, TestResult tr, Dictionary d where t.id in (:ids) and tr.test = t and tr.value is not null and (tr.testResultType = 'D' or tr.testResultType = 'M') and cast(tr.value as integer) = d.id";
-        try{
-            Query query = HibernateUtil.getSession().createQuery(sql);
-            query.setParameterList("ids", testIds);
-            List<Object[]> list = query.list();
-            Map<String, NonNumericTests> tests = new HashMap<String, NonNumericTests>();
-            for (Object[] objects : list) {
-                String testId = (String) objects[0];
-                String testResultType = (String) objects[1];
-                String testResultValue = (String) objects[2];
-                String dictEntry = (String) objects[3];
+        if(testIds != null && !testIds.isEmpty()) {
+            String sql = "Select t.id, tr.testResultType, tr.value, d.dictEntry From Test t, TestResult tr, Dictionary d where t.id in (:ids) and tr.test = t and tr.value is not null and (tr.testResultType = 'D' or tr.testResultType = 'M') and cast(tr.value as integer) = d.id";
+            try{
+                Query query = HibernateUtil.getSession().createQuery(sql);
+                query.setParameterList("ids", testIds);
+                List<Object[]> list = query.list();
+                Map<String, NonNumericTests> tests = new HashMap<String, NonNumericTests>();
+                for (Object[] objects : list) {
+                    String testId = (String) objects[0];
+                    String testResultType = (String) objects[1];
+                    String testResultValue = (String) objects[2];
+                    String dictEntry = (String) objects[3];
 
-                if(tests.get(testId) != null) {
-                    tests.get(testId).dictionaryValues.add(new IdValuePair(testResultValue, dictEntry));
-                } else {
-                    NonNumericTests nonNumericTests = new NonNumericTests(testId, testResultType, new IdValuePair(testResultValue, dictEntry));
-                    tests.put(testId, nonNumericTests);
+                    if(tests.get(testId) != null) {
+                        tests.get(testId).dictionaryValues.add(new IdValuePair(testResultValue, dictEntry));
+                    } else {
+                        NonNumericTests nonNumericTests = new NonNumericTests(testId, testResultType, new IdValuePair(testResultValue, dictEntry));
+                        tests.put(testId, nonNumericTests);
+                    }
                 }
+                closeSession();
+                return new ArrayList<>(tests.values());
+            }catch(HibernateException e){
+                handleException(e, "getAllNonNumericTests");
             }
-            closeSession();
-            return new ArrayList<>(tests.values());
-        }catch(HibernateException e){
-            handleException(e, "getTestByDescription");
         }
-        return null;
+        return new ArrayList<NonNumericTests>();
     }
 
     @Override
