@@ -16,7 +16,11 @@
 package us.mn.state.health.lims.hibernate;
 
 import org.apache.log4j.Logger;
-import org.hibernate.*;
+import org.hibernate.HibernateException;
+import org.hibernate.Interceptor;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.connection.C3P0ConnectionProvider;
 import org.hibernate.connection.ConnectionProvider;
@@ -159,6 +163,7 @@ public class HibernateUtil {
                 } else {
                     s = getSessionFactory().openSession();
                 }
+                enableDefaultFilters(s);
                 threadSession.set(s);
             }
         } catch (HibernateException ex) {
@@ -167,6 +172,24 @@ public class HibernateUtil {
             throw new LIMSRuntimeException("Error in getSession()", ex);
         }
         return new ElisHibernateSession(s);
+    }
+
+    private static void enableDefaultFilters(Session session) {
+        for (Object filterNameObject : configuration.getFilterDefinitions().keySet()) {
+            String filterName = (String) filterNameObject;
+            if(filterName.startsWith("default_")) {
+                session.enableFilter(filterName);
+            }
+        }
+    }
+
+    private static void disableDefaultFilters(Session session) {
+        for (Object filterNameObject : configuration.getFilterDefinitions().keySet()) {
+            String filterName = (String) filterNameObject;
+            if(filterName.startsWith("default_")) {
+                session.disableFilter(filterName);
+            }
+        }
     }
 
     /**
@@ -186,6 +209,7 @@ public class HibernateUtil {
                     logger.error(e, e);
                 }
                 LogEvent.logDebug("HibernateUtil", "closeSession()", "Closing Session of this thread.");
+                disableDefaultFilters(s);
                 s.close();
             }
             threadSession.remove();
