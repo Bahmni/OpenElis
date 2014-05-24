@@ -211,7 +211,7 @@ public class ReferredOutAction extends BaseAction {
             resultString = getAppropriateResultValue(resultList);
             referralItem.setCasualResultId(result.getId());
 
-            List<Note> notes = NoteUtil.getNotesForObjectAndTable(result.getId(), RESULT_REFERENCE_TABLE_ID);
+            List<Note> notes = new ArrayList<>(result.getNotes());
             if (!(notes == null || notes.isEmpty())) {
                 Collections.sort(notes, new Comparator<Note>() {
                     @Override

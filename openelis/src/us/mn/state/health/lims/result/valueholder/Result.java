@@ -20,6 +20,7 @@ import us.mn.state.health.lims.analyte.valueholder.Analyte;
 import us.mn.state.health.lims.common.valueholder.EnumValueItemImpl;
 import us.mn.state.health.lims.common.valueholder.ValueHolder;
 import us.mn.state.health.lims.common.valueholder.ValueHolderInterface;
+import us.mn.state.health.lims.note.valueholder.Note;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
 
 import java.util.HashSet;
@@ -45,6 +46,7 @@ public class Result extends EnumValueItemImpl {
 	private Double maxNormal;
 	private ValueHolder parentResult;
     private Set<ResultSignature> resultSignatures;
+    private Set<Note> notes;
 
     private boolean abnormal;
 
@@ -246,5 +248,13 @@ public class Result extends EnumValueItemImpl {
         if (resultType.equals("D")) return !value.equals("0");
         if (resultType.equals("R")) return value != null && !resultType.isEmpty();
         return false;
+    }
+
+    public Set<Note> getNotes() {
+        return notes;
+    }
+
+    public void setNotes(Set<Note> notes) {
+        this.notes = notes;
     }
 }
