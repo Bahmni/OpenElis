@@ -12,6 +12,11 @@
         </id>
         <version name="lastupdated" column="LASTUPDATED" type="timestamp" access="field"/>
 
+        <set name="patientIdentities" inverse="true" batch-size="25" lazy="true">
+            <key column="patient_id"/>
+            <one-to-many class="us.mn.state.health.lims.patientidentity.valueholder.PatientIdentity"/>
+        </set>
+
         <many-to-one name="person" class="us.mn.state.health.lims.person.valueholder.Person" fetch="select">
             <column name="PERSON_ID" precision="10" scale="0" not-null="true" />
         </many-to-one>
