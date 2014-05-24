@@ -36,7 +36,6 @@ import us.mn.state.health.lims.note.valueholder.Note;
 import us.mn.state.health.lims.organization.dao.OrganizationDAO;
 import us.mn.state.health.lims.organization.daoimpl.OrganizationDAOImpl;
 import us.mn.state.health.lims.organization.valueholder.Organization;
-import us.mn.state.health.lims.patient.util.PatientUtil;
 import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.patientidentity.valueholder.PatientIdentity;
 import us.mn.state.health.lims.patientidentitytype.util.PatientIdentityTypeMap;
@@ -189,23 +188,22 @@ public class ReferredOutAction extends BaseAction {
     }
 
     private ReferralItem getReferralItem(Referral referral) {
-        List<ReferralResult> referralResults = referralResultDAO.getReferralResultsForReferral(referral.getId());
+        List<ReferralResult> referralResults = new ArrayList<>(referral.getReferralResults());
 
         ReferralItem referralItem = new ReferralItem();
-        Analysis analysis = referral.getAnalysis();
-        SampleItem sampleItem = analysis.getSampleItem();
-
         referralItem.setCanceled(false);
         referralItem.setReferredResultType("N");
-        referralItem.setAccessionNumber(sampleItem.getSample().getAccessionNumber());
 
-        TypeOfSample typeOfSample = typeOfSampleDAO.getTypeOfSampleById(sampleItem.getTypeOfSampleId());
+        Analysis analysis = referral.getAnalysis();
+        SampleItem sampleItem = analysis.getSampleItem();
+        TypeOfSample typeOfSample = sampleItem.getTypeOfSample();
         referralItem.setSampleType(typeOfSample.getLocalizedName());
 
+        referralItem.setAccessionNumber(sampleItem.getSample().getAccessionNumber());
         referralItem.setReferringTestName(referral.getAnalysis().getTest().getLocalizedName());
         referralItem.setReferredTestId(referral.getAnalysis().getTest().getId());
 
-        List<Result> resultList = resultDAO.getResultsByAnalysis(analysis);
+        List<Result> resultList = new ArrayList<>(analysis.getResults());
         String resultString = "";
 
         if (!resultList.isEmpty()) {
@@ -259,7 +257,7 @@ public class ReferredOutAction extends BaseAction {
             return null;
 
         Patient patientForSample = sampleHumanDAO.getPatientForSample(sampleItem.getSample());
-        List<PatientIdentity> identityList = PatientUtil.getIdentityListForPatient(patientForSample.getId());
+        List<PatientIdentity> identityList = new ArrayList<>(patientForSample.getPatientIdentities());
         return PatientIdentityTypeMap.getInstance().getIdentityValue(identityList, "ST");
     }
 
@@ -277,7 +275,7 @@ public class ReferredOutAction extends BaseAction {
         while (referralResults.size() > 0) {
             ReferralResult referralResult = referralResults.get(0); // use the top one to load various bits of information.
             ReferredTest referralTest = new ReferredTest();
-            referralTest.setReferralId(referralResult.getReferralId());
+            referralTest.setReferralId(referralResult.getReferral().getId());
             referralResults = setReferralItem(referralTest, referralResults); // remove one or more referralResults from the list as needed (for multiResults).
             if (referralResult.getReferralReportDate() == null) {
                 referralTest.setReferredReportDate(DateUtil.getCurrentDateAsText());

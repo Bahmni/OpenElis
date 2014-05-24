@@ -16,13 +16,14 @@
  */
 package us.mn.state.health.lims.referral.valueholder;
 
-import java.sql.Timestamp;
-
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.common.valueholder.BaseObject;
 import us.mn.state.health.lims.common.valueholder.ValueHolder;
 import us.mn.state.health.lims.common.valueholder.ValueHolderInterface;
 import us.mn.state.health.lims.organization.valueholder.Organization;
+
+import java.sql.Timestamp;
+import java.util.Set;
 
 public class Referral extends BaseObject {
 
@@ -41,10 +42,18 @@ public class Referral extends BaseObject {
     private String referralTypeId;
     private String requesterName;
     private boolean canceled;
+    private Set<ReferralResult> referralResults;
 
     private ValueHolderInterface analysis = new ValueHolder();
     private ValueHolderInterface organization = new ValueHolder();
 
+
+    public Referral() {
+    }
+
+    public Referral(String id) {
+        this.id = id;
+    }
 
     public String getId() {
         return id;
@@ -146,5 +155,13 @@ public class Referral extends BaseObject {
         setSysUserId(currentUserId);
         setCanceled(true);
         getAnalysis().cancelReferOut();
+    }
+
+    public Set<ReferralResult> getReferralResults() {
+        return referralResults;
+    }
+
+    public void setReferralResults(Set<ReferralResult> referralResults) {
+        this.referralResults = referralResults;
     }
 }

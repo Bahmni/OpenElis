@@ -17,6 +17,7 @@
 package us.mn.state.health.lims.patientidentity.valueholder;
 
 import us.mn.state.health.lims.common.valueholder.BaseObject;
+import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.patientidentitytype.valueholder.PatientIdentityType;
 
 public class PatientIdentity extends BaseObject {
@@ -25,6 +26,7 @@ public class PatientIdentity extends BaseObject {
 
 	private String id;
 	private String identityTypeId;
+    private Patient patient;
 	private String patientId;
 	private String identityData;
 	
@@ -62,5 +64,13 @@ public class PatientIdentity extends BaseObject {
 
     public boolean isOfType(PatientIdentityType identityType) {
         return identityTypeId.equals(identityType.getId());
+    }
+
+    public Patient getPatient() {
+        return patient;
+    }
+
+    public void setPatient(Patient patient) {
+        this.patient = patient;
     }
 }

@@ -3,7 +3,7 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-    <class name="us.mn.state.health.lims.analysis.valueholder.Analysis" table="ANALYSIS" optimistic-lock="version" dynamic-update="true">
+    <class name="us.mn.state.health.lims.analysis.valueholder.Analysis" table="ANALYSIS" optimistic-lock="version" dynamic-update="true" batch-size="25">
         <id name="id" type="us.mn.state.health.lims.hibernate.resources.usertype.LIMSStringNumberUserType">
             <column name="ID" precision="10" scale="0" />
             <generator class="sequence">
@@ -84,7 +84,7 @@
             	  column="status_id"
             	  precision="10" />
 
-        <set name="results" inverse="true">
+        <set name="results" inverse="true" batch-size="25" lazy="true">
             <key column="ANALYSIS_ID"/>
             <one-to-many class="us.mn.state.health.lims.result.valueholder.Result"/>
         </set>

@@ -5,7 +5,7 @@
 
 <hibernate-mapping>
     <class name="us.mn.state.health.lims.referral.valueholder.ReferralResult" table="referral_result"
-           optimistic-lock="version" dynamic-update="true">
+           optimistic-lock="version" dynamic-update="true" batch-size="25">
         <id name="id" type="us.mn.state.health.lims.hibernate.resources.usertype.LIMSStringNumberUserType">
             <column name="ID" precision="10" scale="0"/>
             <generator class="sequence">
@@ -13,8 +13,14 @@
             </generator>
         </id>
         <version name="lastupdated" column="LASTUPDATED" type="timestamp" access="field"/>
+
+        <many-to-one name="referral" class="us.mn.state.health.lims.referral.valueholder.Referral" fetch="select" insert="false" update="false">
+            <column name="referral_id"/>
+        </many-to-one>
+
         <property name="referralId" column="referral_id"
                   type="us.mn.state.health.lims.hibernate.resources.usertype.LIMSStringNumberUserType"/>
+
         <property name="testId" column="test_id"
                   type="us.mn.state.health.lims.hibernate.resources.usertype.LIMSStringNumberUserType"/>
         <!-- Follow relationship is managed in the dao and not via hibernate, though the result is owned by ReferralResult -->

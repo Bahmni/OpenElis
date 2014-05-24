@@ -21,17 +21,21 @@ import us.mn.state.health.lims.common.valueholder.BaseObject;
 import us.mn.state.health.lims.common.valueholder.ValueHolder;
 import us.mn.state.health.lims.common.valueholder.ValueHolderInterface;
 import us.mn.state.health.lims.healthcenter.valueholder.HealthCenter;
+import us.mn.state.health.lims.patientidentity.valueholder.PatientIdentity;
 import us.mn.state.health.lims.person.valueholder.Person;
 
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Set;
 
 public class Patient extends BaseObject {
 
 	private static final long serialVersionUID = 1L;
 
 	private String id;
+
+    private Set<PatientIdentity> patientIdentities;
 
 	private String race;
 
@@ -307,4 +311,11 @@ public class Patient extends BaseObject {
         return currPatientAge;
     }
 
+    public Set<PatientIdentity> getPatientIdentities() {
+        return patientIdentities;
+    }
+
+    public void setPatientIdentities(Set<PatientIdentity> patientIdentities) {
+        this.patientIdentities = patientIdentities;
+    }
 }
