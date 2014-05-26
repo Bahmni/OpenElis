@@ -6,7 +6,7 @@
 				us.mn.state.health.lims.common.util.StringUtil,
 				java.util.List,java.util.ArrayList,
                 us.mn.state.health.lims.common.util.Versioning,
-				us.mn.state.health.lims.referral.action.ReferredOutAction.NonNumericTests" %>
+				us.mn.state.health.lims.test.valueholder.NonNumericTests" %>
 
 
 <%@ taglib uri="/tags/struts-bean"		prefix="bean" %>

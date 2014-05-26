@@ -172,7 +172,7 @@ public class AccessionService {
         testDetail.setResult(getResultValue(result));
         testDetail.setResultType(result.getResultType());
         testDetail.setIsAbnormal(result.getAbnormal());
-        testDetail.setDateTime(result.getLastupdated());
+        testDetail.setDateTime(result.getAnalysis().getEnteredDate());
     }
 
 

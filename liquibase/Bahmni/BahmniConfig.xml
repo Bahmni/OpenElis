@@ -1147,4 +1147,29 @@
             <where>name='additional site info'</where>
         </update>
     </changeSet>
+    <changeSet id="89" author="rohan" context="bahmni" runOnChange="true">
+        <comment>Change duplicate unit of measures</comment>
+        <sql>
+            update test set uom_id=(select id from unit_of_measure where name='/hPF') where uom_id=(select id from unit_of_measure where name='/hpf');
+            update test set uom_id=(select id from unit_of_measure where name='Iu/ml') where uom_id=(select id from unit_of_measure where name='iU/ml');
+            update test set uom_id=(select id from unit_of_measure where name='Iu/ml') where description='AFP';
+            update test set uom_id=(select id from unit_of_measure where name='u/ml') where description='B HCG';
+            update test set uom_id=(select id from unit_of_measure where name='u/ml') where description='CA-125';
+        </sql>
+    </changeSet>
+    <changeSet id="90" author="rohan" context="bahmni" runOnChange="true">
+        <comment>Remove duplicate unit of measures</comment>
+        <delete schemaName="clinlims" tableName="unit_of_measure">
+                <where>name='/hpf'</where>
+        </delete>
+        <delete schemaName="clinlims" tableName="unit_of_measure">
+                <where>name='iU/ml'</where>
+        </delete>
+        <delete schemaName="clinlims" tableName="unit_of_measure">
+                <where>name='u/mm'</where>
+        </delete>
+        <delete schemaName="clinlims" tableName="unit_of_measure">
+                <where>name='U/MM'</where>
+        </delete>
+    </changeSet>
 </databaseChangeLog>

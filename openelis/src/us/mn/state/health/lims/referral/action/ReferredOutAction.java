@@ -58,10 +58,9 @@ import us.mn.state.health.lims.samplehuman.dao.SampleHumanDAO;
 import us.mn.state.health.lims.samplehuman.daoimpl.SampleHumanDAOImpl;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
 import us.mn.state.health.lims.statusofsample.util.StatusRules;
+import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
+import us.mn.state.health.lims.test.valueholder.NonNumericTests;
 import us.mn.state.health.lims.test.valueholder.Test;
-import us.mn.state.health.lims.testresult.dao.TestResultDAO;
-import us.mn.state.health.lims.testresult.daoimpl.TestResultDAOImpl;
-import us.mn.state.health.lims.testresult.valueholder.TestResult;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleDAO;
 import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleDAOImpl;
 import us.mn.state.health.lims.typeofsample.util.TypeOfSampleUtil;
@@ -69,7 +68,12 @@ import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSample;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ReferredOutAction extends BaseAction {
 
@@ -381,47 +385,14 @@ public class ReferredOutAction extends BaseAction {
     }
 
     private List<NonNumericTests> getNonNumericTests(List<ReferralItem> referralItems) {
-        DictionaryDAO dictionaryDAO = new DictionaryDAOImpl();
-        Set<String> testIdSet = new HashSet<>();
-
+        Set<Integer> testIdSet = new HashSet<>();
         for (ReferralItem item : referralItems) {
             for (IdValuePair pair : item.getTestSelectionList()) {
-                testIdSet.add(pair.getId());
+                testIdSet.add(Integer.valueOf(pair.getId()));
             }
         }
 
-        List<NonNumericTests> nonNumericTestList = new ArrayList<>();
-        TestResultDAO testResultDAO = new TestResultDAOImpl();
-        for (String testId : testIdSet) {
-            List<TestResult> testResultList = testResultDAO.getTestResultsByTest(testId);
-
-            if (!(testResultList == null || testResultList.isEmpty())) {
-                NonNumericTests nonNumericTests = new NonNumericTests();
-
-                nonNumericTests.testId = testId;
-                String testResultType = testResultList.get(0).getTestResultType();
-                boolean isSelectList = isSelectList(testResultType);
-                nonNumericTests.testType = testResultType;
-                if (isSelectList) {
-                    List<IdValuePair> dictionaryValues = new ArrayList<>();
-                    for (TestResult testResult : testResultList) {
-                        if (isSelectList(testResult.getTestResultType())) {
-                            String resultName = dictionaryDAO.getDictionaryById(testResult.getValue()).getLocalizedName();
-                            dictionaryValues.add(new IdValuePair(testResult.getValue(), resultName));
-                        }
-                    }
-
-                    nonNumericTests.dictionaryValues = dictionaryValues;
-                }
-
-                if (nonNumericTests.testType != null) {
-                    nonNumericTestList.add(nonNumericTests);
-                }
-            }
-
-        }
-
-        return nonNumericTestList;
+        return new TestDAOImpl().getAllNonNumericTests(new ArrayList<Integer>(testIdSet));
     }
 
     /**
@@ -434,9 +405,4 @@ public class ReferredOutAction extends BaseAction {
         return "D".equals(testResultType) || "M".equals(testResultType);
     }
 
-    public class NonNumericTests {
-        public String testId;
-        public String testType;
-        public List<IdValuePair> dictionaryValues;
-    }
 }

@@ -17,6 +17,7 @@ package us.mn.state.health.lims.test.dao;
 
 import us.mn.state.health.lims.common.dao.BaseDAO;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
+import us.mn.state.health.lims.test.valueholder.NonNumericTests;
 import us.mn.state.health.lims.test.valueholder.Test;
 
 import javax.servlet.http.HttpServletRequest;
@@ -97,6 +98,8 @@ public interface TestDAO extends BaseDAO {
 	public String getDescriptionForTestId(String id);
 
 	public Test getTestById(String testId) throws LIMSRuntimeException;
+
+    public List<NonNumericTests> getAllNonNumericTests(List<Integer> testIds);
 
 	public Test getTestByDescription(String description) throws LIMSRuntimeException;
 

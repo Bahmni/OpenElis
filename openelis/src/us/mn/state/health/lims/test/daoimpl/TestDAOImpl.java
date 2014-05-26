@@ -17,19 +17,9 @@
 */
 package us.mn.state.health.lims.test.daoimpl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
-
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
 import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
 import us.mn.state.health.lims.common.action.IActionConstants;
@@ -37,6 +27,7 @@ import us.mn.state.health.lims.common.daoimpl.BaseDAOImpl;
 import us.mn.state.health.lims.common.exception.LIMSDuplicateRecordException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
+import us.mn.state.health.lims.common.util.IdValuePair;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
@@ -48,10 +39,19 @@ import us.mn.state.health.lims.systemusersection.dao.SystemUserSectionDAO;
 import us.mn.state.health.lims.systemusersection.daoimpl.SystemUserSectionDAOImpl;
 import us.mn.state.health.lims.systemusersection.valueholder.SystemUserSection;
 import us.mn.state.health.lims.test.dao.TestDAO;
+import us.mn.state.health.lims.test.valueholder.NonNumericTests;
 import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.testanalyte.dao.TestAnalyteDAO;
 import us.mn.state.health.lims.testanalyte.daoimpl.TestAnalyteDAOImpl;
 import us.mn.state.health.lims.testanalyte.valueholder.TestAnalyte;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * @author diane benz
@@ -1031,7 +1031,38 @@ public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
 		return null;
 	}
 
-	@Override
+    @Override
+    public List<NonNumericTests> getAllNonNumericTests(List<Integer> testIds) {
+        if(testIds != null && !testIds.isEmpty()) {
+            String sql = "Select t.id, tr.testResultType, tr.value, d.dictEntry From Test t, TestResult tr, Dictionary d where t.id in (:ids) and tr.test = t and tr.value is not null and (tr.testResultType = 'D' or tr.testResultType = 'M') and cast(tr.value as integer) = d.id";
+            try{
+                Query query = HibernateUtil.getSession().createQuery(sql);
+                query.setParameterList("ids", testIds);
+                List<Object[]> list = query.list();
+                Map<String, NonNumericTests> tests = new HashMap<String, NonNumericTests>();
+                for (Object[] objects : list) {
+                    String testId = (String) objects[0];
+                    String testResultType = (String) objects[1];
+                    String testResultValue = (String) objects[2];
+                    String dictEntry = (String) objects[3];
+
+                    if(tests.get(testId) != null) {
+                        tests.get(testId).dictionaryValues.add(new IdValuePair(testResultValue, dictEntry));
+                    } else {
+                        NonNumericTests nonNumericTests = new NonNumericTests(testId, testResultType, new IdValuePair(testResultValue, dictEntry));
+                        tests.put(testId, nonNumericTests);
+                    }
+                }
+                closeSession();
+                return new ArrayList<>(tests.values());
+            }catch(HibernateException e){
+                handleException(e, "getAllNonNumericTests");
+            }
+        }
+        return new ArrayList<NonNumericTests>();
+    }
+
+    @Override
 	public Test getTestByDescription(String description) {
 		String sql = "From Test t where t.description = :description";
 		try{
@@ -1113,7 +1144,4 @@ public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
         }
         clearIDMaps();
     }
-
-
-
 }
