@@ -256,7 +256,7 @@ public class ReferredOutAction extends BaseAction {
         if (!"H".equals(sampleItem.getSample().getDomain()))
             return null;
 
-        Patient patientForSample = sampleHumanDAO.getPatientForSample(sampleItem.getSample());
+        Patient patientForSample = sampleItem.getSample().getPatient();
         List<PatientIdentity> identityList = new ArrayList<>(patientForSample.getPatientIdentities());
         return PatientIdentityTypeMap.getInstance().getIdentityValue(identityList, "ST");
     }
