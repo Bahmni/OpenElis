@@ -116,10 +116,11 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
             transaction = HibernateUtil.getSession().beginTransaction();
 
             Person newPerson = getPerson(csvPatient);
-
+            UUID patientUUID = UUID.randomUUID();
             personDAO.insertData(newPerson);
             personAddressDAO.insert(getPersonAddresses(csvPatient, newPerson));
             Patient newPatient = getPatient(csvPatient, newPerson);
+            newPatient.setUuid(patientUUID.toString());
             patientDAO.insertData(newPatient);
 
             patientIdentityDAO.insertData(getPatientIdentity(newPatient, BahmniPatientService.REGISTRATION_KEY_NAME,
@@ -129,7 +130,7 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
             patientIdentityDAO.insertData(getPatientIdentity(newPatient, BahmniPatientService.OCCUPATION_KEY_NAME,
                     csvPatient.occupation));
 
-            patientFeedEventPublisher.publish(csvPatient.healthCenter + csvPatient.registrationNumber, contextPath);
+            patientFeedEventPublisher.publish(newPatient.getUuid(), contextPath);
 
             if (transaction.isActive()) {
                 transaction.commit();

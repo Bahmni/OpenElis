@@ -44,7 +44,6 @@ import us.mn.state.health.lims.common.formfields.FormFields;
 import us.mn.state.health.lims.common.util.validator.ActionError;
 import us.mn.state.health.lims.healthcenter.dao.HealthCenterDAO;
 import us.mn.state.health.lims.healthcenter.daoimpl.HealthCenterDAOImpl;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.patient.action.bean.AddressPartForm;
 import us.mn.state.health.lims.patient.action.bean.AddressParts;
 import us.mn.state.health.lims.patient.action.bean.PatientManagmentInfo;
@@ -69,6 +68,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class PatientManagementUpdateAction extends BaseAction implements IPatientUpdate {
 
@@ -289,8 +289,9 @@ public class PatientManagementUpdateAction extends BaseAction implements IPatien
 
         patient.setHealthCenter(healthCenterDAO.getByName(patientInfo.getHealthCenterName()));
         patient.setPerson(person);
-
+        String uuid = UUID.randomUUID().toString();
 		if (patientUpdateStatus == PatientUpdateStatus.ADD) {
+            patient.setUuid(uuid);
 			patientDAO.insertData(patient);
 		} else if (patientUpdateStatus == PatientUpdateStatus.UPDATE) {
 			patientDAO.updateData(patient);
@@ -300,7 +301,7 @@ public class PatientManagementUpdateAction extends BaseAction implements IPatien
 		patientID = patient.getId();
 
         if(patientUpdateStatus == PatientUpdateStatus.ADD) {
-            patientPublisher.publish(patientInfo.getSTnumber(), contextPath);
+            patientPublisher.publish(uuid, contextPath);
         }
 	}
 
@@ -403,48 +404,6 @@ public class PatientManagementUpdateAction extends BaseAction implements IPatien
 			insertNewPatientInfo(ADDRESS_PART_DEPT_ID, patientInfo.getAddressDepartment(), "D");
 		}
 	}
-
-// private void persistExtraPatientAddressInfo(PatientManagmentInfo patientInfo) {
-//		PersonAddress village = null;
-//		PersonAddress commune = null;
-//		PersonAddress dept = null;
-//		List<PersonAddress> personAddressList = personAddressDAO.getAddressPartsByPersonId(person.getId());
-//
-//		for( PersonAddress address : personAddressList){
-//			if( address.getAddressPartId().equals(ADDRESS_PART_COMMUNE_ID)){
-//				commune = address;
-//				commune.setValue(patientInfo.getCommune());
-//				commune.setSysUserId(currentUserId);
-//				personAddressDAO.update(commune);
-//			}else if( address.getAddressPartId().equals(ADDRESS_PART_VILLAGE_ID)){
-//				village = address;
-//				village.setValue( patientInfo.getCity());
-//				village.setSysUserId(currentUserId);
-//				personAddressDAO.update(village);
-//			}else if( address.getAddressPartId().equals(ADDRESS_PART_DEPT_ID)){
-//				dept = address;
-//				if( !GenericValidator.isBlankOrNull(patientInfo.getAddressDepartment()) && !patientInfo.getAddressDepartment().equals("0")){
-//					dept.setValue(patientInfo.getAddressDepartment());
-//					dept.setType("D");
-//					dept.setSysUserId(currentUserId);
-//					personAddressDAO.update(dept);
-//				}
-//			}
-//		}
-//
-//		if( commune == null){
-//			insertNewPatientInfo(ADDRESS_PART_COMMUNE_ID, patientInfo.getCommune(), "T");
-//		}
-//
-//		if( village == null){
-//			insertNewPatientInfo(ADDRESS_PART_VILLAGE_ID, patientInfo.getCity(), "T");
-//		}
-//
-//		if( dept == null && patientInfo.getAddressDepartment() != null && !patientInfo.getAddressDepartment().equals("0")){
-//			insertNewPatientInfo(ADDRESS_PART_DEPT_ID, patientInfo.getAddressDepartment(), "D");
-//		}
-//
-//	}
 
 	private void insertNewPatientInfo(String partId, String value, String type) {
 		PersonAddress address;

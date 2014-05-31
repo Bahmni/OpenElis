@@ -39,6 +39,6 @@ public class PatientHandler implements Handler<CompletePatientDetails> {
 
     @Override
     public CompletePatientDetails handle(String pathVariable) {
-        return bahmniPatientService.getCompletePatientDetails(pathVariable);
+        return bahmniPatientService.getPatientByUUID(pathVariable);
     }
 }

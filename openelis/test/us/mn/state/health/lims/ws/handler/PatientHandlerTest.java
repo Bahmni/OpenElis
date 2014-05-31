@@ -49,13 +49,10 @@ public class PatientHandlerTest {
     }
 
     @Test
-    public void shouldDelegateResourceRetrievalToService() {
+    public void shouldCallGetPatientByUUID() throws Exception {
         PatientHandler patientHandler = new PatientHandler(bahmniPatientService);
-        CompletePatientDetails expectedPatientDetails = new CompletePatientDetails(null, null, null, null, null, null);
-        when(bahmniPatientService.getCompletePatientDetails("GAN12345")).thenReturn(expectedPatientDetails);
-
-        CompletePatientDetails completePatientDetails = patientHandler.handle("GAN12345");
-
-        assertEquals(expectedPatientDetails, completePatientDetails);
+        CompletePatientDetails completePatientDetails = new CompletePatientDetails(null, null, null, null, null, null);
+        when(bahmniPatientService.getPatientByUUID("uuid")).thenReturn(completePatientDetails);
+        assertEquals(completePatientDetails, patientHandler.handle("uuid"));
     }
 }

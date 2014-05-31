@@ -74,6 +74,7 @@ public class BahmniPatientService {
                 new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl()), new HealthCenterDAOImpl());
     }
 
+
     public BahmniPatientService(PatientDAO patientDAO, PersonDAO personDAO, PatientIdentityDAO patientIdentityDAO,
                                 PersonAddressDAO personAddressDAO, AddressPartDAO addressPartDAO, PatientIdentityTypeDAO patientIdentityTypeDAO,
                                 AuditingService auditingService, HealthCenterDAO healthCenterDAO) {
@@ -234,23 +235,23 @@ public class BahmniPatientService {
         return healthCenterString == null || healthCenterString.isEmpty();
     }
 
-    public CompletePatientDetails getCompletePatientDetails(String patientId) {
-        PatientIdentityType identityType = primaryIdentityType();
-        List<PatientIdentity> patientIdentities = patientIdentityDAO.getPatientIdentitiesByValueAndType(patientId, identityType.getId());
+
+    public CompletePatientDetails getPatientByUUID(String uuid){
+        Patient patient = patientDAO.getPatientByUUID(uuid);
+        List<PatientIdentity> patientIdentities = patientIdentityDAO.getPatientIdentitiesForPatient(patient.getId());
+        Person person = patient.getPerson();
         if (patientIdentities == null || patientIdentities.size() == 0) {
             return null;
         }
         PatientIdentity identity = patientIdentities.get(0);
-        Patient patient = patientDAO.getData(identity.getPatientId());
-        Person person = patient.getPerson();
 
         List<PersonAddress> personAddresses = personAddressDAO.getAddressPartsByPersonId(person.getId());
         List<AddressPart> addressParts = addressPartDAO.getAll();
         List<Attribute> attributes = getAttributes(patient);
 
         return new CompletePatientDetails(patient, person, identity, personAddresses, addressParts, attributes);
-    }
 
+    }
     private PatientIdentityType primaryIdentityType() {
         return patientIdentityTypeDAO.getNamedIdentityType("ST");
     }

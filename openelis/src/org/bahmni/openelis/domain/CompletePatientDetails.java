@@ -45,6 +45,10 @@ public class CompletePatientDetails {
         this.attributes = attributes;
     }
 
+    public String getPatientUUID() {
+        return patient.getUuid();
+    }
+
     public String getFirstName() {
         return person.getFirstName();
     }
