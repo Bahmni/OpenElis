@@ -69,7 +69,7 @@ function doSelectionSearch(){
 //	var requestDate = $("receptionDate").value;
 	
 //	if( requestDate == null || requestDate == ""){
-var patientIdentifier = $("patientID").value;
+var patientIdentifier = $("patientID").value.toUpperCase();
 		patientSearch($("lastName").value, $("firstName").value, $("middleName").value, patientIdentifier, patientIdentifier, patientIdentifier, NO_VALUE, processSearchSuccess, processSearchFailure);
 //	}else{ }
 }
