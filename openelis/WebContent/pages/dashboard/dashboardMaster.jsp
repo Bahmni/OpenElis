@@ -70,7 +70,7 @@ basePath = path + "/";
                     <span>Awaiting Testing : </span>
                     <span id="awaitingTestCount"></span>
                 </td>
-                <td>
+                <td style="<% if (!alwaysValidate) { %> display:none <% } %>">
                     <span>Awaiting Validation : </span>
                     <span id="awaitingValidationCount"></span>
                 </td>
