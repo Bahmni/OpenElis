@@ -1172,4 +1172,16 @@
                 <where>name='U/MM'</where>
         </delete>
     </changeSet>
+    <changeSet id="91" author="Neha" context="bahmni">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                select last_value from gender_seq;
+            </sqlCheck>
+        </preConditions>
+        <comment>Update gender_seq to the latest value</comment>
+        <sql>
+            alter sequence gender_seq restart with 147;
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>
