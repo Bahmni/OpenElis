@@ -338,6 +338,7 @@ function  /*void*/ savePage()
     jQuery("#saveButtonId").attr("disabled", "disabled");
 	window.onbeforeunload = null; // Added to flag that formWarning alert isn't needed.
 	var form = window.document.forms[0];
+    form.enctype = "multipart/form-data";
 	form.action = '<%=formName%>'.sub('Form','') + "Update.do?referer=" + '<%= referer %>'  + '<%= logbookType == "" ? "" : "&type=" + logbookType  %>';
 	form.submit();
 }
@@ -573,6 +574,9 @@ function /*void*/ processTestReflexCD4Success(xhr)
 		<th width="5%">
 			<bean:message key="result.notes"/>
 		</th>
+        <th width="5%">
+            <bean:message key="result.files"/>
+        </th>
 	</tr>
 	<logic:iterate id="testResult" name="<%=formName%>"  property="testResult" indexId="index" type="TestResultItem">
 	<logic:equal name="testResult" property="isGroupSeparator" value="true">
@@ -929,6 +933,18 @@ function /*void*/ processTestReflexCD4Success(xhr)
 						    />
 			<html:hidden property="hideShowFlag"  styleId='<%="hideShow_" + index %>' value="hidden" />
 		</td>
+        <td>
+            <input type="file" name='<%="testResult["+index+"].uploadedFile"%>' onchange='<%="markUpdated(" + index + ");"%>'>
+            <% if(testResult.getUploadedFileName() != null){ %>
+                    <%  String filePath = testResult.getUploadedFileName();
+                        String fileNameWithUUID = filePath.substring(filePath.lastIndexOf("/") + 1);
+                        String fileName = fileNameWithUUID.substring(fileNameWithUUID.indexOf("_")+1);
+                    %>
+                <label><%= fileName %> </label>
+                <a href='<%= testResult.getUploadedFileName() %>' target="_blank">Download</a>
+            <% }%>
+
+        </td>
 	</tr>
 	<logic:notEmpty name="testResult" property="pastNotes">
 		<tr class='<%= rowColor %>' >

@@ -71,6 +71,7 @@ import us.mn.state.health.lims.samplehuman.dao.SampleHumanDAO;
 import us.mn.state.health.lims.samplehuman.daoimpl.SampleHumanDAOImpl;
 import us.mn.state.health.lims.sampleitem.dao.SampleItemDAO;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
+import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.OrderStatus;
@@ -134,6 +135,7 @@ public class ResultsLoadUtility {
 
     private static String ANALYTE_CONCLUSION_ID;
     private static String ANALYTE_CD4_CNT_CONCLUSION_ID;
+    public static final String UPLOADED_RESULTS_DIRECTORY = "uploadedResultsDirectory";
     private static boolean depersonalize = FormFields.getInstance().useField(Field.DepersonalizedResults);
     private boolean useTechSignature = ConfigurationProperties.getInstance().isPropertyValueEqual(Property.resultTechnicianName, "true");
     private static boolean supportReferrals = FormFields.getInstance().useField(Field.ResultsReferral);
@@ -877,6 +879,10 @@ public class ResultsLoadUtility {
         setAbnormalTestResultsToDictionaryResults(testItem, isConclusion, result,testResults);
         if(result != null){
             testItem.setAbnormal(result.getAbnormal());
+
+            String uploadedFilesDirectory = new SiteInformationDAOImpl().getSiteInformationByName(UPLOADED_RESULTS_DIRECTORY).getValue();
+            String uploadedFilePath = uploadedFilesDirectory + result.getUploadedFileName();
+            testItem.setUploadedFileName(uploadedFilePath);
         }
 
         testItem.setTechnician(techSignature);

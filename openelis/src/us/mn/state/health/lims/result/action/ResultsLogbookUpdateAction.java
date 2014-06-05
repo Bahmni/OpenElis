@@ -20,7 +20,12 @@ import org.apache.commons.validator.GenericValidator;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts.Globals;
-import org.apache.struts.action.*;
+import org.apache.struts.action.ActionForm;
+import org.apache.struts.action.ActionForward;
+import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.ActionMessages;
+import org.apache.struts.action.ActionRedirect;
+import org.apache.struts.upload.FormFile;
 import org.bahmni.feed.openelis.feed.service.EventPublishers;
 import org.bahmni.feed.openelis.feed.service.impl.OpenElisUrlPublisher;
 import org.hibernate.HibernateException;
@@ -57,7 +62,11 @@ import us.mn.state.health.lims.referral.daoimpl.ReferralTypeDAOImpl;
 import us.mn.state.health.lims.referral.valueholder.Referral;
 import us.mn.state.health.lims.referral.valueholder.ReferralResult;
 import us.mn.state.health.lims.referral.valueholder.ReferralType;
-import us.mn.state.health.lims.result.action.util.*;
+import us.mn.state.health.lims.result.action.util.ResultSet;
+import us.mn.state.health.lims.result.action.util.ResultUtil;
+import us.mn.state.health.lims.result.action.util.ResultsLoadUtility;
+import us.mn.state.health.lims.result.action.util.ResultsPaging;
+import us.mn.state.health.lims.result.action.util.ResultsValidation;
 import us.mn.state.health.lims.result.dao.ResultDAO;
 import us.mn.state.health.lims.result.dao.ResultInventoryDAO;
 import us.mn.state.health.lims.result.dao.ResultSignatureDAO;
@@ -76,6 +85,7 @@ import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.samplehuman.dao.SampleHumanDAO;
 import us.mn.state.health.lims.samplehuman.daoimpl.SampleHumanDAOImpl;
 import us.mn.state.health.lims.samplehuman.valueholder.SampleHuman;
+import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.OrderStatus;
@@ -91,8 +101,18 @@ import us.mn.state.health.lims.testresult.valueholder.TestResult;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class ResultsLogbookUpdateAction extends BaseAction implements IResultSaveService {
 
@@ -113,9 +133,12 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
     private ReferralResultDAO referralResultDAO = new ReferralResultDAOImpl();
     private ResultLimitDAO resultLimitDAO = new ResultLimitDAOImpl();
     private static Logger logger = LogManager.getLogger(ResultsLogbookUpdateAction.class);
-
     private static final String RESULT_SUBJECT = "Result Note";
+
     private static String REFERRAL_CONFORMATION_ID;
+    public static final String PARENT_OF_UPLOADED_FILES_DIRECTORY = "parentOfUploadedFilesDirectory";
+    public static final String UPLOADED_RESULTS_DIRECTORY = "uploadedResultsDirectory";
+    public static final String SEPARATOR = "_";
 
     private boolean useTechnicianName = ConfigurationProperties.getInstance().isPropertyValueEqual(Property.resultTechnicianName, "true");
     private boolean alwaysValidate = ConfigurationProperties.getInstance().isPropertyValueEqual(Property.ALWAYS_VALIDATE_RESULTS, "true");
@@ -187,6 +210,7 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
                 if (resultSet.newReferral != null) {
                     insertNewReferralAndReferralResult(resultSet);
                 }
+
 
             }
 
@@ -414,6 +438,7 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
         for (TestResultItem testResultItem : modifiedItems) {
 
             Analysis analysis = analysisDAO.getAnalysisById(testResultItem.getAnalysisId());
+            createFileForResult(testResultItem);
             List<Result> results = createResultFromTestResultItem(testResultItem, analysis);
 
             for (Result result : results) {
@@ -422,6 +447,22 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
                 if (resultHasValueOrIsReferral(testResultItem, result)) {
                     updateAndAddAnalysisToModifiedList(testResultItem, testResultItem.getTestDate(), analysis);
                 }
+            }
+        }
+    }
+
+    private void createFileForResult(TestResultItem testResultItem) {
+        if(testResultItem.getUploadedFile() != null){
+            FormFile fileUpload = testResultItem.getUploadedFile();
+
+            String uuid = UUID.randomUUID().toString();
+            String fileName = uuid + SEPARATOR + fileUpload.getFileName();
+            try{
+                File downloadedFile = getFile(fileName);
+                writeToFileSystem(fileUpload, downloadedFile);
+                testResultItem.setUploadedFileName(fileName);
+            } catch (IOException e) {
+                testResultItem.setUploadedFileName(null);
             }
         }
     }
@@ -452,6 +493,7 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
 
         Note note = NoteUtil.createSavableNote(null, testResultItem.getNote(), testResultItem.getResultId(),
                 ResultsLoadUtility.getResultReferenceTableId(), RESULT_SUBJECT, currentUserId);
+
 
         setAnalysisStatus(testResultItem, analysis);
 
@@ -618,7 +660,9 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
                 setStandardResultValues(multiResults[i], result);
                 result.setSortOrder(getResultSortOrder(analysis, result.getValue()));
                 result.setAbnormal(testResultItem.getAbnormal());
-
+                if(testResultItem.getUploadedFileName() != null) {
+                    result.setUploadedFileName(testResultItem.getUploadedFileName());
+                }
                 results.add(result);
             }
             deletableResults.addAll(existingResults);
@@ -664,6 +708,9 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
 
             setStandardResultValues(testResultItem.getResultValue(), result);
             result.setAbnormal(testResultItem.getAbnormal());
+            if(testResultItem.getUploadedFileName() != null){
+                result.setUploadedFileName(testResultItem.getUploadedFileName());
+            }
             results.add(result);
 
             if (isQualifiedResult) {
@@ -759,6 +806,22 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
 
         return redirect;
 
+    }
+
+    private File getFile(String fileName) {
+
+        String parentForUploadedFilesDirectory = new SiteInformationDAOImpl().getSiteInformationByName(PARENT_OF_UPLOADED_FILES_DIRECTORY).getValue();
+        String uploadedFilesDirectory = new SiteInformationDAOImpl().getSiteInformationByName(UPLOADED_RESULTS_DIRECTORY).getValue();
+
+        String filePath = parentForUploadedFilesDirectory + uploadedFilesDirectory + fileName;
+        return new File(filePath);
+    }
+
+    private void writeToFileSystem(FormFile file, File aFile) throws IOException {
+        FileOutputStream fileOutputStream = new FileOutputStream(aFile);
+        fileOutputStream.write(file.getFileData());
+        fileOutputStream.flush();
+        fileOutputStream.close();
     }
 
     @Override

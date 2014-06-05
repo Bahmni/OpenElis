@@ -18,6 +18,7 @@
 package us.mn.state.health.lims.test.beanItems;
 
 import org.apache.commons.validator.GenericValidator;
+import org.apache.struts.upload.FormFile;
 import us.mn.state.health.lims.common.util.IdValuePair;
 import us.mn.state.health.lims.result.action.util.ResultItem;
 import us.mn.state.health.lims.result.valueholder.Result;
@@ -125,8 +126,10 @@ public class TestResultItem implements ResultItem, Serializable{
 	private String qualifiedResultId;
     private boolean abnormal;
     private List<IdValuePair> abnormalTestResult;
+    private FormFile uploadedFile;
+    private String uploadedFileName;
 
-	public String getAccessionNumber() {
+    public String getAccessionNumber() {
 		return accessionNumber;
 	}
     public void setAccessionNumber(String accessionNumber) {
@@ -606,6 +609,20 @@ public class TestResultItem implements ResultItem, Serializable{
     }
     public void setAbnormalTestResult(List<IdValuePair> abnormalTestResult) {
         this.abnormalTestResult = abnormalTestResult;
+    }
+    public FormFile getUploadedFile() {
+        return uploadedFile;
+    }
+    public void setUploadedFile(FormFile uploadedFile) {
+        this.uploadedFile = uploadedFile;
+    }
+
+    public String getUploadedFileName() {
+        return uploadedFileName;
+    }
+
+    public void setUploadedFileName(String uploadedFileName) {
+        this.uploadedFileName = uploadedFileName;
     }
 
     public String getAbnormalTestResultMap() {

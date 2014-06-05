@@ -45,6 +45,7 @@ public class Result extends EnumValueItemImpl {
 	private Double maxNormal;
 	private ValueHolder parentResult;
     private Set<ResultSignature> resultSignatures;
+    private String uploadedFileName;
 
     private boolean abnormal;
 
@@ -206,6 +207,14 @@ public class Result extends EnumValueItemImpl {
 
     public boolean isDictionary() {
         return resultType != null && resultType.equals("D");
+    }
+
+    public String getUploadedFileName() {
+        return uploadedFileName;
+    }
+
+    public void setUploadedFileName(String uploadedFileName) {
+        this.uploadedFileName = uploadedFileName;
     }
 
     @Override

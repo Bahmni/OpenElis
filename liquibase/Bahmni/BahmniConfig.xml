@@ -1183,5 +1183,22 @@
             alter sequence gender_seq restart with 147;
         </sql>
     </changeSet>
-
+    <changeSet id="92" author="Rohan,Neha" context="bahmni">
+        <comment>Add the uploaded_file_name column to the result table</comment>
+        <addColumn schemaName="clinlims" tableName="result">
+            <column name="uploaded_file_name" type="varchar(500)"></column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="93" author="Rohan,Neha" context="bahmni">
+        <comment>Add uploaded results directory path in site information</comment>
+        <insert schemaName="clinlims" tableName="site_information">
+            <column name="id" valueNumeric=" nextVal( 'site_information_seq' ) "/>
+            <column name="name" value="uploadedResultsDirectory"/>
+            <column name="description"
+                    value="Contains all files uploaded against results"/>
+            <column name="value" value="/uploaded_results/"/>
+            <column name="lastupdated" valueDate=" now() "/>
+            <column name="value_type" valueDate="text"/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>

@@ -45,5 +45,6 @@
             <key column="result_id"></key>
             <one-to-many class="us.mn.state.health.lims.result.valueholder.ResultSignature"/>
         </set>
+        <property name="uploadedFileName" type="java.lang.String" column="uploaded_file_name"/>
     </class>
 </hibernate-mapping>
