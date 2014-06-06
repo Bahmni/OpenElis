@@ -879,10 +879,11 @@ public class ResultsLoadUtility {
         setAbnormalTestResultsToDictionaryResults(testItem, isConclusion, result,testResults);
         if(result != null){
             testItem.setAbnormal(result.getAbnormal());
-
-            String uploadedFilesDirectory = new SiteInformationDAOImpl().getSiteInformationByName(UPLOADED_RESULTS_DIRECTORY).getValue();
-            String uploadedFilePath = uploadedFilesDirectory + result.getUploadedFileName();
-            testItem.setUploadedFileName(uploadedFilePath);
+            if(result.getUploadedFileName() != null) {
+                String uploadedFilesDirectory = new SiteInformationDAOImpl().getSiteInformationByName(UPLOADED_RESULTS_DIRECTORY).getValue();
+                String uploadedFilePath = uploadedFilesDirectory + result.getUploadedFileName();
+                testItem.setUploadedFileName(uploadedFilePath);
+            }
         }
 
         testItem.setTechnician(techSignature);
