@@ -452,7 +452,7 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
     }
 
     private void createFileForResult(TestResultItem testResultItem) {
-        if(testResultItem.getUploadedFile() != null){
+        if(testResultItem.getUploadedFile() != null && testResultItem.getUploadedFile().getFileName() != ""){
             FormFile fileUpload = testResultItem.getUploadedFile();
 
             String uuid = UUID.randomUUID().toString();
