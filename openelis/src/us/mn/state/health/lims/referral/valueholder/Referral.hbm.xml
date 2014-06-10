@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping auto-import="true">
-    <class name="us.mn.state.health.lims.referral.valueholder.Referral" table="referral" optimistic-lock="version" dynamic-update="true" >
+    <class name="us.mn.state.health.lims.referral.valueholder.Referral" table="referral" optimistic-lock="version" dynamic-update="true" batch-size="25">
         <id name="id" type="us.mn.state.health.lims.hibernate.resources.usertype.LIMSStringNumberUserType">
             <column name="ID" precision="10" scale="0" />
             <generator class="sequence">
@@ -27,7 +27,11 @@
 		<property name="organizationName" column="organization_name" length="30" not-null="false" />
 		<property name="requesterName" column="requester_name" length="60" not-null="false" />
 		<property name="canceled" column="canceled" type="boolean" />
-		<many-to-one name="analysis" class="us.mn.state.health.lims.analysis.valueholder.Analysis" fetch="join" >
+        <set name="referralResults" inverse="true" order-by="id" lazy="true" batch-size="25">
+            <key column="referral_id"/>
+            <one-to-many class="us.mn.state.health.lims.referral.valueholder.ReferralResult"/>
+        </set>
+		<many-to-one name="analysis" class="us.mn.state.health.lims.analysis.valueholder.Analysis">
 			<column name="analysis_id"	 precision="10" scale="0" />
 		</many-to-one>
 		<many-to-one name="organization" class="us.mn.state.health.lims.organization.valueholder.Organization" fetch="select" >

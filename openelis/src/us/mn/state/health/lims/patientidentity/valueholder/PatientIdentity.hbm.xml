@@ -3,7 +3,7 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-    <class name="us.mn.state.health.lims.patientidentity.valueholder.PatientIdentity" table="PATIENT_IDENTITY" optimistic-lock="version" dynamic-update="true" >
+    <class name="us.mn.state.health.lims.patientidentity.valueholder.PatientIdentity" table="PATIENT_IDENTITY" optimistic-lock="version" dynamic-update="true" batch-size="25">
         <id name="id" type="us.mn.state.health.lims.hibernate.resources.usertype.LIMSStringNumberUserType">
             <column name="ID" precision="10" scale="0" />
             <generator class="sequence">
@@ -15,6 +15,9 @@
         <property name="identityTypeId" type="us.mn.state.health.lims.hibernate.resources.usertype.LIMSStringNumberUserType">
             <column name="IDENTITY_TYPE_ID" precision="10" scale="0" />
         </property>
+        <many-to-one name="patient" class="us.mn.state.health.lims.patient.valueholder.Patient" insert="false" update="false" fetch="select">
+            <column name="PATIENT_ID" precision="10" scale="0" />
+        </many-to-one>
         <property name="patientId" type="us.mn.state.health.lims.hibernate.resources.usertype.LIMSStringNumberUserType">
             <column name="PATIENT_ID" precision="10" scale="0" not-null="true" />
         </property>

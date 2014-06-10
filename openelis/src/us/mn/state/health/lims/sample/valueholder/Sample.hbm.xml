@@ -3,7 +3,7 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-    <class name="us.mn.state.health.lims.sample.valueholder.Sample" table="SAMPLE" optimistic-lock="version" dynamic-update="true" >
+    <class name="us.mn.state.health.lims.sample.valueholder.Sample" table="SAMPLE" optimistic-lock="version" dynamic-update="true" batch-size="25">
         <id name="id" type="us.mn.state.health.lims.hibernate.resources.usertype.LIMSStringNumberUserType">
             <column name="ID" precision="10" scale="0" />
             <generator class="sequence">
@@ -73,5 +73,10 @@
             <key column="samp_id"/>
             <one-to-many class="us.mn.state.health.lims.sampleitem.valueholder.SampleItem"/>
         </set>
+        
+        <join table="SAMPLE_HUMAN" optional="true">
+            <key column="SAMP_ID" unique="true"/>
+            <many-to-one name="patient" class="us.mn.state.health.lims.patient.valueholder.Patient" column="patient_id" not-null="true"/>
+        </join>
     </class>
 </hibernate-mapping>

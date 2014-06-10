@@ -34,6 +34,7 @@ public class ReferralResult extends BaseObject {
     private static final long serialVersionUID = 1L;
 
     private String id;
+    private Referral referral;
     private String referralId;
     private String testId;
     private Timestamp referralReportDate;
@@ -45,14 +46,6 @@ public class ReferralResult extends BaseObject {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getReferralId() {
-        return referralId;
-    }
-
-    public void setReferralId(String referralId) {
-        this.referralId = referralId;
     }
 
     public String getTestId() {
@@ -130,4 +123,19 @@ public class ReferralResult extends BaseObject {
         }
     }
 
+    public Referral getReferral() {
+        return referral;
+    }
+
+    public void setReferral(Referral referral) {
+        this.referral = referral;
+    }
+
+    public String getReferralId() {
+        return referralId;
+    }
+
+    public void setReferralId(String referralId) {
+        this.referralId = referralId;
+    }
 }

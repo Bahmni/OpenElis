@@ -21,6 +21,7 @@ import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.common.valueholder.EnumValueItemImpl;
 import us.mn.state.health.lims.common.valueholder.ValueHolder;
 import us.mn.state.health.lims.common.valueholder.ValueHolderInterface;
+import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
 import us.mn.state.health.lims.samplesource.valueholder.SampleSource;
 import us.mn.state.health.lims.systemuser.valueholder.SystemUser;
@@ -62,6 +63,7 @@ public class Sample extends EnumValueItemImpl {
 	private String transmissionDateForDisplay;
 	private ValueHolderInterface systemUser;
     private Set<SampleItem> sampleItems;
+    private Patient patient;
 
     private String uuid;
 
@@ -395,4 +397,11 @@ public class Sample extends EnumValueItemImpl {
         getSampleItems().add(sampleItem);
     }
 
+    public Patient getPatient() {
+        return patient;
+    }
+
+    public void setPatient(Patient patient) {
+        this.patient = patient;
+    }
 }

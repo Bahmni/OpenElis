@@ -46,5 +46,13 @@
             <one-to-many class="us.mn.state.health.lims.result.valueholder.ResultSignature"/>
         </set>
         <property name="uploadedFileName" type="java.lang.String" column="uploaded_file_name"/>
+
+        <set name="notes" batch-size="25" table="NOTE" inverse="false" lazy="true">
+            <key column="reference_id"></key>
+            <one-to-many class="us.mn.state.health.lims.note.valueholder.Note"/>
+            <filter name="default_resultNotes" condition="reference_table in (select reference_tables.id from reference_tables where reference_tables.name='RESULT')"/>
+        </set>
     </class>
+
+    <filter-def name="default_resultNotes"/>
 </hibernate-mapping>
