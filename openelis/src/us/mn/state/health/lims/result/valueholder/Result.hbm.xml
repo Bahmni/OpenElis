@@ -52,6 +52,7 @@
             <one-to-many class="us.mn.state.health.lims.note.valueholder.Note"/>
             <filter name="default_resultNotes" condition="reference_table in (select reference_tables.id from reference_tables where reference_tables.name='RESULT')"/>
         </set>
+        <property name="resultLimitId" type="integer" column="result_limit_id"/>
     </class>
 
     <filter-def name="default_resultNotes"/>

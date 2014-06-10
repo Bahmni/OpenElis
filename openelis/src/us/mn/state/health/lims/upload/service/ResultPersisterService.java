@@ -139,6 +139,8 @@ public class ResultPersisterService {
         ResultLimit resultLimit = resultsLoadUtility.getResultLimitForTestAndPatient(test, patient);
         result.setMaxNormal(resultLimit.getHighNormal());
         result.setMinNormal(resultLimit.getLowNormal());
+        String resultLimitId = resultLimit.getId();
+        result.setResultLimitId(resultLimitId != null ? Integer.parseInt(resultLimitId) : null);
         result.setValue(testResultValue);
         result.setResultType(NUMERIC_RESULT_TYPE);
         resultDAO.insertData(result);

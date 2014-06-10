@@ -111,6 +111,8 @@ public class ReferralResult extends BaseObject {
         getResult().setSortOrder("0");
         getResult().setMinNormal(limit.getLowNormal());
         getResult().setMaxNormal(limit.getHighNormal());
+        String limitId = limit.getId();
+        getResult().setResultLimitId(limitId != null ? Integer.parseInt(limitId) : null);
 
         getResult().setResultType(referredResultType);
         if (ResultType.Dictionary.code().equals(referredResultType) || ResultType.MultiSelect.code().equals(referredResultType)) {

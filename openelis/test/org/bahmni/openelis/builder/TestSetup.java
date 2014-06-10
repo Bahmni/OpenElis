@@ -249,6 +249,8 @@ public class TestSetup {
         result.setResultType("N");
         result.setMinNormal(resultLimit.getLowNormal());
         result.setMaxNormal(resultLimit.getHighNormal());
+        String resultLimitId = resultLimit.getId();
+        result.setResultLimitId(resultLimitId != null ? Integer.parseInt(resultLimitId) : null);
 
         new ResultDAOImpl().insertData(result);
         analysis.addResult(result);

@@ -48,6 +48,7 @@ public class Result extends EnumValueItemImpl {
     private Set<ResultSignature> resultSignatures;
     private String uploadedFileName;
     private Set<Note> notes;
+    private Integer resultLimitId;
 
     private boolean abnormal;
 
@@ -217,6 +218,14 @@ public class Result extends EnumValueItemImpl {
 
     public void setUploadedFileName(String uploadedFileName) {
         this.uploadedFileName = uploadedFileName;
+    }
+
+    public Integer getResultLimitId() {
+        return resultLimitId;
+    }
+
+    public void setResultLimitId(Integer resultLimitId) {
+        this.resultLimitId = resultLimitId;
     }
 
     @Override

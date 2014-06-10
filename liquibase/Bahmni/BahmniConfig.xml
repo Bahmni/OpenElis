@@ -1201,4 +1201,10 @@
             <column name="value_type" value="text"/>
         </insert>
     </changeSet>
+    <changeSet id="94" author="Arathy" context="bahmni">
+        <comment>Add result limit id column to the result table</comment>
+        <addColumn schemaName="clinlims" tableName="result">
+            <column name="result_limit_id" type="numeric"></column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
