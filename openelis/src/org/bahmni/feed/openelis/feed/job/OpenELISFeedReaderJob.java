@@ -61,7 +61,7 @@ public abstract class OpenELISFeedReaderJob implements Job {
             processEvents(jobExecutionContext);
         } catch (Exception e) {
             try {
-                if (ExceptionUtils.getStackTrace(e).contains("HTTP response code: 401")) {
+                if (e != null && isUnauthorised(e)) {
                     initializeAtomFeedClient();
                 }
             } finally {
@@ -122,5 +122,10 @@ public abstract class OpenELISFeedReaderJob implements Job {
             throw new RuntimeException("Is not a valid URI - " + authenticationURI);
         }
         return String.format("%s://%s", openMRSAuthURL.getProtocol(), openMRSAuthURL.getAuthority());
+    }
+
+    private boolean isUnauthorised(Exception e) {
+        return ExceptionUtils.getStackTrace(e).contains("HTTP response code: 401")
+                || ExceptionUtils.getStackTrace(e).contains("HTTP response code: 403");
     }
 }
