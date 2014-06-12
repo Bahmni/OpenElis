@@ -18,6 +18,7 @@ package us.mn.state.health.lims.upload.service;
 
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
+import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
 import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
 import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
@@ -140,7 +141,7 @@ public class ResultPersisterService {
         result.setMaxNormal(resultLimit.getHighNormal());
         result.setMinNormal(resultLimit.getLowNormal());
         String resultLimitId = resultLimit.getId();
-        result.setResultLimitId(resultLimitId != null ? Integer.parseInt(resultLimitId) : null);
+        result.setResultLimitId(!StringUtil.isNullorNill(resultLimitId) ? Integer.parseInt(resultLimitId) : null);
         result.setValue(testResultValue);
         result.setResultType(NUMERIC_RESULT_TYPE);
         resultDAO.insertData(result);
