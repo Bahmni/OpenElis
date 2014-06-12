@@ -741,7 +741,7 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
         result.setMinNormal(testResultItem.getLowerNormalRange());
         result.setMaxNormal(testResultItem.getUpperNormalRange());
         String resultLimitId = testResultItem.getResultLimitId();
-        result.setResultLimitId(resultLimitId != null ? Integer.parseInt(resultLimitId) : null);
+        result.setResultLimitId(!StringUtil.isNullorNill(resultLimitId) ? Integer.parseInt(resultLimitId) : null);
 
         setAnalyteForResult(result);
     }

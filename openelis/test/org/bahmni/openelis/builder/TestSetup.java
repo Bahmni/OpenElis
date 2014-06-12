@@ -24,6 +24,7 @@ import us.mn.state.health.lims.analyte.daoimpl.AnalyteDAOImpl;
 import us.mn.state.health.lims.analyte.valueholder.Analyte;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.util.DateUtil;
+import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
 import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
 import us.mn.state.health.lims.note.daoimpl.NoteDAOImpl;
@@ -250,7 +251,7 @@ public class TestSetup {
         result.setMinNormal(resultLimit.getLowNormal());
         result.setMaxNormal(resultLimit.getHighNormal());
         String resultLimitId = resultLimit.getId();
-        result.setResultLimitId(resultLimitId != null ? Integer.parseInt(resultLimitId) : null);
+        result.setResultLimitId(!StringUtil.isNullorNill(resultLimitId) ? Integer.parseInt(resultLimitId) : null);
 
         new ResultDAOImpl().insertData(result);
         analysis.addResult(result);

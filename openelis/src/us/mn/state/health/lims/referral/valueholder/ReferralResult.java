@@ -19,6 +19,7 @@ package us.mn.state.health.lims.referral.valueholder;
 import org.apache.commons.validator.GenericValidator;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.util.DateUtil;
+import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.valueholder.BaseObject;
 import us.mn.state.health.lims.common.valueholder.ValueHolder;
 import us.mn.state.health.lims.common.valueholder.ValueHolderInterface;
@@ -112,7 +113,7 @@ public class ReferralResult extends BaseObject {
         getResult().setMinNormal(limit.getLowNormal());
         getResult().setMaxNormal(limit.getHighNormal());
         String limitId = limit.getId();
-        getResult().setResultLimitId(limitId != null ? Integer.parseInt(limitId) : null);
+        getResult().setResultLimitId(!StringUtil.isNullorNill(limitId) ? Integer.parseInt(limitId) : null);
 
         getResult().setResultType(referredResultType);
         if (ResultType.Dictionary.code().equals(referredResultType) || ResultType.MultiSelect.code().equals(referredResultType)) {
