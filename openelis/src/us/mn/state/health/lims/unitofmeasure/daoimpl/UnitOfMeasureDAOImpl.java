@@ -21,6 +21,7 @@ import java.util.Vector;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
+import org.hibernate.HibernateException;
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
 import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
 import us.mn.state.health.lims.common.action.IActionConstants;
@@ -31,6 +32,7 @@ import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
+import us.mn.state.health.lims.panel.valueholder.Panel;
 import us.mn.state.health.lims.unitofmeasure.dao.UnitOfMeasureDAO;
 import us.mn.state.health.lims.unitofmeasure.valueholder.UnitOfMeasure;
 
@@ -337,4 +339,16 @@ public class UnitOfMeasureDAOImpl extends BaseDAOImpl implements
 					"Error in duplicateUnitOfMeasureExists()", e);
 		}
 	}
+
+    public UnitOfMeasure getUnitOfMeasureById(String id) {
+        try {
+            UnitOfMeasure unitOfMeasure = (UnitOfMeasure)HibernateUtil.getSession().get(UnitOfMeasure.class, id);
+            closeSession();
+            return unitOfMeasure;
+        } catch (HibernateException e) {
+            handleException(e, "getDataById");
+        }
+
+        return null;
+    }
 }
