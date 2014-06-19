@@ -1207,4 +1207,26 @@
             <column name="result_limit_id" type="numeric"></column>
         </addColumn>
     </changeSet>
+    <changeSet id="95" author="Bharti,Arathy" context="bahmni">
+				<preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+			                SELECT COUNT(*) FROM gender where gender_type = 'O';
+			      </sqlCheck>
+				</preConditions>
+        <comment>Adding Hospital name and address</comment>
+        <sql>
+          		insert into gender (id, gender_type, description, name_key) values ((select nextval('gender_seq')), 'O', 'Other', 'gender.other');
+        </sql>
+    </changeSet>
+    <changeSet id="96" author="Bharti, Arathy" context="bahmni">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                select last_value from gender_seq;
+            </sqlCheck>
+        </preConditions>
+        <comment>Update gender_seq to the latest value</comment>
+        <sql>
+            alter sequence gender_seq restart with 148;
+        </sql>
+    </changeSet>
 </databaseChangeLog>
