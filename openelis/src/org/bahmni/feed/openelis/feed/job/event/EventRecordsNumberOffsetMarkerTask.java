@@ -40,15 +40,15 @@ public class EventRecordsNumberOffsetMarkerTask implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 
-        AtomFeedHibernateTransactionManager transactionManager = new AtomFeedHibernateTransactionManager();
-        AllEventRecords allEventRecords = new AllEventRecordsJdbcImpl(transactionManager);
-        AllEventRecordsOffsetMarkers eventRecordsOffsetMarkers = new AllEventRecordsOffsetMarkersJdbcImpl(transactionManager);
-        ChunkingEntries chunkingEntries = new ChunkingEntriesJdbcImpl(transactionManager);
-        final OffsetMarkerService markerService = new NumberOffsetMarkerServiceImpl(allEventRecords, chunkingEntries, eventRecordsOffsetMarkers);
-        
+        final AtomFeedHibernateTransactionManager transactionManager = new AtomFeedHibernateTransactionManager();
+
         transactionManager.executeWithTransaction(new AFTransactionWorkWithoutResult() {
             @Override
             protected void doInTransaction() {
+                AllEventRecords allEventRecords = new AllEventRecordsJdbcImpl(transactionManager);
+                AllEventRecordsOffsetMarkers eventRecordsOffsetMarkers = new AllEventRecordsOffsetMarkersJdbcImpl(transactionManager);
+                ChunkingEntries chunkingEntries = new ChunkingEntriesJdbcImpl(transactionManager);
+                OffsetMarkerService markerService = new NumberOffsetMarkerServiceImpl(allEventRecords, chunkingEntries, eventRecordsOffsetMarkers);
                 markerService.markEvents(OFFSET_BY_NUMBER_OF_RECORDS_PER_CATEGORY);
             }
             @Override
