@@ -107,19 +107,13 @@ public class BahmniPatientService {
         OpenMRSPersonAddress preferredAddress = openMRSPerson.getPreferredAddress();
         AddressParts addressParts = new AddressParts(addressPartDAO.getAll());
         if (preferredAddress != null) {
-            PersonAddresses personAddresses = new PersonAddresses(personAddressDAO.getAddressPartsByPersonId(person.getId()));
-            PersonAddress level1Address = personAddresses.findByPartName("level1", addressParts);
-            level1Address.updateValue(preferredAddress.getAddress1(), sysUserId);
-            PersonAddress level2Address = personAddresses.findByPartName("level2", addressParts);
-            level2Address.updateValue(preferredAddress.getCityVillage(), sysUserId);
-            PersonAddress level3Address = personAddresses.findByPartName("level3", addressParts);
-            level3Address.updateValue(preferredAddress.getAddress2(), sysUserId);
-            PersonAddress level4Address = personAddresses.findByPartName("level4", addressParts);
-            level4Address.updateValue(preferredAddress.getAddress3(), sysUserId);
-            PersonAddress level5Address = personAddresses.findByPartName("level5", addressParts);
-            level5Address.updateValue(preferredAddress.getCountyDistrict(), sysUserId);
-            PersonAddress level6Address = personAddresses.findByPartName("level6", addressParts);
-            level6Address.updateValue(preferredAddress.getStateProvince(), sysUserId);
+            PersonAddresses personAddresses = new PersonAddresses(personAddressDAO.getAddressPartsByPersonId(person.getId()), addressParts);
+            insertOrUpdateAddressPart(personAddresses, "level1", PersonAddress.create(person, addressParts, "level1", preferredAddress.getAddress1(), sysUserId));
+            insertOrUpdateAddressPart(personAddresses, "level2", PersonAddress.create(person, addressParts, "level2", preferredAddress.getCityVillage(), sysUserId));
+            insertOrUpdateAddressPart(personAddresses, "level3", PersonAddress.create(person, addressParts, "level3", preferredAddress.getAddress2(), sysUserId));
+            insertOrUpdateAddressPart(personAddresses, "level4", PersonAddress.create(person, addressParts, "level4", preferredAddress.getAddress3(), sysUserId));
+            insertOrUpdateAddressPart(personAddresses, "level5", PersonAddress.create(person, addressParts, "level5", preferredAddress.getCountyDistrict(), sysUserId));
+            insertOrUpdateAddressPart(personAddresses, "level6", PersonAddress.create(person, addressParts, "level6", preferredAddress.getStateProvince(), sysUserId));
         }
 
         populatePatient(sysUserId, openMRSPerson, patient);
@@ -130,6 +124,15 @@ public class BahmniPatientService {
 
         addOrUpdate(patient, patientIdentityTypes, patientIdentities, PRIMARY_RELATIVE_KEY_NAME, getAttributeValue(openMRSPerson, OpenMRSPersonAttributeType.PRIMARY_RELATIVE), sysUserId);
         addOrUpdate(patient, patientIdentityTypes, patientIdentities, OCCUPATION_KEY_NAME, getAttributeDisplay(openMRSPerson, OpenMRSPersonAttributeType.OCCUPATION), sysUserId);
+    }
+
+    private void insertOrUpdateAddressPart(PersonAddresses personAddresses, String partName, PersonAddress personAddress) {
+        PersonAddress level1Address = personAddresses.findByPartName(partName);
+        if(level1Address != null) {
+            level1Address.updateValue(personAddress.getValue(), personAddress.getSysUserId());
+        } else {
+            personAddressDAO.insert(personAddress);
+        }
     }
 
     private void addOrUpdate(Patient patient, PatientIdentityTypes patientIdentityTypes, PatientIdentities patientIdentities, String identityName, String attributeValue, String sysUserId) {

@@ -20,12 +20,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PersonAddresses extends ArrayList<PersonAddress> {
-    public PersonAddresses(List<PersonAddress> personAddresses) {
+    private final AddressParts addressParts;
+
+    public PersonAddresses(List<PersonAddress> personAddresses, AddressParts addressParts) {
         super(personAddresses);
+        this.addressParts = addressParts;
     }
 
-    public PersonAddress findByPartName(String partName, AddressParts addressParts) {
-        AddressPart addressPart = addressParts.findByName(partName);
+    public PersonAddress findByPartName(String partName) {
+        AddressPart addressPart = this.addressParts.findByName(partName);
         for (PersonAddress personAddress : this) {
             if (addressPart.getId().equals(personAddress.getAddressPartId())) {
                 return personAddress;

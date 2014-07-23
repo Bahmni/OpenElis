@@ -23,6 +23,7 @@ import org.mockito.Mock;
 import us.mn.state.health.lims.address.dao.AddressPartDAO;
 import us.mn.state.health.lims.address.dao.PersonAddressDAO;
 import us.mn.state.health.lims.address.valueholder.AddressPart;
+import us.mn.state.health.lims.address.valueholder.AddressParts;
 import us.mn.state.health.lims.address.valueholder.PersonAddress;
 import us.mn.state.health.lims.address.valueholder.PersonAddresses;
 import us.mn.state.health.lims.healthcenter.valueholder.HealthCenter;
@@ -75,7 +76,7 @@ public class BahmniPatientServiceTest {
         patientIdentityList.add(patientIdentity);
         when(patientDAO.getPatientByUUID(patient.getUuid())).thenReturn(patient);
         when(patientIdentityDAO.getPatientIdentitiesForPatient("321")).thenReturn(patientIdentityList);
-        when(personAddressDAO.getAddressPartsByPersonId("321")).thenReturn(new PersonAddresses(new ArrayList<PersonAddress>()));
+        when(personAddressDAO.getAddressPartsByPersonId("321")).thenReturn(new PersonAddresses(new ArrayList<PersonAddress>(), new AddressParts(new ArrayList<AddressPart>())));
         when(addressDAO.getAll()).thenReturn(new ArrayList<AddressPart>());
         when(patientIdentityTypeDAO.get("ID")).thenReturn(new PatientIdentityType());
         BahmniPatientService bahmniPatientService = new BahmniPatientService(patientDAO, null, patientIdentityDAO,
