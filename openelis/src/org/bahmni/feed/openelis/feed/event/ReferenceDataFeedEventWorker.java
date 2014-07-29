@@ -23,10 +23,12 @@ import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataD
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataPanel;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataSample;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataTest;
+import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataTestUnitOfMeasure;
 import org.bahmni.feed.openelis.feed.service.impl.PanelService;
 import org.bahmni.feed.openelis.feed.service.impl.TestSectionService;
 import org.bahmni.feed.openelis.feed.service.impl.TestService;
 import org.bahmni.feed.openelis.feed.service.impl.TypeOfSampleService;
+import org.bahmni.feed.openelis.feed.service.impl.UnitOfMeasureService;
 import org.bahmni.webclients.HttpClient;
 import org.ict4h.atomfeed.client.domain.Event;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
@@ -43,6 +45,7 @@ public class ReferenceDataFeedEventWorker extends OpenElisEventWorker {
     private TypeOfSampleService typeOfSampleService;
     private TestService testService;
     private PanelService panelService;
+    private UnitOfMeasureService unitOfMeasureService;
 
 
     protected enum title {
@@ -51,7 +54,8 @@ public class ReferenceDataFeedEventWorker extends OpenElisEventWorker {
         test,
         panel,
         drug,
-        drug_form
+        drug_form,
+        test_unit_of_measure
     }
 
     public ReferenceDataFeedEventWorker(HttpClient webClient, String urlPrefix) {
@@ -61,6 +65,7 @@ public class ReferenceDataFeedEventWorker extends OpenElisEventWorker {
         this.typeOfSampleService = new TypeOfSampleService();
         this.testService = new TestService();
         this.panelService = new PanelService();
+        this.unitOfMeasureService = new UnitOfMeasureService();
     }
 
     @Override
@@ -85,6 +90,10 @@ public class ReferenceDataFeedEventWorker extends OpenElisEventWorker {
                 ReferenceDataPanel panel = webClient.get(urlPrefix + content, ReferenceDataPanel.class);
                 logger.info(String.format("Processing panel with UUID=%s", panel.getId()));
                 panelService.createOrUpdate(panel);
+            }else if(title.test_unit_of_measure.name().equals(event.getTitle())) {
+                ReferenceDataTestUnitOfMeasure unitOfMeasure = webClient.get(urlPrefix + content, ReferenceDataTestUnitOfMeasure.class);
+                logger.info(String.format("Processing test unit if measure with UUID=%s", unitOfMeasure.getId()));
+                unitOfMeasureService.createOrUpdate(unitOfMeasure);
             }
         } catch (Exception e) {
             throw new LIMSRuntimeException(e);

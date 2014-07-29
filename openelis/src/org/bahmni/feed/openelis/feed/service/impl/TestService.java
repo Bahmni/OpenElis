@@ -39,6 +39,9 @@ import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleTestDAOImpl;
 import us.mn.state.health.lims.typeofsample.util.TypeOfSampleUtil;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSample;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSampleTest;
+import us.mn.state.health.lims.unitofmeasure.dao.UnitOfMeasureDAO;
+import us.mn.state.health.lims.unitofmeasure.daoimpl.UnitOfMeasureDAOImpl;
+import us.mn.state.health.lims.unitofmeasure.valueholder.UnitOfMeasure;
 
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -53,6 +56,7 @@ public class TestService {
     private TestSectionDAO testSectionDAO;
     private TypeOfSampleDAO typeOfSampleDAO;
     private TypeOfSampleTestDAO typeOfSampleTestDAO;
+    private UnitOfMeasureDAO unitOfMeasureDAO;
 
     public TestService() {
         this.testDAO = new TestDAOImpl();
@@ -61,6 +65,7 @@ public class TestService {
         this.auditingService = new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl());
         this.typeOfSampleDAO = new TypeOfSampleDAOImpl();
         this.typeOfSampleTestDAO = new TypeOfSampleTestDAOImpl();
+        this.unitOfMeasureDAO = new UnitOfMeasureDAOImpl();
     }
 
     /**
@@ -113,6 +118,13 @@ public class TestService {
         //Need to check if section is null, then throw exception and don't proceed ahead
         if(sectionID==null || section == null){
            throw new LIMSRuntimeException("Cannot save test since no section exists with ID:"+ sectionID);
+        }
+        if(referenceDataTest.getTestUnitOfMeasure() !=null){
+            ExternalReference externalReferenceForUnitOfMeasure =
+                    externalReferenceDao.getData(referenceDataTest.getTestUnitOfMeasure().getId(), UnitOfMeasureService.CATEGORY_UNIT_OF_MEASURE);
+            String unitOfMeasureId = String.valueOf(externalReferenceForUnitOfMeasure.getItemId());
+            UnitOfMeasure unitOfMeasure = unitOfMeasureDAO.getUnitOfMeasureById(unitOfMeasureId);
+            test.setUnitOfMeasure(unitOfMeasure);
         }
         test.setTestSection(section);
         test.setDescription(referenceDataTest.getDescription());

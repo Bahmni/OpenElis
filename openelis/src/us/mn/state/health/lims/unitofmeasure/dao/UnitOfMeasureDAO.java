@@ -15,11 +15,11 @@
 */
 package us.mn.state.health.lims.unitofmeasure.dao;
 
-import java.util.List;
-
 import us.mn.state.health.lims.common.dao.BaseDAO;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.unitofmeasure.valueholder.UnitOfMeasure;
+
+import java.util.List;
 
 /**
  * @author diane benz
@@ -54,6 +54,8 @@ public interface UnitOfMeasureDAO extends BaseDAO {
 
 	public UnitOfMeasure getUnitOfMeasureByName(UnitOfMeasure unitOfMeasure)
 			throws LIMSRuntimeException;
+
+    public UnitOfMeasure getUnitOfMeasureById(String id);
 
 	//bugzilla 1411
 	public Integer getTotalUnitOfMeasureCount() throws LIMSRuntimeException;
