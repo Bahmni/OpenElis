@@ -16,11 +16,11 @@
 */
 package us.mn.state.health.lims.referral.dao;
 
-import java.sql.Date;
-import java.util.List;
-
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.referral.valueholder.Referral;
+
+import java.sql.Date;
+import java.util.List;
 
 
 public interface ReferralDAO{
@@ -31,7 +31,9 @@ public interface ReferralDAO{
 
 	public Referral getReferralByAnalysisId(String analysisId) throws LIMSRuntimeException;
 
-	public List<Referral> getAllUncanceledOpenReferrals() throws LIMSRuntimeException;
+	public List<Referral> getAllUncanceledOpenReferrals(int resultPageSize,int resultPageNumber) throws LIMSRuntimeException;
+
+    long getAllUncanceledOpenReferralsCount() throws LIMSRuntimeException;
 
     public List<Referral> getAllUncanceledOpenReferralsByPatientSTNumber(String patientSTNumber) throws LIMSRuntimeException;
 

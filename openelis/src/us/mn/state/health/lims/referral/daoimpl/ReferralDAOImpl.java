@@ -16,14 +16,9 @@
  */
 package us.mn.state.health.lims.referral.daoimpl;
 
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.validator.GenericValidator;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
-
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
 import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
 import us.mn.state.health.lims.common.action.IActionConstants;
@@ -34,7 +29,10 @@ import us.mn.state.health.lims.patientidentitytype.util.PatientIdentityTypeMap;
 import us.mn.state.health.lims.referral.dao.ReferralDAO;
 import us.mn.state.health.lims.referral.valueholder.Referral;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
-import us.mn.state.health.lims.statusofsample.valueholder.StatusOfSample;
+
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 import static us.mn.state.health.lims.common.services.PatientService.getHealthPrefixedList;
 
@@ -90,12 +88,12 @@ public class ReferralDAOImpl extends BaseDAOImpl implements ReferralDAO {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Referral> getAllUncanceledOpenReferrals() throws LIMSRuntimeException {
+    public List<Referral> getAllUncanceledOpenReferrals(int resultPageSize,int resultPageNumber) throws LIMSRuntimeException {
         String sql = "From Referral r where" +
                 " r.analysis.statusId in (" + StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.ReferedOut) + "," + StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.BiologistRejectedRO) + ")" +
                 " and r.canceled = 'false' order by r.id";
         try {
-            Query query = HibernateUtil.getSession().createQuery(sql);
+            Query query = HibernateUtil.getSession().createQuery(sql).setMaxResults(resultPageSize).setFirstResult(resultPageSize*resultPageNumber);
             List<Referral> referrals = query.list();
             closeSession();
             return referrals;
@@ -103,6 +101,21 @@ public class ReferralDAOImpl extends BaseDAOImpl implements ReferralDAO {
             handleException(e, "getAllUncanceledOpenReferrals");
         }
         return null;
+    }
+
+    @Override
+    public long getAllUncanceledOpenReferralsCount() throws LIMSRuntimeException {
+        String sql = "select count(*) From Referral r where" +
+                " r.analysis.statusId in (" + StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.ReferedOut) + "," + StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.BiologistRejectedRO) + ")" +
+                " and r.canceled = 'false'";
+        try {
+            Long resultCount = (Long) HibernateUtil.getSession().createQuery(sql).uniqueResult();
+            closeSession();
+            return resultCount;
+        } catch (HibernateException e) {
+            handleException(e, "getAllUncanceledOpenReferralsCount");
+        }
+        return -1;
     }
 
     public List<Referral> getAllUncanceledOpenReferralsByPatientSTNumber(String patientSTNumber) throws LIMSRuntimeException {

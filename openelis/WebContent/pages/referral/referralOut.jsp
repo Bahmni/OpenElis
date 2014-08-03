@@ -5,11 +5,15 @@
 				us.mn.state.health.lims.common.util.IdValuePair,
 				us.mn.state.health.lims.common.util.StringUtil,
 				java.util.List,java.util.ArrayList,
-                us.mn.state.health.lims.common.util.Versioning,
-				us.mn.state.health.lims.test.valueholder.NonNumericTests" %>
+				us.mn.state.health.lims.common.util.Versioning,
+				us.mn.state.health.lims.common.util.resources.ResourceLocator,
+				us.mn.state.health.lims.test.valueholder.NonNumericTests,java.util.ArrayList,
+                java.util.List" %>
+    <%@ page import="java.util.Locale" %>
+    <%@ page import="org.apache.commons.lang3.StringUtils" %>
 
 
-<%@ taglib uri="/tags/struts-bean"		prefix="bean" %>
+    <%@ taglib uri="/tags/struts-bean"		prefix="bean" %>
 <%@ taglib uri="/tags/struts-html"		prefix="html" %>
 <%@ taglib uri="/tags/struts-logic"		prefix="logic" %>
 
@@ -430,15 +434,120 @@ function showAllTests() {
     window.location = "ReferredOutTests.do";
 }
 
+var referralPage = {
+    <%
+     if (request.getAttribute(IActionConstants.MENU_TOTAL_RECORDS) != null) {
+    %>
+    totalRecords : <%=request.getAttribute(IActionConstants.MENU_TOTAL_RECORDS)%>,
+    <%
+      }
+    %>
+    <%
+     if (request.getAttribute(IActionConstants.MENU_FROM_RECORD) != null) {
+    %>
+    fromRecord : <%=request.getAttribute(IActionConstants.MENU_FROM_RECORD)%>,
+    <%
+      }
+    %>
+    <%
+     if (request.getAttribute(IActionConstants.MENU_TO_RECORD) != null) {
+    %>
+    toRecord : <%=request.getAttribute(IActionConstants.MENU_TO_RECORD)%>,
+    <%
+      }
+    %>
+    <%
+     if (request.getAttribute(IActionConstants.RECORDS_PAGE_SIZE) != null) {
+    %>
+    pageSize : <%=request.getAttribute(IActionConstants.RECORDS_PAGE_SIZE)%>,
+    <%
+      }
+    %>
+
+    previous: function(){
+        var pageNo = this.fromRecord / this.pageSize;
+        var prevPage = Math.floor(pageNo) >0?Math.floor(pageNo) -1:0;
+        var parser = document.createElement('a');
+        parser.href = document.URL;
+        window.location.href= parser.pathname+"?pageNumber="+prevPage;
+    },
+    next:function() {
+        var pageNo = this.fromRecord / this.pageSize;
+        var nextPage = Math.ceil(pageNo) == pageNo?Math.ceil(pageNo)+1:Math.ceil(pageNo);
+        var parser = document.createElement('a');
+        parser.href = document.URL;
+        window.location.href= parser.pathname+"?pageNumber="+nextPage;
+    }
+}
 </script>
 
-<div>
+<span>
     <bean:message key="patient.ST.number"/>
     <input id="patientSTNumber"></input>
     <button type="button" onclick="searchTestsByPatient()"><bean:message key="referral.search.patient"/></button>
     <button type="button" onclick="showAllTests()"><bean:message key="referral.all"/></button>
-</div>
 
+</span>
+
+    <%
+        if(StringUtils.isBlank(request.getQueryString()) || !request.getQueryString().contains("patientSTNumber")){
+
+    %>
+<span class="paginator-no-float">
+
+    <%
+        Boolean previousDisabled = false;
+        Boolean nextDisabled = false;
+          if (request.getAttribute(IActionConstants.PREVIOUS_DISABLED) != null) {
+             previousDisabled = (Boolean) request.getAttribute(IActionConstants.PREVIOUS_DISABLED);
+          }
+          if (request.getAttribute(IActionConstants.NEXT_DISABLED) != null) {
+             nextDisabled = (Boolean) request.getAttribute(IActionConstants.NEXT_DISABLED);
+          }
+    %>
+    <span class="paginator-previous">
+        <html:button onclick="referralPage.previous()" property="previous" disabled="<%=previousDisabled%>">
+           <bean:message key="label.button.previous"/>
+        </html:button>
+    </span>
+    <span>
+        <span class="menu-select-header-btns-text">
+         <%
+             Integer totalCount=0;
+             Integer fromCount=0;
+             Integer toCount=0;
+
+             if (request.getAttribute(IActionConstants.MENU_TOTAL_RECORDS) != null) {
+                 totalCount = (Integer) request.getAttribute(IActionConstants.MENU_TOTAL_RECORDS);
+             }
+             if (request.getAttribute(IActionConstants.MENU_FROM_RECORD) != null) {
+                 fromCount = (Integer) request.getAttribute(IActionConstants.MENU_FROM_RECORD);
+             }
+             if (request.getAttribute(IActionConstants.MENU_TO_RECORD) != null) {
+                toCount = (Integer) request.getAttribute(IActionConstants.MENU_TO_RECORD);
+             }
+
+              java.util.Locale locale = (Locale)request.getSession().getAttribute(org.apache.struts.Globals.LOCALE_KEY);
+              String msgResults = ResourceLocator.getInstance().getMessageResources().getMessage(locale,"list.showing");
+              String msgOf = ResourceLocator.getInstance().getMessageResources().getMessage(locale,"list.of");
+
+             String paginationMessage = msgResults + " " + fromCount + " - " + toCount + " " + msgOf + " " + totalCount;
+         %>
+
+          <%=paginationMessage%>
+
+        </span>
+    </span>
+    <span>
+        <html:button onclick="referralPage.next()" property="next" disabled="<%=nextDisabled%>">
+           <bean:message key="label.button.next"/>
+        </html:button>
+    </span>
+</span>
+    <%
+        }
+
+    %>
 <logic:notEmpty name="patientSTNumber">
     <h2><bean:message key="referral.search.patient.success"/> : <%=patientSTNumber%></h2>
 </logic:notEmpty>
@@ -452,9 +561,9 @@ function showAllTests() {
 <table width="100%" border="0" cellspacing="0" cellpadding="1" id="mainTable" >
   <tr >
     <th><bean:message key="referral.reason"/></th>
-    <th><bean:message key="referral.referer"/></th>
+    <%--<th><bean:message key="referral.referer"/></th>--%>
     <th><bean:message key="referral.institute"/></th>
-    <th><bean:message key="referral.sent.date"/></th>
+    <%--<th><bean:message key="referral.sent.date"/></th>--%>
     <th><bean:message key="test.testName"/></th>
     <th width="16px">&nbsp;</th>
     <th><bean:message key="result.result"/></th>
@@ -511,12 +620,6 @@ function showAllTests() {
 			</select>
 		</td>
 		<td>
-			<html:text name="referralItems"
-					   property="referrer"
-					   onchange='<%="markModified(\'" + index + "\'); " %>'
-					   indexed="true"/>
-		</td>
-		<td>
 			<select name='<%="referralItems[" + index + "].referredInstituteId"%>'
 					onchange='<%="markModified(\"" + index + "\");"%>' >
 			<logic:iterate id="optionValue" name='<%=formName %>' property="referralOrganizations" type="IdValuePair" >
@@ -527,26 +630,7 @@ function showAllTests() {
 			</select>
 		</td>
 		<td>
-			<html:text name='referralItems'
-					   property="referredSendDate"
-					   indexed="true"
-					   size="8"
-					   maxlength="10"
-					   onchange='<%="markModified(\'" + index + "\');  validateDateFormat(this);"%>'
-					   styleId='<%="sendDate_" + index %>'/>
-		</td>
-		<td>
-			<select name='<%="referralItems[" + index + "].referredTestId"%>'
-					onchange='<%="markModified(\"" + index + "\"); updateResultField(\"" + index + "\");"%>'
-					id='<%="testSelection_" + index%>' class="testSelection">
-					<option value='0' ></option>
-
-			<logic:iterate id="optionValue" name='referralItems' property="testSelectionList" type="IdValuePair" >
-				<option value='<%=optionValue.getId()%>' <%if(optionValue.getId().equals(referralItems.getReferredTestId())) out.print("selected");%>   >
-					<bean:write name="optionValue" property="value"/>
-				</option>
-			</logic:iterate>
-			</select>
+            <b><bean:write name="referralItems" property="referringTestName"/></b>
 		</td>
         <td class="ruled" style='vertical-align: middle'>
             <logic:equal name="referralItems" property="failedValidation" value="true">

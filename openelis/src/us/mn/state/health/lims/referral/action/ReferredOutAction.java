@@ -82,8 +82,10 @@ public class ReferredOutAction extends BaseAction {
     private static ResultDAO resultDAO = new ResultDAOImpl();
     private static SampleHumanDAO sampleHumanDAO = new SampleHumanDAOImpl();
     private static DictionaryDAO dictionaryDAO = new DictionaryDAOImpl();
+    private static ReferralDAO referralDAO = new ReferralDAOImpl();
     private List<NonNumericTests> nonNumericTests;
     private static String RESULT_REFERENCE_TABLE_ID = NoteUtil.getTableReferenceId("RESULT");
+    private static final int DEFAULT_PAGE_SIZE = 20;
 
     @Override
     protected String getPageSubtitleKey() {
@@ -101,10 +103,15 @@ public class ReferredOutAction extends BaseAction {
 
         DynaActionForm dynaForm = (DynaActionForm) form;
         String patientSTNumber = request.getParameter("patientSTNumber");
+        int pageNumber = getPageNumber(request);
+        int pageSize = getPageSize(request);
+        Integer referralResultsCount = getReferralResultsCount();
+
+        setRequestAttributes(request,referralResultsCount);
 
         request.getSession().setAttribute(SAVE_DISABLED, TRUE);
 
-        List<ReferralItem> referralItems = getReferralItems(patientSTNumber);
+        List<ReferralItem> referralItems = getReferralItems(patientSTNumber,pageSize,pageNumber);
         PropertyUtils.setProperty(dynaForm, "referralItems", referralItems);
         PropertyUtils.setProperty(dynaForm, "referralReasons", ReferralUtil.getReferralReasons());
 
@@ -117,6 +124,42 @@ public class ReferredOutAction extends BaseAction {
         fillInDictionaryValuesForReferralItems(referralItems);
 
         return mapping.findForward(IActionConstants.FWD_SUCCESS);
+    }
+
+    private void setRequestAttributes(HttpServletRequest request, Integer referralResultsCount) {
+        int pageNumber = getPageNumber(request);
+        int pageSize = getPageSize(request);
+        Integer toRecord = pageNumber * pageSize + pageSize <= referralResultsCount?pageNumber * pageSize + pageSize:referralResultsCount;
+        // so that it doesnt display 'records 1-0 of 0' when there are no records
+        Integer fromRecord = pageNumber * pageSize < toRecord?pageNumber * pageSize +1 : pageNumber * pageSize;
+        Boolean previousDisabled = pageNumber >0?false:true;
+        Boolean nextDisabled = (pageNumber +1)* pageSize >referralResultsCount?true:false;
+        request.setAttribute(IActionConstants.MENU_TOTAL_RECORDS,referralResultsCount);
+        request.setAttribute(IActionConstants.MENU_FROM_RECORD,fromRecord);
+        request.setAttribute(IActionConstants.MENU_TO_RECORD,toRecord);
+        request.setAttribute(IActionConstants.RECORDS_PAGE_SIZE,pageSize);
+        request.setAttribute(IActionConstants.PREVIOUS_DISABLED,previousDisabled);
+        request.setAttribute(IActionConstants.NEXT_DISABLED,nextDisabled);
+    }
+
+    private Integer getReferralResultsCount() {
+        return Long.valueOf(referralDAO.getAllUncanceledOpenReferralsCount()).intValue();
+    }
+
+    private int getPageSize(HttpServletRequest request) {
+        String pageSize = (String) request.getAttribute("pageSize");
+        if(StringUtils.isBlank(pageSize)){
+            return DEFAULT_PAGE_SIZE;
+        }
+        return Integer.valueOf(pageSize);
+    }
+
+    private int getPageNumber(HttpServletRequest request) {
+        String pageNumber = request.getParameter("pageNumber");
+        if(StringUtils.isBlank(pageNumber)){
+            return 0;
+        }
+        return Integer.valueOf(pageNumber);
     }
 
     private void fillInDictionaryValuesForReferralItems(List<ReferralItem> referralItems) {
@@ -150,17 +193,18 @@ public class ReferredOutAction extends BaseAction {
         return pairs;
     }
 
-    private List<ReferralItem> getReferralItems(String patientSTNumber) {
+    private List<ReferralItem> getReferralItems(String patientSTNumber, int pageSize, int pageNumber) {
         List<ReferralItem> referralItems = new ArrayList<>();
-        ReferralDAO referralDAO = new ReferralDAOImpl();
 
         List<Referral> referralList;
         if (StringUtils.isNotBlank(patientSTNumber)) {
             patientSTNumber = patientSTNumber.toUpperCase();
             referralList = referralDAO.getAllUncanceledOpenReferralsByPatientSTNumber(patientSTNumber);
         } else {
-            referralList = referralDAO.getAllUncanceledOpenReferrals();
+            referralList = referralDAO.getAllUncanceledOpenReferrals(pageSize,pageNumber);
         }
+
+        Collections.sort(referralList, new ReferralComparator());
 
         for (Referral referral : referralList) {
             ReferralItem referralItem = getReferralItem(referral);
@@ -168,22 +212,14 @@ public class ReferredOutAction extends BaseAction {
                 referralItems.add(referralItem);
             }
         }
-        Collections.sort(referralItems, new ReferralComparator());
+//        Collections.sort(referralItems, new ReferralComparator());
         return referralItems;
     }
 
-    private final static class ReferralComparator implements Comparator<ReferralItem> {
+    private final static class ReferralComparator implements Comparator<Referral> {
         @Override
-        public int compare(ReferralItem left, ReferralItem right) {
-            int result = left.getAccessionNumber().compareTo(right.getAccessionNumber());
-            if (result != 0) {
-                return result;
-            }
-            result = left.getSampleType().compareTo(right.getSampleType());
-            if (result != 0) {
-                return result;
-            }
-            return result = left.getReferringTestName().compareTo(right.getReferringTestName());
+        public int compare(Referral left, Referral right) {
+            return right.getRequestDate().compareTo(left.getRequestDate());
         }
     }
 

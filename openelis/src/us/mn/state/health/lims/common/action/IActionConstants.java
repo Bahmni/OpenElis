@@ -187,6 +187,7 @@ public interface IActionConstants {
 	public static final String MENU_TOTAL_RECORDS = "totalRecordCount";
 	public static final String MENU_FROM_RECORD = "fromRecordCount";
 	public static final String MENU_TO_RECORD = "toRecordCount";
+	public static final String RECORDS_PAGE_SIZE = "recordsPageSize";
 	//end bugzilla 1411
 
 	//added for bugzilla 1467
