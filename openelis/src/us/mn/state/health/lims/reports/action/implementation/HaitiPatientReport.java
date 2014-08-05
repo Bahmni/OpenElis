@@ -258,7 +258,7 @@ public abstract class HaitiPatientReport extends Report {
         errorFound = false;
         lowerNumber = dynaForm.getString("accessionDirect");
         upperNumber = dynaForm.getString("highAccessionDirect");
-        String patientNumber = dynaForm.getString("patientNumberDirect");
+        String patientNumber = dynaForm.getString("patientNumberDirect").toUpperCase();
 
         handledOrders = new ArrayList<String>();
 
