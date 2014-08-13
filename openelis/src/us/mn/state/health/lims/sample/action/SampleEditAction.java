@@ -132,8 +132,8 @@ public class SampleEditAction extends BaseAction {
 
 				getSampleItems();
 				setPatientInfo(dynaForm);
-				setCurrentTestInfo(dynaForm);
-				setAddableTestInfo(dynaForm);
+                List<SampleEditItem> sampleEditItems = setCurrentTestInfo(dynaForm);
+                setAddableTestInfo(dynaForm,sampleEditItems);
 				setAddableSampleTypes(dynaForm);
 				PropertyUtils.setProperty(dynaForm, "maxAccessionNumber", maxAccessionNumber);
 			} else {
@@ -204,7 +204,7 @@ public class SampleEditAction extends BaseAction {
 		PropertyUtils.setProperty(dynaForm, "nationalId", patientService.getNationalId());
 	}
 
-	private void setCurrentTestInfo(DynaActionForm dynaForm) throws IllegalAccessException, InvocationTargetException,
+	private List<SampleEditItem> setCurrentTestInfo(DynaActionForm dynaForm) throws IllegalAccessException, InvocationTargetException,
 			NoSuchMethodException {
 		List<SampleEditItem> currentTestList = new ArrayList<SampleEditItem>();
 
@@ -213,6 +213,7 @@ public class SampleEditAction extends BaseAction {
 		}
 
 		PropertyUtils.setProperty(dynaForm, "existingTests", currentTestList);
+        return currentTestList;
 	}
 
 	private void addCurrentTestsToList(SampleItem sampleItem, List<SampleEditItem> currentTestList) {
@@ -295,59 +296,67 @@ public class SampleEditAction extends BaseAction {
         return analysis.getPanel() != null;
     }
 
-    private void setAddableTestInfo(DynaActionForm dynaForm) throws IllegalAccessException, InvocationTargetException,
+    private void setAddableTestInfo(DynaActionForm dynaForm, List<SampleEditItem> currentlyExistingTests) throws IllegalAccessException, InvocationTargetException,
 			NoSuchMethodException {
 		List<SampleEditItem> possibleTestList = new ArrayList<SampleEditItem>();
 
 		for (SampleItem sampleItem : sampleItemList) {
-			addPossibleTestsToList(sampleItem, possibleTestList);
-		}
+            addPossibleTestsToList(sampleItem, possibleTestList,currentlyExistingTests);
+        }
 
 		PropertyUtils.setProperty(dynaForm, "possibleTests", possibleTestList);
 		PropertyUtils.setProperty(dynaForm, "testSectionList", DisplayListService.getList(ListType.TEST_SECTION));
 	}
 
-	private void setAddableSampleTypes(DynaActionForm dynaForm) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+    private void setAddableSampleTypes(DynaActionForm dynaForm) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		PropertyUtils.setProperty(dynaForm, "sampleTypes", DisplayListService.getList(ListType.SAMPLE_TYPE));
 	}
 
-	private void addPossibleTestsToList(SampleItem sampleItem, List<SampleEditItem> possibleTestList) {
+    private void addPossibleTestsToList(SampleItem sampleItem, List<SampleEditItem> possibleTestList, List<SampleEditItem> currentTests) {
 
-		TypeOfSample typeOfSample = new TypeOfSample();
-		typeOfSample.setId(sampleItem.getTypeOfSampleId());
-		typeOfSampleDAO.getData(typeOfSample);
+        TypeOfSample typeOfSample = new TypeOfSample();
+        typeOfSample.setId(sampleItem.getTypeOfSampleId());
+        typeOfSampleDAO.getData(typeOfSample);
 
-		TestDAO testDAO = new TestDAOImpl();
-		Test test = new Test();
+        TestDAO testDAO = new TestDAOImpl();
+        Test test = new Test();
 
-		TypeOfSampleTestDAO sampleTypeTestDAO = new TypeOfSampleTestDAOImpl();
-		List<TypeOfSampleTest> typeOfSampleTestList = sampleTypeTestDAO.getTypeOfSampleTestsForSampleType(typeOfSample.getId());
-		List<SampleEditItem> typeOfTestSampleItemList = new ArrayList<SampleEditItem>();
+        TypeOfSampleTestDAO sampleTypeTestDAO = new TypeOfSampleTestDAOImpl();
+        List<TypeOfSampleTest> typeOfSampleTestList = sampleTypeTestDAO.getTypeOfSampleTestsForSampleType(typeOfSample.getId());
+        List<SampleEditItem> typeOfTestSampleItemList = new ArrayList<SampleEditItem>();
 
-		for (TypeOfSampleTest typeOfSampleTest : typeOfSampleTestList) {
-			SampleEditItem sampleEditItem = new SampleEditItem();
+        for (TypeOfSampleTest typeOfSampleTest : typeOfSampleTestList) {
+            boolean alreadyExists = false;
+            for (SampleEditItem currentTest : currentTests) {
+                if (currentTest.getTestId().equals(typeOfSampleTest.getTestId())) {
+                    alreadyExists = true;
+                }
+            }
+            if (!alreadyExists) {
+                SampleEditItem sampleEditItem = new SampleEditItem();
+                sampleEditItem.setTestId(typeOfSampleTest.getTestId());
+                test.setId(typeOfSampleTest.getTestId());
+                testDAO.getData(test);
+                if ("Y".equals(test.getIsActive())) {
+                    sampleEditItem.setTestName(test.getLocalizedName());
+                    sampleEditItem.setSampleItemId(sampleItem.getId());
+                    sampleEditItem.setSortOrder(test.getSortOrder());
+                    typeOfTestSampleItemList.add(sampleEditItem);
+                }
+            }
+        }
 
-			sampleEditItem.setTestId(typeOfSampleTest.getTestId());
-			test.setId(typeOfSampleTest.getTestId());
-			testDAO.getData(test);
-			if ("Y".equals(test.getIsActive())) {
-				sampleEditItem.setTestName(test.getLocalizedName());
-				sampleEditItem.setSampleItemId(sampleItem.getId());
-				sampleEditItem.setSortOrder(test.getSortOrder());
-				typeOfTestSampleItemList.add(sampleEditItem);
-			}
-		}
 
-		if (!typeOfTestSampleItemList.isEmpty()) {
-			Collections.sort(typeOfTestSampleItemList, testComparator);
+        if (!typeOfTestSampleItemList.isEmpty()) {
+            Collections.sort(typeOfTestSampleItemList, testComparator);
 
-			typeOfTestSampleItemList.get(0).setAccessionNumber(accessionNumber + "-" + sampleItem.getSortOrder());
-			typeOfTestSampleItemList.get(0).setSampleType(typeOfSample.getLocalizedName());
+            typeOfTestSampleItemList.get(0).setAccessionNumber(accessionNumber + "-" + sampleItem.getSortOrder());
+            typeOfTestSampleItemList.get(0).setSampleType(typeOfSample.getLocalizedName());
 
-			possibleTestList.addAll(typeOfTestSampleItemList);
-		}
+            possibleTestList.addAll(typeOfTestSampleItemList);
+        }
 
-	}
+    }
 
 	protected String getPageTitleKey() {
 		return isEditable ? StringUtil.getContextualKeyForKey("sample.edit.title") : StringUtil.getContextualKeyForKey("sample.view.title");
