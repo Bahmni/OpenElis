@@ -17,6 +17,7 @@
 package us.mn.state.health.lims.sample.action;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.validator.GenericValidator;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
@@ -328,7 +329,7 @@ public class SampleEditAction extends BaseAction {
         for (TypeOfSampleTest typeOfSampleTest : typeOfSampleTestList) {
             boolean alreadyExists = false;
             for (SampleEditItem currentTest : currentTests) {
-                if (currentTest.getTestId().equals(typeOfSampleTest.getTestId())) {
+                if (ObjectUtils.equals(currentTest.getTestId(), typeOfSampleTest.getTestId())) {
                     alreadyExists = true;
                 }
             }
