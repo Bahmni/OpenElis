@@ -40,11 +40,10 @@ import java.util.Map;
 public abstract class OpenELISFeedReaderJob implements Job {
 
     protected static Map<Class, FeedClient> atomFeedClients = new HashMap<>();
-    private final Logger logger;
+    private final Logger logger = Logger.getLogger(this.getClass());
 
-    protected OpenELISFeedReaderJob(Logger logger) {
-        logger.info("Started");
-        this.logger = logger;
+    protected OpenELISFeedReaderJob() {
+        logger.info(getFeedName() + " started");
     }
 
     protected abstract EventWorker createWorker(HttpClient authenticatedWebClient, String urlPrefix);

@@ -16,7 +16,6 @@
 
 package org.bahmni.feed.openelis.feed.job.openmrs;
 
-import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.feed.event.PatientFeedEventWorker;
 import org.bahmni.feed.openelis.feed.job.FeedNames;
 import org.bahmni.webclients.HttpClient;
@@ -25,11 +24,6 @@ import org.quartz.DisallowConcurrentExecution;
 
 @DisallowConcurrentExecution
 public class OpenMRSPatientFeedReaderJob extends OpenMRSFeedReaderJob {
-    private static Logger logger = Logger.getLogger(OpenMRSPatientFeedReaderJob.class);
-
-    public OpenMRSPatientFeedReaderJob() {
-        super(logger);
-    }
 
     @Override
     protected EventWorker createWorker(HttpClient authenticatedWebClient, String urlPrefix) {

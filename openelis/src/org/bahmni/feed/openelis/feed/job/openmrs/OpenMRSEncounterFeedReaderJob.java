@@ -16,10 +16,9 @@
 
 package org.bahmni.feed.openelis.feed.job.openmrs;
 
-import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.AtomFeedProperties;
-import org.bahmni.feed.openelis.feed.job.FeedNames;
 import org.bahmni.feed.openelis.feed.event.EncounterFeedWorker;
+import org.bahmni.feed.openelis.feed.job.FeedNames;
 import org.bahmni.feed.openelis.feed.job.OpenELISFeedReaderJob;
 import org.bahmni.webclients.ConnectionDetails;
 import org.bahmni.webclients.HttpClient;
@@ -35,12 +34,6 @@ public class OpenMRSEncounterFeedReaderJob extends OpenELISFeedReaderJob {
     private static final String OPENMRS_PASSWORD = "openmrs.password";
     private static final String OPENMRS_WEBCLIENT_CONNECT_TIMEOUT = "openmrs.connectionTimeoutInMilliseconds";
     private static final String OPENMRS_WEBCLIENT_READ_TIMEOUT = "openmrs.replyTimeoutInMilliseconds";
-
-    private static Logger logger = Logger.getLogger(OpenMRSEncounterFeedReaderJob.class);
-
-    public OpenMRSEncounterFeedReaderJob() {
-        super(logger);
-    }
 
     protected ConnectionDetails getConnectionDetails() {
         AtomFeedProperties atomFeedProperties = AtomFeedProperties.getInstance();

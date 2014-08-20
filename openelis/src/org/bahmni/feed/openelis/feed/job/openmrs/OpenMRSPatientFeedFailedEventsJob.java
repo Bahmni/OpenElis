@@ -16,7 +16,6 @@
 
 package org.bahmni.feed.openelis.feed.job.openmrs;
 
-import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.feed.event.PatientFeedEventWorker;
 import org.bahmni.feed.openelis.feed.job.FeedNames;
@@ -25,7 +24,6 @@ import org.bahmni.webclients.ConnectionDetails;
 import org.bahmni.webclients.HttpClient;
 import org.ict4h.atomfeed.client.service.EventWorker;
 import org.quartz.DisallowConcurrentExecution;
-import org.quartz.JobExecutionException;
 
 @DisallowConcurrentExecution
 public class OpenMRSPatientFeedFailedEventsJob extends OpenELISFeedFailedEventsJob {
@@ -34,12 +32,6 @@ public class OpenMRSPatientFeedFailedEventsJob extends OpenELISFeedFailedEventsJ
     private static final String OPENMRS_PASSWORD = "openmrs.password";
     private static final String OPENMRS_WEBCLIENT_CONNECT_TIMEOUT = "openmrs.connectionTimeoutInMilliseconds";
     private static final String OPENMRS_WEBCLIENT_READ_TIMEOUT = "openmrs.replyTimeoutInMilliseconds";
-
-    private static Logger logger = Logger.getLogger(OpenMRSPatientFeedFailedEventsJob.class);
-
-    public OpenMRSPatientFeedFailedEventsJob() throws JobExecutionException {
-        super(logger);
-    }
 
     protected ConnectionDetails getConnectionDetails() {
         AtomFeedProperties atomFeedProperties = AtomFeedProperties.getInstance();

@@ -16,7 +16,6 @@
 
 package org.bahmni.feed.openelis.feed.job.bahmnireferencedata;
 
-import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.feed.event.ReferenceDataFeedEventWorker;
 import org.bahmni.feed.openelis.feed.job.OpenELISFeedFailedEventsJob;
@@ -34,13 +33,6 @@ public class ReferenceDataFeedFailedEventsJob extends OpenELISFeedFailedEventsJo
     private static final String REFERENCE_DATA_WEBCLIENT_READ_TIMEOUT = "openerp.replyTimeoutInMilliseconds";
 
     private static final String FEED_NAME = "reference.data.feed.uri";
-
-
-    protected static Logger logger = Logger.getLogger(ReferenceDataFeedReaderJob.class);
-
-    public ReferenceDataFeedFailedEventsJob() {
-        super(logger);
-    }
 
     @Override
     protected String getFeedName() {

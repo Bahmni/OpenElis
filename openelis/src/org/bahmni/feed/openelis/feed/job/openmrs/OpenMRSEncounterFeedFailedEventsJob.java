@@ -16,16 +16,14 @@
 
 package org.bahmni.feed.openelis.feed.job.openmrs;
 
-import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.AtomFeedProperties;
-import org.bahmni.feed.openelis.feed.job.FeedNames;
 import org.bahmni.feed.openelis.feed.event.EncounterFeedWorker;
+import org.bahmni.feed.openelis.feed.job.FeedNames;
 import org.bahmni.feed.openelis.feed.job.OpenELISFeedFailedEventsJob;
 import org.bahmni.webclients.ConnectionDetails;
 import org.bahmni.webclients.HttpClient;
 import org.ict4h.atomfeed.client.service.EventWorker;
 import org.quartz.DisallowConcurrentExecution;
-import org.quartz.JobExecutionException;
 
 @DisallowConcurrentExecution
 public class OpenMRSEncounterFeedFailedEventsJob extends OpenELISFeedFailedEventsJob {
@@ -36,11 +34,6 @@ public class OpenMRSEncounterFeedFailedEventsJob extends OpenELISFeedFailedEvent
     private static final String OPENMRS_WEBCLIENT_CONNECT_TIMEOUT = "openmrs.connectionTimeoutInMilliseconds";
     private static final String OPENMRS_WEBCLIENT_READ_TIMEOUT = "openmrs.replyTimeoutInMilliseconds";
 
-    private static Logger logger = Logger.getLogger(OpenMRSEncounterFeedFailedEventsJob.class);
-
-    public OpenMRSEncounterFeedFailedEventsJob() throws JobExecutionException {
-        super(logger);
-    }
 
     @Override
     protected EventWorker createWorker(HttpClient authenticatedWebClient, String urlPrefix) {
