@@ -599,10 +599,10 @@ var referralPage = {
 		<td colspan="2">
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<bean:message key="resultsentry.sampleType"/>: <b><bean:write name="referralItems" property="sampleType"/></b>
 		</td>
-		<td colspan="4">
+		<td colspan="2">
 			<bean:message key="test.testName"/>: <b><bean:write name="referralItems" property="referringTestName"/></b>
 		</td>
-		<td colspan="4">
+		<td colspan="6">
 			<bean:message key="result.result"/>: <b><bean:write name="referralItems" property="referralResults"/></b>
 		</td>
 	</tr>
