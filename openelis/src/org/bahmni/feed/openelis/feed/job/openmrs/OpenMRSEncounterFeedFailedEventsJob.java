@@ -20,8 +20,10 @@ import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.feed.event.EncounterFeedWorker;
 import org.bahmni.feed.openelis.feed.job.FeedNames;
 import org.bahmni.feed.openelis.feed.job.OpenELISFeedFailedEventsJob;
+import org.bahmni.webclients.Authenticator;
 import org.bahmni.webclients.ConnectionDetails;
 import org.bahmni.webclients.HttpClient;
+import org.bahmni.webclients.openmrs.OpenMRSLoginAuthenticator;
 import org.ict4h.atomfeed.client.service.EventWorker;
 import org.quartz.DisallowConcurrentExecution;
 
@@ -54,4 +56,10 @@ public class OpenMRSEncounterFeedFailedEventsJob extends OpenELISFeedFailedEvent
                 Integer.parseInt(atomFeedProperties.getProperty(OPENMRS_WEBCLIENT_CONNECT_TIMEOUT)),
                 Integer.parseInt(atomFeedProperties.getProperty(OPENMRS_WEBCLIENT_READ_TIMEOUT)));
     }
+
+    @Override
+    protected Authenticator getAuthenticator(ConnectionDetails connectionDetails) {
+        return new OpenMRSLoginAuthenticator(connectionDetails);
+    }
+
 }

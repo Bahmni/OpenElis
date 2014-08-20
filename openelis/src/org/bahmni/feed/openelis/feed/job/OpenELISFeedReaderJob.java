@@ -42,10 +42,6 @@ public abstract class OpenELISFeedReaderJob implements Job {
     protected static Map<Class, FeedClient> atomFeedClients = new HashMap<>();
     private final Logger logger = Logger.getLogger(this.getClass());
 
-    protected OpenELISFeedReaderJob() {
-        logger.info(getFeedName() + " started");
-    }
-
     protected abstract EventWorker createWorker(HttpClient authenticatedWebClient, String urlPrefix);
     
     protected abstract Authenticator getAuthenticator(ConnectionDetails connectionDetails);
@@ -56,8 +52,9 @@ public abstract class OpenELISFeedReaderJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+        logger.info("Job Started");
         try {
-            processEvents(jobExecutionContext);
+            processEvents();
         } catch (Exception e) {
             try {
                 if (e != null && isUnauthorised(e)) {
@@ -69,21 +66,14 @@ public abstract class OpenELISFeedReaderJob implements Job {
         }
     }
     
-    protected void processEvents(JobExecutionContext jobExecutionContext) {
+    protected void processEvents() {
         if (atomFeedClients.get(this.getClass()) == null)
             initializeAtomFeedClient();
         FeedClient atomFeedClient = atomFeedClients.get(this.getClass());
         atomFeedClient.processEvents();
     }
 
-    protected void processFailedEvents(JobExecutionContext jobExecutionContext) {
-        if (atomFeedClients.get(this.getClass()) == null)
-            initializeAtomFeedClient();
-        FeedClient atomFeedClient = atomFeedClients.get(this.getClass());
-        atomFeedClient.processFailedEvents();
-    }
-
-    private void initializeAtomFeedClient() {
+    protected void initializeAtomFeedClient() {
         FeedClient atomFeedClient = createAtomFeedClient(AtomFeedProperties.getInstance(), new AtomFeedClientFactory());
 
         if (atomFeedClient != null) {

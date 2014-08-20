@@ -19,6 +19,7 @@ package org.bahmni.feed.openelis.feed.job;
 import org.bahmni.webclients.Authenticator;
 import org.bahmni.webclients.ConnectionDetails;
 import org.bahmni.webclients.openmrs.OpenMRSLoginAuthenticator;
+import org.ict4h.atomfeed.client.service.FeedClient;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
@@ -26,10 +27,13 @@ public abstract class OpenELISFeedFailedEventsJob extends OpenELISFeedReaderJob 
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        processFailedEvents(jobExecutionContext);
+        processFailedEvents();
     }
 
-    protected Authenticator getAuthenticator(ConnectionDetails connectionDetails) {
-        return new OpenMRSLoginAuthenticator(connectionDetails);
+    protected void processFailedEvents() {
+        if (atomFeedClients.get(this.getClass()) == null)
+            initializeAtomFeedClient();
+        FeedClient atomFeedClient = atomFeedClients.get(this.getClass());
+        atomFeedClient.processFailedEvents();
     }
 }

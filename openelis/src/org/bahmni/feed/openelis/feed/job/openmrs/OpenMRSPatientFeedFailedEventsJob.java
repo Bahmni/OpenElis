@@ -20,8 +20,10 @@ import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.feed.event.PatientFeedEventWorker;
 import org.bahmni.feed.openelis.feed.job.FeedNames;
 import org.bahmni.feed.openelis.feed.job.OpenELISFeedFailedEventsJob;
+import org.bahmni.webclients.Authenticator;
 import org.bahmni.webclients.ConnectionDetails;
 import org.bahmni.webclients.HttpClient;
+import org.bahmni.webclients.openmrs.OpenMRSLoginAuthenticator;
 import org.ict4h.atomfeed.client.service.EventWorker;
 import org.quartz.DisallowConcurrentExecution;
 
@@ -52,4 +54,10 @@ public class OpenMRSPatientFeedFailedEventsJob extends OpenELISFeedFailedEventsJ
     protected String getFeedName() {
         return FeedNames.OPENMRS_PATIENT_FEED_NAME;
     }
+
+    @Override
+    protected Authenticator getAuthenticator(ConnectionDetails connectionDetails) {
+        return new OpenMRSLoginAuthenticator(connectionDetails);
+    }
+
 }
