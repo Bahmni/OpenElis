@@ -326,9 +326,20 @@ public class SampleEditAction extends BaseAction {
         List<TypeOfSampleTest> typeOfSampleTestList = sampleTypeTestDAO.getTypeOfSampleTestsForSampleType(typeOfSample.getId());
         List<SampleEditItem> typeOfTestSampleItemList = new ArrayList<SampleEditItem>();
 
+        List<SampleEditItem> allTests = new ArrayList<>();
+        for (SampleEditItem currentTest : currentTests) {
+            if (currentTest.isPanel()) {
+                allTests.addAll(currentTest.getPanelTests());
+            }
+            else{
+                allTests.add(currentTest);
+            }
+        }
+
+
         for (TypeOfSampleTest typeOfSampleTest : typeOfSampleTestList) {
             boolean alreadyExists = false;
-            for (SampleEditItem currentTest : currentTests) {
+            for (SampleEditItem currentTest : allTests) {
                 if (ObjectUtils.equals(currentTest.getTestId(), typeOfSampleTest.getTestId())) {
                     alreadyExists = true;
                 }
