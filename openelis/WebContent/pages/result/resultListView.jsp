@@ -19,7 +19,9 @@
 	us.mn.state.health.lims.common.util.ConfigurationProperties.Property,
 	us.mn.state.health.lims.common.util.StringUtil,
     us.mn.state.health.lims.common.util.Versioning,
-	us.mn.state.health.lims.testreflex.action.util.TestReflexResolver" %>
+	us.mn.state.health.lims.testreflex.action.util.TestReflexResolver,
+	java.net.URLDecoder,
+    us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl"%>
 
 <%@ taglib uri="/tags/struts-bean" prefix="bean" %>
 <%@ taglib uri="/tags/struts-html" prefix="html" %>
@@ -39,7 +41,8 @@
 <bean:define id="referer" value='<%= request.getParameter("referer") == null || request.getParameter("referer").isEmpty() ? "" : request.getParameter("referer")%>' />
 
 <%!
-	List<String> hivKits;
+    private static final String UPLOADED_RESULTS_DIRECTORY = "uploadedResultsDirectory";
+    List<String> hivKits;
 	List<String> syphilisKits;
 	String basePath = "";
 	String searchTerm = null;
@@ -939,9 +942,11 @@ function /*void*/ processTestReflexCD4Success(xhr)
                     <%  String filePath = testResult.getUploadedFileName();
                         String fileNameWithUUID = filePath.substring(filePath.lastIndexOf("/") + 1);
                         String fileName = fileNameWithUUID.substring(fileNameWithUUID.indexOf("_")+1);
+                        fileName = new URLDecoder().decode(fileName, "UTF-8");
+                        String uploadedFilesDirectory = new SiteInformationDAOImpl().getSiteInformationByName(UPLOADED_RESULTS_DIRECTORY).getValue();
                     %>
                 <label><%= fileName %> </label>
-                <a href='<%= testResult.getUploadedFileName() %>' target="_blank">Download</a>
+                <a href='<%= uploadedFilesDirectory + testResult.getUploadedFileName()%>' target="_blank">Download</a>
             <% }%>
 
         </td>

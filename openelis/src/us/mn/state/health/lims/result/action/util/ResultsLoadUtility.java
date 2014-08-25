@@ -135,7 +135,6 @@ public class ResultsLoadUtility {
 
     private static String ANALYTE_CONCLUSION_ID;
     private static String ANALYTE_CD4_CNT_CONCLUSION_ID;
-    public static final String UPLOADED_RESULTS_DIRECTORY = "uploadedResultsDirectory";
     private static boolean depersonalize = FormFields.getInstance().useField(Field.DepersonalizedResults);
     private boolean useTechSignature = ConfigurationProperties.getInstance().isPropertyValueEqual(Property.resultTechnicianName, "true");
     private static boolean supportReferrals = FormFields.getInstance().useField(Field.ResultsReferral);
@@ -880,9 +879,7 @@ public class ResultsLoadUtility {
         if(result != null){
             testItem.setAbnormal(result.getAbnormal());
             if(result.getUploadedFileName() != null) {
-                String uploadedFilesDirectory = new SiteInformationDAOImpl().getSiteInformationByName(UPLOADED_RESULTS_DIRECTORY).getValue();
-                String uploadedFilePath = uploadedFilesDirectory + result.getUploadedFileName();
-                testItem.setUploadedFileName(uploadedFilePath);
+                testItem.setUploadedFileName(result.getUploadedFileName());
             }
         }
 

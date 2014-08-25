@@ -19,6 +19,7 @@ package us.mn.state.health.lims.result.action.util;
 import org.apache.commons.validator.GenericValidator;
 import java.util.List;
 
+import org.apache.struts.upload.FormFile;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
 import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
@@ -76,4 +77,9 @@ public class ResultUtil {
 				("D".equals(item.getResultType()) && "0".equals(item.getResultValue()))) || 
 				("M".equals(item.getResultType()) && !GenericValidator.isBlankOrNull(item.getMultiSelectResultValues()));
 	}
+
+    public static boolean areFiles(TestResultItem item) {
+        FormFile uploadedFile = item.getUploadedFile();
+        return !GenericValidator.isBlankOrNull(uploadedFile.getFileName());
+    }
 }

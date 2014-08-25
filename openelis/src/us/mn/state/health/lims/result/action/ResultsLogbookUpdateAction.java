@@ -104,6 +104,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -427,7 +429,7 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
         modifiedItems = new ArrayList<TestResultItem>();
 
         for (TestResultItem item : allItems) {
-            if (item.getIsModified() && (ResultUtil.areResults(item) || ResultUtil.areNotes(item) || item.isReferredOut())) {
+            if (item.getIsModified() && (ResultUtil.areResults(item) || ResultUtil.areNotes(item) || item.isReferredOut() || ResultUtil.areFiles(item))) {
                 modifiedItems.add(item);
             }
         }
@@ -458,11 +460,15 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
             String uuid = UUID.randomUUID().toString();
             String fileName = uuid + SEPARATOR + fileUpload.getFileName();
             try{
+                String encodedFileName = new URI(null, null, fileName, null).toString();
                 File downloadedFile = getFile(fileName);
                 writeToFileSystem(fileUpload, downloadedFile);
-                testResultItem.setUploadedFileName(fileName);
+                testResultItem.setUploadedFileName(encodedFileName);
             } catch (IOException e) {
                 testResultItem.setUploadedFileName(null);
+            } catch (URISyntaxException e) {
+                testResultItem.setUploadedFileName(null);
+                e.printStackTrace();
             }
         }
     }

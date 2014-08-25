@@ -35,6 +35,7 @@ public class TestDetail {
     private Boolean isAbnormal;
     private Timestamp dateTime;
     private String status;
+    private String uploadedFileName;
 
     public String getTestName() {
         return testName;
@@ -143,5 +144,13 @@ public class TestDetail {
 
     public String getStatus() {
         return status;
+    }
+
+    public String getUploadedFileName() {
+        return uploadedFileName;
+    }
+
+    public void setUploadedFileName(String uploadedFileName) {
+        this.uploadedFileName = uploadedFileName;
     }
 }

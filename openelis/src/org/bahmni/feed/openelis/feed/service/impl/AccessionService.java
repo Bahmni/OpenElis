@@ -173,6 +173,7 @@ public class AccessionService {
         testDetail.setResultType(result.getResultType());
         testDetail.setIsAbnormal(result.getAbnormal());
         testDetail.setDateTime(result.getAnalysis().getEnteredDate());
+        testDetail.setUploadedFileName(result.getUploadedFileName());
     }
 
 
