@@ -23,7 +23,9 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.DynaActionForm;
 import org.apache.struts.upload.FormFile;
+import org.bahmni.csv.CSVFile;
 import org.bahmni.fileimport.FileImporter;
+import org.jfree.data.io.CSV;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.login.valueholder.UserSessionData;
@@ -60,8 +62,8 @@ public class UploadAction extends BaseAction {
 
         try {
             String fileName = file.getFileName();
-            File downloadedFile = getFile(fileName);
-            writeToFileSystem(file, downloadedFile);
+            CSVFile downloadedFile = getFile(fileName);
+            writeToFileSystem(file, new File(downloadedFile.getAbsolutePath()));
 
             UserSessionData userSessionData = (UserSessionData) request.getSession().getAttribute(USER_SESSION_DATA);
 
@@ -94,7 +96,7 @@ public class UploadAction extends BaseAction {
         fileOutputStream.close();
     }
 
-    private File getFile(String fileName) {
+    private CSVFile getFile(String fileName) {
         int indexForSlash = fileName.lastIndexOf("\\");
         String substring;
         if (indexForSlash >= 0) {
@@ -110,7 +112,9 @@ public class UploadAction extends BaseAction {
         String parentForUploadedFilesDirectory = new SiteInformationDAOImpl().getSiteInformationByName(PARENT_OF_UPLOADED_FILES_DIRECTORY).getValue();
         String uploadedFilesDirectory = new SiteInformationDAOImpl().getSiteInformationByName(UPLOADED_FILES_DIRECTORY).getValue();
 
-        return new File(parentForUploadedFilesDirectory + uploadedFilesDirectory + fileNameWithoutExtension + timestampForFile + fileExtension);
+        String relativeFilePath = fileNameWithoutExtension + timestampForFile + fileExtension;
+        String uploadedFilesBasePath = parentForUploadedFilesDirectory + uploadedFilesDirectory;
+        return new CSVFile(uploadedFilesBasePath, relativeFilePath);
     }
 
     @Override
