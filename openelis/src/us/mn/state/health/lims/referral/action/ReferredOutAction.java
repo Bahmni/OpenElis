@@ -204,23 +204,13 @@ public class ReferredOutAction extends BaseAction {
             referralList = referralDAO.getAllUncanceledOpenReferrals(pageSize,pageNumber);
         }
 
-        Collections.sort(referralList, new ReferralComparator());
-
         for (Referral referral : referralList) {
             ReferralItem referralItem = getReferralItem(referral);
             if (referralItem != null) {
                 referralItems.add(referralItem);
             }
         }
-//        Collections.sort(referralItems, new ReferralComparator());
         return referralItems;
-    }
-
-    private final static class ReferralComparator implements Comparator<Referral> {
-        @Override
-        public int compare(Referral left, Referral right) {
-            return right.getRequestDate().compareTo(left.getRequestDate());
-        }
     }
 
     private ReferralItem getReferralItem(Referral referral) {

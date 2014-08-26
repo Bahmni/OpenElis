@@ -91,7 +91,7 @@ public class ReferralDAOImpl extends BaseDAOImpl implements ReferralDAO {
     public List<Referral> getAllUncanceledOpenReferrals(int resultPageSize,int resultPageNumber) throws LIMSRuntimeException {
         String sql = "From Referral r where" +
                 " r.analysis.statusId in (" + StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.ReferedOut) + "," + StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.BiologistRejectedRO) + ")" +
-                " and r.canceled = 'false' order by r.id";
+                " and r.canceled = 'false' order by r.requestDate desc";
         try {
             Query query = HibernateUtil.getSession().createQuery(sql).setMaxResults(resultPageSize).setFirstResult(resultPageSize*resultPageNumber);
             List<Referral> referrals = query.list();
@@ -124,7 +124,7 @@ public class ReferralDAOImpl extends BaseDAOImpl implements ReferralDAO {
                 " and r.analysis.statusId in (" + StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.ReferedOut) + "," + StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.BiologistRejectedRO) + ")" +
                 " and sh.patientId = pi.patientId and pi.identityTypeId = "+ PatientIdentityTypeMap.getInstance().getIDForType("ST") +
                 " and pi.identityData in ( :patientSTNumber )" +
-                " and r.canceled = 'false' order by r.id";
+                " and r.canceled = 'false' order by r.requestDate desc";
         try {
             Query query = HibernateUtil.getSession().createQuery(sql);
             query.setParameterList("patientSTNumber", getHealthPrefixedList(patientSTNumber));
@@ -173,7 +173,7 @@ public class ReferralDAOImpl extends BaseDAOImpl implements ReferralDAO {
     @SuppressWarnings("unchecked")
     public List<Referral> getAllReferralsBySampleId(String id) throws LIMSRuntimeException {
         if (!GenericValidator.isBlankOrNull(id)) {
-            String sql = "FROM Referral r WHERE r.analysis.sampleItem.sample.id = :sampleId";
+            String sql = "FROM Referral r WHERE r.analysis.sampleItem.sample.id = :sampleId order by r.requestDate desc";
 
             try {
                 Query query = HibernateUtil.getSession().createQuery(sql);
@@ -188,7 +188,7 @@ public class ReferralDAOImpl extends BaseDAOImpl implements ReferralDAO {
 
         }
 
-        return new ArrayList<Referral>();
+        return new ArrayList<>();
     }
 
     /**
@@ -197,7 +197,7 @@ public class ReferralDAOImpl extends BaseDAOImpl implements ReferralDAO {
     @SuppressWarnings("unchecked")
     @Override
     public List<Referral> getAllReferralsByOrganization(String organizationId, Date lowDate, Date highDate) {
-        String sql = "FROM Referral r WHERE r.organization.id = :organizationId AND r.requestDate >= :lowDate AND r.requestDate <= :highDate";
+        String sql = "FROM Referral r WHERE r.organization.id = :organizationId AND r.requestDate >= :lowDate AND r.requestDate <= :highDate order by r.requestDate desc";
 
         try {
             Query query = HibernateUtil.getSession().createQuery(sql);
@@ -210,7 +210,7 @@ public class ReferralDAOImpl extends BaseDAOImpl implements ReferralDAO {
         } catch (HibernateException e) {
             handleException(e, "getAllReferralsByOrganization");
         }
-        return new ArrayList<Referral>();
+        return new ArrayList<>();
     }
 
 }
