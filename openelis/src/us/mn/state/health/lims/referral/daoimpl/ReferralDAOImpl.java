@@ -91,7 +91,7 @@ public class ReferralDAOImpl extends BaseDAOImpl implements ReferralDAO {
     public List<Referral> getAllUncanceledOpenReferrals(int resultPageSize,int resultPageNumber) throws LIMSRuntimeException {
         String sql = "From Referral r where" +
                 " r.analysis.statusId in (" + StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.ReferedOut) + "," + StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.BiologistRejectedRO) + ")" +
-                " and r.canceled = 'false' order by r.id";
+                " and r.canceled = 'false' order by r.requestDate desc";
         try {
             Query query = HibernateUtil.getSession().createQuery(sql).setMaxResults(resultPageSize).setFirstResult(resultPageSize*resultPageNumber);
             List<Referral> referrals = query.list();
@@ -124,7 +124,7 @@ public class ReferralDAOImpl extends BaseDAOImpl implements ReferralDAO {
                 " and r.analysis.statusId in (" + StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.ReferedOut) + "," + StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.BiologistRejectedRO) + ")" +
                 " and sh.patientId = pi.patientId and pi.identityTypeId = "+ PatientIdentityTypeMap.getInstance().getIDForType("ST") +
                 " and pi.identityData in ( :patientSTNumber )" +
-                " and r.canceled = 'false' order by r.id";
+                " and r.canceled = 'false' order by r.requestDate desc";
         try {
             Query query = HibernateUtil.getSession().createQuery(sql);
             query.setParameterList("patientSTNumber", getHealthPrefixedList(patientSTNumber));
