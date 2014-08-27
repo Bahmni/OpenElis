@@ -57,6 +57,7 @@ import us.mn.state.health.lims.referral.daoimpl.ReferralDAOImpl;
 import us.mn.state.health.lims.referral.daoimpl.ReferralResultDAOImpl;
 import us.mn.state.health.lims.referral.valueholder.Referral;
 import us.mn.state.health.lims.referral.valueholder.ReferralResult;
+import us.mn.state.health.lims.result.action.util.NumericResult;
 import us.mn.state.health.lims.result.action.util.ResultsLoadUtility;
 import us.mn.state.health.lims.result.valueholder.Result;
 import us.mn.state.health.lims.result.valueholder.ResultType;
@@ -89,7 +90,7 @@ public class ReferredOutUpdateAction extends BaseAction {
     private List<ReferralItem> canceledItems;
     private Set<Sample> parentSamples;
     private List<Sample> modifiedSamples;
-    private ActionMessages errors;
+    private ActionErrors errors;
 
     private final ReferralDAO referralDAO = new ReferralDAOImpl();
     private final ReferralResultDAO referralResultDAO = new ReferralResultDAOImpl();
@@ -126,7 +127,7 @@ public class ReferredOutUpdateAction extends BaseAction {
         resultsLoadUtility = new ResultsLoadUtility(currentUserId);
         parentSamples = new HashSet<>();
         modifiedSamples = new ArrayList<>();
-        errors = new ActionMessages();
+        errors = new ActionErrors();
 
         request.getSession().setAttribute(SAVE_DISABLED, TRUE);
         List<ReferralItem> referralItems = (List<ReferralItem>) PropertyUtils.getProperty(form, "referralItems");
@@ -264,6 +265,12 @@ public class ReferredOutUpdateAction extends BaseAction {
             errors.add(ActionErrors.GLOBAL_MESSAGE, error);
         }
 
+        if (!GenericValidator.isBlankOrNull(referralItem.getReferredResult()) && "N".equals(referralItem.getReferredResultType())) {
+            List<ActionError> actionErrors = new NumericResult(referralItem.getReferredResult()).validate();
+            for (ActionError actionError : actionErrors) {
+                errors.add(ActionErrors.GLOBAL_MESSAGE, actionError);
+            }
+        }
     }
 
     private boolean institutionEntered(ReferralItem referralItem) {

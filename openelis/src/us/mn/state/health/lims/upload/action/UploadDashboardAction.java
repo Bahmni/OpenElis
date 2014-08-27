@@ -59,7 +59,7 @@ public class UploadDashboardAction extends BaseAction {
         List<ImportStatus> uploads = importStatusDao.getImportStatusFromDate(thirtyDaysBefore.toDate());
 
         for (ImportStatus uploadStatus : uploads) {
-            createHTMLLinkForErrorFile(request, uploadedFilesDirectory, uploadStatus);
+            createHTMLLinkForErrorFile(uploadedFilesDirectory, uploadStatus);
             retainErrorMessageOnlyFromStackTrace(uploadStatus);
         }
 
@@ -76,7 +76,7 @@ public class UploadDashboardAction extends BaseAction {
         }
     }
 
-    private void createHTMLLinkForErrorFile(HttpServletRequest request, String uploadedFilesDirectory, ImportStatus uploadStatus) {
+    private void createHTMLLinkForErrorFile(String uploadedFilesDirectory, ImportStatus uploadStatus) {
         String errorFileName = uploadStatus.getErrorFileName();
         if (!StringUtils.isEmpty(errorFileName)) {
             String name = FilenameUtils.getName(errorFileName);

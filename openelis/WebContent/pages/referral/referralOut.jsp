@@ -49,7 +49,13 @@ $jq(document).ready( function() {
             showNotesWhenReferralOutWasRejected(this);
         });
 
-
+        var numericResults = jQuery('input[data-result-type="N"]');
+        numericResults.each(function(index, numericResult){
+            validateNumberFormat(numericResult);
+        });
+        numericResults.on("change", function(){
+           validateNumberFormat(this);
+        });
 	});
 
 function showNotesWhenReferralOutWasRejected(object){
@@ -365,6 +371,15 @@ function /*void*/ validateDateFormat( dateElement ){
 	dateElement.style.borderColor = valid ? "" : "red";
 }
 
+function /*void*/ validateNumberFormat(resultBox){
+	if(!resultBox.value) return;
+	var regEx = new RegExp("^(-|\\+){0,1}\\d*\\.?\\d*$");
+	var specialCase = "XXXX";
+	var isNumber = regEx.test(resultBox.value);
+	var isSpecialCase = specialCase == resultBox.value.toUpperCase();
+	resultBox.style.borderColor = isSpecialCase || isNumber ? "" : "red";
+}
+
 function /*void*/ setXMLWads(){
 	var i = 0;
 	var XMLWadElements = $$(".XMLWad");
@@ -642,6 +657,7 @@ var referralPage = {
 			       name='<%= "referralItems[" + index + "].referredResult" %>'
 			       value='<%= referralItems.getReferredResult() %>'
 			       onchange='<%= "markModified(\"" + index + "\");" %>'
+			       data-result-type='<%= referredResultType %>'
 			       <%if(!("N".equals(referredResultType) || "A".equals(referredResultType) || "R".equals(referredResultType))) out.print("style='display : none'");%>
 			       id='<%= "numericResult_" + index %>'
 				     />

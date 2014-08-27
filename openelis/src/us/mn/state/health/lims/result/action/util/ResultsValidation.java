@@ -34,8 +34,6 @@ import us.mn.state.health.lims.result.valueholder.Result;
 import us.mn.state.health.lims.test.beanItems.TestResultItem;
 
 public class ResultsValidation {
-
-	private static final String SPECIAL_CASE = "XXXX";
 	private boolean supportReferrals = false;
 	private boolean useTechnicianName = false;
 	private boolean noteRequiredForChangedResults = false;
@@ -114,18 +112,12 @@ public class ResultsValidation {
 		}
 		
 		if (!GenericValidator.isBlankOrNull(testResultItem.getResultValue()) && "N".equals(testResultItem.getResultType())) {
-			if( testResultItem.getResultValue().equals(SPECIAL_CASE)){
-				return;
-			}
-			try {
-				Double.parseDouble(testResultItem.getResultValue());
-			} catch (NumberFormatException e) {
-				errors.add(new ActionError("errors.number.format", new StringBuilder("Result")));
-			}
-		}
+            List<ActionError> actionErrors = new NumericResult(testResultItem.getResultValue()).validate();
+            errors.addAll(actionErrors);
+        }
 	}
-	
-	private void validateReferral(TestResultItem item, List<ActionError> errors) {
+
+    private void validateReferral(TestResultItem item, List<ActionError> errors) {
 		if (item.isReferredOut() && "0".equals(item.getReferralReasonId())) {
 			errors.add(new ActionError("error.referral.noReason"));
 		}
