@@ -36,6 +36,7 @@ import us.mn.state.health.lims.common.services.PatientService;
 import us.mn.state.health.lims.common.util.ConfigurationProperties;
 import us.mn.state.health.lims.common.util.ConfigurationProperties.Property;
 import us.mn.state.health.lims.common.util.DateUtil;
+import us.mn.state.health.lims.common.util.IdValuePair;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.observationhistory.daoimpl.ObservationHistoryDAOImpl;
 import us.mn.state.health.lims.observationhistory.valueholder.ObservationHistory;
@@ -310,7 +311,14 @@ public class SampleEditAction extends BaseAction {
 	}
 
     private void setAddableSampleTypes(DynaActionForm dynaForm) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		PropertyUtils.setProperty(dynaForm, "sampleTypes", DisplayListService.getList(ListType.SAMPLE_TYPE));
+        HashSet<IdValuePair> sampleTypes = new HashSet<>(DisplayListService.getList(ListType.SAMPLE_TYPE));
+        HashSet<IdValuePair> alreadyAddedSampleTypes = new HashSet<>();
+        for (SampleItem item : sampleItemList) {
+            TypeOfSample typeOfSample = item.getTypeOfSample();
+            alreadyAddedSampleTypes.add(new IdValuePair(typeOfSample.getId(), typeOfSample.getLocalizedName()));
+        }
+        sampleTypes.removeAll(alreadyAddedSampleTypes);
+        PropertyUtils.setProperty(dynaForm, "sampleTypes", sampleTypes);
 	}
 
     private void addPossibleTestsToList(SampleItem sampleItem, List<SampleEditItem> possibleTestList, List<SampleEditItem> currentTests) {
