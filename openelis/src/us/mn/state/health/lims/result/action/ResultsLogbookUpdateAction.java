@@ -71,6 +71,7 @@ import us.mn.state.health.lims.result.dao.ResultDAO;
 import us.mn.state.health.lims.result.dao.ResultInventoryDAO;
 import us.mn.state.health.lims.result.dao.ResultSignatureDAO;
 import us.mn.state.health.lims.result.daoimpl.ResultDAOImpl;
+import us.mn.state.health.lims.result.daoimpl.ResultFileUploadDaoImpl;
 import us.mn.state.health.lims.result.daoimpl.ResultInventoryDAOImpl;
 import us.mn.state.health.lims.result.daoimpl.ResultSignatureDAOImpl;
 import us.mn.state.health.lims.result.valueholder.Result;
@@ -138,9 +139,6 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
     private static final String RESULT_SUBJECT = "Result Note";
 
     private static String REFERRAL_CONFORMATION_ID;
-    public static final String PARENT_OF_UPLOADED_FILES_DIRECTORY = "parentOfUploadedFilesDirectory";
-    public static final String UPLOADED_RESULTS_DIRECTORY = "uploadedResultsDirectory";
-    public static final String SEPARATOR = "_";
 
     private boolean useTechnicianName = ConfigurationProperties.getInstance().isPropertyValueEqual(Property.resultTechnicianName, "true");
     private boolean alwaysValidate = ConfigurationProperties.getInstance().isPropertyValueEqual(Property.ALWAYS_VALIDATE_RESULTS, "true");
@@ -454,22 +452,14 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
     }
 
     private void createFileForResult(TestResultItem testResultItem) {
-        if(testResultItem.getUploadedFile() != null && testResultItem.getUploadedFile().getFileName() != ""){
-            FormFile fileUpload = testResultItem.getUploadedFile();
-
-            String uuid = UUID.randomUUID().toString();
-            String fileName = uuid + SEPARATOR + fileUpload.getFileName();
-            try{
-                String encodedFileName = new URI(null, null, fileName, null).toString();
-                File downloadedFile = getFile(fileName);
-                writeToFileSystem(fileUpload, downloadedFile);
-                testResultItem.setUploadedFileName(encodedFileName);
-            } catch (IOException e) {
-                testResultItem.setUploadedFileName(null);
-            } catch (URISyntaxException e) {
-                testResultItem.setUploadedFileName(null);
-                e.printStackTrace();
-            }
+        try {
+            String encodedFileName = new ResultFileUploadDaoImpl().upload(testResultItem.getUploadedFile());
+            testResultItem.setUploadedFileName(encodedFileName);
+        } catch (IOException e) {
+            testResultItem.setUploadedFileName(null);
+        } catch (URISyntaxException e) {
+            testResultItem.setUploadedFileName(null);
+            e.printStackTrace();
         }
     }
 
@@ -814,22 +804,6 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
 
         return redirect;
 
-    }
-
-    private File getFile(String fileName) {
-
-        String parentForUploadedFilesDirectory = new SiteInformationDAOImpl().getSiteInformationByName(PARENT_OF_UPLOADED_FILES_DIRECTORY).getValue();
-        String uploadedFilesDirectory = new SiteInformationDAOImpl().getSiteInformationByName(UPLOADED_RESULTS_DIRECTORY).getValue();
-
-        String filePath = parentForUploadedFilesDirectory + uploadedFilesDirectory + fileName;
-        return new File(filePath);
-    }
-
-    private void writeToFileSystem(FormFile file, File aFile) throws IOException {
-        FileOutputStream fileOutputStream = new FileOutputStream(aFile);
-        fileOutputStream.write(file.getFileData());
-        fileOutputStream.flush();
-        fileOutputStream.close();
     }
 
     @Override
