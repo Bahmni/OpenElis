@@ -16,6 +16,8 @@
 */
 package us.mn.state.health.lims.referral.action.beanitems;
 
+import org.apache.struts.upload.FormFile;
+
 public interface IReferralResultTest {
 
 	public abstract void setReferredTestId(String referredTestId);
@@ -50,4 +52,8 @@ public interface IReferralResultTest {
     public abstract boolean isAbnormal();
 
     public abstract void setAbnormal(boolean abnormal);
+
+    public abstract void setUploadedFileName(String fileName);
+    public abstract String getUploadedFileName();
+    public abstract FormFile getUploadedFile();
 }

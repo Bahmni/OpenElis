@@ -16,6 +16,7 @@
 */
 package us.mn.state.health.lims.referral.action.beanitems;
 
+import org.apache.struts.upload.FormFile;
 import us.mn.state.health.lims.common.util.IdValuePair;
 
 import java.util.List;
@@ -35,6 +36,8 @@ public class ReferredTest implements IReferralResultTest {
 	private boolean remove = false;
     private String referredMultiDictionaryResult;
     private boolean abnormal;
+    private String uploadedFileName;
+    private FormFile uploadedFile;
 
     public String getReferralId() {
         return referralId;
@@ -122,5 +125,20 @@ public class ReferredTest implements IReferralResultTest {
     @Override
     public void setAbnormal(boolean abnormal) {
         this.abnormal = abnormal;
+    }
+
+    @Override
+    public void setUploadedFileName(String fileName) {
+        this.uploadedFileName = fileName;
+    }
+
+    @Override
+    public String getUploadedFileName() {
+        return uploadedFileName;
+    }
+
+    @Override
+    public FormFile getUploadedFile() {
+        return uploadedFile;
     }
 }

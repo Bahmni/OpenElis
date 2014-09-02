@@ -437,6 +437,7 @@ function /*void*/ savePage(){
 
   window.onbeforeunload = null; // Added to flag that formWarning alert isn't needed.
 	var form = window.document.forms[0];
+    form.enctype = "multipart/form-data";
 	form.action = '<%=formName%>'.sub('Form','') + "Update.do" + window.location.search;
 	form.submit();
 }
@@ -586,6 +587,7 @@ var referralPage = {
     <th><bean:message key="referral.report.date"/></th>
     <th><bean:message key="label.button.cancel.referral"/></th>
 	<th width="5%"><bean:message key="result.notes"/></th>  
+	<th><bean:message key="result.files"/></th>
 </tr>
   <logic:iterate id="referralItems" name="<%=formName%>"  property="referralItems" indexId="index" type="ReferralItem" >
 	<html:hidden  styleId='<%= "textXML_" + index %>' name="referralItems" property="additionalTestsXMLWad" indexed="true" styleClass="XMLWad" />
@@ -718,7 +720,12 @@ var referralPage = {
 						 	     onclick='<%= "showHideNotes(this, " + index + ");" %>'
 						 	     id='<%="showHideButton_" + index %>'
 						    />
-			<input type="hidden" id='<%="hideShow_" + index %>' value="hidden" /></td>
+			<input type="hidden" id='<%="hideShow_" + index %>' value="hidden" />
+        </td>
+
+        <td>
+            <input type="file" name='<%="referralItems["+index+"].uploadedFile"%>' onchange='<%="markModified(" + index + ");"%>'>
+        </td>
 	</tr>
 	<logic:notEmpty name="referralItems"  property="additionalTests" >
 	<logic:iterate id="additionalTests" name="referralItems"  property="additionalTests" indexId="testIndex" type="ReferredTest" >

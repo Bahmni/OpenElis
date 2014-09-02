@@ -16,6 +16,7 @@
  */
 package us.mn.state.health.lims.referral.action.beanitems;
 
+import org.apache.struts.upload.FormFile;
 import us.mn.state.health.lims.common.util.IdValuePair;
 
 import java.io.Serializable;
@@ -54,6 +55,8 @@ public class ReferralItem implements IReferralResultTest, Serializable {
     private boolean failedValidation = false;
     private String patientNumber;
     private boolean abnormal;
+    private FormFile uploadedFile;
+    private String uploadedFileName;
 
     public String getReferralId() {
         return referralId;
@@ -287,5 +290,23 @@ public class ReferralItem implements IReferralResultTest, Serializable {
     @Override
     public void setAbnormal(boolean abnormal) {
         this.abnormal = abnormal;
+    }
+
+    public FormFile getUploadedFile() {
+        return uploadedFile;
+    }
+
+    public void setUploadedFile(FormFile uploadedFile) {
+        this.uploadedFile = uploadedFile;
+    }
+
+    @Override
+    public String getUploadedFileName() {
+        return uploadedFileName;
+    }
+
+    @Override
+    public void setUploadedFileName(String uploadedFileName) {
+        this.uploadedFileName = uploadedFileName;
     }
 }

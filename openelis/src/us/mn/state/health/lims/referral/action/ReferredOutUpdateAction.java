@@ -59,6 +59,7 @@ import us.mn.state.health.lims.referral.valueholder.Referral;
 import us.mn.state.health.lims.referral.valueholder.ReferralResult;
 import us.mn.state.health.lims.result.action.util.NumericResult;
 import us.mn.state.health.lims.result.action.util.ResultsLoadUtility;
+import us.mn.state.health.lims.result.daoimpl.ResultFileUploadDaoImpl;
 import us.mn.state.health.lims.result.valueholder.Result;
 import us.mn.state.health.lims.result.valueholder.ResultType;
 import us.mn.state.health.lims.resultlimits.valueholder.ResultLimit;
@@ -79,6 +80,8 @@ import us.mn.state.health.lims.testresult.valueholder.TestResult;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -108,6 +111,7 @@ public class ReferredOutUpdateAction extends BaseAction {
     private ResultsLoadUtility resultsLoadUtility;
     private SampleHumanDAO sampleHumanDAO = new SampleHumanDAOImpl();
     private OpenElisUrlPublisher accessionPublisher = new EventPublishers().accessionPublisher();
+    private ResultFileUploadDaoImpl resultFileUploadDao = new ResultFileUploadDaoImpl();
 
 
     @Override
@@ -286,7 +290,7 @@ public class ReferredOutUpdateAction extends BaseAction {
     }
 
     private boolean resultEntered(IReferralResultTest resultTest) {
-        return !(GenericValidator.isBlankOrNull(resultTest.getReferredResult()) && "0".equals(resultTest.getReferredDictionaryResult()));
+        return !(GenericValidator.isBlankOrNull(resultTest.getReferredResult()) && "0".equals(resultTest.getReferredDictionaryResult())) || (resultTest.getUploadedFile() != null);
     }
 
     private ArrayList<ReferralSet> createReferralSets(ArrayList<ReferralResult> removableReferralResults) throws LIMSRuntimeException {
@@ -384,6 +388,8 @@ public class ReferredOutUpdateAction extends BaseAction {
         String referredResultType = getReferredResultType(referralItem, test);
         ResultLimit limit = resultsLoadUtility.getResultLimitForTestAndPatient(test, patient);
 
+        saveUploadedFile(referralItem);
+
         if (ResultType.MultiSelect.code().equals(referredResultType)) {
             String multiResult = referralItem.getReferredMultiDictionaryResult();
             multiResult = (multiResult != null) ? multiResult : "";
@@ -406,6 +412,15 @@ public class ReferredOutUpdateAction extends BaseAction {
             if(!alwaysValidate){
                 referralResult.getResult().getAnalysis().finalizeResult();
             }
+        }
+    }
+
+    private void saveUploadedFile(IReferralResultTest referralItem) {
+        try {
+            String encodedFileName = resultFileUploadDao.upload(referralItem.getUploadedFile());
+            referralItem.setUploadedFileName(encodedFileName);
+        } catch (IOException | URISyntaxException e) {
+            referralItem.setUploadedFileName(null);
         }
     }
 

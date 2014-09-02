@@ -584,7 +584,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 	<logic:iterate id="testResult" name="<%=formName%>"  property="testResult" indexId="index" type="TestResultItem">
 	<logic:equal name="testResult" property="isGroupSeparator" value="true">
 	<tr>
-		<td colspan="8"><hr/></td>
+		<td colspan="10"><hr/></td>
 	</tr>
 	<tr>
 		<th>
@@ -611,7 +611,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
    <% if( compactHozSpace ){ %>
    <logic:equal  name="testResult" property="showSampleDetails" value="true">
 		<tr class='<%= rowColor %>Head <%= accessionNumber%>' >
-			<td colspan="8" class='InterstitialHead' >
+			<td colspan="10" class='InterstitialHead' >
                 <%=StringUtil.getContextualMessageForKey("result.sample.id")%> : &nbsp;
 				<b><bean:write name="testResult" property="accessionNumber"/> -
 				<bean:write name="testResult" property="sequenceNumber"/></b>

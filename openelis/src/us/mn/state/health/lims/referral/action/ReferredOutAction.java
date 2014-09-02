@@ -235,6 +235,7 @@ public class ReferredOutAction extends BaseAction {
         if (!resultList.isEmpty()) {
             Result result = resultList.get(0);
             resultString = getAppropriateResultValue(resultList);
+            referralItem.setUploadedFileName(result.getUploadedFileName());
             referralItem.setCasualResultId(result.getId());
 
             List<Note> notes = new ArrayList<>(result.getNotes());
