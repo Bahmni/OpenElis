@@ -20,10 +20,7 @@ import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.feed.job.bahmnireferencedata.ReferenceDataFeedFailedEventsJob;
 import org.bahmni.feed.openelis.feed.job.bahmnireferencedata.ReferenceDataFeedReaderJob;
 import org.bahmni.feed.openelis.feed.job.event.EventRecordsNumberOffsetMarkerTask;
-import org.bahmni.feed.openelis.feed.job.openmrs.OpenMRSEncounterFeedFailedEventsJob;
-import org.bahmni.feed.openelis.feed.job.openmrs.OpenMRSEncounterFeedReaderJob;
-import org.bahmni.feed.openelis.feed.job.openmrs.OpenMRSPatientFeedFailedEventsJob;
-import org.bahmni.feed.openelis.feed.job.openmrs.OpenMRSPatientFeedReaderJob;
+import org.bahmni.feed.openelis.feed.job.openmrs.*;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.quartz.*;
@@ -64,6 +61,9 @@ public class LateStartScheduler {
 
         scheduleJobMap.put("atom-feed-openmrs-encounter", OpenMRSEncounterFeedReaderJob.class);
         scheduleJobMap.put("atom-feed-openmrs-encounter-failed", OpenMRSEncounterFeedFailedEventsJob.class);
+
+        scheduleJobMap.put("atom-feed-openmrs-lab", OpenMRSLabFeedReaderJob.class);
+        scheduleJobMap.put("atom-feed-openmrs-lab-failed", OpenMRSLabFeedFailedEventsJob.class);
 
         scheduleJobMap.put("atom-feed-referencedata", ReferenceDataFeedReaderJob.class);
         scheduleJobMap.put("atom-feed-referencedata-failed", ReferenceDataFeedFailedEventsJob.class);
