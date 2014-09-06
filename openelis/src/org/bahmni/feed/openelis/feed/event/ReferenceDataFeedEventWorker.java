@@ -21,14 +21,9 @@ import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataDepartment;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataPanel;
-import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataSample;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataTest;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataTestUnitOfMeasure;
-import org.bahmni.feed.openelis.feed.service.impl.PanelService;
-import org.bahmni.feed.openelis.feed.service.impl.TestSectionService;
-import org.bahmni.feed.openelis.feed.service.impl.TestService;
-import org.bahmni.feed.openelis.feed.service.impl.TypeOfSampleService;
-import org.bahmni.feed.openelis.feed.service.impl.UnitOfMeasureService;
+import org.bahmni.feed.openelis.feed.service.impl.*;
 import org.bahmni.webclients.HttpClient;
 import org.ict4h.atomfeed.client.domain.Event;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
@@ -50,7 +45,6 @@ public class ReferenceDataFeedEventWorker extends OpenElisEventWorker {
 
     protected enum title {
         department,
-        sample,
         test,
         panel,
         drug,
@@ -78,19 +72,15 @@ public class ReferenceDataFeedEventWorker extends OpenElisEventWorker {
                 ReferenceDataDepartment department = webClient.get(urlPrefix + content, ReferenceDataDepartment.class);
                 logger.info(String.format("Processing department with UUID=%s", department.getId()));
                 testSectionService.createOrUpdate(department, getDefaultOrganization(atomFeedProperties));
-            } else if (title.sample.name().equals(event.getTitle())) {
-                ReferenceDataSample sample = webClient.get(urlPrefix + content, ReferenceDataSample.class);
-                logger.info(String.format("Processing sample with UUID=%s", sample.getId()));
-                typeOfSampleService.createOrUpdate(sample);
             } else if (title.test.name().equals(event.getTitle())) {
                 ReferenceDataTest test = webClient.get(urlPrefix + content, ReferenceDataTest.class);
                 logger.info(String.format("Processing test with UUID=%s", test.getId()));
                 testService.createOrUpdate(test);
-            } else if(title.panel.name().equals(event.getTitle())) {
+            } else if (title.panel.name().equals(event.getTitle())) {
                 ReferenceDataPanel panel = webClient.get(urlPrefix + content, ReferenceDataPanel.class);
                 logger.info(String.format("Processing panel with UUID=%s", panel.getId()));
                 panelService.createOrUpdate(panel);
-            }else if(title.test_unit_of_measure.name().equals(event.getTitle())) {
+            } else if (title.test_unit_of_measure.name().equals(event.getTitle())) {
                 ReferenceDataTestUnitOfMeasure unitOfMeasure = webClient.get(urlPrefix + content, ReferenceDataTestUnitOfMeasure.class);
                 logger.info(String.format("Processing test unit if measure with UUID=%s", unitOfMeasure.getId()));
                 unitOfMeasureService.createOrUpdate(unitOfMeasure);
@@ -113,10 +103,10 @@ public class ReferenceDataFeedEventWorker extends OpenElisEventWorker {
     private String getDefaultOrganization(AtomFeedProperties atomFeedProperties) {
         final String ELIS_DEF_ORG_ENVIRONMENT_VARIABLE = "ELIS_DEFAULT_ORGANIZATION_NAME";
         String envValue = System.getenv(ELIS_DEF_ORG_ENVIRONMENT_VARIABLE);
-        if(StringUtils.isNotEmpty(envValue)){
-            logger.info("Environment variable "+ ELIS_DEF_ORG_ENVIRONMENT_VARIABLE +" found with value: " + envValue);
+        if (StringUtils.isNotEmpty(envValue)) {
+            logger.info("Environment variable " + ELIS_DEF_ORG_ENVIRONMENT_VARIABLE + " found with value: " + envValue);
             return envValue;
-        }else{
+        } else {
             return atomFeedProperties.getProperty(REFERENCE_DATA_DEFAULT_ORGANIZATION);
         }
     }
