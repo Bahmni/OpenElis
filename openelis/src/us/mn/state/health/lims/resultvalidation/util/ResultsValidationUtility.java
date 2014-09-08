@@ -56,6 +56,9 @@ import us.mn.state.health.lims.resultvalidation.bean.AnalysisItem;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
 import us.mn.state.health.lims.sample.valueholder.Sample;
+import us.mn.state.health.lims.siteinformation.dao.SiteInformationDAO;
+import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
+import us.mn.state.health.lims.siteinformation.valueholder.SiteInformation;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.RecordStatus;
@@ -76,6 +79,7 @@ public class ResultsValidationUtility {
 
     public static final String SAMPLE_TABLE_NAME = "SAMPLE";
     public static final String ACCESSION_NOTE_SUBJECT = "Accession Note";
+    public static final String UPLOADED_RESULTS_DIRECTORY = "uploadedResultsDirectory";
 
     public enum TestSectionType {
 		UNKNOWN, IMMUNOLOGY, HEMATOLOGY, BIOCHEMISTRY, SEROLOGY, VIROLOGY;
@@ -94,6 +98,7 @@ public class ResultsValidationUtility {
 	private final TestDAO testDAO = new TestDAOImpl();
 	private final SampleDAO sampleDAO = new SampleDAOImpl();
 	private final NoteDAO noteDAO = new NoteDAOImpl();
+    private final SiteInformationDAO siteInformationDAO = new SiteInformationDAOImpl();
 
 	private final ObservationHistoryDAO observationHistoryDAO = new ObservationHistoryDAOImpl();
 	private static String RESULT_TABLE_ID;
@@ -742,9 +747,14 @@ public class ResultsValidationUtility {
 
 	public List<AnalysisItem> testResultListToAnalysisItemList(List<ResultValidationItem> testResultList) {
 		List<AnalysisItem> analysisResultList = new ArrayList<AnalysisItem>();
-
+        String uploadedFilePath = null;
 		for (ResultValidationItem tResultItem : testResultList) {
-			analysisResultList.add(testResultItemToAnalysisItem(tResultItem));
+            Result result = resultDAO.getResultById(tResultItem.getResultId());
+            if(result.getUploadedFileName() != null){
+                SiteInformation uploadedResultsDirectory = siteInformationDAO.getSiteInformationByName(UPLOADED_RESULTS_DIRECTORY);
+                uploadedFilePath = uploadedResultsDirectory.getValue() + result.getUploadedFileName();
+            }
+            analysisResultList.add(testResultItemToAnalysisItem(tResultItem, uploadedFilePath));
 		}
 
 		return analysisResultList;
@@ -761,7 +771,7 @@ public class ResultsValidationUtility {
 		return StatusOfSampleUtil.getRecordStatusForID(ohList.get(0).getValue());
 	}
 
-	public AnalysisItem testResultItemToAnalysisItem(ResultValidationItem testResultItem) {
+	public AnalysisItem testResultItemToAnalysisItem(ResultValidationItem testResultItem, String uploadedFilePath) {
 		AnalysisItem analysisResultItem = new AnalysisItem();
 		String testUnits = getUnitsByTestId(testResultItem.getTestId());
 		String testName = testResultItem.getTestName();
@@ -802,6 +812,7 @@ public class ResultsValidationUtility {
         analysisResultItem.setMinNormal(testResultItem.getMinNormal());
         analysisResultItem.setMaxNormal(testResultItem.getMaxNormal());
         analysisResultItem.setAbnormalTestResult(testResultItem.getAbnormalTestResult());
+        analysisResultItem.setUploadedFilePath(uploadedFilePath);
 
 		return analysisResultItem;
 
