@@ -30,7 +30,7 @@
 <bean:define id="referer"	value='<%=request.getParameter("referer") == null || request.getParameter("referer").isEmpty() ? "" : request.getParameter("referer")%>' />
 
 <bean:define id="results" name="<%=formName%>" property="resultList" />
-<bean:define id="pagingSearch" name='<%=formName%>' property="paging.searchTermToPage" type="List<IdValuePair>" /> 
+<bean:define id="pagingSearch" name='<%=formName%>' property="paging.searchTermToPage" type="List<IdValuePair>" />
 
 <bean:size id="resultCount" name="results" />
 <%!
@@ -71,7 +71,7 @@ var pagingSearch = new Object();
 $jq(document).ready( function() {
 			var searchTerm = '<%=searchTerm%>';
 			pageSearch = new OEPageSearch( $("searchNotFound"), "td", pager );
-			
+
 			if( searchTerm != "null" ){
 				 pageSearch.highlightSearch( searchTerm, false );
 			}
@@ -85,7 +85,7 @@ function  /*void*/ setMyCancelAction(form, action, validate, parameters)
 
 function /*void*/ enableDisableCheckboxes( matchedElement, groupingNumber ){
 	$(matchedElement).checked = false;
-	
+
 	$("sampleRejected_" + groupingNumber).checked = false;
 	$("sampleAccepted_" + groupingNumber).checked = false;
 	$("selectAllReject").checked = false;
@@ -127,7 +127,7 @@ function /*void*/ acceptSample(element, groupingNumber ){
 		item.checked = false;
 		}
 	);
-	
+
 	$("sampleRejected_" + groupingNumber).checked = false;
 	$("selectAllReject").checked = false;
 	$("selectAllAccept").checked = false;
@@ -143,7 +143,7 @@ function /*void*/ rejectSample(element, groupingNumber ){
 		item.checked = element.checked;
 		}
 	);
-	
+
 	$("sampleAccepted_" + groupingNumber).checked = false;
 	$("selectAllAccept").checked = false;
 	$("selectAllReject").checked = false;
@@ -159,7 +159,7 @@ function /*void*/ makeDirty(){
 		showSuccessMessage(false); //refers to last save
 	}
 	// Adds warning when leaving page if content has been entered into makeDirty form fields
-	function formWarning(){ 
+	function formWarning(){
     return "<bean:message key="banner.menu.dataLossWarning"/>";
 	}
 	window.onbeforeunload = formWarning;
@@ -226,7 +226,7 @@ function updateReflexChild( group){
 
  	if( childReflex ){
  		childId = childReflex[0].id.split("_")[1];
- 		
+
 		for( i = 0; i < reflexGroup.length; i++ ){
 			if( childReflex[0] != reflexGroup[i]){
 				rowId = reflexGroup[i].id.split("_")[1];
@@ -234,7 +234,7 @@ function updateReflexChild( group){
 				values += "," + reflexGroup[i].value;
 			}
 		}
-		
+
 		requestString +=   "results=" +resultIds.slice(1) + "&values=" + values.slice(1) + "&childRow=" + childId;
 
 		new Ajax.Request (
@@ -267,7 +267,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 		success = true;
 		childRow = formField.getElementsByTagName("childRow").item(0).childNodes[0].nodeValue;
 		value = formField.getElementsByTagName("value").item(0).childNodes[0].nodeValue;
-		
+
 		if( value && value.length > 0){
 			$("results_" + childRow).value = value;
 		}
@@ -345,7 +345,7 @@ function enableOnlyForRemark(index, resultType, isReferredOut) {
 <Table width="100%" >
     <tr>
 		<th width="77%" colspan="3" style="background-color: white">
-			<img src="./images/nonconforming.gif" /> = <bean:message key="result.nonconforming.item"/>		
+			<img src="./images/nonconforming.gif" /> = <bean:message key="result.nonconforming.item"/>
 		</th>
 		<th width="10%" align="center" style="background-color: white">&nbsp;
 				<bean:message key="validation.accept.all" />
@@ -372,7 +372,7 @@ function enableOnlyForRemark(index, resultType, isReferredOut) {
 </Table>
 </logic:notEqual>
 <Table width="100%" >
-	<logic:notEqual name="resultCount" value="0"> 
+	<logic:notEqual name="resultCount" value="0">
 	<tr>
     	<th>
 	  		<bean:message key="quick.entry.accession.number.CI"/>
@@ -393,8 +393,11 @@ function enableOnlyForRemark(index, resultType, isReferredOut) {
 			<bean:message key="validation.reject" />
 		</th>
 		<th>
-			<bean:message key="result.notes"/>
+            <bean:message key="result.uploadedFile"/>
 		</th>
+        <th>
+            <bean:message key="result.notes"/>
+        </th>
   	</tr>
 
 	<logic:iterate id="resultList" name="<%=formName%>"  property="resultList" indexId="index" type="AnalysisItem">
@@ -406,7 +409,7 @@ function enableOnlyForRemark(index, resultType, isReferredOut) {
 			<html:hidden name="resultList" property="noteId" indexed="true" />
 			<html:hidden name="resultList" property="resultId"  indexed="true" styleId='<%="resultIdValue_" + index%>'/>
 
-			<%if( resultList.isMultipleResultForSample() && showAccessionNumber ){ 
+			<%if( resultList.isMultipleResultForSample() && showAccessionNumber ){
 			     showAccessionNumber = false; %>
 			<tr  class='<%=(rowColorIndex % 2 == 0) ? "evenRow" : "oddRow" %>'  >
 				<td colspan="3" class='<%= currentAccessionNumber %>'>
@@ -418,7 +421,7 @@ function enableOnlyForRemark(index, resultType, isReferredOut) {
 								   property="isAccepted"
 								   styleClass="accepted"
 								   indexed="true"
-								   onchange="markUpdated(); makeDirty();" 
+								   onchange="markUpdated(); makeDirty();"
 								   onclick='<%="acceptSample( this, \'" + resultList.getSampleGroupingNumber() + "\');" %>' />
 				</td>
 				<td align="center">
@@ -454,20 +457,20 @@ function enableOnlyForRemark(index, resultType, isReferredOut) {
 					<logic:equal name="resultList" property="resultType" value="N">
 						<% if( resultList.isReadOnly() ){%>
 							<div
-								class='results-readonly <%= (resultList.getIsHighlighted() ? "invalidHighlight " : " ") + (resultList.isReflexGroup() ? "reflexGroup_" + resultList.getSampleGroupingNumber()  : "")  +  
+								class='results-readonly <%= (resultList.getIsHighlighted() ? "invalidHighlight " : " ") + (resultList.isReflexGroup() ? "reflexGroup_" + resultList.getSampleGroupingNumber()  : "")  +
 							              (resultList.isChildReflex() ? " childReflex_" + resultList.getSampleGroupingNumber(): "") %> '
 							    id='<%= "results_" + index %>'
 								name='<%="resultList[" + index + "].result" %>' >
 							<%= resultList.getResult() %>
 							</div>
 						<% }else{ %>
-	    					<input type="text" 
-					           name='<%="resultList[" + index + "].result" %>' 
-					           size="6" 
-					           value='<%= resultList.getResult() %>' 
+	    					<input type="text"
+					           name='<%="resultList[" + index + "].result" %>'
+					           size="6"
+					           value='<%= resultList.getResult() %>'
 					           id='<%= "results_" + index %>'
-							   class='<%= (resultList.getIsHighlighted() ? "invalidHighlight " : " ") + (resultList.isReflexGroup() ? "reflexGroup_" + resultList.getSampleGroupingNumber()  : "")  +  
-							              (resultList.isChildReflex() ? " childReflex_" + resultList.getSampleGroupingNumber(): "") %> ' 
+							   class='<%= (resultList.getIsHighlighted() ? "invalidHighlight " : " ") + (resultList.isReflexGroup() ? "reflexGroup_" + resultList.getSampleGroupingNumber()  : "")  +
+							              (resultList.isChildReflex() ? " childReflex_" + resultList.getSampleGroupingNumber(): "") %> '
 							   onchange='<%=  "markUpdated(); makeDirty(); updateLogValue(this, " + index + "); " +
 								                (resultList.isReflexGroup() && !resultList.isChildReflex() ? "updateReflexChild(" + resultList.getSampleGroupingNumber()  +  " ); " : "") +
 								                 "; updateAbnormalCheck( isNormalForNumeric(this.value,"+resultList.getMinNormal()+","+resultList.getMaxNormal()+")," + index + ")"%>'/>
@@ -475,8 +478,8 @@ function enableOnlyForRemark(index, resultType, isReferredOut) {
 						<bean:write name="resultList" property="units"/>
 					</logic:equal>
 					<logic:equal name="resultList" property="resultType" value="D">
-						<select name="<%="resultList[" + index + "].result" %>" 
-						        id='<%="resultId_" + index%>' 
+						<select name="<%="resultList[" + index + "].result" %>"
+						        id='<%="resultId_" + index%>'
 						        onchange="markUpdated(); makeDirty(); updateAbnormalCheck(isNormalForDropDown(this.value, [<%= resultList.getAbnormalTestResultMap() %>]), <%= index %>);" >
 								<logic:iterate id="optionValue" name="resultList" property="dictionaryResults" type="IdValuePair" >
 									<option value='<%=optionValue.getId()%>'  <%if(optionValue.getId().equals(resultList.getResult())) out.print("selected"); %>  >
@@ -515,7 +518,7 @@ function enableOnlyForRemark(index, resultType, isReferredOut) {
 												DecimalFormat twoDForm = new DecimalFormat("##.##");
 												out.print(Double.valueOf(twoDForm.format(value)));
 												}catch(Exception e){
-													out.print("--");} %>		
+													out.print("--");} %>
 						</div> log
 					<% } %>
 				</td>
@@ -555,6 +558,11 @@ function enableOnlyForRemark(index, resultType, isReferredOut) {
 				<% }else{ %>
 				<td><bean:message key="label.computed"/></td><td><bean:message key="label.computed"/></td>
 				<% } %>
+                <td>
+                    <% if (resultList.getUploadedFilePath() != null) {%>
+                        <a href="<bean:write name="resultList" property="uploadedFilePath"/>">Download file</a>
+                    <% }%>
+                </td>
 				<td>
 					<% if( !resultList.isReadOnly()){ %>
 				    	<logic:empty name="resultList" property="note">
@@ -586,7 +594,7 @@ function enableOnlyForRemark(index, resultType, isReferredOut) {
 				</td>
 			</tr>
   	</logic:iterate>
-	
+
 
 
   	</logic:notEqual>

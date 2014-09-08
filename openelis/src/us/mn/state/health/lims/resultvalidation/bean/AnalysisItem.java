@@ -143,6 +143,16 @@ public class AnalysisItem {
     private double lowerAbnormalRange;
     private Double minNormal;
     private Double maxNormal;
+    private String uploadedFilePath;
+
+
+    public String getUploadedFilePath() {
+        return uploadedFilePath;
+    }
+
+    public void setUploadedFilePath(String uploadedFileName) {
+        this.uploadedFilePath = uploadedFileName;
+    }
 
     public double getUpperAbnormalRange() {
         return upperAbnormalRange;
