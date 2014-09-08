@@ -17,11 +17,8 @@
 package us.mn.state.health.lims.scheduler;
 
 import org.apache.log4j.Logger;
-import org.bahmni.feed.openelis.feed.job.bahmnireferencedata.ReferenceDataFeedFailedEventsJob;
-import org.bahmni.feed.openelis.feed.job.bahmnireferencedata.ReferenceDataFeedReaderJob;
 import org.bahmni.feed.openelis.feed.job.event.EventRecordsNumberOffsetMarkerTask;
 import org.bahmni.feed.openelis.feed.job.openmrs.*;
-import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
@@ -33,7 +30,6 @@ import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.scheduler.dao.CronSchedulerDAO;
 import us.mn.state.health.lims.scheduler.daoimpl.CronSchedulerDAOImpl;
 import us.mn.state.health.lims.scheduler.valueholder.CronScheduler;
-import static org.quartz.impl.matchers.EverythingMatcher.*;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -42,6 +38,7 @@ import java.util.*;
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
+import static org.quartz.impl.matchers.EverythingMatcher.allJobs;
 
 public class LateStartScheduler {
     private static final String NEVER = "never";
@@ -64,9 +61,6 @@ public class LateStartScheduler {
 
         scheduleJobMap.put("atom-feed-openmrs-lab", OpenMRSLabFeedReaderJob.class);
         scheduleJobMap.put("atom-feed-openmrs-lab-failed", OpenMRSLabFeedFailedEventsJob.class);
-
-        scheduleJobMap.put("atom-feed-referencedata", ReferenceDataFeedReaderJob.class);
-        scheduleJobMap.put("atom-feed-referencedata-failed", ReferenceDataFeedFailedEventsJob.class);
 
         scheduleJobMap.put("atom-feed-events-offset-marker", EventRecordsNumberOffsetMarkerTask.class);
     }
@@ -125,7 +119,7 @@ public class LateStartScheduler {
     }
 
     public void shutdown() throws SchedulerException {
-            scheduler.shutdown(true);
+        scheduler.shutdown(true);
     }
 
     private class ElisJobListener extends JobListenerSupport {
@@ -150,7 +144,7 @@ public class LateStartScheduler {
 
             if (matchingJobName != null) {
                 Transaction transaction = null;
-                try{
+                try {
                     logger.info("executed the job : " + matchingJobName);
                     transaction = HibernateUtil.getSession().beginTransaction();
                     CronSchedulerDAO schedulerDAO = new CronSchedulerDAOImpl();

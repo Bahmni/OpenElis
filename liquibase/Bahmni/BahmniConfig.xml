@@ -1249,4 +1249,31 @@
             <column name="cron_statement" value="0 0/1 * * * ?"/>
         </insert>
     </changeSet>
+    <changeSet id="98" author="Mihir" context="bahmni">
+        <preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="2">
+                select count(*) from quartz_cron_scheduler where name in
+                 ('atom-feed-openmrs-lab', 'atom-feed-openmrs-lab-failed');
+            </sqlCheck>
+        </preConditions>
+        <comment>Update cron_statement to correct cron schedule</comment>
+        <sql>
+            update quartz_cron_scheduler set cron_statement='0/15 * * * * ?' where name='atom-feed-openmrs-lab';
+            update quartz_cron_scheduler set cron_statement='0/15 * * * * ?' where 
+            name='atom-feed-openmrs-lab-failed';
+        </sql>
+    </changeSet>
+    <changeSet id="99" author="Mihir" context="bahmni">
+        <preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="2">
+                select count(*) from quartz_cron_scheduler where name in
+                 ('atom-feed-referencedata', 'atom-feed-referencedata-failed');
+            </sqlCheck>
+        </preConditions>
+        <comment>Delete reference data atom feed scheduler</comment>
+        <sql>
+            delete from quartz_cron_scheduler where name='atom-feed-referencedata';
+            delete from quartz_cron_scheduler where name='atom-feed-referencedata-failed';
+        </sql>
+    </changeSet>
 </databaseChangeLog>

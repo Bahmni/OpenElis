@@ -21,7 +21,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import java.util.Date;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ReferenceDataTest {
+public  class ReferenceDataTest {
     private String id;
     private ReferenceDataDepartment department;
     private String description;
