@@ -560,7 +560,7 @@ function enableOnlyForRemark(index, resultType, isReferredOut) {
 				<% } %>
                 <td>
                     <% if (resultList.getUploadedFilePath() != null) {%>
-                        <a href="<bean:write name="resultList" property="uploadedFilePath"/>">Download file</a>
+                        <a href="<bean:write name="resultList" property="uploadedFilePath"/>" target="_blank">Download file</a>
                     <% }%>
                 </td>
 				<td>
