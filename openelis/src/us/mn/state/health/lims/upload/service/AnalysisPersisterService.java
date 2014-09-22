@@ -16,6 +16,7 @@
 
 package us.mn.state.health.lims.upload.service;
 
+import java.sql.Timestamp;
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
@@ -51,6 +52,7 @@ public class AnalysisPersisterService {
         java.sql.Date analysisDate = new java.sql.Date(parsedDate.getTime());
         analysis.setStartedDate(analysisDate);
         analysis.setCompletedDate(analysisDate);
+        analysis.setEnteredDate(new Timestamp(analysisDate.getTime()));
         analysis.setIsReportable(test.getIsReportable());
         analysis.setAnalysisType(DEFAULT_ANALYSIS_TYPE);
         analysis.setRevision(SystemConfiguration.getInstance().getAnalysisDefaultRevision());
