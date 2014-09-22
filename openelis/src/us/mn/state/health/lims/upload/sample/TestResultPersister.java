@@ -125,24 +125,6 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
         return sampleSourceNames;
     }
 
-    private String validateAllTestResultsAreValid(List<CSVTestResult> testResults) {
-        for (CSVTestResult testResult : testResults) {
-            if (!testResult.isValid()) {
-                return "All Tests should have a result.\n";
-            }
-        }
-        return "";
-    }
-
-    private String validateAtLeastOneTestIsNonEmpty(List<CSVTestResult> testResults) {
-        for (CSVTestResult testResult : testResults) {
-            if (!testResult.isEmpty()) {
-                return "";
-            }
-        }
-        return "There should be atleast one Test with a Result.\n";
-    }
-
     private String validateTestNames(List<CSVTestResult> testResults) {
         List<String> invalidTestNames = new ArrayList<>();
         for (CSVTestResult testResult : testResults) {
