@@ -31,7 +31,7 @@ public  class ReferenceDataTest {
     private ReferenceDataSample sample;
     private String shortName;
     private Integer sortOrder;
-    private ReferenceDataTestUnitOfMeasure testUnitOfMeasure;
+    private String testUnitOfMeasure;
 
     public String getId() {
         return id;
@@ -105,11 +105,11 @@ public  class ReferenceDataTest {
         this.name = name;
     }
 
-    public ReferenceDataTestUnitOfMeasure getTestUnitOfMeasure() {
+    public String getTestUnitOfMeasure() {
         return testUnitOfMeasure;
     }
 
-    public void setTestUnitOfMeasure(ReferenceDataTestUnitOfMeasure testUnitOfMeasure) {
+    public void setTestUnitOfMeasure(String testUnitOfMeasure) {
         this.testUnitOfMeasure = testUnitOfMeasure;
     }
 }

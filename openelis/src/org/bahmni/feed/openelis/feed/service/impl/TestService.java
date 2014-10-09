@@ -39,9 +39,6 @@ import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleTestDAOImpl;
 import us.mn.state.health.lims.typeofsample.util.TypeOfSampleUtil;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSample;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSampleTest;
-import us.mn.state.health.lims.unitofmeasure.dao.UnitOfMeasureDAO;
-import us.mn.state.health.lims.unitofmeasure.daoimpl.UnitOfMeasureDAOImpl;
-import us.mn.state.health.lims.unitofmeasure.valueholder.UnitOfMeasure;
 
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -56,7 +53,7 @@ public class TestService {
     private TestSectionDAO testSectionDAO;
     private TypeOfSampleDAO typeOfSampleDAO;
     private TypeOfSampleTestDAO typeOfSampleTestDAO;
-    private UnitOfMeasureDAO unitOfMeasureDAO;
+    private UnitOfMeasureService unitOfMeasureService;
 
     public TestService() {
         this.testDAO = new TestDAOImpl();
@@ -65,7 +62,7 @@ public class TestService {
         this.auditingService = new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl());
         this.typeOfSampleDAO = new TypeOfSampleDAOImpl();
         this.typeOfSampleTestDAO = new TypeOfSampleTestDAOImpl();
-        this.unitOfMeasureDAO = new UnitOfMeasureDAOImpl();
+        this.unitOfMeasureService = new UnitOfMeasureService();
     }
 
     /**
@@ -94,13 +91,17 @@ public class TestService {
             Test test = new Test();
             test = populateTest(test, referenceDataTest, sysUserId);
             testDAO.insertData(test);
-            saveSampleForTest(test, referenceDataTest.getSample().getId(), sysUserId);
+            if(referenceDataTest.getSample() !=null){
+                saveSampleForTest(test, referenceDataTest.getSample().getId(), sysUserId);
+            }
             saveExternalReference(referenceDataTest, test);
         } else {
             Test test = testDAO.getTestById(String.valueOf(data.getItemId()));
             populateTest(test, referenceDataTest, sysUserId);
             testDAO.updateData(test);
-            saveSampleForTest(test, referenceDataTest.getSample().getId(), sysUserId);
+            if(referenceDataTest.getSample() !=null){
+                saveSampleForTest(test, referenceDataTest.getSample().getId(), sysUserId);
+            }
         }
         TypeOfSampleUtil.clearTestCache();
     }
@@ -112,19 +113,19 @@ public class TestService {
     }
 
     private Test populateTest(Test test, ReferenceDataTest referenceDataTest, String sysUserId) throws IOException {
+        String sectionID = null;
+        TestSection section = null;
         test.setTestName(referenceDataTest.getName());
-        String sectionID = referenceDataTest.getDepartment().getId();
-        TestSection section = testSectionDAO.getTestSectionByUUID(sectionID);
+        if(referenceDataTest.getDepartment() != null){
+            sectionID = referenceDataTest.getDepartment().getId();
+            section = testSectionDAO.getTestSectionByUUID(sectionID);
+        }
         //Need to check if section is null, then throw exception and don't proceed ahead
         if(sectionID==null || section == null){
            throw new LIMSRuntimeException("Cannot save test since no section exists with ID:"+ sectionID);
         }
         if(referenceDataTest.getTestUnitOfMeasure() !=null){
-            ExternalReference externalReferenceForUnitOfMeasure =
-                    externalReferenceDao.getData(referenceDataTest.getTestUnitOfMeasure().getId(), UnitOfMeasureService.CATEGORY_UNIT_OF_MEASURE);
-            String unitOfMeasureId = String.valueOf(externalReferenceForUnitOfMeasure.getItemId());
-            UnitOfMeasure unitOfMeasure = unitOfMeasureDAO.getUnitOfMeasureById(unitOfMeasureId);
-            test.setUnitOfMeasure(unitOfMeasure);
+            test.setUnitOfMeasure(unitOfMeasureService.create(referenceDataTest.getTestUnitOfMeasure()));
         }
         test.setTestSection(section);
         test.setDescription(referenceDataTest.getDescription());

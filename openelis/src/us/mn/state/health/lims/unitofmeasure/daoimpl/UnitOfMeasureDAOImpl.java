@@ -318,7 +318,7 @@ public class UnitOfMeasureDAOImpl extends BaseDAOImpl implements
 			String sql = "from UnitOfMeasure t where trim(lower(t.unitOfMeasureName)) = :param and t.id != :param2";
 			org.hibernate.Query query = HibernateUtil.getSession().createQuery(
 					sql);
-			query.setParameter("param", unitOfMeasure.getUnitOfMeasureName().toLowerCase().trim());
+			query.setParameter("param", unitOfMeasure.getUnitOfMeasureName().trim());
 	
 			// initialize with 0 (for new records where no id has been generated
 			// yet
