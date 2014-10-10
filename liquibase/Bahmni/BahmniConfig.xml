@@ -1276,4 +1276,16 @@
             delete from quartz_cron_scheduler where name='atom-feed-referencedata-failed';
         </sql>
     </changeSet>
+    <changeSet id="100" author="Mihir, Sravanthi" context="bahmni">
+        <comment>Delete view hiv_patients</comment>
+        <sql>
+            drop view if exists hiv_patients;
+        </sql>
+    </changeSet>
+    <changeSet id="101" author="Mihir, Sravanthi" context="bahmni">
+        <comment>Resize test_section name column</comment>
+        <sql>
+            ALTER TABLE test_section alter column name type VARCHAR(40);
+        </sql>
+    </changeSet>
 </databaseChangeLog>
