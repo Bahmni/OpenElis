@@ -102,7 +102,7 @@ public class TestServiceTest {
         referenceDataTest.setDepartment(createDummyDepartment(deptID));
         referenceDataTest.setIsActive(Boolean.TRUE);
         referenceDataTest.setLastUpdated(new Date());
-        referenceDataTest.setSample(createDummySample());
+        referenceDataTest.setSampleUuid(createDummySample().getId());
 
         return referenceDataTest;
     }
