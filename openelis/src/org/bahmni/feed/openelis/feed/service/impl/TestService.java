@@ -91,16 +91,16 @@ public class TestService {
             Test test = new Test();
             test = populateTest(test, referenceDataTest, sysUserId);
             testDAO.insertData(test);
-            if(referenceDataTest.getSample() !=null){
-                saveSampleForTest(test, referenceDataTest.getSample().getId(), sysUserId);
+            if(referenceDataTest.getSampleUuid() !=null){
+                saveSampleForTest(test, referenceDataTest.getSampleUuid(), sysUserId);
             }
             saveExternalReference(referenceDataTest, test);
         } else {
             Test test = testDAO.getTestById(String.valueOf(data.getItemId()));
             populateTest(test, referenceDataTest, sysUserId);
             testDAO.updateData(test);
-            if(referenceDataTest.getSample() !=null){
-                saveSampleForTest(test, referenceDataTest.getSample().getId(), sysUserId);
+            if(referenceDataTest.getSampleUuid() !=null){
+                saveSampleForTest(test, referenceDataTest.getSampleUuid(), sysUserId);
             }
         }
         TypeOfSampleUtil.clearTestCache();

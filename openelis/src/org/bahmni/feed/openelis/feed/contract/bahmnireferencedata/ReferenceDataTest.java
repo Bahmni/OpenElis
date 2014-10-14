@@ -28,7 +28,7 @@ public  class ReferenceDataTest {
     private Boolean isActive;
     private Date lastUpdated;
     private String name;
-    private ReferenceDataSample sample;
+    private String sampleUuid;
     private String shortName;
     private Integer sortOrder;
     private String testUnitOfMeasure;
@@ -73,12 +73,12 @@ public  class ReferenceDataTest {
         this.lastUpdated = lastUpdated;
     }
 
-    public ReferenceDataSample getSample() {
-        return sample;
+    public String getSampleUuid() {
+        return sampleUuid;
     }
 
-    public void setSample(ReferenceDataSample sample) {
-        this.sample = sample;
+    public void setSampleUuid(String sampleUuid) {
+        this.sampleUuid = sampleUuid;
     }
 
     public String getShortName() {

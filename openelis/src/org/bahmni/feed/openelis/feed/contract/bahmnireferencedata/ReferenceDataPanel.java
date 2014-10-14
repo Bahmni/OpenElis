@@ -30,7 +30,7 @@ public class ReferenceDataPanel {
     private Boolean isActive;
     private Date lastUpdated;
     private String name;
-    private ReferenceDataSample sample;
+    private String sampleUuid;
     private String shortName;
     private Integer sortOrder;
     private List<ReferenceDataTest> tests;
@@ -75,12 +75,12 @@ public class ReferenceDataPanel {
         this.name = name;
     }
 
-    public ReferenceDataSample getSample() {
-        return sample;
+    public String getSampleUuid() {
+        return sampleUuid;
     }
 
-    public void setSample(ReferenceDataSample sample) {
-        this.sample = sample;
+    public void setSampleUuid(String sampleUuid) {
+        this.sampleUuid = sampleUuid;
     }
 
     public String getShortName() {

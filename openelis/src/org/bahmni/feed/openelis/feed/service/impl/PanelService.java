@@ -77,14 +77,14 @@ public class PanelService {
             Panel panel = new Panel();
             panel = populatePanel(panel, referenceDataPanel, sysUserId);
             panelDAO.insertData(panel);
-            saveSampleForPanel(panel, referenceDataPanel.getSample().getId(), sysUserId);
+            saveSampleForPanel(panel, referenceDataPanel.getSampleUuid(), sysUserId);
             saveTestsForPanel(panel, referenceDataPanel, sysUserId);
             saveExternalReference(referenceDataPanel, panel);
         } else {
             Panel panel = panelDAO.getPanelById(String.valueOf(data.getItemId()));
             populatePanel(panel, referenceDataPanel, sysUserId);
             panelDAO.updateData(panel);
-            saveSampleForPanel(panel, referenceDataPanel.getSample().getId(), sysUserId);
+            saveSampleForPanel(panel, referenceDataPanel.getSampleUuid(), sysUserId);
             saveTestsForPanel(panel, referenceDataPanel, sysUserId);
         }
         TypeOfSampleUtil.clearTestCache();
