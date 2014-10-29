@@ -83,7 +83,6 @@ public class TestSectionService {
         testSection.setDescription(department.getDescription());
         String isActive = department.getIsActive() ? "Y" : "N";
         testSection.setIsActive(isActive);
-        testSection.setSortOrderInt(department.getSortOrder());
         testSection.setLastupdated(new Timestamp(new Date().getTime()));
         testSection.setSysUserId(sysUserId);
         testSection.setOrganization(organization);

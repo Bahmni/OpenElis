@@ -16,13 +16,9 @@
 
 package org.bahmni.feed.openelis.feed.contract.bahmnireferencedata;
 
-import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPatientIdentifier;
-import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPerson;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ReferenceDataDepartment {
@@ -33,7 +29,6 @@ public class ReferenceDataDepartment {
     private Boolean isActive;
     private Date lastUpdated;
     private String name;
-    private Integer sortOrder;
 
     public String getId() {
         return id;
@@ -81,14 +76,6 @@ public class ReferenceDataDepartment {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Integer getSortOrder() {
-        return sortOrder;
-    }
-
-    public void setSortOrder(Integer sortOrder) {
-        this.sortOrder = sortOrder;
     }
 
     public ReferenceDataDepartment() {
