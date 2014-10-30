@@ -1288,4 +1288,10 @@
             ALTER TABLE test_section alter column name type VARCHAR(40);
         </sql>
     </changeSet>
+    <changeSet id="102" author="Mihir, Hemanth" context="bahmni">
+        <comment>Resize type_of_sample local_abbrev column</comment>
+        <sql>
+            ALTER TABLE type_of_sample alter column local_abbrev type VARCHAR(40);
+        </sql>
+    </changeSet>
 </databaseChangeLog>
