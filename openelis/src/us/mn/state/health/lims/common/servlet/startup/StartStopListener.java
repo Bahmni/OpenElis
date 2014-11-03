@@ -51,7 +51,7 @@ public final class StartStopListener implements ServletContextListener {
     }
 
     public void contextInitialized(ServletContextEvent event) {
-        DOMConfigurator.configure(event.getServletContext().getRealPath("WEB-INF/classes/log4j.xml"));
+        DOMConfigurator.configure(event.getServletContext().getRealPath("/WEB-INF/classes/log4j.xml"));
         logger.info(String.format("Initializing"));
         scheduler = new LateStartScheduler();
         scheduler.checkAndStartScheduler();
