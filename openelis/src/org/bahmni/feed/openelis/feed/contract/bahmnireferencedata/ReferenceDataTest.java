@@ -31,6 +31,7 @@ public  class ReferenceDataTest {
     private String sampleUuid;
     private String shortName;
     private Integer sortOrder;
+    private String resultType;
     private String testUnitOfMeasure;
 
     public String getId() {
@@ -111,5 +112,13 @@ public  class ReferenceDataTest {
 
     public void setTestUnitOfMeasure(String testUnitOfMeasure) {
         this.testUnitOfMeasure = testUnitOfMeasure;
+    }
+
+    public String getResultType() {
+        return resultType;
+    }
+
+    public void setResultType(String resultType) {
+        this.resultType = resultType;
     }
 }

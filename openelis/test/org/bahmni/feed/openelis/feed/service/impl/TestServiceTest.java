@@ -23,11 +23,15 @@ import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataS
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataTest;
 import org.bahmni.feed.openelis.utils.AuditingService;
 import org.junit.Before;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.dao.TestSectionDAO;
 import us.mn.state.health.lims.test.valueholder.Test;
+import us.mn.state.health.lims.test.valueholder.TestSection;
+import us.mn.state.health.lims.testresult.dao.TestResultDAO;
+import us.mn.state.health.lims.testresult.valueholder.TestResult;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleDAO;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleTestDAO;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSample;
@@ -35,7 +39,10 @@ import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSample;
 import java.io.IOException;
 import java.util.Date;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -50,6 +57,8 @@ public class TestServiceTest {
     @Mock
     private TestSectionDAO testSectionDAOMock;
     @Mock
+    private TestResultDAO testResultDAOMock;
+    @Mock
     private TypeOfSampleDAO typeOfSampleDAOMock;
     @Mock
     private TypeOfSampleTestDAO typeOfSampleTestDAOMock;
@@ -60,7 +69,7 @@ public class TestServiceTest {
     public void setUp() {
         initMocks(this);
 
-         testService = new TestService(externalReferenceDaoMock, testDAOMock, testSectionDAOMock,
+         testService = new TestService(externalReferenceDaoMock, testDAOMock, testResultDAOMock, testSectionDAOMock,
                 auditingServiceMock, typeOfSampleDAOMock, typeOfSampleTestDAOMock);
 
     }
@@ -91,6 +100,26 @@ public class TestServiceTest {
         when(testDAOMock.getTestById(anyString())).thenReturn(createDummyTest());
 
         testService.createOrUpdate(referenceDataTest);
+    }
+
+    @org.junit.Test
+    public void addResultTypeRemarkIfTestResultTypeIsText() throws IOException {
+
+        ReferenceDataTest referenceDataTest = createReferenceDataTestWithSomeDepartment("someDeptID");
+        referenceDataTest.setResultType("Text");
+
+        ArgumentCaptor<TestResult> argument = ArgumentCaptor.forClass(TestResult.class);
+        TestSection testSectionMock = new TestSection();
+
+        when(testSectionDAOMock.getTestSectionByUUID(anyString())).thenReturn(testSectionMock);
+        when(typeOfSampleDAOMock.getTypeOfSampleByUUID(anyString())).thenReturn(createDummyTypeOfSample());
+        when(externalReferenceDaoMock.getData(referenceDataTest.getId(), TestService.CATEGORY_TEST)).thenReturn(createDummyReferenceData());
+        when(testDAOMock.getTestById(anyString())).thenReturn(createDummyTest());
+
+        testService.createOrUpdate(referenceDataTest);
+        verify(testResultDAOMock, times(1)).insertData(argument.capture());
+
+        assertEquals("R", argument.getValue().getTestResultType());
     }
 
 
