@@ -23,7 +23,6 @@ import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataTest;
 import org.bahmni.feed.openelis.utils.AuditingService;
 import us.mn.state.health.lims.common.action.IActionConstants;
-import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
 import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 import us.mn.state.health.lims.test.dao.TestDAO;
@@ -50,6 +49,7 @@ import java.util.Date;
 public class TestService {
 
     public static final String CATEGORY_TEST = "Test";
+    public static final String DUMMY_TEST_SECTION_NAME = "New";
     private AuditingService auditingService;
     private TestDAO testDAO;
     private TestResultDAO testResultDAO;
@@ -79,7 +79,7 @@ public class TestService {
                        TestSectionDAO testSectionDAO,
                        AuditingService auditingService,
                        TypeOfSampleDAO typeOfSampleDAO,
-                       TypeOfSampleTestDAO typeOfSampleTestDAO){
+                       TypeOfSampleTestDAO typeOfSampleTestDAO) {
 
         this.externalReferenceDao = externalReferenceDao;
         this.testDAO = testDAO;
@@ -97,21 +97,22 @@ public class TestService {
         Test test = new Test();
 
         if (data == null) {
-            test = populateTest(test, referenceDataTest, sysUserId);
+            test = populateTest(test, referenceDataTest, sysUserId, null);
             testDAO.insertData(test);
-            if(referenceDataTest.getSampleUuid() !=null){
+            if (referenceDataTest.getSampleUuid() != null) {
                 saveSampleForTest(test, referenceDataTest.getSampleUuid(), sysUserId);
             }
             saveExternalReference(referenceDataTest, test);
         } else {
             test = testDAO.getTestById(String.valueOf(data.getItemId()));
-            populateTest(test, referenceDataTest, sysUserId);
+            String uuid = test.getTestSection() != null ? test.getTestSection().getUUID() : null;
+            populateTest(test, referenceDataTest, sysUserId, uuid);
             testDAO.updateData(test);
-            if(referenceDataTest.getSampleUuid() !=null){
+            if (referenceDataTest.getSampleUuid() != null) {
                 saveSampleForTest(test, referenceDataTest.getSampleUuid(), sysUserId);
             }
         }
-        if(referenceDataTest.getResultType().equals("Text")){
+        if (referenceDataTest.getResultType().equals("Text")) {
             TestResult testResult = new TestResult();
             testResult.setSysUserId("1");
             testResult.setTest(test);
@@ -127,19 +128,11 @@ public class TestService {
         externalReferenceDao.insertData(data);
     }
 
-    private Test populateTest(Test test, ReferenceDataTest referenceDataTest, String sysUserId) throws IOException {
-        String sectionID = null;
-        TestSection section = null;
+    private Test populateTest(Test test, ReferenceDataTest referenceDataTest, String sysUserId, String testSectionUuid) throws IOException {
         test.setTestName(referenceDataTest.getName());
-        if(referenceDataTest.getDepartment() != null){
-            sectionID = referenceDataTest.getDepartment().getId();
-            section = testSectionDAO.getTestSectionByUUID(sectionID);
-        }
-        //Need to check if section is null, then throw exception and don't proceed ahead
-        if(sectionID==null || section == null){
-           throw new LIMSRuntimeException("Cannot save test since no section exists with ID:"+ sectionID);
-        }
-        if(referenceDataTest.getTestUnitOfMeasure() !=null){
+        //Assign to dummy test section
+        TestSection section = getTestSection(testSectionUuid);
+        if (referenceDataTest.getTestUnitOfMeasure() != null) {
             test.setUnitOfMeasure(unitOfMeasureService.create(referenceDataTest.getTestUnitOfMeasure()));
         }
         test.setTestSection(section);
@@ -150,6 +143,24 @@ public class TestService {
         test.setSysUserId(sysUserId);
         test.setOrderable(true);
         test.setSortOrder(String.valueOf(referenceDataTest.getSortOrder()));
+        return test;
+    }
+
+    private TestSection getTestSection(String uuid) {
+        if (uuid == null) {
+            return testSectionDAO.getTestSectionByName(DUMMY_TEST_SECTION_NAME);
+        } else {
+            return testSectionDAO.getTestSectionByUUID(uuid);
+        }
+    }
+
+    public Test updateTestSection(String testName, String testSectionUuid){
+        Test test = testDAO.getTestByName(testName);
+        TestSection testSection = getTestSection(testSectionUuid);
+        if(!test.getTestSection().equals(testSection)){
+            test.setTestSection(testSection);
+            testDAO.updateData(test);
+        }
         return test;
     }
 

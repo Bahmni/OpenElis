@@ -14,15 +14,12 @@ import org.bahmni.feed.openelis.feed.service.impl.TestSectionService;
 import org.bahmni.feed.openelis.feed.service.impl.TestService;
 import org.bahmni.feed.openelis.feed.service.impl.TypeOfSampleService;
 import org.bahmni.webclients.HttpClient;
-import org.exolab.castor.xml.schema.Key;
 import org.ict4h.atomfeed.client.domain.Event;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
-import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
 import us.mn.state.health.lims.hibernate.ElisHibernateSession;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 public class LabFeedEventWorker extends OpenElisEventWorker {
     public static final String REFERENCE_DATA_DEFAULT_ORGANIZATION = "reference.data.default.organization";
@@ -90,10 +87,10 @@ public class LabFeedEventWorker extends OpenElisEventWorker {
             } else if (title.all_tests_and_panels.toUrlString().equals(event.getTitle())) {
                 ReferenceDataAllTestsAndPanels allTestsAndPanels = webClient.get(urlPrefix + content, ReferenceDataAllTestsAndPanels.class);
                 logger.info(String.format("Processing all tests and panels with UUID=%s", allTestsAndPanels.getId()));
-                for (ReferenceDataTest test : allTestsAndPanels.getTests()) {
+                for (ReferenceDataTest test : allTestsAndPanels.getReferenceDataTestAndPanels().getTests()) {
                     testService.createOrUpdate(test);
                 }
-                for (ReferenceDataPanel panel : allTestsAndPanels.getPanels()) {
+                for (ReferenceDataPanel panel : allTestsAndPanels.getReferenceDataTestAndPanels().getPanels()) {
                     panelService.createOrUpdate(panel);
                 }
             } else if (title.all_samples.toUrlString().equals(event.getTitle())) {

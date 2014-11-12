@@ -29,6 +29,15 @@ public class ReferenceDataSample {
     private String name;
     private String shortName;
     private Integer sortOrder;
+    private ReferenceDataTestAndPanels referenceDataTestAndPanels;
+
+    public ReferenceDataTestAndPanels getReferenceDataTestAndPanels() {
+        return referenceDataTestAndPanels;
+    }
+
+    public void setReferenceDataTestAndPanels(ReferenceDataTestAndPanels referenceDataTestAndPanels) {
+        this.referenceDataTestAndPanels = referenceDataTestAndPanels;
+    }
 
     public String getId() {
         return id;
