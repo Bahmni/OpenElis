@@ -23,7 +23,6 @@ import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataTest;
 import org.bahmni.feed.openelis.utils.AuditingService;
 import us.mn.state.health.lims.common.action.IActionConstants;
-import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
 import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 import us.mn.state.health.lims.test.dao.TestDAO;
@@ -37,11 +36,7 @@ import us.mn.state.health.lims.testresult.daoimpl.TestResultDAOImpl;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleDAO;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleTestDAO;
-import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleDAOImpl;
-import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleTestDAOImpl;
 import us.mn.state.health.lims.typeofsample.util.TypeOfSampleUtil;
-import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSample;
-import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSampleTest;
 
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -50,13 +45,12 @@ import java.util.Date;
 public class TestService {
 
     public static final String CATEGORY_TEST = "Test";
+    public static final String DUMMY_TEST_SECTION_NAME = "New";
     private AuditingService auditingService;
     private TestDAO testDAO;
     private TestResultDAO testResultDAO;
     private ExternalReferenceDao externalReferenceDao;
     private TestSectionDAO testSectionDAO;
-    private TypeOfSampleDAO typeOfSampleDAO;
-    private TypeOfSampleTestDAO typeOfSampleTestDAO;
     private UnitOfMeasureService unitOfMeasureService;
 
     public TestService() {
@@ -65,8 +59,6 @@ public class TestService {
         this.externalReferenceDao = new ExternalReferenceDaoImpl();
         this.testSectionDAO = new TestSectionDAOImpl();
         this.auditingService = new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl());
-        this.typeOfSampleDAO = new TypeOfSampleDAOImpl();
-        this.typeOfSampleTestDAO = new TypeOfSampleTestDAOImpl();
         this.unitOfMeasureService = new UnitOfMeasureService();
     }
 
@@ -79,15 +71,13 @@ public class TestService {
                        TestSectionDAO testSectionDAO,
                        AuditingService auditingService,
                        TypeOfSampleDAO typeOfSampleDAO,
-                       TypeOfSampleTestDAO typeOfSampleTestDAO){
+                       TypeOfSampleTestDAO typeOfSampleTestDAO) {
 
         this.externalReferenceDao = externalReferenceDao;
         this.testDAO = testDAO;
         this.testResultDAO = testResultDAO;
         this.testSectionDAO = testSectionDAO;
         this.auditingService = auditingService;
-        this.typeOfSampleDAO = typeOfSampleDAO;
-        this.typeOfSampleTestDAO = typeOfSampleTestDAO;
 
     }
 
@@ -97,21 +87,16 @@ public class TestService {
         Test test = new Test();
 
         if (data == null) {
-            test = populateTest(test, referenceDataTest, sysUserId);
+            test = populateTest(test, referenceDataTest, sysUserId, null);
             testDAO.insertData(test);
-            if(referenceDataTest.getSampleUuid() !=null){
-                saveSampleForTest(test, referenceDataTest.getSampleUuid(), sysUserId);
-            }
             saveExternalReference(referenceDataTest, test);
         } else {
             test = testDAO.getTestById(String.valueOf(data.getItemId()));
-            populateTest(test, referenceDataTest, sysUserId);
+            String uuid = test.getTestSection() != null ? test.getTestSection().getUUID() : null;
+            populateTest(test, referenceDataTest, sysUserId, uuid);
             testDAO.updateData(test);
-            if(referenceDataTest.getSampleUuid() !=null){
-                saveSampleForTest(test, referenceDataTest.getSampleUuid(), sysUserId);
-            }
         }
-        if(referenceDataTest.getResultType().equals("Text")){
+        if (referenceDataTest.getResultType().equals("Text")) {
             TestResult testResult = new TestResult();
             testResult.setSysUserId("1");
             testResult.setTest(test);
@@ -127,19 +112,11 @@ public class TestService {
         externalReferenceDao.insertData(data);
     }
 
-    private Test populateTest(Test test, ReferenceDataTest referenceDataTest, String sysUserId) throws IOException {
-        String sectionID = null;
-        TestSection section = null;
+    private Test populateTest(Test test, ReferenceDataTest referenceDataTest, String sysUserId, String testSectionUuid) throws IOException {
         test.setTestName(referenceDataTest.getName());
-        if(referenceDataTest.getDepartment() != null){
-            sectionID = referenceDataTest.getDepartment().getId();
-            section = testSectionDAO.getTestSectionByUUID(sectionID);
-        }
-        //Need to check if section is null, then throw exception and don't proceed ahead
-        if(sectionID==null || section == null){
-           throw new LIMSRuntimeException("Cannot save test since no section exists with ID:"+ sectionID);
-        }
-        if(referenceDataTest.getTestUnitOfMeasure() !=null){
+        //Assign to dummy test section
+        TestSection section = getTestSection(testSectionUuid);
+        if (referenceDataTest.getTestUnitOfMeasure() != null) {
             test.setUnitOfMeasure(unitOfMeasureService.create(referenceDataTest.getTestUnitOfMeasure()));
         }
         test.setTestSection(section);
@@ -153,19 +130,27 @@ public class TestService {
         return test;
     }
 
-    private void saveSampleForTest(Test test, String sampleUUID, String sysUserId) {
-        TypeOfSample typeOfSample = typeOfSampleDAO.getTypeOfSampleByUUID(sampleUUID);
-
-        TypeOfSampleTest existingTypeOfSampleTest = typeOfSampleTestDAO.getTypeOfSampleTestForTest(test.getId());
-        if (existingTypeOfSampleTest != null) {
-            typeOfSampleTestDAO.deleteData(new String[]{existingTypeOfSampleTest.getId()}, sysUserId);
+    private TestSection getTestSection(String uuid) {
+        if (uuid == null) {
+            return testSectionDAO.getTestSectionByName(DUMMY_TEST_SECTION_NAME);
+        } else {
+            return testSectionDAO.getTestSectionByUUID(uuid);
         }
+    }
 
-        TypeOfSampleTest typeOfSampleTest = new TypeOfSampleTest();
-        typeOfSampleTest.setSysUserId("1");
-        typeOfSampleTest.setTestId(test.getId());
-        typeOfSampleTest.setTypeOfSampleId(typeOfSample.getId());
-        typeOfSampleTestDAO.insertData(typeOfSampleTest);
+    public Test updateTestSection(String testName, String testSectionUuid, String sysUserId){
+        Test test = testDAO.getTestByName(testName);
+        test.setSysUserId(sysUserId);
+        TestSection testSection = getTestSection(testSectionUuid);
+        if(!test.getTestSection().equals(testSection)){
+            test.setTestSection(testSection);
+            testDAO.updateData(test);
+        }
+        return test;
+    }
+
+    public Test getTest(ReferenceDataTest referenceDataTest) {
+        return testDAO.getTestByName(referenceDataTest.getName());
     }
 
 }

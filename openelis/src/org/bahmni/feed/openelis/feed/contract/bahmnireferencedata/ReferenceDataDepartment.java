@@ -18,17 +18,59 @@ package org.bahmni.feed.openelis.feed.contract.bahmnireferencedata;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ReferenceDataDepartment {
-    
+
     private String id;
     private Date dateCreated;
     private String description;
     private Boolean isActive;
     private Date lastUpdated;
     private String name;
+    private List<ReferenceDataTest> tests;
+
+
+    public ReferenceDataDepartment() {
+    }
+
+    public ReferenceDataDepartment(String id, Date dateCreated, String description, Boolean isActive, Date lastUpdated, String name, List<ReferenceDataTest> tests) {
+        this.id = id;
+        this.dateCreated = dateCreated;
+        this.description = description;
+        this.isActive = isActive;
+        this.lastUpdated = lastUpdated;
+        this.name = name;
+        this.tests = tests;
+    }
+
+    public ReferenceDataDepartment(String id, Date dateCreated, String description, Boolean isActive, Date lastUpdated, String name) {
+        this.id = id;
+        this.dateCreated = dateCreated;
+        this.description = description;
+        this.isActive = isActive;
+        this.lastUpdated = lastUpdated;
+        this.name = name;
+        this.tests = new ArrayList<>();
+    }
+
+    public List<ReferenceDataTest> getTests() {
+        if (tests == null) {
+            this.tests = new ArrayList<>();
+        }
+        return tests;
+    }
+
+    public void setTests(List<ReferenceDataTest> tests) {
+        this.tests = tests;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
 
     public String getId() {
         return id;
@@ -58,10 +100,6 @@ public class ReferenceDataDepartment {
         return isActive;
     }
 
-    public void setIsActive(boolean active) {
-        isActive = active;
-    }
-
     public Date getLastUpdated() {
         return lastUpdated;
     }
@@ -78,7 +116,7 @@ public class ReferenceDataDepartment {
         this.name = name;
     }
 
-    public ReferenceDataDepartment() {
+    public void addTest(ReferenceDataTest referenceDataTest) {
+        this.getTests().add(referenceDataTest);
     }
-
 }

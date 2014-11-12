@@ -19,6 +19,7 @@ package org.bahmni.feed.openelis.feed.contract.bahmnireferencedata;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -30,10 +31,23 @@ public class ReferenceDataPanel {
     private Boolean isActive;
     private Date lastUpdated;
     private String name;
-    private String sampleUuid;
     private String shortName;
     private Integer sortOrder;
     private List<ReferenceDataTest> tests;
+
+    public ReferenceDataPanel(String id, String description, Boolean isActive, Date lastUpdated, String name, String shortName, Integer sortOrder) {
+        this.id = id;
+        this.description = description;
+        this.isActive = isActive;
+        this.lastUpdated = lastUpdated;
+        this.name = name;
+        this.shortName = shortName;
+        this.sortOrder = sortOrder;
+        this.tests = new ArrayList<>();
+    }
+
+    public ReferenceDataPanel() {
+    }
 
     public String getId() {
         return id;
@@ -75,14 +89,6 @@ public class ReferenceDataPanel {
         this.name = name;
     }
 
-    public String getSampleUuid() {
-        return sampleUuid;
-    }
-
-    public void setSampleUuid(String sampleUuid) {
-        this.sampleUuid = sampleUuid;
-    }
-
     public String getShortName() {
         return shortName;
     }
@@ -100,10 +106,17 @@ public class ReferenceDataPanel {
     }
 
     public List<ReferenceDataTest> getTests() {
+        if(this.tests == null){
+            this.tests = new ArrayList<>();
+        }
         return tests;
     }
 
     public void setTests(List<ReferenceDataTest> tests) {
         this.tests = tests;
+    }
+
+    public void addTest(ReferenceDataTest referenceDataTest) {
+        this.getTests().add(referenceDataTest);
     }
 }

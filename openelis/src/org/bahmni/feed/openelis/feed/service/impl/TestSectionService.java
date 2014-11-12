@@ -17,6 +17,7 @@
 package org.bahmni.feed.openelis.feed.service.impl;
 
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataDepartment;
+import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataTest;
 import org.bahmni.feed.openelis.utils.AuditingService;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
@@ -26,28 +27,34 @@ import us.mn.state.health.lims.organization.valueholder.Organization;
 import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 import us.mn.state.health.lims.test.dao.TestSectionDAO;
 import us.mn.state.health.lims.test.daoimpl.TestSectionDAOImpl;
+import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.test.valueholder.TestSection;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
 
 public class TestSectionService {
 
     private OrganizationDAO organizationDAO;
+    private TestService testService;
+    private PanelService panelService;
     private TestSectionDAO testSectionDAO;
     private AuditingService auditingService;
 
     public TestSectionService() {
-        this(new TestSectionDAOImpl(), new OrganizationDAOImpl(), new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl()));
+        this(new TestSectionDAOImpl(), new OrganizationDAOImpl(), new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl()), new TestService(), new PanelService());
     }
 
-    public TestSectionService(TestSectionDAO testSectionDAO, OrganizationDAO organizationDAO, AuditingService auditingService) {
+    public TestSectionService(TestSectionDAO testSectionDAO, OrganizationDAO organizationDAO, AuditingService auditingService, TestService testService, PanelService panelService) {
         this.testSectionDAO = testSectionDAO;
         this.auditingService = auditingService;
         this.organizationDAO = organizationDAO;
+        this.testService = testService;
+        this.panelService = panelService;
     }
 
-    public void createOrUpdate(ReferenceDataDepartment department, final String organizationName) {
+    public void createOrUpdate(ReferenceDataDepartment department, final String organizationName) throws IOException {
         String sysUserId = auditingService.getSysUserId();
         TestSection testSection = testSectionDAO.getTestSectionByUUID(department.getId());
 
@@ -63,6 +70,16 @@ public class TestSectionService {
             create(department, organization, sysUserId);
         } else {
             update(testSection, organization, department, sysUserId);
+        }
+        updateTests(department, sysUserId);
+    }
+
+    private void updateTests(ReferenceDataDepartment department, String sysUserId) throws IOException {
+        for (ReferenceDataTest referenceDataTest : department.getTests()) {
+            Test test = testService.updateTestSection(referenceDataTest.getName(), department.getId(), sysUserId);
+            if(test == null){
+                throw new LIMSRuntimeException(String.format("Error while updating test section - %s on test  - %s", department.getName(), referenceDataTest.getName()));
+            }
         }
     }
 

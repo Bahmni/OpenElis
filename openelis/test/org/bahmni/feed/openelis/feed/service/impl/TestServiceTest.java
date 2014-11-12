@@ -25,7 +25,6 @@ import org.bahmni.feed.openelis.utils.AuditingService;
 import org.junit.Before;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.dao.TestSectionDAO;
 import us.mn.state.health.lims.test.valueholder.Test;
@@ -75,37 +74,26 @@ public class TestServiceTest {
     }
 
 
-    @org.junit.Test (expected=LIMSRuntimeException.class)
-    public void failSavingATestIfTestSectionDoesNotExist() throws IOException {
+    @org.junit.Test
+    public void savingATestWithDummyDepartmentIfTestSectionDoesNotExist() throws IOException {
 
-        ReferenceDataTest referenceDataTest = createReferenceDataTestWithSomeDepartment("someDeptID");
+        ReferenceDataTest referenceDataTest = createReferenceDataTest();
 
-        when(testSectionDAOMock.getTestSectionByUUID(anyString())).thenReturn(null);
+        when(testSectionDAOMock.getTestSectionByName(anyString())).thenReturn(null);
         when(typeOfSampleDAOMock.getTypeOfSampleByUUID(anyString())).thenReturn(createDummyTypeOfSample());
         when(externalReferenceDaoMock.getData(referenceDataTest.getId(), TestService.CATEGORY_TEST)).thenReturn(createDummyReferenceData());
-        when(testDAOMock.getTestById(anyString())).thenReturn(createDummyTest());
+        Test dummyTest = createDummyTest();
+        when(testDAOMock.getTestById(anyString())).thenReturn(dummyTest);
 
         testService.createOrUpdate(referenceDataTest);
+        verify(testDAOMock).updateData(dummyTest);
     }
 
-
-    @org.junit.Test(expected=LIMSRuntimeException.class)
-    public void failSavingATestIfTestSectionIDPassedIsNull() throws IOException {
-
-        ReferenceDataTest referenceDataTest = createReferenceDataTestWithSomeDepartment(null);
-
-        when(testSectionDAOMock.getTestSectionByUUID(anyString())).thenReturn(null);
-        when(typeOfSampleDAOMock.getTypeOfSampleByUUID(anyString())).thenReturn(createDummyTypeOfSample());
-        when(externalReferenceDaoMock.getData(referenceDataTest.getId(), TestService.CATEGORY_TEST)).thenReturn(createDummyReferenceData());
-        when(testDAOMock.getTestById(anyString())).thenReturn(createDummyTest());
-
-        testService.createOrUpdate(referenceDataTest);
-    }
 
     @org.junit.Test
     public void addResultTypeRemarkIfTestResultTypeIsText() throws IOException {
 
-        ReferenceDataTest referenceDataTest = createReferenceDataTestWithSomeDepartment("someDeptID");
+        ReferenceDataTest referenceDataTest = createReferenceDataTest();
         referenceDataTest.setResultType("Text");
 
         ArgumentCaptor<TestResult> argument = ArgumentCaptor.forClass(TestResult.class);
@@ -125,14 +113,12 @@ public class TestServiceTest {
 
     //------- Private methods --------------
 
-    private ReferenceDataTest createReferenceDataTestWithSomeDepartment(String deptID) {
+    private ReferenceDataTest createReferenceDataTest() {
         ReferenceDataTest referenceDataTest = new ReferenceDataTest();
         referenceDataTest.setId("1");
-        referenceDataTest.setDepartment(createDummyDepartment(deptID));
         referenceDataTest.setIsActive(Boolean.TRUE);
         referenceDataTest.setLastUpdated(new Date());
-        referenceDataTest.setSampleUuid(createDummySample().getId());
-
+        referenceDataTest.setResultType("N/A");
         return referenceDataTest;
     }
 

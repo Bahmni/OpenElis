@@ -29,6 +29,32 @@ public class ReferenceDataSample {
     private String name;
     private String shortName;
     private Integer sortOrder;
+    private ReferenceDataTestAndPanels testsAndPanels;
+
+    public ReferenceDataSample(String id, Date dateCreated, Boolean isActive, Date lastUpdated, String name, String shortName, Integer sortOrder) {
+        this.id = id;
+        this.dateCreated = dateCreated;
+        this.isActive = isActive;
+        this.lastUpdated = lastUpdated;
+        this.name = name;
+        this.shortName = shortName;
+        this.sortOrder = sortOrder;
+        this.testsAndPanels = new ReferenceDataTestAndPanels();
+    }
+
+    public ReferenceDataSample() {
+    }
+
+    public ReferenceDataTestAndPanels getTestsAndPanels() {
+        if(testsAndPanels == null){
+            this.testsAndPanels = new ReferenceDataTestAndPanels();
+        }
+        return testsAndPanels;
+    }
+
+    public void setTestsAndPanels(ReferenceDataTestAndPanels testsAndPanels) {
+        this.testsAndPanels = testsAndPanels;
+    }
 
     public String getId() {
         return id;
@@ -84,5 +110,13 @@ public class ReferenceDataSample {
 
     public void setSortOrder(Integer sortOrder) {
         this.sortOrder = sortOrder;
+    }
+
+    public void addTest(ReferenceDataTest referenceDataTest) {
+        this.getTestsAndPanels().addTest(referenceDataTest);
+    }
+
+    public void addPanel(ReferenceDataPanel referenceDataPanel) {
+        this.getTestsAndPanels().addPanel(referenceDataPanel);
     }
 }

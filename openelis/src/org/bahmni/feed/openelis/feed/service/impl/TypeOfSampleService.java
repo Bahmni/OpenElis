@@ -16,10 +16,14 @@
 
 package org.bahmni.feed.openelis.feed.service.impl;
 
+import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataPanel;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataSample;
+import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataTest;
 import org.bahmni.feed.openelis.utils.AuditingService;
 import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
+import us.mn.state.health.lims.panel.valueholder.Panel;
 import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
+import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleDAO;
 import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleDAOImpl;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSample;
@@ -32,14 +36,22 @@ public class TypeOfSampleService {
     public static final String DEFAULT_DOMAIN = "H";
     private TypeOfSampleDAO typeOfSampleDAO;
     private AuditingService auditingService;
+    private TestService testService;
+    private TypeOfSampleTestService typeOfSampleTestService;
+    private TypeOfSamplePanelService typeOfSamplePanelService;
+    private PanelService panelService;
 
     public TypeOfSampleService() {
-        this(new TypeOfSampleDAOImpl(), new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl()));
+        this(new TypeOfSampleDAOImpl(), new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl()), new TestService(), new PanelService(), new TypeOfSampleTestService(), new TypeOfSamplePanelService());
     }
 
-    public TypeOfSampleService(TypeOfSampleDAO typeOfSampleDAO, AuditingService auditingService) {
+    public TypeOfSampleService(TypeOfSampleDAO typeOfSampleDAO, AuditingService auditingService, TestService testService, PanelService panelService, TypeOfSampleTestService typeOfSampleTestService, TypeOfSamplePanelService typeOfSamplePanelService) {
         this.typeOfSampleDAO = typeOfSampleDAO;
         this.auditingService = auditingService;
+        this.testService = testService;
+        this.typeOfSampleTestService = typeOfSampleTestService;
+        this.panelService = panelService;
+        this.typeOfSamplePanelService = typeOfSamplePanelService;
     }
 
     public void createOrUpdate(ReferenceDataSample sample) {
@@ -50,6 +62,24 @@ public class TypeOfSampleService {
             create(sample, sysUserId);
         } else {
             update(typeOfSample, sample, sysUserId);
+        }
+        createOrUpdateSampleTestAssociation(sample);
+        createOrUpdateSamplePanelAssociation(sample);
+    }
+
+    private void createOrUpdateSamplePanelAssociation(ReferenceDataSample sample) {
+        for (ReferenceDataPanel referenceDataPanel : sample.getTestsAndPanels().getPanels()) {
+            Panel panel = panelService.getPanel(referenceDataPanel);
+            TypeOfSample typeOfSample = typeOfSampleDAO.getTypeOfSampleByUUID(sample.getId());
+            typeOfSamplePanelService.createOrUpdate(typeOfSample.getId(), panel.getId());
+        }
+    }
+
+    private void createOrUpdateSampleTestAssociation(ReferenceDataSample sample) {
+        for (ReferenceDataTest referenceDataTest : sample.getTestsAndPanels().getTests()) {
+            Test test = testService.getTest(referenceDataTest);
+            TypeOfSample typeOfSample = typeOfSampleDAO.getTypeOfSampleByUUID(sample.getId());
+            typeOfSampleTestService.createOrUpdate(typeOfSample.getId(), test.getId());
         }
     }
 

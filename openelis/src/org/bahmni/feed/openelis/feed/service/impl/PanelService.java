@@ -35,13 +35,7 @@ import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 import us.mn.state.health.lims.test.valueholder.Test;
-import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleDAO;
-import us.mn.state.health.lims.typeofsample.dao.TypeOfSamplePanelDAO;
-import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleDAOImpl;
-import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSamplePanelDAOImpl;
 import us.mn.state.health.lims.typeofsample.util.TypeOfSampleUtil;
-import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSample;
-import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSamplePanel;
 
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -55,8 +49,6 @@ public class PanelService {
     private AuditingService auditingService;
     private PanelDAO panelDAO;
     private ExternalReferenceDao externalReferenceDao;
-    private TypeOfSampleDAO typeOfSampleDAO;
-    private TypeOfSamplePanelDAO typeOfSamplePanelDAO;
     private TestDAO testDAO;
     private PanelItemDAO panelItemDAO;
 
@@ -64,8 +56,6 @@ public class PanelService {
         this.externalReferenceDao = new ExternalReferenceDaoImpl();
         this.auditingService = new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl());
         this.panelDAO = new PanelDAOImpl();
-        this.typeOfSampleDAO = new TypeOfSampleDAOImpl();
-        this.typeOfSamplePanelDAO = new TypeOfSamplePanelDAOImpl();
         this.testDAO = new TestDAOImpl();
         this.panelItemDAO = new PanelItemDAOImpl();
     }
@@ -77,14 +67,12 @@ public class PanelService {
             Panel panel = new Panel();
             panel = populatePanel(panel, referenceDataPanel, sysUserId);
             panelDAO.insertData(panel);
-            saveSampleForPanel(panel, referenceDataPanel.getSampleUuid(), sysUserId);
             saveTestsForPanel(panel, referenceDataPanel, sysUserId);
             saveExternalReference(referenceDataPanel, panel);
         } else {
             Panel panel = panelDAO.getPanelById(String.valueOf(data.getItemId()));
             populatePanel(panel, referenceDataPanel, sysUserId);
             panelDAO.updateData(panel);
-            saveSampleForPanel(panel, referenceDataPanel.getSampleUuid(), sysUserId);
             saveTestsForPanel(panel, referenceDataPanel, sysUserId);
         }
         TypeOfSampleUtil.clearTestCache();
@@ -137,19 +125,8 @@ public class PanelService {
         return panelItem;
     }
 
-    private void saveSampleForPanel(Panel panel, String sampleUUID, String sysUserId) {
-        TypeOfSample typeOfSample = typeOfSampleDAO.getTypeOfSampleByUUID(sampleUUID);
-
-        TypeOfSamplePanel existingTypeOfSampleTest = typeOfSamplePanelDAO.getTypeOfSamplePanelForPanel(panel.getId());
-        if (existingTypeOfSampleTest != null) {
-            typeOfSamplePanelDAO.deleteData(new String[]{existingTypeOfSampleTest.getId()}, sysUserId);
-        }
-
-        TypeOfSamplePanel typeOfSamplePanel = new TypeOfSamplePanel();
-        typeOfSamplePanel.setSysUserId("1");
-        typeOfSamplePanel.setPanelId(panel.getId());
-        typeOfSamplePanel.setTypeOfSampleId(typeOfSample.getId());
-        typeOfSamplePanelDAO.insertData(typeOfSamplePanel);
+    public Panel getPanel(ReferenceDataPanel referenceDataPanel) {
+        return panelDAO.getPanelByName(referenceDataPanel.getName());
     }
 }
 

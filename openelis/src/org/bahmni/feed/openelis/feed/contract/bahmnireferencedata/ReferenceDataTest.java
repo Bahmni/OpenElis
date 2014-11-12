@@ -21,18 +21,31 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import java.util.Date;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public  class ReferenceDataTest {
+public class ReferenceDataTest {
     private String id;
-    private ReferenceDataDepartment department;
     private String description;
     private Boolean isActive;
     private Date lastUpdated;
     private String name;
-    private String sampleUuid;
     private String shortName;
     private Integer sortOrder;
     private String resultType;
     private String testUnitOfMeasure;
+
+    public ReferenceDataTest() {
+    }
+
+    public ReferenceDataTest(String id, String description, Boolean isActive, Date lastUpdated, String name, String sampleUuid, String shortName, Integer sortOrder, String resultType, String testUnitOfMeasure) {
+        this.id = id;
+        this.description = description;
+        this.isActive = isActive;
+        this.lastUpdated = lastUpdated;
+        this.name = name;
+        this.shortName = shortName;
+        this.sortOrder = sortOrder;
+        this.resultType = resultType;
+        this.testUnitOfMeasure = testUnitOfMeasure;
+    }
 
     public String getId() {
         return id;
@@ -40,14 +53,6 @@ public  class ReferenceDataTest {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public ReferenceDataDepartment getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(ReferenceDataDepartment department) {
-        this.department = department;
     }
 
     public String getDescription() {
@@ -72,14 +77,6 @@ public  class ReferenceDataTest {
 
     public void setLastUpdated(Date lastUpdated) {
         this.lastUpdated = lastUpdated;
-    }
-
-    public String getSampleUuid() {
-        return sampleUuid;
-    }
-
-    public void setSampleUuid(String sampleUuid) {
-        this.sampleUuid = sampleUuid;
     }
 
     public String getShortName() {
