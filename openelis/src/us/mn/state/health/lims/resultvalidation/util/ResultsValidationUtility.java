@@ -747,8 +747,8 @@ public class ResultsValidationUtility {
 
 	public List<AnalysisItem> testResultListToAnalysisItemList(List<ResultValidationItem> testResultList) {
 		List<AnalysisItem> analysisResultList = new ArrayList<AnalysisItem>();
-        String uploadedFilePath = null;
 		for (ResultValidationItem tResultItem : testResultList) {
+			String uploadedFilePath = null;
             Result result = resultDAO.getResultById(tResultItem.getResultId());
             if(result.getUploadedFileName() != null){
                 SiteInformation uploadedResultsDirectory = siteInformationDAO.getSiteInformationByName(UPLOADED_RESULTS_DIRECTORY);
