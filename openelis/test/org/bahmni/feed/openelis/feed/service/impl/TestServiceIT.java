@@ -1,6 +1,7 @@
 package org.bahmni.feed.openelis.feed.service.impl;
 
 import org.bahmni.feed.openelis.IT;
+import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.MinimalResource;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataDepartment;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataTest;
 import org.junit.Before;
@@ -37,7 +38,7 @@ public class TestServiceIT extends IT {
         testService.createOrUpdate(referenceDataTest);
         us.mn.state.health.lims.test.valueholder.Test savedTest = testDAO.getTestByName("Test Name");
         assertEquals("New", savedTest.getTestSection().getTestSectionName());
-        assertEquals("Test Desc", savedTest.getDescription());
+        assertEquals("Test Name", savedTest.getDescription());
         assertEquals("uom", savedTest.getUnitOfMeasure().getUnitOfMeasureName());
     }
 
@@ -47,12 +48,12 @@ public class TestServiceIT extends IT {
         testService.createOrUpdate(referenceDataTest);
         us.mn.state.health.lims.test.valueholder.Test savedTest = testDAO.getTestByName("Test Name");
         assertEquals("New", savedTest.getTestSection().getTestSectionName());
-        assertEquals("Test Desc", savedTest.getDescription());
+        assertEquals("Test Name", savedTest.getDescription());
         assertEquals("uom", savedTest.getUnitOfMeasure().getUnitOfMeasureName());
         assertEquals("23", savedTest.getSortOrder());
         referenceDataTest = new ReferenceDataTest(testUuid, "Test Desc", true, new Date(), "New Test Name", null, "short", 244, "Numeric", "uom");
         testService.createOrUpdate(referenceDataTest);
-        us.mn.state.health.lims.test.valueholder.Test updatedTest = testDAO.getTestByDescription("Test Desc");
+        us.mn.state.health.lims.test.valueholder.Test updatedTest = testDAO.getTestByDescription("New Test Name");
         assertNotNull(updatedTest.getId());
         assertEquals(savedTest.getId(), updatedTest.getId());
         assertEquals("New Test Name", updatedTest.getTestName());
@@ -67,7 +68,7 @@ public class TestServiceIT extends IT {
         assertEquals("New", savedTest.getTestSection().getTestSectionName());
         String departmentUuid = UUID.randomUUID().toString();
         ReferenceDataDepartment referenceDataDepartment = new ReferenceDataDepartment(departmentUuid, new Date(), "Dept Desc", true, new Date(), "Bio Department");
-        referenceDataDepartment.addTest(referenceDataTest);
+        referenceDataDepartment.addTest(new MinimalResource(referenceDataTest.getId(), referenceDataTest.getName()));
         Organization organization = (Organization) new OrganizationDAOImpl().getAllOrganizations().get(0);
         testSectionService.createOrUpdate(referenceDataDepartment, organization.getOrganizationName());
         savedTest = testDAO.getTestByName("Test Name");

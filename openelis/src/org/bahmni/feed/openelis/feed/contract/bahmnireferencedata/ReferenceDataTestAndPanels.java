@@ -15,8 +15,6 @@ public class ReferenceDataTestAndPanels {
     private Boolean isActive;
 
     public ReferenceDataTestAndPanels() {
-        this.tests = new ArrayList<>();
-        this.panels = new ArrayList<>();
     }
 
     public void setId(String id) {

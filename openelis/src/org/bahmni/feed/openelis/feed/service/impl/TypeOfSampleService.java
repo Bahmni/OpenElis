@@ -16,9 +16,8 @@
 
 package org.bahmni.feed.openelis.feed.service.impl;
 
-import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataPanel;
+import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.MinimalResource;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataSample;
-import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataTest;
 import org.bahmni.feed.openelis.utils.AuditingService;
 import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
 import us.mn.state.health.lims.panel.valueholder.Panel;
@@ -40,6 +39,7 @@ public class TypeOfSampleService {
     private TypeOfSampleTestService typeOfSampleTestService;
     private TypeOfSamplePanelService typeOfSamplePanelService;
     private PanelService panelService;
+    private String sysUserId;
 
     public TypeOfSampleService() {
         this(new TypeOfSampleDAOImpl(), new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl()), new TestService(), new PanelService(), new TypeOfSampleTestService(), new TypeOfSamplePanelService());
@@ -55,7 +55,7 @@ public class TypeOfSampleService {
     }
 
     public void createOrUpdate(ReferenceDataSample sample) {
-        String sysUserId = auditingService.getSysUserId();
+        sysUserId = auditingService.getSysUserId();
         TypeOfSample typeOfSample = typeOfSampleDAO.getTypeOfSampleByUUID(sample.getId());
 
         if (typeOfSample == null) {
@@ -68,17 +68,21 @@ public class TypeOfSampleService {
     }
 
     private void createOrUpdateSamplePanelAssociation(ReferenceDataSample sample) {
-        for (ReferenceDataPanel referenceDataPanel : sample.getTestsAndPanels().getPanels()) {
-            Panel panel = panelService.getPanel(referenceDataPanel);
-            TypeOfSample typeOfSample = typeOfSampleDAO.getTypeOfSampleByUUID(sample.getId());
+        TypeOfSample typeOfSample = typeOfSampleDAO.getTypeOfSampleByUUID(sample.getId());
+        typeOfSamplePanelService.deleteAllAssociations(typeOfSample.getId(), sysUserId);
+        for (MinimalResource panelData : sample.getPanels()) {
+            Panel panel = panelService.getPanel(panelData);
+
+
             typeOfSamplePanelService.createOrUpdate(typeOfSample.getId(), panel.getId());
         }
     }
 
     private void createOrUpdateSampleTestAssociation(ReferenceDataSample sample) {
-        for (ReferenceDataTest referenceDataTest : sample.getTestsAndPanels().getTests()) {
-            Test test = testService.getTest(referenceDataTest);
-            TypeOfSample typeOfSample = typeOfSampleDAO.getTypeOfSampleByUUID(sample.getId());
+        TypeOfSample typeOfSample = typeOfSampleDAO.getTypeOfSampleByUUID(sample.getId());
+        typeOfSampleTestService.deleteAllAssociations(typeOfSample.getId(), sysUserId);
+        for (MinimalResource testData : sample.getTests()) {
+            Test test = testService.getTest(testData);
             typeOfSampleTestService.createOrUpdate(typeOfSample.getId(), test.getId());
         }
     }
@@ -96,7 +100,7 @@ public class TypeOfSampleService {
 
     private TypeOfSample populateTypeOfSample(TypeOfSample typeOfSample, ReferenceDataSample sample, String sysUserId) {
         typeOfSample.setUuid(sample.getId());
-        typeOfSample.setLocalAbbreviation(sample.getShortName());
+        typeOfSample.setLocalAbbreviation(sample.getName());
         typeOfSample.setDescription(sample.getName());
         String isActive = sample.getIsActive() ? "Y" : "N";
         typeOfSample.setIsActive(isActive);

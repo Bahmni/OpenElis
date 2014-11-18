@@ -1,6 +1,7 @@
 package org.bahmni.feed.openelis.feed.service.impl;
 
 import org.bahmni.feed.openelis.IT;
+import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.MinimalResource;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataPanel;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataSample;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataTest;
@@ -63,11 +64,11 @@ public class TypeOfSampleServiceIT extends IT {
         assertEquals("Test Name", savedTest.getTestName());
         assertEquals("New", savedTest.getTestSection().getTestSectionName());
 
-        referenceDataSample.addTest(referenceDataTest);
+        referenceDataSample.addTest(new MinimalResource(referenceDataTest.getId(), referenceDataTest.getName()));
         typeOfSampleService.createOrUpdate(referenceDataSample);
         TypeOfSample savedSample = typeOfSampleDAO.getTypeOfSampleByUUID(sampleUuid);
         assertEquals("Sample Name", savedSample.getDescription());
-        assertEquals("short Name", savedSample.getLocalAbbreviation());
+        assertEquals("Sample Name", savedSample.getLocalAbbreviation());
         TypeOfSampleTest sampleTestAssoc = typeOfSampleTestDAO.getTypeOfSampleTestForTest(savedTest.getId());
         assertNotNull(sampleTestAssoc);
         assertEquals(savedTest.getId(), sampleTestAssoc.getTestId());
@@ -88,16 +89,15 @@ public class TypeOfSampleServiceIT extends IT {
 
         Panel savedPanel = panelDAO.getPanelByName("Panel Name");
         assertEquals("Panel Name", savedPanel.getPanelName());
-        assertEquals("Panel Description", savedPanel.getDescription());
 
-        referenceDataSample.addTest(referenceDataTest);
-        referenceDataSample.addPanel(referenceDataPanel);
+        referenceDataSample.addTest(new MinimalResource(referenceDataTest.getId(), referenceDataTest.getName()));
+        referenceDataSample.addPanel(new MinimalResource(referenceDataPanel.getId(), referenceDataPanel.getName()));
         typeOfSampleService.createOrUpdate(referenceDataSample);
 
         TypeOfSample savedSample = typeOfSampleDAO.getTypeOfSampleByUUID(sampleUuid);
 
         assertEquals("Sample Name", savedSample.getDescription());
-        assertEquals("short Name", savedSample.getLocalAbbreviation());
+        assertEquals("Sample Name", savedSample.getLocalAbbreviation());
 
         TypeOfSampleTest sampleTestAssoc = typeOfSampleTestDAO.getTypeOfSampleTestForTest(savedTest.getId());
 

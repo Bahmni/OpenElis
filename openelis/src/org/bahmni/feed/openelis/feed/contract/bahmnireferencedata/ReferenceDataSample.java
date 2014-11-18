@@ -18,7 +18,9 @@ package org.bahmni.feed.openelis.feed.contract.bahmnireferencedata;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ReferenceDataSample {
@@ -29,7 +31,8 @@ public class ReferenceDataSample {
     private String name;
     private String shortName;
     private Integer sortOrder;
-    private ReferenceDataTestAndPanels testsAndPanels;
+    private List<MinimalResource> tests;
+    private List<MinimalResource> panels;
 
     public ReferenceDataSample(String id, Date dateCreated, Boolean isActive, Date lastUpdated, String name, String shortName, Integer sortOrder) {
         this.id = id;
@@ -39,21 +42,11 @@ public class ReferenceDataSample {
         this.name = name;
         this.shortName = shortName;
         this.sortOrder = sortOrder;
-        this.testsAndPanels = new ReferenceDataTestAndPanels();
+        this.tests = new ArrayList<>();
+        this.panels = new ArrayList<>();
     }
 
     public ReferenceDataSample() {
-    }
-
-    public ReferenceDataTestAndPanels getTestsAndPanels() {
-        if(testsAndPanels == null){
-            this.testsAndPanels = new ReferenceDataTestAndPanels();
-        }
-        return testsAndPanels;
-    }
-
-    public void setTestsAndPanels(ReferenceDataTestAndPanels testsAndPanels) {
-        this.testsAndPanels = testsAndPanels;
     }
 
     public String getId() {
@@ -112,11 +105,33 @@ public class ReferenceDataSample {
         this.sortOrder = sortOrder;
     }
 
-    public void addTest(ReferenceDataTest referenceDataTest) {
-        this.getTestsAndPanels().addTest(referenceDataTest);
+    public List<MinimalResource> getTests() {
+        if (tests == null) {
+            this.tests = new ArrayList<>();
+        }
+        return tests;
     }
 
-    public void addPanel(ReferenceDataPanel referenceDataPanel) {
-        this.getTestsAndPanels().addPanel(referenceDataPanel);
+    public void setTests(List<MinimalResource> tests) {
+        this.tests = tests;
+    }
+
+    public List<MinimalResource> getPanels() {
+        if (panels == null) {
+            this.panels = new ArrayList<>();
+        }
+        return panels;
+    }
+
+    public void setPanels(List<MinimalResource> panels) {
+        this.panels = panels;
+    }
+
+    public void addTest(MinimalResource labTest) {
+        this.getTests().add(labTest);
+    }
+
+    public void addPanel(MinimalResource panel) {
+        this.getPanels().add(panel);
     }
 }

@@ -1,6 +1,7 @@
 package org.bahmni.feed.openelis.feed.service.impl;
 
 import org.bahmni.feed.openelis.IT;
+import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.MinimalResource;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataDepartment;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataTest;
 import org.bahmni.feed.openelis.utils.AuditingService;
@@ -58,19 +59,18 @@ public class TestSectionServiceIT extends IT{
         us.mn.state.health.lims.test.valueholder.Test savedTest = testDAO.getTestByName("Test Name");
         assertEquals("New", savedTest.getTestSection().getTestSectionName());
         assertEquals("Test Name", savedTest.getTestName());
-        assertEquals("Test Desc", savedTest.getDescription());
 
         testSectionService.createOrUpdate(referenceDataDepartment, organization.getOrganizationName());
         TestSection savedTestSection = testSectionDAO.getTestSectionByUUID(departmentId);
         assertNotNull(savedTestSection);
         assertEquals(savedTestSection.getUUID(), departmentId);
-        assertEquals(savedTestSection.getTestSectionName(), "Bio Department");
-        assertEquals(savedTestSection.getDescription(), "Dept Desc");
-        referenceDataDepartment.addTest(referenceDataTest);
+        assertEquals("Bio Department", savedTestSection.getTestSectionName());
+        assertEquals("Bio Department", savedTestSection.getDescription());
+        referenceDataDepartment.addTest(new MinimalResource(referenceDataTest.getId(), referenceDataTest.getName()));
         testSectionService.createOrUpdate(referenceDataDepartment, organization.getOrganizationName());
         savedTest = testDAO.getTestByName("Test Name");
         assertEquals("Bio Department", savedTest.getTestSection().getTestSectionName());
         assertEquals("Test Name", savedTest.getTestName());
-        assertEquals("Test Desc", savedTest.getDescription());
+        assertEquals("Test Name", savedTest.getDescription());
     }
 }

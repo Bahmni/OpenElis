@@ -6,6 +6,9 @@ import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleTestDAOImpl;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSampleTest;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TypeOfSampleTestService {
 
     private final TypeOfSampleTestDAOImpl typeOfSampleTestDAO;
@@ -40,5 +43,14 @@ public class TypeOfSampleTestService {
             typeOfSampleTestDAO.deleteData(new String[]{existingAssoc.getId()}, sysUserId);
             typeOfSampleTestDAO.insertData(typeOfSampleTest);
         }
+    }
+
+    public void deleteAllAssociations(String typeOfSampleId, String sysUserId){
+        List<TypeOfSampleTest> testsForSample = typeOfSampleTestDAO.getTypeOfSampleTestsForSampleType(typeOfSampleId);
+        ArrayList<String> sampleIds = new ArrayList<>();
+        for (TypeOfSampleTest typeOfSampleTest : testsForSample) {
+            sampleIds.add(typeOfSampleTest.getId());
+        }
+        typeOfSampleTestDAO.deleteData(sampleIds.toArray(new String []{}), sysUserId);
     }
 }

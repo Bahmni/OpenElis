@@ -16,6 +16,7 @@
 
 package org.bahmni.feed.openelis.feed.service.impl;
 
+import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.MinimalResource;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataDepartment;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataTest;
 import org.bahmni.feed.openelis.utils.AuditingService;
@@ -75,10 +76,10 @@ public class TestSectionService {
     }
 
     private void updateTests(ReferenceDataDepartment department, String sysUserId) throws IOException {
-        for (ReferenceDataTest referenceDataTest : department.getTests()) {
-            Test test = testService.updateTestSection(referenceDataTest.getName(), department.getId(), sysUserId);
+        for (MinimalResource testData : department.getTests()) {
+            Test test = testService.updateTestSection(testData.getName(), department.getId(), sysUserId);
             if(test == null){
-                throw new LIMSRuntimeException(String.format("Error while updating test section - %s on test  - %s", department.getName(), referenceDataTest.getName()));
+                throw new LIMSRuntimeException(String.format("Error while updating test section - %s on test  - %s", department.getName(), testData.getName()));
             }
         }
     }
@@ -97,7 +98,7 @@ public class TestSectionService {
     private TestSection populateTestSection(TestSection testSection, ReferenceDataDepartment department, Organization organization, String sysUserId) {
         testSection.setUUID(department.getId());
         testSection.setTestSectionName(department.getName());
-        testSection.setDescription(department.getDescription());
+        testSection.setDescription(department.getName());
         String isActive = department.getIsActive() ? "Y" : "N";
         testSection.setIsActive(isActive);
         testSection.setLastupdated(new Timestamp(new Date().getTime()));

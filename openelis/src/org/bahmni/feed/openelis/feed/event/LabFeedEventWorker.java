@@ -87,10 +87,10 @@ public class LabFeedEventWorker extends OpenElisEventWorker {
             } else if (title.all_tests_and_panels.toUrlString().equals(event.getTitle())) {
                 ReferenceDataAllTestsAndPanels allTestsAndPanels = webClient.get(urlPrefix + content, ReferenceDataAllTestsAndPanels.class);
                 logger.info(String.format("Processing all tests and panels with UUID=%s", allTestsAndPanels.getId()));
-                for (ReferenceDataTest test : allTestsAndPanels.getReferenceDataTestAndPanels().getTests()) {
+                for (ReferenceDataTest test : allTestsAndPanels.getTestsAndPanels().getTests()) {
                     testService.createOrUpdate(test);
                 }
-                for (ReferenceDataPanel panel : allTestsAndPanels.getReferenceDataTestAndPanels().getPanels()) {
+                for (ReferenceDataPanel panel : allTestsAndPanels.getTestsAndPanels().getPanels()) {
                     panelService.createOrUpdate(panel);
                 }
             } else if (title.all_samples.toUrlString().equals(event.getTitle())) {

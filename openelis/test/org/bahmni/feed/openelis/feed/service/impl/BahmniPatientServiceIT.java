@@ -35,6 +35,7 @@ import us.mn.state.health.lims.address.daoimpl.PersonAddressDAOImpl;
 import us.mn.state.health.lims.address.valueholder.AddressParts;
 import us.mn.state.health.lims.address.valueholder.PersonAddresses;
 import us.mn.state.health.lims.healthcenter.daoimpl.HealthCenterDAOImpl;
+import us.mn.state.health.lims.healthcenter.valueholder.HealthCenter;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
 import us.mn.state.health.lims.patient.daoimpl.PatientDAOImpl;
@@ -56,11 +57,14 @@ public class BahmniPatientServiceIT extends IT {
     private PatientDAOImpl patientDAO;
     private PersonAddressDAOImpl personAddressDAO;
     private AddressPartDAOImpl addressPartDAO;
+    private HealthCenterDAOImpl healthCenterDAO;
 
     @Before
     public void setUp(){
         AuditingService auditingService = new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl());
         patientDAO = new PatientDAOImpl();
+        healthCenterDAO = new HealthCenterDAOImpl();
+        healthCenterDAO.add(new HealthCenter("BAM", "test"));
         personAddressDAO = new PersonAddressDAOImpl();
         addressPartDAO = new AddressPartDAOImpl();
         bahmniPatientService = new BahmniPatientService(patientDAO, new PersonDAOImpl(), new PatientIdentityDAOImpl(), personAddressDAO, addressPartDAO, new PatientIdentityTypeDAOImpl(), auditingService, new HealthCenterDAOImpl());

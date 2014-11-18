@@ -6,6 +6,9 @@ import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSamplePanelDAOImpl;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSamplePanel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TypeOfSamplePanelService {
 
     private final TypeOfSamplePanelDAOImpl typeOfSamplePanelDAO;
@@ -40,5 +43,14 @@ public class TypeOfSamplePanelService {
             typeOfSamplePanelDAO.deleteData(new String[]{existingAssoc.getId()}, sysUserId);
             typeOfSamplePanelDAO.insertData(typeOfSamplePanel);
         }
+    }
+
+    public void deleteAllAssociations(String typeOfSampleId, String sysUserId) {
+        List<TypeOfSamplePanel> testsForSample = typeOfSamplePanelDAO.getTypeOfSamplePanelsForSampleType(typeOfSampleId);
+        ArrayList<String> sampleIds = new ArrayList<>();
+        for (TypeOfSamplePanel typeOfSamplePanel : testsForSample) {
+            sampleIds.add(typeOfSamplePanel.getId());
+        }
+        typeOfSamplePanelDAO.deleteData(sampleIds.toArray(new String[]{}), sysUserId);
     }
 }

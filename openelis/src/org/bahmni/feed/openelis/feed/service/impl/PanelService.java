@@ -20,6 +20,7 @@ package org.bahmni.feed.openelis.feed.service.impl;
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoImpl;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
+import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.MinimalResource;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataPanel;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataTest;
 import org.bahmni.feed.openelis.utils.AuditingService;
@@ -86,8 +87,7 @@ public class PanelService {
 
     private Panel populatePanel(Panel panel, ReferenceDataPanel referenceDataPanel, String sysUserId) throws IOException {
         panel.setPanelName(referenceDataPanel.getName());
-        String description = referenceDataPanel.getDescription();
-        panel.setDescription(description);
+        panel.setDescription(referenceDataPanel.getName());
         panel.setSysUserId(sysUserId);
         panel.setIsActive(referenceDataPanel.getIsActive() ? IActionConstants.YES : IActionConstants.NO);
         panel.setLastupdated(new Timestamp(new Date().getTime()));
@@ -97,10 +97,10 @@ public class PanelService {
 
     private void saveTestsForPanel(Panel panel, ReferenceDataPanel referenceDataPanel, String sysUserId) {
         deleteExistingPanels(panel, sysUserId);
-        List<ReferenceDataTest> tests = referenceDataPanel.getTests();
+        List<MinimalResource> tests = referenceDataPanel.getTests();
         for (int i = 0; i < tests.size(); i++) {
-            ReferenceDataTest referenceDataTest = tests.get(i);
-            ExternalReference reference = externalReferenceDao.getData(referenceDataTest.getId(), CATEGORY_TEST);
+            MinimalResource referenceDataTest = tests.get(i);
+            ExternalReference reference = externalReferenceDao.getData(referenceDataTest.getUuid(), CATEGORY_TEST);
             PanelItem panelItem = createPanelItem(panel, testDAO.getTestById(String.valueOf(reference.getItemId())), String.valueOf(i + 1), sysUserId);
             panelItemDAO.insertData(panelItem);
         }
@@ -125,8 +125,8 @@ public class PanelService {
         return panelItem;
     }
 
-    public Panel getPanel(ReferenceDataPanel referenceDataPanel) {
-        return panelDAO.getPanelByName(referenceDataPanel.getName());
+    public Panel getPanel(MinimalResource panel) {
+        return panelDAO.getPanelByName(panel.getName());
     }
 }
 

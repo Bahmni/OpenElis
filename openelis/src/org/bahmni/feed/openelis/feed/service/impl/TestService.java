@@ -20,6 +20,7 @@ package org.bahmni.feed.openelis.feed.service.impl;
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoImpl;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
+import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.MinimalResource;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataTest;
 import org.bahmni.feed.openelis.utils.AuditingService;
 import us.mn.state.health.lims.common.action.IActionConstants;
@@ -120,7 +121,7 @@ public class TestService {
             test.setUnitOfMeasure(unitOfMeasureService.create(referenceDataTest.getTestUnitOfMeasure()));
         }
         test.setTestSection(section);
-        test.setDescription(referenceDataTest.getDescription());
+        test.setDescription(referenceDataTest.getName());
         test.setIsActive(referenceDataTest.getIsActive() ? IActionConstants.YES : IActionConstants.NO);
         test.setLastupdated(new Timestamp(new Date().getTime()));
         test.setName(referenceDataTest.getName());
@@ -149,8 +150,8 @@ public class TestService {
         return test;
     }
 
-    public Test getTest(ReferenceDataTest referenceDataTest) {
-        return testDAO.getTestByName(referenceDataTest.getName());
+    public Test getTest(MinimalResource test) {
+        return testDAO.getTestByName(test.getName());
     }
 
 }

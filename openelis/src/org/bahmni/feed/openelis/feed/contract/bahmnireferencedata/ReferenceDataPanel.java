@@ -25,7 +25,7 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ReferenceDataPanel {
-    
+
     private String id;
     private String description;
     private Boolean isActive;
@@ -33,7 +33,7 @@ public class ReferenceDataPanel {
     private String name;
     private String shortName;
     private Integer sortOrder;
-    private List<ReferenceDataTest> tests;
+    private List<MinimalResource> tests;
 
     public ReferenceDataPanel(String id, String description, Boolean isActive, Date lastUpdated, String name, String shortName, Integer sortOrder) {
         this.id = id;
@@ -105,18 +105,18 @@ public class ReferenceDataPanel {
         this.sortOrder = sortOrder;
     }
 
-    public List<ReferenceDataTest> getTests() {
-        if(this.tests == null){
+    public List<MinimalResource> getTests() {
+        if (this.tests == null) {
             this.tests = new ArrayList<>();
         }
         return tests;
     }
 
-    public void setTests(List<ReferenceDataTest> tests) {
+    public void setTests(List<MinimalResource> tests) {
         this.tests = tests;
     }
 
-    public void addTest(ReferenceDataTest referenceDataTest) {
-        this.getTests().add(referenceDataTest);
+    public void addTest(MinimalResource labTest) {
+        this.getTests().add(labTest);
     }
 }

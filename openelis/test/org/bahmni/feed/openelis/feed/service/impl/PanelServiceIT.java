@@ -1,6 +1,7 @@
 package org.bahmni.feed.openelis.feed.service.impl;
 
 import org.bahmni.feed.openelis.IT;
+import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.MinimalResource;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataPanel;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataTest;
 import org.junit.Before;
@@ -20,7 +21,7 @@ import java.util.UUID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class PanelServiceIT extends IT{
+public class PanelServiceIT extends IT {
 
     private ReferenceDataTest referenceDataTest;
     private TestService testService;
@@ -52,12 +53,12 @@ public class PanelServiceIT extends IT{
         assertEquals("Test Name", savedTest.getTestName());
         assertEquals("New", savedTest.getTestSection().getTestSectionName());
 
-        referenceDataPanel.addTest(referenceDataTest);
+        referenceDataPanel.addTest(new MinimalResource(referenceDataTest.getId(), referenceDataTest.getName()));
         panelService.createOrUpdate(referenceDataPanel);
 
         Panel savedPanel = panelDAO.getPanelByName("Panel Name");
         assertNotNull(savedPanel);
-        assertEquals("Panel Description", savedPanel.getDescription());
+        assertEquals("Panel Name", savedPanel.getDescription());
 
         List panelTestAssoc = panelItemDAO.getPanelItemsForPanel(savedPanel.getId());
         assertNotNull(panelTestAssoc);
@@ -72,7 +73,7 @@ public class PanelServiceIT extends IT{
 
         Panel savedPanel = panelDAO.getPanelByName("Panel Name");
         assertNotNull(savedPanel);
-        assertEquals("Panel Description", savedPanel.getDescription());
+        assertEquals("Panel Name", savedPanel.getDescription());
 
         List panelTestAssoc = panelItemDAO.getPanelItemsForPanel(savedPanel.getId());
         assertEquals(0, panelTestAssoc.size());

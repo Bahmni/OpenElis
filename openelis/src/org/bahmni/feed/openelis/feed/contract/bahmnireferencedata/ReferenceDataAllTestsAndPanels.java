@@ -13,7 +13,7 @@ public class ReferenceDataAllTestsAndPanels {
     private String description;
     private String name;
     private Boolean isActive;
-    private ReferenceDataTestAndPanels referenceDataTestAndPanels;
+    private ReferenceDataTestAndPanels testsAndPanels;
 
     public void setId(String id) {
         this.id = id;
@@ -71,11 +71,11 @@ public class ReferenceDataAllTestsAndPanels {
         return id;
     }
 
-    public ReferenceDataTestAndPanels getReferenceDataTestAndPanels() {
-        return referenceDataTestAndPanels;
+    public ReferenceDataTestAndPanels getTestsAndPanels() {
+        return testsAndPanels;
     }
 
-    public void setReferenceDataTestAndPanels(ReferenceDataTestAndPanels referenceDataTestAndPanels) {
-        this.referenceDataTestAndPanels = referenceDataTestAndPanels;
+    public void setTestsAndPanels(ReferenceDataTestAndPanels testsAndPanels) {
+        this.testsAndPanels = testsAndPanels;
     }
 }

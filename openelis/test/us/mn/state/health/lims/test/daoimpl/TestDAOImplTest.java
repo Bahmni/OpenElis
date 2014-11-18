@@ -19,8 +19,8 @@ public class TestDAOImplTest extends IT {
         Test malariaTest = TestSetup.createTest("Malaria", "");
         Test rbcTest = TestSetup.createTest("RBC", "");
 
-        Dictionary positive = TestSetup.createDictionary("Positive", "+");
-        Dictionary negative = TestSetup.createDictionary("negative", "-");
+        Dictionary positive = TestSetup.createDictionary("Positiive", "+");
+        Dictionary negative = TestSetup.createDictionary("negatiive", "-");
         TestSetup.createTestResult(malariaTest, "D", positive);
         TestSetup.createTestResult(malariaTest, "D", negative);
 

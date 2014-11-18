@@ -31,13 +31,13 @@ public class ReferenceDataDepartment {
     private Boolean isActive;
     private Date lastUpdated;
     private String name;
-    private List<ReferenceDataTest> tests;
+    private List<MinimalResource> tests;
 
 
     public ReferenceDataDepartment() {
     }
 
-    public ReferenceDataDepartment(String id, Date dateCreated, String description, Boolean isActive, Date lastUpdated, String name, List<ReferenceDataTest> tests) {
+    public ReferenceDataDepartment(String id, Date dateCreated, String description, Boolean isActive, Date lastUpdated, String name, List<MinimalResource> tests) {
         this.id = id;
         this.dateCreated = dateCreated;
         this.description = description;
@@ -57,14 +57,14 @@ public class ReferenceDataDepartment {
         this.tests = new ArrayList<>();
     }
 
-    public List<ReferenceDataTest> getTests() {
+    public List<MinimalResource> getTests() {
         if (tests == null) {
             this.tests = new ArrayList<>();
         }
         return tests;
     }
 
-    public void setTests(List<ReferenceDataTest> tests) {
+    public void setTests(List<MinimalResource> tests) {
         this.tests = tests;
     }
 
@@ -116,7 +116,7 @@ public class ReferenceDataDepartment {
         this.name = name;
     }
 
-    public void addTest(ReferenceDataTest referenceDataTest) {
-        this.getTests().add(referenceDataTest);
+    public void addTest(MinimalResource labTest) {
+        this.getTests().add(labTest);
     }
 }

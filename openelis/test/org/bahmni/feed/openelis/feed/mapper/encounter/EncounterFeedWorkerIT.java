@@ -87,8 +87,8 @@ public class EncounterFeedWorkerIT extends IT {
         patientUUID = UUID.randomUUID().toString();
         patient = createPatient(firstName, "middleName", lastName, identifier, patientUUID);
 
-        bloodSample = createTypeOfSample("blood", "BLD");
-        urineSample = createTypeOfSample("URINE", "URN");
+        bloodSample = createTypeOfSample("bloood", "BLD");
+        urineSample = createTypeOfSample("URIINE", "URN");
 
         // anaemia panel with two tests of sample blood
         anaemiaPanel = createPanel("Anaemia Panel Test");
