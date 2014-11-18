@@ -63,8 +63,6 @@ public class BahmniPatientServiceIT extends IT {
     public void setUp(){
         AuditingService auditingService = new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl());
         patientDAO = new PatientDAOImpl();
-        healthCenterDAO = new HealthCenterDAOImpl();
-        healthCenterDAO.add(new HealthCenter("BAM", "test"));
         personAddressDAO = new PersonAddressDAOImpl();
         addressPartDAO = new AddressPartDAOImpl();
         bahmniPatientService = new BahmniPatientService(patientDAO, new PersonDAOImpl(), new PatientIdentityDAOImpl(), personAddressDAO, addressPartDAO, new PatientIdentityTypeDAOImpl(), auditingService, new HealthCenterDAOImpl());
