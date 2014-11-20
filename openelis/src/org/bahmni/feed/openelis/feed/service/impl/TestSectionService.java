@@ -18,8 +18,8 @@ package org.bahmni.feed.openelis.feed.service.impl;
 
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.MinimalResource;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataDepartment;
-import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataTest;
 import org.bahmni.feed.openelis.utils.AuditingService;
+import us.mn.state.health.lims.common.exception.LIMSException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
 import us.mn.state.health.lims.organization.dao.OrganizationDAO;
@@ -55,30 +55,34 @@ public class TestSectionService {
         this.panelService = panelService;
     }
 
-    public void createOrUpdate(ReferenceDataDepartment department, final String organizationName) throws IOException {
-        String sysUserId = auditingService.getSysUserId();
-        TestSection testSection = testSectionDAO.getTestSectionByUUID(department.getId());
+    public void createOrUpdate(ReferenceDataDepartment department, final String organizationName) throws IOException, LIMSException {
+        try {
+            String sysUserId = auditingService.getSysUserId();
+            TestSection testSection = testSectionDAO.getTestSectionByUUID(department.getId());
 
-        Organization organization = organizationDAO.getOrganizationByName(new Organization() {{
-            this.setOrganizationName(organizationName);
-        }}, true);
+            Organization organization = organizationDAO.getOrganizationByName(new Organization() {{
+                this.setOrganizationName(organizationName);
+            }}, true);
 
-        if (organization == null) {
-            throw new LIMSRuntimeException("organization does not exist" + organizationName);
+            if (organization == null) {
+                throw new LIMSRuntimeException("organization does not exist" + organizationName);
+            }
+
+            if (testSection == null) {
+                create(department, organization, sysUserId);
+            } else {
+                update(testSection, organization, department, sysUserId);
+            }
+            updateTests(department, sysUserId);
+        } catch (Exception e) {
+            throw new LIMSException(String.format("Error while saving panel - %s", department.getName()));
         }
-
-        if (testSection == null) {
-            create(department, organization, sysUserId);
-        } else {
-            update(testSection, organization, department, sysUserId);
-        }
-        updateTests(department, sysUserId);
     }
 
-    private void updateTests(ReferenceDataDepartment department, String sysUserId) throws IOException {
+    private void updateTests(ReferenceDataDepartment department, String sysUserId) throws IOException, LIMSException {
         for (MinimalResource testData : department.getTests()) {
             Test test = testService.updateTestSection(testData.getName(), department.getId(), sysUserId);
-            if(test == null){
+            if (test == null) {
                 throw new LIMSRuntimeException(String.format("Error while updating test section - %s on test  - %s", department.getName(), testData.getName()));
             }
         }

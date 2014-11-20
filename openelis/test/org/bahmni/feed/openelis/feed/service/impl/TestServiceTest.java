@@ -25,6 +25,7 @@ import org.bahmni.feed.openelis.utils.AuditingService;
 import org.junit.Before;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import us.mn.state.health.lims.common.exception.LIMSException;
 import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.dao.TestSectionDAO;
 import us.mn.state.health.lims.test.valueholder.Test;
@@ -75,7 +76,7 @@ public class TestServiceTest {
 
 
     @org.junit.Test
-    public void savingATestWithDummyDepartmentIfTestSectionDoesNotExist() throws IOException {
+    public void savingATestWithDummyDepartmentIfTestSectionDoesNotExist() throws IOException, LIMSException {
 
         ReferenceDataTest referenceDataTest = createReferenceDataTest();
 
@@ -91,7 +92,7 @@ public class TestServiceTest {
 
 
     @org.junit.Test
-    public void addResultTypeRemarkIfTestResultTypeIsText() throws IOException {
+    public void addResultTypeRemarkIfTestResultTypeIsText() throws IOException, LIMSException {
 
         ReferenceDataTest referenceDataTest = createReferenceDataTest();
         referenceDataTest.setResultType("Text");

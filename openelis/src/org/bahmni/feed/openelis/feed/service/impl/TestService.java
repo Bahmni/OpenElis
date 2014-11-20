@@ -24,6 +24,7 @@ import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.MinimalResourc
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataTest;
 import org.bahmni.feed.openelis.utils.AuditingService;
 import us.mn.state.health.lims.common.action.IActionConstants;
+import us.mn.state.health.lims.common.exception.LIMSException;
 import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
 import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 import us.mn.state.health.lims.test.dao.TestDAO;
@@ -82,29 +83,34 @@ public class TestService {
 
     }
 
-    public void createOrUpdate(ReferenceDataTest referenceDataTest) throws IOException {
-        String sysUserId = auditingService.getSysUserId();
-        ExternalReference data = externalReferenceDao.getData(referenceDataTest.getId(), CATEGORY_TEST);
-        Test test = new Test();
+    public void createOrUpdate(ReferenceDataTest referenceDataTest) throws IOException, LIMSException {
+        try {
+            String sysUserId = auditingService.getSysUserId();
 
-        if (data == null) {
-            test = populateTest(test, referenceDataTest, sysUserId, null);
-            testDAO.insertData(test);
-            saveExternalReference(referenceDataTest, test);
-        } else {
-            test = testDAO.getTestById(String.valueOf(data.getItemId()));
-            String uuid = test.getTestSection() != null ? test.getTestSection().getUUID() : null;
-            populateTest(test, referenceDataTest, sysUserId, uuid);
-            testDAO.updateData(test);
+            ExternalReference data = externalReferenceDao.getData(referenceDataTest.getId(), CATEGORY_TEST);
+            Test test = new Test();
+
+            if (data == null) {
+                test = populateTest(test, referenceDataTest, sysUserId, null);
+                testDAO.insertData(test);
+                saveExternalReference(referenceDataTest, test);
+            } else {
+                test = testDAO.getTestById(String.valueOf(data.getItemId()));
+                String uuid = test.getTestSection() != null ? test.getTestSection().getUUID() : null;
+                populateTest(test, referenceDataTest, sysUserId, uuid);
+                testDAO.updateData(test);
+            }
+            if (referenceDataTest.getResultType().equals("Text")) {
+                TestResult testResult = new TestResult();
+                testResult.setSysUserId("1");
+                testResult.setTest(test);
+                testResult.setTestResultType("R");
+                testResultDAO.insertData(testResult);
+            }
+            TypeOfSampleUtil.clearTestCache();
+        }catch (Exception e){
+            throw new LIMSException(String.format("Error while saving test - %s", referenceDataTest.getName()));
         }
-        if (referenceDataTest.getResultType().equals("Text")) {
-            TestResult testResult = new TestResult();
-            testResult.setSysUserId("1");
-            testResult.setTest(test);
-            testResult.setTestResultType("R");
-            testResultDAO.insertData(testResult);
-        }
-        TypeOfSampleUtil.clearTestCache();
     }
 
     private void saveExternalReference(ReferenceDataTest referenceDataTest, Test test) {
@@ -139,11 +145,14 @@ public class TestService {
         }
     }
 
-    public Test updateTestSection(String testName, String testSectionUuid, String sysUserId){
+    public Test updateTestSection(String testName, String testSectionUuid, String sysUserId) throws LIMSException {
         Test test = testDAO.getTestByName(testName);
+        if (test == null) {
+            throw new LIMSException(String.format("%s test does not exist", testName));
+        }
         test.setSysUserId(sysUserId);
         TestSection testSection = getTestSection(testSectionUuid);
-        if(!test.getTestSection().equals(testSection)){
+        if (!test.getTestSection().equals(testSection)) {
             test.setTestSection(testSection);
             testDAO.updateData(test);
         }

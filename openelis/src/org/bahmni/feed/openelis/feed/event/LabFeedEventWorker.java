@@ -3,18 +3,14 @@ package org.bahmni.feed.openelis.feed.event;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.AtomFeedProperties;
-import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataAllSamples;
-import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataAllTestsAndPanels;
-import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataDepartment;
-import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataPanel;
-import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataSample;
-import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataTest;
+import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.*;
 import org.bahmni.feed.openelis.feed.service.impl.PanelService;
 import org.bahmni.feed.openelis.feed.service.impl.TestSectionService;
 import org.bahmni.feed.openelis.feed.service.impl.TestService;
 import org.bahmni.feed.openelis.feed.service.impl.TypeOfSampleService;
 import org.bahmni.webclients.HttpClient;
 import org.ict4h.atomfeed.client.domain.Event;
+import us.mn.state.health.lims.common.exception.LIMSException;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.hibernate.ElisHibernateSession;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
@@ -50,13 +46,11 @@ public class LabFeedEventWorker extends OpenElisEventWorker {
 
         private String value;
 
-        private title(String value)
-        {
+        private title(String value) {
             this.value = value;
         }
 
-        public String toUrlString()
-        {
+        public String toUrlString() {
             return this.value; //This will return hyphen separated values
         }
     }
@@ -101,7 +95,7 @@ public class LabFeedEventWorker extends OpenElisEventWorker {
                     typeOfSampleService.createOrUpdate(sample);
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | LIMSException e) {
             throw new LIMSRuntimeException(e);
         } finally {
             ElisHibernateSession session = (ElisHibernateSession) HibernateUtil.getSession();

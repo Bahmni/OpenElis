@@ -22,9 +22,9 @@ import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoIm
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.MinimalResource;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataPanel;
-import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataTest;
 import org.bahmni.feed.openelis.utils.AuditingService;
 import us.mn.state.health.lims.common.action.IActionConstants;
+import us.mn.state.health.lims.common.exception.LIMSException;
 import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
 import us.mn.state.health.lims.panel.dao.PanelDAO;
 import us.mn.state.health.lims.panel.daoimpl.PanelDAOImpl;
@@ -61,22 +61,28 @@ public class PanelService {
         this.panelItemDAO = new PanelItemDAOImpl();
     }
 
-    public void createOrUpdate(ReferenceDataPanel referenceDataPanel) throws IOException {
-        String sysUserId = auditingService.getSysUserId();
-        ExternalReference data = externalReferenceDao.getData(referenceDataPanel.getId(), CATEGORY_PANEL);
-        if (data == null) {
-            Panel panel = new Panel();
-            panel = populatePanel(panel, referenceDataPanel, sysUserId);
-            panelDAO.insertData(panel);
-            saveTestsForPanel(panel, referenceDataPanel, sysUserId);
-            saveExternalReference(referenceDataPanel, panel);
-        } else {
-            Panel panel = panelDAO.getPanelById(String.valueOf(data.getItemId()));
-            populatePanel(panel, referenceDataPanel, sysUserId);
-            panelDAO.updateData(panel);
-            saveTestsForPanel(panel, referenceDataPanel, sysUserId);
+    public void createOrUpdate(ReferenceDataPanel referenceDataPanel) throws IOException, LIMSException {
+        try {
+
+
+            String sysUserId = auditingService.getSysUserId();
+            ExternalReference data = externalReferenceDao.getData(referenceDataPanel.getId(), CATEGORY_PANEL);
+            if (data == null) {
+                Panel panel = new Panel();
+                panel = populatePanel(panel, referenceDataPanel, sysUserId);
+                panelDAO.insertData(panel);
+                saveTestsForPanel(panel, referenceDataPanel, sysUserId);
+                saveExternalReference(referenceDataPanel, panel);
+            } else {
+                Panel panel = panelDAO.getPanelById(String.valueOf(data.getItemId()));
+                populatePanel(panel, referenceDataPanel, sysUserId);
+                panelDAO.updateData(panel);
+                saveTestsForPanel(panel, referenceDataPanel, sysUserId);
+            }
+            TypeOfSampleUtil.clearTestCache();
+        } catch (Exception e) {
+            throw new LIMSException(String.format("Error while saving panel - %s", referenceDataPanel.getName()));
         }
-        TypeOfSampleUtil.clearTestCache();
     }
 
     private void saveExternalReference(ReferenceDataPanel referenceDataPanel, Panel panel) {
@@ -95,13 +101,20 @@ public class PanelService {
         return panel;
     }
 
-    private void saveTestsForPanel(Panel panel, ReferenceDataPanel referenceDataPanel, String sysUserId) {
+    private void saveTestsForPanel(Panel panel, ReferenceDataPanel referenceDataPanel, String sysUserId) throws LIMSException {
         deleteExistingPanels(panel, sysUserId);
         List<MinimalResource> tests = referenceDataPanel.getTests();
         for (int i = 0; i < tests.size(); i++) {
             MinimalResource referenceDataTest = tests.get(i);
             ExternalReference reference = externalReferenceDao.getData(referenceDataTest.getUuid(), CATEGORY_TEST);
-            PanelItem panelItem = createPanelItem(panel, testDAO.getTestById(String.valueOf(reference.getItemId())), String.valueOf(i + 1), sysUserId);
+            if (reference == null) {
+                throw new LIMSException(String.format("%s test not found", referenceDataTest.getName()));
+            }
+            Test test = testDAO.getTestById(String.valueOf(reference.getItemId()));
+            if (test == null) {
+                throw new LIMSException(String.format("%s test not found", referenceDataTest.getName()));
+            }
+            PanelItem panelItem = createPanelItem(panel, test, String.valueOf(i + 1), sysUserId);
             panelItemDAO.insertData(panelItem);
         }
     }
