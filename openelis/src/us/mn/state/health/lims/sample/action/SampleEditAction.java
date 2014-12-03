@@ -37,6 +37,7 @@ import us.mn.state.health.lims.common.util.ConfigurationProperties;
 import us.mn.state.health.lims.common.util.ConfigurationProperties.Property;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.IdValuePair;
+import us.mn.state.health.lims.common.util.IntegerUtil;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.observationhistory.daoimpl.ObservationHistoryDAOImpl;
 import us.mn.state.health.lims.observationhistory.valueholder.ObservationHistory;
@@ -57,6 +58,7 @@ import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.SampleStat
 import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 import us.mn.state.health.lims.test.valueholder.Test;
+import us.mn.state.health.lims.test.valueholder.TestComparator;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleDAO;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleTestDAO;
 import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleDAOImpl;
@@ -81,7 +83,6 @@ public class SampleEditAction extends BaseAction {
 	private List<SampleItem> sampleItemList;
 	private static final TypeOfSampleDAO typeOfSampleDAO = new TypeOfSampleDAOImpl();
 	private static final AnalysisDAO analysisDAO = new AnalysisDAOImpl();
-	private static final SampleEditItemComparator testComparator = new SampleEditItemComparator();
 	private boolean isEditable = false;
 	private static Set<Integer> excludedAnalysisStatusList;
 	private static Set<Integer> includedSampleStatusList;
@@ -252,7 +253,8 @@ public class SampleEditAction extends BaseAction {
 		}
 
 		if (!analysisSampleItemList.isEmpty()) {
-			Collections.sort(analysisSampleItemList, testComparator);
+			Collections.sort(analysisSampleItemList, SampleEditItemComparator.NAME_COMPARATOR); // Secondary Sorting
+			Collections.sort(analysisSampleItemList, SampleEditItemComparator.SORT_ORDER_COMPARATOR); // Primary Sorting
 
 			analysisSampleItemList.get(0).setAccessionNumber(accessionNumber + "-" + sampleItem.getSortOrder());
 			analysisSampleItemList.get(0).setShouldDisplaySampleTypeInformation(true);
@@ -305,6 +307,8 @@ public class SampleEditAction extends BaseAction {
 		for (SampleItem sampleItem : sampleItemList) {
             addPossibleTestsToList(sampleItem, possibleTestList,currentlyExistingTests);
         }
+
+
 
 		PropertyUtils.setProperty(dynaForm, "possibleTests", possibleTestList);
 		PropertyUtils.setProperty(dynaForm, "testSectionList", DisplayListService.getList(ListType.TEST_SECTION));
@@ -368,7 +372,8 @@ public class SampleEditAction extends BaseAction {
 
 
         if (!typeOfTestSampleItemList.isEmpty()) {
-            Collections.sort(typeOfTestSampleItemList, testComparator);
+			Collections.sort(typeOfTestSampleItemList, SampleEditItemComparator.NAME_COMPARATOR); // Secondary Sorting
+			Collections.sort(typeOfTestSampleItemList, SampleEditItemComparator.SORT_ORDER_COMPARATOR); // Primary Sorting
 
             typeOfTestSampleItemList.get(0).setAccessionNumber(accessionNumber + "-" + sampleItem.getSortOrder());
             typeOfTestSampleItemList.get(0).setSampleType(typeOfSample.getLocalizedName());
@@ -387,26 +392,33 @@ public class SampleEditAction extends BaseAction {
 				.getContextualKeyForKey("sample.view.subtitle");
 	}
 
-	private static class SampleEditItemComparator implements Comparator<SampleEditItem> {
+	private static class SampleEditItemComparator implements Comparable<SampleEditItem> {
+		String name;
 
-		public int compare(SampleEditItem o1, SampleEditItem o2) {
-            if (GenericValidator.isBlankOrNull(o1.getSortOrder()) || GenericValidator.isBlankOrNull(o2.getSortOrder())) {
-                if(o1.isPanel() && o2.isPanel()){
-                    return o1.getPanelName().compareTo(o2.getPanelName());
+		@Override
+		public int compareTo(SampleEditItem sampleEditItem) {
+			return this.name.compareTo(sampleEditItem.getTestName());
+		}
+
+		public static final Comparator<SampleEditItem> NAME_COMPARATOR = new Comparator<SampleEditItem>() {
+			public int compare(SampleEditItem a, SampleEditItem b) {
+                if(a.isPanel() && b.isPanel()){
+                    return a.getPanelName().toLowerCase().compareTo(b.getPanelName().toLowerCase());
                 }
-                if(o1.isPanel() && !o2.isPanel()){
-                    return o1.getPanelName().compareTo(o2.getTestName());
+                if(a.isPanel() && !b.isPanel()){
+                    return a.getPanelName().toLowerCase().compareTo(b.getTestName().toLowerCase());
                 }
-                if(o2.isPanel() && !o1.isPanel()){
-                    return o2.getPanelName().compareTo(o1.getTestName());
+                if(b.isPanel() && !a.isPanel()){
+                    return b.getPanelName().toLowerCase().compareTo(a.getTestName().toLowerCase());
                 }
-            } else {
-                Integer testSortOrder1 = Integer.getInteger(o1.getSortOrder());
-                Integer testSortOrder2 = Integer.getInteger(o2.getSortOrder());
-                if (testSortOrder1 != null && testSortOrder2 != null)
-                    return testSortOrder1.compareTo(testSortOrder2);
-            }
-            return o1.getTestName().compareTo(o2.getTestName());
-        }
-    }
+				return ((a.getTestName().toLowerCase()).compareTo(b.getTestName().toLowerCase()));
+			}
+		};
+
+		public static final Comparator<SampleEditItem> SORT_ORDER_COMPARATOR = new Comparator<SampleEditItem>() {
+			public int compare(SampleEditItem a, SampleEditItem b) {
+				return IntegerUtil.getParsedValueOrDefault(a.getSortOrder(), Integer.MAX_VALUE).compareTo(IntegerUtil.getParsedValueOrDefault(b.getSortOrder(), Integer.MAX_VALUE));
+			}
+		};
+	}
 }
