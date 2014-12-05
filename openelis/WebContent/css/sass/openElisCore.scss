@@ -1326,3 +1326,20 @@ table.administration{
 input[name=patientNumberDirect], #patientSTNumber {
   text-transform:uppercase;
 }
+
+.availableTestTable {
+  th.sample-type, th.accession-number {
+    width: 200px;
+  }
+  tr {
+    vertical-align: top;
+    li.test-name {
+      width: 250px;
+      float: left;
+      margin-bottom: 5px;
+    }
+  }
+  .tests {
+    border-bottom: 1px solid #ccc;
+  }
+}

@@ -58,6 +58,7 @@ import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
 import us.mn.state.health.lims.sample.util.AccessionNumberUtil;
 import us.mn.state.health.lims.sample.util.AnalysisBuilder;
+import us.mn.state.health.lims.sample.util.PossibleSample;
 import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.samplehuman.daoimpl.SampleHumanDAOImpl;
 import us.mn.state.health.lims.sampleitem.dao.SampleItemDAO;
@@ -148,7 +149,7 @@ public class SampleEditUpdateAction extends BaseAction {
 			List<Analysis> cancelAnalysisList = createRemoveList((List<SampleEditItem>) dynaForm.get("existingTests"));
 			List<SampleItem> cancelSampleItemList = createCancelSampleList((List<SampleEditItem>) dynaForm.get("existingTests"),
 					cancelAnalysisList);
-			List<Analysis> addAnalysisList = createAddAanlysisList((List<SampleEditItem>) dynaForm.get("possibleTests"));
+			List<Analysis> addAnalysisList = createAddAanlysisList((List<PossibleSample>) dynaForm.get("possibleSamples"));
 
 			List<SampleTestCollection> addedSamples = createAddSampleList(dynaForm, updatedSample, analysisBuilder);
 
@@ -502,37 +503,39 @@ public class SampleEditUpdateAction extends BaseAction {
 		return analysis;
 	}
 
-	private List<Analysis> createAddAanlysisList(List<SampleEditItem> tests) {
+	private List<Analysis> createAddAanlysisList(List<PossibleSample> samples) {
 		List<Analysis> addAnalysisList = new ArrayList<Analysis>();
 
-		for (SampleEditItem sampleEditItem : tests) {
-			if (sampleEditItem.isAdd()) {
+		for (PossibleSample sample : samples) {
+			for (SampleEditItem sampleEditItem : sample.getPossibleTestOrPanel()) {
+				if (sampleEditItem.isAdd()) {
 
-				Analysis analysis = newOrExistingCanceledAnalysis(sampleEditItem);
+					Analysis analysis = newOrExistingCanceledAnalysis(sampleEditItem);
 
-				if (analysis.getId() == null) {
-					SampleItem sampleItem = new SampleItem();
-					sampleItem.setId(sampleEditItem.getSampleItemId());
-					sampleItemDAO.getData(sampleItem);
-					analysis.setSampleItem(sampleItem);
+					if (analysis.getId() == null) {
+						SampleItem sampleItem = new SampleItem();
+						sampleItem.setId(sampleEditItem.getSampleItemId());
+						sampleItemDAO.getData(sampleItem);
+						analysis.setSampleItem(sampleItem);
 
-					Test test = new Test();
-					test.setId(sampleEditItem.getTestId());
-					testDAO.getData(test);
+						Test test = new Test();
+						test.setId(sampleEditItem.getTestId());
+						testDAO.getData(test);
 
-					analysis.setTest(test);
-					analysis.setRevision("0");
-					analysis.setTestSection(test.getTestSection());
-					analysis.setEnteredDate(DateUtil.getNowAsTimestamp());
-					analysis.setIsReportable(test.getIsReportable());
-					analysis.setAnalysisType("MANUAL");
-					analysis.setStartedDate(DateUtil.getNowAsSqlDate());
+						analysis.setTest(test);
+						analysis.setRevision("0");
+						analysis.setTestSection(test.getTestSection());
+						analysis.setEnteredDate(DateUtil.getNowAsTimestamp());
+						analysis.setIsReportable(test.getIsReportable());
+						analysis.setAnalysisType("MANUAL");
+						analysis.setStartedDate(DateUtil.getNowAsSqlDate());
+					}
+
+					analysis.setStatusId(StatusOfSampleUtil.getStatusID(AnalysisStatus.NotTested));
+					analysis.setSysUserId(currentUserId);
+
+					addAnalysisList.add(analysis);
 				}
-
-				analysis.setStatusId(StatusOfSampleUtil.getStatusID(AnalysisStatus.NotTested));
-				analysis.setSysUserId(currentUserId);
-
-				addAnalysisList.add(analysis);
 			}
 		}
 

@@ -104,7 +104,7 @@
             <form-property name="newAccessionNumber" type="java.lang.String" initial=""/>
             <form-property name="lastupdated" type="java.sql.Timestamp" initial=""/>
             <form-property name="existingTests" type="java.util.Collection"/>
-            <form-property name="possibleTests" type="java.util.Collection"/>
+            <form-property name="possibleSamples" type="java.util.Collection"/>
             <form-property name="searchFinished" type="java.lang.Boolean" initial="false"/>
             <form-property name="paymentOptions" type="java.util.Collection"/>
             <form-property name="paymentOptionSelection" type="java.lang.String"/>

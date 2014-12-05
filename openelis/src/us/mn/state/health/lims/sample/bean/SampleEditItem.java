@@ -16,6 +16,7 @@
 
 package us.mn.state.health.lims.sample.bean;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 

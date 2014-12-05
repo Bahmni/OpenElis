@@ -47,6 +47,7 @@ import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.sample.bean.SampleEditItem;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
+import us.mn.state.health.lims.sample.util.PossibleSample;
 import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.samplehuman.daoimpl.SampleHumanDAOImpl;
 import us.mn.state.health.lims.sampleitem.dao.SampleItemDAO;
@@ -58,7 +59,6 @@ import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.SampleStat
 import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 import us.mn.state.health.lims.test.valueholder.Test;
-import us.mn.state.health.lims.test.valueholder.TestComparator;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleDAO;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleTestDAO;
 import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleDAOImpl;
@@ -302,15 +302,15 @@ public class SampleEditAction extends BaseAction {
 
     private void setAddableTestInfo(DynaActionForm dynaForm, List<SampleEditItem> currentlyExistingTests) throws IllegalAccessException, InvocationTargetException,
 			NoSuchMethodException {
-		List<SampleEditItem> possibleTestList = new ArrayList<SampleEditItem>();
+		List<PossibleSample> possibleSampleList = new ArrayList<>();
 
 		for (SampleItem sampleItem : sampleItemList) {
-            addPossibleTestsToList(sampleItem, possibleTestList,currentlyExistingTests);
+            addPossibleSamplesToList(sampleItem, possibleSampleList, currentlyExistingTests);
         }
 
 
 
-		PropertyUtils.setProperty(dynaForm, "possibleTests", possibleTestList);
+		PropertyUtils.setProperty(dynaForm, "possibleSamples", possibleSampleList);
 		PropertyUtils.setProperty(dynaForm, "testSectionList", DisplayListService.getList(ListType.TEST_SECTION));
 	}
 
@@ -325,7 +325,7 @@ public class SampleEditAction extends BaseAction {
         PropertyUtils.setProperty(dynaForm, "sampleTypes", sampleTypes);
 	}
 
-    private void addPossibleTestsToList(SampleItem sampleItem, List<SampleEditItem> possibleTestList, List<SampleEditItem> currentTests) {
+    private void addPossibleSamplesToList(SampleItem sampleItem, List<PossibleSample> sampleList, List<SampleEditItem> currentTests) {
 
         TypeOfSample typeOfSample = new TypeOfSample();
         typeOfSample.setId(sampleItem.getTypeOfSampleId());
@@ -336,7 +336,7 @@ public class SampleEditAction extends BaseAction {
 
         TypeOfSampleTestDAO sampleTypeTestDAO = new TypeOfSampleTestDAOImpl();
         List<TypeOfSampleTest> typeOfSampleTestList = sampleTypeTestDAO.getTypeOfSampleTestsForSampleType(typeOfSample.getId());
-        List<SampleEditItem> typeOfTestSampleItemList = new ArrayList<SampleEditItem>();
+        List<SampleEditItem> testOrPanelList = new ArrayList<SampleEditItem>();
 
         List<SampleEditItem> allTests = new ArrayList<>();
         for (SampleEditItem currentTest : currentTests) {
@@ -365,20 +365,23 @@ public class SampleEditAction extends BaseAction {
                     sampleEditItem.setTestName(test.getLocalizedName());
                     sampleEditItem.setSampleItemId(sampleItem.getId());
                     sampleEditItem.setSortOrder(test.getSortOrder());
-                    typeOfTestSampleItemList.add(sampleEditItem);
+                    testOrPanelList.add(sampleEditItem);
                 }
             }
         }
 
 
-        if (!typeOfTestSampleItemList.isEmpty()) {
-			Collections.sort(typeOfTestSampleItemList, SampleEditItemComparator.NAME_COMPARATOR); // Secondary Sorting
-			Collections.sort(typeOfTestSampleItemList, SampleEditItemComparator.SORT_ORDER_COMPARATOR); // Primary Sorting
+        if (!testOrPanelList.isEmpty()) {
+			Collections.sort(testOrPanelList, SampleEditItemComparator.NAME_COMPARATOR); // Secondary Sorting
+			Collections.sort(testOrPanelList, SampleEditItemComparator.SORT_ORDER_COMPARATOR); // Primary Sorting
 
-            typeOfTestSampleItemList.get(0).setAccessionNumber(accessionNumber + "-" + sampleItem.getSortOrder());
-            typeOfTestSampleItemList.get(0).setSampleType(typeOfSample.getLocalizedName());
+			PossibleSample possibleSample = new PossibleSample();
+			possibleSample.setAccessionNumber(accessionNumber);
+			possibleSample.setSampleType(typeOfSample.getLocalizedName());
+            possibleSample.setPossibleTestOrPanel(testOrPanelList);
 
-            possibleTestList.addAll(typeOfTestSampleItemList);
+			sampleList.add(possibleSample);
+
         }
 
     }

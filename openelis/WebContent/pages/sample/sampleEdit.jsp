@@ -8,7 +8,8 @@
             us.mn.state.health.lims.common.util.Versioning,
 	        us.mn.state.health.lims.sample.bean.SampleEditItem,
 	        us.mn.state.health.lims.sample.util.AccessionNumberUtil,
-	        us.mn.state.health.lims.common.util.IdValuePair" %>
+	        us.mn.state.health.lims.common.util.IdValuePair,
+	        us.mn.state.health.lims.sample.util.PossibleSample" %>
 
 <%@ taglib uri="/tags/struts-bean"		prefix="bean" %>
 <%@ taglib uri="/tags/struts-html"		prefix="html" %>
@@ -322,34 +323,45 @@ function processAccessionFailure(xhr)
 <br/>
 <logic:equal name='<%=formName%>' property="isEditable" value="true" >
 <% if(allowEditOrRemoveTests){ %>
-<table id="availableTestTable" width="100%">
-<caption><bean:message key="sample.edit.available.tests"/></caption>
-<tr>
-<th><%= StringUtil.getContextualMessageForKey("quick.entry.accession.number") %></th>
-<th><bean:message key="sample.entry.sample.type"/></th>
-<th><bean:message key="sample.entry.assignTests"/></th>
-<th><bean:message key="test.testName"/></th>
-</tr>
-<logic:iterate id="possibleTests" name="<%=formName%>"  property="possibleTests" indexId="index" type="SampleEditItem">
-<tr>
-    <td>
-        <html:hidden name="possibleTests" property="testId" indexed="true"/>
-        <html:hidden name="possibleTests" property="sampleItemId" indexed="true"/>
-        <span class="itemNumber" ><bean:write name="possibleTests" property="accessionNumber"/></span>
-    </td>
-    <td>
-        <bean:write name="possibleTests" property="sampleType"/>
-    </td>
-    <td>
-        <html:checkbox name="possibleTests" property="add" indexed="true" onchange="addRemoveRequest(this);" />
-    </td>
-    <td>&nbsp;
-        <bean:write name="possibleTests" property="testName"/>
-    </td>
-</tr>
-</logic:iterate>
-</table>
-<% } %>
+	<table id="availableTestTable" width="100%" class="availableTestTable">
+		<caption><bean:message key="sample.edit.available.tests"/></caption>
+		<tr>
+			<th class="accession-number">
+				<%= StringUtil.getContextualMessageForKey("quick.entry.accession.number") %>
+			</th>
+			<th class="sample-type"><bean:message key="sample.entry.sample.type"/></th>
+			<th><bean:message key="test.testName"/></th>
+		</tr>
+		<logic:iterate id="possibleSamples" name="<%=formName%>" property="possibleSamples" indexId="sampleIndex"
+					   type="PossibleSample">
+			<tr class="tests">
+				<td>
+				<span class="itemNumber">
+					<bean:write name="possibleSamples" property="accessionNumber"/>
+				</span>
+				</td>
+				<td>
+					<bean:write name="possibleSamples" property="sampleType"/>
+				</td>
+				<td>
+					<ul>
+						<logic:iterate id="possibleTestOrPanel" name="possibleSamples" property="possibleTestOrPanel" indexId="testIndex"
+									   type="SampleEditItem">
+							<li class="test-name">
+								<html:hidden name="possibleTestOrPanel" property="testId" indexed="true"/>
+								<html:hidden name="possibleTestOrPanel" property="sampleItemId" indexed="true"/>
+								<label>
+									<input type="checkbox" name="possibleSamples[<bean:write name='sampleIndex'/>].possibleTestOrPanel[<bean:write name='testIndex'/>].add" onchange="addRemoveRequest(this);">
+									<bean:write name="possibleTestOrPanel" property="testName"/>
+								</label>
+							</li>
+						</logic:iterate>
+					</ul>
+				</td>
+			</tr>
+		</logic:iterate>
+	</table>
+	<% } %>
 <h2><bean:message key="sample.entry.addSample" /></h2>
 
 <div id="samplesDisplay" class="colorFill" >
