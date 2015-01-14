@@ -75,7 +75,7 @@ public class TestSectionService {
             }
             updateTests(department, sysUserId);
         } catch (Exception e) {
-            throw new LIMSException(String.format("Error while saving panel - %s", department.getName()));
+            throw new LIMSException(String.format("Error while saving Department - %s", department.getName()), e);
         }
     }
 

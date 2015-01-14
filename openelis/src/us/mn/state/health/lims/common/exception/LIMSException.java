@@ -27,4 +27,12 @@ public class LIMSException extends Exception {
 		super(message);
 	}
 
+	public LIMSException(Throwable throwable) {
+		super(throwable);
+	}
+
+	public LIMSException(String message, Throwable throwable) {
+		super(message, throwable);
+	}
+
 }
