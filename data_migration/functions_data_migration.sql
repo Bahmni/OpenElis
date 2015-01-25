@@ -439,3 +439,59 @@ BEGIN
 END
 $$
 LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION clinlims.insert_sample_source(sample_source_name text, sample_source_description text)
+  RETURNS void
+AS
+  $BODY$
+  DECLARE
+    sample_source_id int;
+    max_display_order int;
+BEGIN
+
+    select max(display_order) into max_display_order from clinlims.sample_source;
+    SELECT id INTO sample_source_id FROM clinlims.sample_source WHERE name = sample_source_name;
+    IF NOT FOUND THEN
+        
+      INSERT INTO clinlims.sample_source (id, name, description, active, display_order)
+        VALUES (nextval('clinlims.sample_source_id_seq'), sample_source_name, sample_source_description, true, max_display_order);
+
+    END IF;    
+
+   
+END
+$BODY$
+LANGUAGE plpgsql;
+
+
+
+CREATE OR REPLACE FUNCTION clinlims.insert_provider(provider_first_name text, provider_last_name text)
+  RETURNS void
+AS
+  $BODY$
+  DECLARE
+    existing_person_id int;
+    existing_provider_id int;
+BEGIN
+
+    SELECT id
+    INTO existing_person_id
+    FROM clinlims.person
+    WHERE first_name = provider_first_name and last_name = provider_last_name;
+    IF FOUND
+    THEN
+      SELECT id
+      into existing_provider_id
+      from clinlims.provider
+      where person_id = existing_person_id;
+      IF NOT FOUND
+      THEN
+        insert into clinlims.provider (id, person_id, lastupdated)
+        VALUES (nextval('clinlims.provider_seq'), existing_person_id, now());
+      END IF;
+    END IF;    
+
+   
+END
+$BODY$
+LANGUAGE plpgsql;

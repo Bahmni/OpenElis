@@ -30,7 +30,6 @@ import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.dao.TestSectionDAO;
 import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.test.valueholder.TestSection;
-import us.mn.state.health.lims.testresult.dao.TestResultDAO;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleDAO;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleTestDAO;
@@ -57,7 +56,7 @@ public class TestServiceTest {
     @Mock
     private TestSectionDAO testSectionDAOMock;
     @Mock
-    private TestResultDAO testResultDAOMock;
+    private TestResultService testResultServiceMock;
     @Mock
     private TypeOfSampleDAO typeOfSampleDAOMock;
     @Mock
@@ -69,7 +68,7 @@ public class TestServiceTest {
     public void setUp() {
         initMocks(this);
 
-         testService = new TestService(externalReferenceDaoMock, testDAOMock, testResultDAOMock, testSectionDAOMock,
+         testService = new TestService(externalReferenceDaoMock, testDAOMock, testResultServiceMock, testSectionDAOMock,
                 auditingServiceMock, typeOfSampleDAOMock, typeOfSampleTestDAOMock);
 
     }
@@ -89,28 +88,6 @@ public class TestServiceTest {
         testService.createOrUpdate(referenceDataTest);
         verify(testDAOMock).updateData(dummyTest);
     }
-
-
-    @org.junit.Test
-    public void addResultTypeRemarkIfTestResultTypeIsText() throws IOException, LIMSException {
-
-        ReferenceDataTest referenceDataTest = createReferenceDataTest();
-        referenceDataTest.setResultType("Text");
-
-        ArgumentCaptor<TestResult> argument = ArgumentCaptor.forClass(TestResult.class);
-        TestSection testSectionMock = new TestSection();
-
-        when(testSectionDAOMock.getTestSectionByUUID(anyString())).thenReturn(testSectionMock);
-        when(typeOfSampleDAOMock.getTypeOfSampleByUUID(anyString())).thenReturn(createDummyTypeOfSample());
-        when(externalReferenceDaoMock.getData(referenceDataTest.getId(), TestService.CATEGORY_TEST)).thenReturn(createDummyReferenceData());
-        when(testDAOMock.getTestById(anyString())).thenReturn(createDummyTest());
-
-        testService.createOrUpdate(referenceDataTest);
-        verify(testResultDAOMock, times(1)).insertData(argument.capture());
-
-        assertEquals("R", argument.getValue().getTestResultType());
-    }
-
 
     //------- Private methods --------------
 

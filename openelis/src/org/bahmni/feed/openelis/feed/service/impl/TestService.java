@@ -33,9 +33,6 @@ import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 import us.mn.state.health.lims.test.daoimpl.TestSectionDAOImpl;
 import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.test.valueholder.TestSection;
-import us.mn.state.health.lims.testresult.dao.TestResultDAO;
-import us.mn.state.health.lims.testresult.daoimpl.TestResultDAOImpl;
-import us.mn.state.health.lims.testresult.valueholder.TestResult;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleDAO;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleTestDAO;
 import us.mn.state.health.lims.typeofsample.util.TypeOfSampleUtil;
@@ -50,14 +47,14 @@ public class TestService {
     public static final String DUMMY_TEST_SECTION_NAME = "New";
     private AuditingService auditingService;
     private TestDAO testDAO;
-    private TestResultDAO testResultDAO;
+    private TestResultService testResultService;
     private ExternalReferenceDao externalReferenceDao;
     private TestSectionDAO testSectionDAO;
     private UnitOfMeasureService unitOfMeasureService;
 
     public TestService() {
         this.testDAO = new TestDAOImpl();
-        this.testResultDAO = new TestResultDAOImpl();
+        this.testResultService = new TestResultService();
         this.externalReferenceDao = new ExternalReferenceDaoImpl();
         this.testSectionDAO = new TestSectionDAOImpl();
         this.auditingService = new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl());
@@ -69,7 +66,7 @@ public class TestService {
      */
     public TestService(ExternalReferenceDao externalReferenceDao,
                        TestDAO testDAO,
-                       TestResultDAO testResultDAO,
+                       TestResultService testResultService,
                        TestSectionDAO testSectionDAO,
                        AuditingService auditingService,
                        TypeOfSampleDAO typeOfSampleDAO,
@@ -77,7 +74,7 @@ public class TestService {
 
         this.externalReferenceDao = externalReferenceDao;
         this.testDAO = testDAO;
-        this.testResultDAO = testResultDAO;
+        this.testResultService = testResultService;
         this.testSectionDAO = testSectionDAO;
         this.auditingService = auditingService;
 
@@ -85,6 +82,7 @@ public class TestService {
 
     public void createOrUpdate(ReferenceDataTest referenceDataTest) throws IOException, LIMSException {
         try {
+
             String sysUserId = auditingService.getSysUserId();
 
             ExternalReference data = externalReferenceDao.getData(referenceDataTest.getId(), CATEGORY_TEST);
@@ -101,14 +99,10 @@ public class TestService {
                 testDAO.updateData(test);
             }
             if (referenceDataTest.getResultType().equals("Text")) {
-                TestResult testResult = new TestResult();
-                testResult.setSysUserId("1");
-                testResult.setTest(test);
-                testResult.setTestResultType("R");
-                testResultDAO.insertData(testResult);
+                testResultService.createOrUpdate(test, "R");
             }
             TypeOfSampleUtil.clearTestCache();
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new LIMSException(String.format("Error while saving test - %s", referenceDataTest.getName()));
         }
     }

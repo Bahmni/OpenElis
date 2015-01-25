@@ -60,8 +60,6 @@ public class LabFeedEventWorker extends OpenElisEventWorker {
         try {
             AtomFeedProperties atomFeedProperties = AtomFeedProperties.getInstance();
             String content = event.getContent();
-
-            // TODO : Mujir/Bharti - need to add for all-tests-and-panels and all-samples
             if (title.sample.toUrlString().equals(event.getTitle())) {
                 ReferenceDataSample sample = webClient.get(urlPrefix + content, ReferenceDataSample.class);
                 logger.info(String.format("Processing sample with UUID=%s", sample.getId()));
