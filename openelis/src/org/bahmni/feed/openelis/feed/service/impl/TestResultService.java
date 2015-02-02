@@ -21,12 +21,9 @@ public class TestResultService {
         testResult.setTest(test);
         testResult.setTestResultType(testResultType);
         List<TestResult> existingTestResults = testResultDAO.getTestResultsByTest(test.getId());
-        for (TestResult existingTestResult : existingTestResults) {
-            existingTestResult.setSysUserId("1");
+        if (existingTestResults == null || (existingTestResults != null && existingTestResults.size() < 1)) {
+            testResultDAO.insertData(testResult);
         }
-        if (existingTestResults != null && existingTestResults.size() > 0) {
-            testResultDAO.deleteData(existingTestResults);
-        }
-        testResultDAO.insertData(testResult);
+
     }
 }
