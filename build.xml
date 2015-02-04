@@ -7,9 +7,6 @@
     </presetdef>
     <property file="build.properties"/>
     <property environment="env"/>
-    <condition property="OPENELIS_CONTEXT" value="${env.OPENELIS_CONTEXT}" else="">
-        <isset property="env.OPENELIS_CONTEXT" />
-    </condition>
 
     <target name="init">
         <tstamp/>
@@ -91,7 +88,7 @@
         </copy>
         <propertyMerge
                 inputpropertyfile="${target}/MessageResources.properties"
-                mergepropertyfile="${target}/${OPENELIS_CONTEXT}MessageResources.properties"
+                mergepropertyfile="${target}/BahmniMessageResources.properties"
                 outputpropertyfile="${target}/MessageResources.properties"
                 native2ascii="true"/>
         <war destfile="${dist}/openelis.war">
