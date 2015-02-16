@@ -346,18 +346,25 @@ public class SampleEditUpdateAction extends BaseAction {
 
                 if (editItem.isPanel()) {
                     for (SampleEditItem item : editItem.getPanelTests()) {
+
                         Analysis analysis = getCancelableAnalysis(item);
-                        cancelAnalysisList.add(analysis);
+                        addAnalysisToCancelAnalysisList(analysis, cancelAnalysisList);
                     }
                 } else {
                     Analysis analysis = getCancelableAnalysis(editItem);
-                    cancelAnalysisList.add(analysis);
+                    addAnalysisToCancelAnalysisList(analysis, cancelAnalysisList);
                 }
             }
         }
 
         return cancelList;
 	}
+
+    private void addAnalysisToCancelAnalysisList(Analysis analysis, List<Analysis> cancelAnalysisList) {
+        if(!cancelAnalysisListContainsId(analysis.getId(), cancelAnalysisList)){
+            cancelAnalysisList.add(analysis);
+        }
+    }
 
     private void addSampleItemToCancelList(List<SampleItem> cancelList, SampleEditItem editItem) {
         SampleItem sampleItem = getCancelableSampleItem(editItem);
