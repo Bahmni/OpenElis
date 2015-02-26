@@ -24,8 +24,6 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
-import org.bahmni.feed.openelis.feed.service.EventPublishers;
-import org.bahmni.feed.openelis.feed.service.impl.OpenElisUrlPublisher;
 import org.hibernate.StaleObjectStateException;
 import us.mn.state.health.lims.address.dao.AddressPartDAO;
 import us.mn.state.health.lims.address.dao.PersonAddressDAO;
@@ -72,92 +70,93 @@ import java.util.UUID;
 
 public class PatientManagementUpdateAction extends BaseAction implements IPatientUpdate {
 
-	protected Patient patient;
-	protected Person person;
-	private List<PatientIdentity> patientIdentities;
-	private String patientID = "";
-	private Boolean initializeFormOnSave = true;
-	private static PatientIdentityDAO identityDAO = new PatientIdentityDAOImpl();
-	private static PatientDAO patientDAO = new PatientDAOImpl();
-	private static PersonAddressDAO personAddressDAO = new PersonAddressDAOImpl();
+    protected Patient patient;
+    protected Person person;
+    private List<PatientIdentity> patientIdentities;
+    private String patientID = "";
+    private Boolean initializeFormOnSave = true;
+    private static PatientIdentityDAO identityDAO = new PatientIdentityDAOImpl();
+    private static PatientDAO patientDAO = new PatientDAOImpl();
+    private static PersonAddressDAO personAddressDAO = new PersonAddressDAOImpl();
     private static HealthCenterDAO healthCenterDAO = new HealthCenterDAOImpl();
-	private OpenElisUrlPublisher patientPublisher = new EventPublishers().patientPublisher();
 
-	protected PatientUpdateStatus patientUpdateStatus = PatientUpdateStatus.NO_ACTION;
+    protected PatientUpdateStatus patientUpdateStatus = PatientUpdateStatus.NO_ACTION;
 
-	private static String ADDRESS_PART_VILLAGE_ID;
-	private static String ADDRESS_PART_COMMUNE_ID;
-	private static String ADDRESS_PART_DEPT_ID;
+    private static String ADDRESS_PART_VILLAGE_ID;
+    private static String ADDRESS_PART_COMMUNE_ID;
+    private static String ADDRESS_PART_DEPT_ID;
 
-	public static enum PatientUpdateStatus {
-		NO_ACTION, UPDATE, ADD
-	};
+    public static enum PatientUpdateStatus {
+        NO_ACTION, UPDATE, ADD
+    }
 
-	static{
-		AddressPartDAO addressPartDAO = new AddressPartDAOImpl();
-		List<AddressPart> partList = addressPartDAO.getAll();
+    ;
 
-		for( AddressPart addressPart : partList){
-			if( "department".equals(addressPart.getPartName())){
-				ADDRESS_PART_DEPT_ID = addressPart.getId();
-			}else if( "commune".equals(addressPart.getPartName())){
-				ADDRESS_PART_COMMUNE_ID = addressPart.getId();
-			}else if( "village".equals(addressPart.getPartName())){
-				ADDRESS_PART_VILLAGE_ID = addressPart.getId();
-			}
-		}
-	}
+    static {
+        AddressPartDAO addressPartDAO = new AddressPartDAOImpl();
+        List<AddressPart> partList = addressPartDAO.getAll();
 
-	@Override
-	protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
-			throws Exception {
+        for (AddressPart addressPart : partList) {
+            if ("department".equals(addressPart.getPartName())) {
+                ADDRESS_PART_DEPT_ID = addressPart.getId();
+            } else if ("commune".equals(addressPart.getPartName())) {
+                ADDRESS_PART_COMMUNE_ID = addressPart.getId();
+            } else if ("village".equals(addressPart.getPartName())) {
+                ADDRESS_PART_VILLAGE_ID = addressPart.getId();
+            }
+        }
+    }
 
-		String forward = FWD_SUCCESS;
+    @Override
+    protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
+            throws Exception {
 
-		BaseActionForm dynaForm = (BaseActionForm) form;
-		PatientManagmentInfo patientInfo = (PatientManagmentInfo) dynaForm.get("patientProperties");
-		setPatientUpdateStatus(patientInfo);
+        String forward = FWD_SUCCESS;
 
-		if (patientUpdateStatus != PatientUpdateStatus.NO_ACTION) {
+        BaseActionForm dynaForm = (BaseActionForm) form;
+        PatientManagmentInfo patientInfo = (PatientManagmentInfo) dynaForm.get("patientProperties");
+        setPatientUpdateStatus(patientInfo);
 
-			ActionMessages errors;
+        if (patientUpdateStatus != PatientUpdateStatus.NO_ACTION) {
 
-			errors = preparePatientData(mapping, request, patientInfo);
+            ActionMessages errors;
 
-			if (errors.size() > 0) {
-				return mapping.findForward(FWD_FAIL);
-			}
+            errors = preparePatientData(mapping, request, patientInfo);
+
+            if (errors.size() > 0) {
+                return mapping.findForward(FWD_FAIL);
+            }
 
 
-			try {
+            try {
                 persistPatientData(patientInfo, request.getContextPath());
-			} catch (LIMSInvalidSTNumberException e) {
+            } catch (LIMSInvalidSTNumberException e) {
                 request.setAttribute(IActionConstants.REQUEST_FAILED, true);
                 return addErrorMessageAndForward(mapping, request, new ActionError("errors.InvalidStNumber", null, null));
             } catch (LIMSValidationException e) {
                 request.setAttribute(IActionConstants.REQUEST_FAILED, true);
                 return addErrorMessageAndForward(mapping, request, new ActionError(e.getMessage(), null, null));
-            } catch (LIMSDuplicateRecordException e){
+            } catch (LIMSDuplicateRecordException e) {
                 request.setAttribute(IActionConstants.REQUEST_FAILED, true);
                 return addErrorMessageAndForward(mapping, request, new ActionError("errors.duplicate.STNumber", null, null));
-            }catch (LIMSRuntimeException lre) {
+            } catch (LIMSRuntimeException lre) {
                 request.setAttribute(IActionConstants.REQUEST_FAILED, true);
-				if (lre.getException() instanceof StaleObjectStateException) {
-					return addErrorMessageAndForward(mapping, request, new ActionError("errors.OptimisticLockException", null, null));
-				} else {
+                if (lre.getException() instanceof StaleObjectStateException) {
+                    return addErrorMessageAndForward(mapping, request, new ActionError("errors.OptimisticLockException", null, null));
+                } else {
                     return addErrorMessageAndForward(mapping, request, new ActionError("errors.UpdateException", null, null));
                 }
-			}
+            }
 
-			if (initializeFormOnSave) {
-				dynaForm.initialize(mapping);
-			}
-		}
+            if (initializeFormOnSave) {
+                dynaForm.initialize(mapping);
+            }
+        }
 
-		setSuccessFlag(request, forward);
+        setSuccessFlag(request, forward);
 
-		return mapping.findForward(forward);
-	}
+        return mapping.findForward(forward);
+    }
 
     private ActionForward addErrorMessageAndForward(ActionMapping mapping, HttpServletRequest request, ActionError error) {
         ActionMessages errors = new ActionMessages();
@@ -177,109 +176,109 @@ public class PatientManagementUpdateAction extends BaseAction implements IPatien
      * javax.servlet.http.HttpServletRequest,
      * us.mn.state.health.lims.common.action.BaseActionForm)
      */
-	public ActionMessages preparePatientData(ActionMapping mapping, HttpServletRequest request, PatientManagmentInfo patientInfo)
-			throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+    public ActionMessages preparePatientData(ActionMapping mapping, HttpServletRequest request, PatientManagmentInfo patientInfo)
+            throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 
-		if( currentUserId == null){
-			currentUserId = getSysUserId(request);
-		}
+        if (currentUserId == null) {
+            currentUserId = getSysUserId(request);
+        }
 
-		ActionMessages errors = new ActionMessages();// dynaForm.validate(mapping,
-		// request);
+        ActionMessages errors = new ActionMessages();// dynaForm.validate(mapping,
+        // request);
 
-		initMembers();
+        initMembers();
 
-		if (patientUpdateStatus == PatientUpdateStatus.UPDATE) {
-			loadForUpdate(patientInfo);
-		}
+        if (patientUpdateStatus == PatientUpdateStatus.UPDATE) {
+            loadForUpdate(patientInfo);
+        }
 
-		copyFormBeanToValueHolders(patientInfo);
+        copyFormBeanToValueHolders(patientInfo);
 
-		setSystemUserID();
+        setSystemUserID();
 
-		setLastUpdatedTimeStamps(patientInfo);
+        setLastUpdatedTimeStamps(patientInfo);
 
-		return errors;
-	}
+        return errors;
+    }
 
-	private void setLastUpdatedTimeStamps(PatientManagmentInfo patientInfo) {
-		String patientUpdate = patientInfo.getPatientLastUpdated();
-		if (!GenericValidator.isBlankOrNull(patientUpdate)) {
-			Timestamp timeStamp = Timestamp.valueOf(patientUpdate);
-			patient.setLastupdated(timeStamp);
-		}
+    private void setLastUpdatedTimeStamps(PatientManagmentInfo patientInfo) {
+        String patientUpdate = patientInfo.getPatientLastUpdated();
+        if (!GenericValidator.isBlankOrNull(patientUpdate)) {
+            Timestamp timeStamp = Timestamp.valueOf(patientUpdate);
+            patient.setLastupdated(timeStamp);
+        }
 
-		String personUpdate = patientInfo.getPersonLastUpdated();
-		if (!GenericValidator.isBlankOrNull(personUpdate)) {
-			Timestamp timeStamp = Timestamp.valueOf(personUpdate);
-			person.setLastupdated(timeStamp);
-		}
-	}
+        String personUpdate = patientInfo.getPersonLastUpdated();
+        if (!GenericValidator.isBlankOrNull(personUpdate)) {
+            Timestamp timeStamp = Timestamp.valueOf(personUpdate);
+            person.setLastupdated(timeStamp);
+        }
+    }
 
-	private void initMembers() {
-		patient = new Patient();
-		person = new Person();
-		patientIdentities = new ArrayList<PatientIdentity>();
-	}
+    private void initMembers() {
+        patient = new Patient();
+        person = new Person();
+        patientIdentities = new ArrayList<PatientIdentity>();
+    }
 
-	private void loadForUpdate(PatientManagmentInfo patientInfo) {
+    private void loadForUpdate(PatientManagmentInfo patientInfo) {
 
-		patientID = patientInfo.getPatientPK();
-		patient = patientDAO.readPatient(patientID);
-		person = patient.getPerson();
+        patientID = patientInfo.getPatientPK();
+        patient = patientDAO.readPatient(patientID);
+        person = patient.getPerson();
 
-		patientIdentities = identityDAO.getPatientIdentitiesForPatient(patient.getId());
-	}
+        patientIdentities = identityDAO.getPatientIdentitiesForPatient(patient.getId());
+    }
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * us.mn.state.health.lims.patient.action.IPatientUpdate#setPatientUpdateStatus
-	 * (us.mn.state.health.lims.common.action.BaseActionForm)
-	 */
-	public void setPatientUpdateStatus(PatientManagmentInfo patientInfo) {
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * us.mn.state.health.lims.patient.action.IPatientUpdate#setPatientUpdateStatus
+     * (us.mn.state.health.lims.common.action.BaseActionForm)
+     */
+    public void setPatientUpdateStatus(PatientManagmentInfo patientInfo) {
 
-		String status = patientInfo.getPatientProcessingStatus();
+        String status = patientInfo.getPatientProcessingStatus();
 
-		if (status.equals("noAction")) {
-			patientUpdateStatus = PatientUpdateStatus.NO_ACTION;
-		} else if (status.equals("update")) {
-			patientUpdateStatus = PatientUpdateStatus.UPDATE;
-		} else {
-			patientUpdateStatus = PatientUpdateStatus.ADD;
-		}
-	}
+        if (status.equals("noAction")) {
+            patientUpdateStatus = PatientUpdateStatus.NO_ACTION;
+        } else if (status.equals("update")) {
+            patientUpdateStatus = PatientUpdateStatus.UPDATE;
+        } else {
+            patientUpdateStatus = PatientUpdateStatus.ADD;
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * us.mn.state.health.lims.patient.action.IPatientUpdate#getPatientUpdateStatus
-	 * ()
-	 */
-	public PatientUpdateStatus getPatientUpdateStatus() {
-		return patientUpdateStatus;
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * us.mn.state.health.lims.patient.action.IPatientUpdate#getPatientUpdateStatus
+     * ()
+     */
+    public PatientUpdateStatus getPatientUpdateStatus() {
+        return patientUpdateStatus;
+    }
 
-	private void copyFormBeanToValueHolders(PatientManagmentInfo patientInfo) throws IllegalAccessException, InvocationTargetException,
-			NoSuchMethodException {
+    private void copyFormBeanToValueHolders(PatientManagmentInfo patientInfo) throws IllegalAccessException, InvocationTargetException,
+            NoSuchMethodException {
 
-		PropertyUtils.copyProperties(patient, patientInfo);
-		PropertyUtils.copyProperties(person, patientInfo);
-	}
+        PropertyUtils.copyProperties(patient, patientInfo);
+        PropertyUtils.copyProperties(person, patientInfo);
+    }
 
-	private void setSystemUserID() {
-		patient.setSysUserId(currentUserId);
-		person.setSysUserId(currentUserId);
+    private void setSystemUserID() {
+        patient.setSysUserId(currentUserId);
+        person.setSysUserId(currentUserId);
 
-		for (PatientIdentity identity : patientIdentities) {
-			identity.setSysUserId(currentUserId);
-		}
-	}
+        for (PatientIdentity identity : patientIdentities) {
+            identity.setSysUserId(currentUserId);
+        }
+    }
 
-	public void persistPatientData(PatientManagmentInfo patientInfo, String contextPath) throws LIMSRuntimeException {
-		PersonDAO personDAO = new PersonDAOImpl();
+    public void persistPatientData(PatientManagmentInfo patientInfo, String contextPath) throws LIMSRuntimeException {
+        PersonDAO personDAO = new PersonDAOImpl();
 
         if (patientUpdateStatus == PatientUpdateStatus.ADD) {
             personDAO.insertData(person);
@@ -290,20 +289,16 @@ public class PatientManagementUpdateAction extends BaseAction implements IPatien
         patient.setHealthCenter(healthCenterDAO.getByName(patientInfo.getHealthCenterName()));
         patient.setPerson(person);
         String uuid = UUID.randomUUID().toString();
-		if (patientUpdateStatus == PatientUpdateStatus.ADD) {
+        if (patientUpdateStatus == PatientUpdateStatus.ADD) {
             patient.setUuid(uuid);
-			patientDAO.insertData(patient);
-		} else if (patientUpdateStatus == PatientUpdateStatus.UPDATE) {
-			patientDAO.updateData(patient);
-		}
-
-		persistPatientRelatedInformation(patientInfo, patient);
-		patientID = patient.getId();
-
-        if(patientUpdateStatus == PatientUpdateStatus.ADD) {
-            patientPublisher.publish(uuid, contextPath);
+            patientDAO.insertData(patient);
+        } else if (patientUpdateStatus == PatientUpdateStatus.UPDATE) {
+            patientDAO.updateData(patient);
         }
-	}
+
+        persistPatientRelatedInformation(patientInfo, patient);
+        patientID = patient.getId();
+    }
 
     protected void persistPatientRelatedInformation(PatientManagmentInfo patientInfo, Patient patient) {
         persistIndentityTypes(patientInfo);
@@ -318,21 +313,21 @@ public class PatientManagementUpdateAction extends BaseAction implements IPatien
 
     protected void persistIndentityTypes(PatientManagmentInfo patientInfo) {
 
-		persistIdentityType(patientInfo.getSTnumber(), "ST");
-		persistIdentityType(patientInfo.getMothersName(), "MOTHER");
-		persistIdentityType(patientInfo.getAka(), "AKA");
-		persistIdentityType(patientInfo.getInsuranceNumber(), "INSURANCE");
-		persistIdentityType(patientInfo.getOccupation(), "OCCUPATION");
-		persistIdentityType(patientInfo.getSubjectNumber(), "SUBJECT");
-		persistIdentityType(patientInfo.getMothersInitial(), "MOTHERS_INITIAL");
-		persistIdentityType(patientInfo.getEducation(), "EDUCATION");
-		persistIdentityType(patientInfo.getMaritialStatus(), "MARITIAL");
-		persistIdentityType(patientInfo.getNationality(), "NATIONALITY");
-		persistIdentityType(patientInfo.getHealthDistrict(), "HEALTH DISTRICT");
-		persistIdentityType(patientInfo.getHealthRegion(), "HEALTH REGION");
-		persistIdentityType(patientInfo.getOtherNationality(), "OTHER NATIONALITY");
-		persistIdentityType(patientInfo.getPrimaryRelative(), "primaryRelative");
-	}
+        persistIdentityType(patientInfo.getSTnumber(), "ST");
+        persistIdentityType(patientInfo.getMothersName(), "MOTHER");
+        persistIdentityType(patientInfo.getAka(), "AKA");
+        persistIdentityType(patientInfo.getInsuranceNumber(), "INSURANCE");
+        persistIdentityType(patientInfo.getOccupation(), "OCCUPATION");
+        persistIdentityType(patientInfo.getSubjectNumber(), "SUBJECT");
+        persistIdentityType(patientInfo.getMothersInitial(), "MOTHERS_INITIAL");
+        persistIdentityType(patientInfo.getEducation(), "EDUCATION");
+        persistIdentityType(patientInfo.getMaritialStatus(), "MARITIAL");
+        persistIdentityType(patientInfo.getNationality(), "NATIONALITY");
+        persistIdentityType(patientInfo.getHealthDistrict(), "HEALTH DISTRICT");
+        persistIdentityType(patientInfo.getHealthRegion(), "HEALTH REGION");
+        persistIdentityType(patientInfo.getOtherNationality(), "OTHER NATIONALITY");
+        persistIdentityType(patientInfo.getPrimaryRelative(), "primaryRelative");
+    }
 
     private void persistPatientAddressInfo(PatientManagmentInfo patientInfo, Person person) {
         deleteExistingAddress(person);
@@ -365,134 +360,134 @@ public class PatientManagementUpdateAction extends BaseAction implements IPatien
 
 
     private void persistExtraPatientAddressInfo(PatientManagmentInfo patientInfo) {
-		PersonAddress village = null;
-		PersonAddress commune = null;
-		PersonAddress dept = null;
-		List<PersonAddress> personAddressList = personAddressDAO.getAddressPartsByPersonId(person.getId());
+        PersonAddress village = null;
+        PersonAddress commune = null;
+        PersonAddress dept = null;
+        List<PersonAddress> personAddressList = personAddressDAO.getAddressPartsByPersonId(person.getId());
 
-		for( PersonAddress address : personAddressList){
-			if( address.getAddressPartId().equals(ADDRESS_PART_COMMUNE_ID)){
-				commune = address;
-				commune.setValue(patientInfo.getCommune());
-				commune.setSysUserId(currentUserId);
-				personAddressDAO.update(commune);
-			}else if( address.getAddressPartId().equals(ADDRESS_PART_VILLAGE_ID)){
-				village = address;
-				village.setValue( patientInfo.getCity());
-				village.setSysUserId(currentUserId);
-				personAddressDAO.update(village);
-			}else if( address.getAddressPartId().equals(ADDRESS_PART_DEPT_ID)){
-				dept = address;
-				if( !GenericValidator.isBlankOrNull(patientInfo.getAddressDepartment()) && !patientInfo.getAddressDepartment().equals("0")){
-					dept.setValue(patientInfo.getAddressDepartment());
-					dept.setType("D");
-					dept.setSysUserId(currentUserId);
-					personAddressDAO.update(dept);
-				}
-			}
-		}
+        for (PersonAddress address : personAddressList) {
+            if (address.getAddressPartId().equals(ADDRESS_PART_COMMUNE_ID)) {
+                commune = address;
+                commune.setValue(patientInfo.getCommune());
+                commune.setSysUserId(currentUserId);
+                personAddressDAO.update(commune);
+            } else if (address.getAddressPartId().equals(ADDRESS_PART_VILLAGE_ID)) {
+                village = address;
+                village.setValue(patientInfo.getCity());
+                village.setSysUserId(currentUserId);
+                personAddressDAO.update(village);
+            } else if (address.getAddressPartId().equals(ADDRESS_PART_DEPT_ID)) {
+                dept = address;
+                if (!GenericValidator.isBlankOrNull(patientInfo.getAddressDepartment()) && !patientInfo.getAddressDepartment().equals("0")) {
+                    dept.setValue(patientInfo.getAddressDepartment());
+                    dept.setType("D");
+                    dept.setSysUserId(currentUserId);
+                    personAddressDAO.update(dept);
+                }
+            }
+        }
 
-		if( commune == null){
-			insertNewPatientInfo(ADDRESS_PART_COMMUNE_ID, patientInfo.getCommune(), "T");
-		}
+        if (commune == null) {
+            insertNewPatientInfo(ADDRESS_PART_COMMUNE_ID, patientInfo.getCommune(), "T");
+        }
 
-		if( village == null){
-			insertNewPatientInfo(ADDRESS_PART_VILLAGE_ID, patientInfo.getCity(), "T");
-		}
+        if (village == null) {
+            insertNewPatientInfo(ADDRESS_PART_VILLAGE_ID, patientInfo.getCity(), "T");
+        }
 
-		if( dept == null && patientInfo.getAddressDepartment() != null && !patientInfo.getAddressDepartment().equals("0")){
-			insertNewPatientInfo(ADDRESS_PART_DEPT_ID, patientInfo.getAddressDepartment(), "D");
-		}
-	}
+        if (dept == null && patientInfo.getAddressDepartment() != null && !patientInfo.getAddressDepartment().equals("0")) {
+            insertNewPatientInfo(ADDRESS_PART_DEPT_ID, patientInfo.getAddressDepartment(), "D");
+        }
+    }
 
-	private void insertNewPatientInfo(String partId, String value, String type) {
-		PersonAddress address;
-		address = new PersonAddress();
-		address.setPersonId(person.getId());
-		address.setAddressPartId(partId);
-		address.setType(type);
-		address.setValue(value);
-		address.setSysUserId(currentUserId);
-		personAddressDAO.insert(address);
-	}
+    private void insertNewPatientInfo(String partId, String value, String type) {
+        PersonAddress address;
+        address = new PersonAddress();
+        address.setPersonId(person.getId());
+        address.setAddressPartId(partId);
+        address.setType(type);
+        address.setValue(value);
+        address.setSysUserId(currentUserId);
+        personAddressDAO.insert(address);
+    }
 
-	public void persistIdentityType(String paramValue, String type) throws LIMSRuntimeException {
+    public void persistIdentityType(String paramValue, String type) throws LIMSRuntimeException {
 
-		Boolean newIdentityNeeded = true;
-		String typeID = PatientIdentityTypeMap.getInstance().getIDForType(type);
+        Boolean newIdentityNeeded = true;
+        String typeID = PatientIdentityTypeMap.getInstance().getIDForType(type);
 
-		if (patientUpdateStatus == PatientUpdateStatus.UPDATE) {
+        if (patientUpdateStatus == PatientUpdateStatus.UPDATE) {
 
-			for (PatientIdentity listIdentity : patientIdentities) {
-				if (listIdentity.getIdentityTypeId().equals(typeID)) {
+            for (PatientIdentity listIdentity : patientIdentities) {
+                if (listIdentity.getIdentityTypeId().equals(typeID)) {
 
-					newIdentityNeeded = false;
+                    newIdentityNeeded = false;
 
-					if ((listIdentity.getIdentityData() == null && !GenericValidator.isBlankOrNull(paramValue))
-							|| (listIdentity.getIdentityData() != null && !listIdentity.getIdentityData().equals(paramValue))) {
-						listIdentity.setIdentityData(paramValue);
-						identityDAO.updateData(listIdentity);
-					}
+                    if ((listIdentity.getIdentityData() == null && !GenericValidator.isBlankOrNull(paramValue))
+                            || (listIdentity.getIdentityData() != null && !listIdentity.getIdentityData().equals(paramValue))) {
+                        listIdentity.setIdentityData(paramValue);
+                        identityDAO.updateData(listIdentity);
+                    }
 
-					break;
-				}
-			}
-		}
+                    break;
+                }
+            }
+        }
 
-		if (newIdentityNeeded && !GenericValidator.isBlankOrNull(paramValue)) {
-			// either a new patient or a new identity item
-			PatientIdentity identity = new PatientIdentity();
-			identity.setPatientId(patient.getId());
-			identity.setIdentityTypeId(typeID);
-			identity.setSysUserId(currentUserId);
-			identity.setIdentityData(paramValue);
-			identity.setLastupdatedFields();
-			identityDAO.insertData(identity);
-		}
-	}
+        if (newIdentityNeeded && !GenericValidator.isBlankOrNull(paramValue)) {
+            // either a new patient or a new identity item
+            PatientIdentity identity = new PatientIdentity();
+            identity.setPatientId(patient.getId());
+            identity.setIdentityTypeId(typeID);
+            identity.setSysUserId(currentUserId);
+            identity.setIdentityData(paramValue);
+            identity.setLastupdatedFields();
+            identityDAO.insertData(identity);
+        }
+    }
 
-	protected void persistPatientType(PatientManagmentInfo patientInfo) {
+    protected void persistPatientType(PatientManagmentInfo patientInfo) {
 
-		PatientPatientTypeDAO patientPatientTypeDAO = new PatientPatientTypeDAOImpl();
+        PatientPatientTypeDAO patientPatientTypeDAO = new PatientPatientTypeDAOImpl();
 
-		String typeName = null;
+        String typeName = null;
 
-		try {
-			typeName = patientInfo.getPatientType();
-		} catch (Exception ignored) {
-		}
+        try {
+            typeName = patientInfo.getPatientType();
+        } catch (Exception ignored) {
+        }
 
-		if (!GenericValidator.isBlankOrNull(typeName) && !typeName.equals("0")) {
-			String typeID = PatientTypeMap.getInstance().getIDForType(typeName);
+        if (!GenericValidator.isBlankOrNull(typeName) && !typeName.equals("0")) {
+            String typeID = PatientTypeMap.getInstance().getIDForType(typeName);
 
-			PatientPatientType patientPatientType = patientPatientTypeDAO.getPatientPatientTypeForPatient(patient.getId());
+            PatientPatientType patientPatientType = patientPatientTypeDAO.getPatientPatientTypeForPatient(patient.getId());
 
-			if (patientPatientType == null) {
-				patientPatientType = new PatientPatientType();
-				patientPatientType.setSysUserId(currentUserId);
-				patientPatientType.setPatientId(patient.getId());
-				patientPatientType.setPatientTypeId(typeID);
-				patientPatientTypeDAO.insertData(patientPatientType);
-			} else {
-				patientPatientType.setSysUserId(currentUserId);
-				patientPatientType.setPatientTypeId(typeID);
-				patientPatientTypeDAO.updateData(patientPatientType);
-			}
-		}
-	}
+            if (patientPatientType == null) {
+                patientPatientType = new PatientPatientType();
+                patientPatientType.setSysUserId(currentUserId);
+                patientPatientType.setPatientId(patient.getId());
+                patientPatientType.setPatientTypeId(typeID);
+                patientPatientTypeDAO.insertData(patientPatientType);
+            } else {
+                patientPatientType.setSysUserId(currentUserId);
+                patientPatientType.setPatientTypeId(typeID);
+                patientPatientTypeDAO.updateData(patientPatientType);
+            }
+        }
+    }
 
 
-	@Override
-	protected String getPageTitleKey() {
-		return "patient.management.title";
-	}
+    @Override
+    protected String getPageTitleKey() {
+        return "patient.management.title";
+    }
 
-	@Override
-	protected String getPageSubtitleKey() {
-		return "patient.management.title";
-	}
+    @Override
+    protected String getPageSubtitleKey() {
+        return "patient.management.title";
+    }
 
-	public String getPatientId(BaseActionForm dynaForm) {
-		return GenericValidator.isBlankOrNull(patientID) ? (String) dynaForm.getString("patientPK") : patientID;
-	}
+    public String getPatientId(BaseActionForm dynaForm) {
+        return GenericValidator.isBlankOrNull(patientID) ? (String) dynaForm.getString("patientPK") : patientID;
+    }
 }

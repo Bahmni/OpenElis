@@ -18,7 +18,6 @@ package us.mn.state.health.lims.upload.patient;
 
 import junit.framework.Assert;
 import org.bahmni.csv.RowResult;
-import org.bahmni.feed.openelis.feed.service.impl.OpenElisUrlPublisher;
 import org.bahmni.feed.openelis.utils.AuditingService;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,7 +53,7 @@ public class PatientPersisterTest {
         validHealthCenter.setName(VALID_HEALTH_CENTRE);
         when(healthCenterDAO.getAll()).thenReturn(Arrays.asList(validHealthCenter));
 
-        patientPersister = new TestablePatientPersister(null, null, null, null, null, null, healthCenterDAO, genderDao, null);
+        patientPersister = new TestablePatientPersister(null, null, null, null, null, null, healthCenterDAO, genderDao);
     }
 
     @Test
@@ -231,8 +230,8 @@ public class PatientPersisterTest {
     public class TestablePatientPersister extends PatientPersister{
         private String stNumberFormat = "/([a-zA-Z]*)(\\d+)/";
 
-        public TestablePatientPersister(AuditingService auditingService, PersonDAO personDAO,PersonAddressDAO personAddressDAO, PatientDAO patientDAO,PatientIdentityDAO patientIdentityDAO, PatientIdentityTypeDAO patientIdentityTypeDAO,HealthCenterDAO healthCenterDAO, GenderDAO genderDao,OpenElisUrlPublisher patientFeedEventPublisher) {
-            super(auditingService, personDAO, personAddressDAO, patientDAO, patientIdentityDAO, patientIdentityTypeDAO, healthCenterDAO, genderDao, patientFeedEventPublisher);
+        public TestablePatientPersister(AuditingService auditingService, PersonDAO personDAO,PersonAddressDAO personAddressDAO, PatientDAO patientDAO,PatientIdentityDAO patientIdentityDAO, PatientIdentityTypeDAO patientIdentityTypeDAO,HealthCenterDAO healthCenterDAO, GenderDAO genderDao) {
+            super(auditingService, personDAO, personAddressDAO, patientDAO, patientIdentityDAO, patientIdentityTypeDAO, healthCenterDAO, genderDao);
         }
 
         @Override

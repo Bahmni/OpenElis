@@ -21,7 +21,6 @@ import org.bahmni.feed.openelis.feed.transaction.support.AtomFeedHibernateTransa
 import org.ict4h.atomfeed.server.repository.jdbc.AllEventRecordsJdbcImpl;
 import org.ict4h.atomfeed.server.service.EventService;
 import org.ict4h.atomfeed.server.service.EventServiceImpl;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
 
 public class EventPublishers {
     
@@ -36,10 +35,6 @@ public class EventPublishers {
         this.transactionManager = new AtomFeedHibernateTransactionManager();
         AllEventRecordsJdbcImpl records = new AllEventRecordsJdbcImpl(transactionManager);
         this.eventService = new EventServiceImpl(records);
-    }
-
-    public OpenElisUrlPublisher patientPublisher() {
-        return new OpenElisUrlPublisher(transactionManager, eventService, PATIENT_CATEGORY, PATIENT);
     }
 
     public OpenElisUrlPublisher accessionPublisher() {
