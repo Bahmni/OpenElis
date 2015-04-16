@@ -1294,4 +1294,36 @@
             ALTER TABLE type_of_sample alter column local_abbrev type VARCHAR(40);
         </sql>
     </changeSet>
+    <changeSet id="103" author="Chethan, Hemanth" context="bahmni">
+        <comment>altering the data type of name fields to accept 50 characters in person table and sampletracking view</comment>
+        <dropView schemaName="clinlims" viewName="sampletracking"/>
+        <modifyColumn schemaName="clinlims" tableName="person">
+            <column name="first_name" type="varchar(50)"/>
+            <column name="last_name" type="varchar(50)"/>
+            <column name="middle_name" type="varchar(50)"/>
+        </modifyColumn>
+        <sql>
+            CREATE OR REPLACE VIEW sampletracking AS
+            SELECT organizationinfo.accnum, patientinfo.patientid, organizationinfo.cliref, patientinfo.patientlastname, patientinfo.patientfirstname, patientinfo.dateofbirth, organizationinfo.orglocalabbrev AS org_local_abbrev, organizationinfo.orgname, organizationinfo.recddate, typeinfo.tosid, typeinfo.tosdesc, sourceinfo.sosid, sourceinfo.sosdesc, organizationinfo.colldate, sampleinfo.si AS sori
+            FROM ( SELECT s.accession_number AS accnum, p.last_name AS patientlastname, p.first_name AS patientfirstname, pt.external_id AS patientid, pt.birth_date AS dateofbirth
+            FROM sample s
+            LEFT JOIN sample_human samphum ON s.id = samphum.samp_id
+            LEFT JOIN patient pt ON samphum.patient_id = pt.id
+            LEFT JOIN person p ON pt.person_id = p.id) patientinfo, ( SELECT s.accession_number AS accnum, sos.id AS sosid, sos.description AS sosdesc
+            FROM sample s
+            LEFT JOIN sample_item sampitem ON s.id = sampitem.samp_id
+            LEFT JOIN source_of_sample sos ON sampitem.source_id = sos.id) sourceinfo, ( SELECT s.accession_number AS accnum, tos.id AS tosid, tos.description AS tosdesc
+            FROM sample s
+            LEFT JOIN sample_item sampitem ON s.id = sampitem.samp_id
+            LEFT JOIN type_of_sample tos ON sampitem.typeosamp_id = tos.id) typeinfo, ( SELECT s.accession_number AS accnum, org.local_abbrev AS orglocalabbrev, org.name AS orgname, s.received_date AS recddate, s.collection_date AS colldate, s.client_reference AS cliref
+            FROM sample s
+            LEFT JOIN sample_organization samporg ON s.id = samporg.samp_id
+            LEFT JOIN organization org ON samporg.org_id = org.id) organizationinfo, ( SELECT s.accession_number AS accnum, s.spec_or_isolate AS si
+            FROM sample s) sampleinfo
+            WHERE typeinfo.accnum::text = organizationinfo.accnum::text AND sourceinfo.accnum::text = organizationinfo.accnum::text AND patientinfo.accnum::text = organizationinfo.accnum::text AND sampleinfo.accnum::text = organizationinfo.accnum::text
+            ORDER BY organizationinfo.orglocalabbrev, organizationinfo.recddate, organizationinfo.colldate, typeinfo.tosdesc, sourceinfo.sosdesc;
+
+            ALTER TABLE sampletracking OWNER TO clinlims;
+        </sql>
+    </changeSet>
 </databaseChangeLog>
