@@ -1326,12 +1326,4 @@
             ALTER TABLE sampletracking OWNER TO clinlims;
         </sql>
     </changeSet>
-
-    <changeSet author="Charles, Sravanthi" id="104" context="bahmni">
-        <dropNotNullConstraint
-                columnDataType="varchar(20)"
-                columnName="accession_number"
-                schemaName="clinlims"
-                tableName="sample"/>
-    </changeSet>
 </databaseChangeLog>

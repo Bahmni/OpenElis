@@ -23,6 +23,4 @@ import java.util.List;
 public interface OrderListDAO {
     public List<Order> getAllToday();
     List<Order> getAllPendingBeforeToday();
-    List<Order> getAllSampleNotCollectedToday();
-    List<Order> getAllSampleNotCollectedPendingBeforeToday();
 }
