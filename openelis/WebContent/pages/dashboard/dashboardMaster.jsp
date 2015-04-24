@@ -12,6 +12,8 @@
 <%@ taglib uri="/tags/labdev-view" prefix="app" %>
 <bean:define id="formName" value='<%= (String)request.getAttribute(IActionConstants.FORM_NAME) %>' />
 <bean:define id="todayOrderListJson" name="<%=formName%>" property="todayOrderList" />
+<bean:define id="todaySampleNotCollectedListJson" name="<%=formName%>" property="todaySampleNotCollectedList" />
+<bean:define id="backlogSampleNotCollectedListJson" name="<%=formName%>" property="backlogSampleNotCollectedList" />
 <bean:define id="backlogOrderListJson" name="<%=formName%>" property="backlogOrderList" />
 
 <%!
@@ -95,8 +97,18 @@ basePath = path + "/";
             <li><a href="#todayListContainer">Today</a></li>
             <li><a href="#backlogListContainer">Backlog</a></li>
          </ul>
-        <div id="todayListContainer"><div id="todayListContainer-slick-grid"></div></div>
-        <div id="backlogListContainer"><div id="backlogListContainer-slick-grid"></div></div>
+        <div id="todayListContainer">
+            <span>Sample to be collected</span>
+            <div id="todaySampleNotCollectedListContainer-slick-grid"></div>
+            <span>Sample collected</span>
+            <div id="todayListContainer-slick-grid"></div>
+        </div>
+        <div id="backlogListContainer">
+            <span>Sample to be collected</span>
+            <div id="backlogSampleNotCollectedListContainer-slick-grid"></div>
+            <span>Sample collected</span>
+            <div id="backlogListContainer-slick-grid"></div>
+        </div>
     </div>
 
     <div id="patientDetails" class="hide details">
@@ -134,6 +146,8 @@ basePath = path + "/";
 
     jQuery(document).ready(function() {
         var todayOrderList = JSON.parse('<%=todayOrderListJson%>');
+        var todaySampleNotCollectedList = JSON.parse('<%=todaySampleNotCollectedListJson%>');
+        var backlogSampleNotCollectedList = JSON.parse('<%=backlogSampleNotCollectedListJson%>');
         var backlogOrderList = JSON.parse('<%=backlogOrderListJson%>');
 
         var isToday = function(date) {
@@ -156,6 +170,16 @@ basePath = path + "/";
         var dataViewForTodayTab = new Slick.Data.DataView({ inlineFilters: true });
         var gridForTodayOrder = new Slick.Grid(todayOrdersObject.div, dataViewForTodayTab, todayOrdersObject.columns,options);
         createGrid(gridForTodayOrder, dataViewForTodayTab, todayOrdersObject, onRowSelection);
+
+        var todaySampleNotCollectedObject = new order("#todaySampleNotCollectedListContainer-slick-grid", todaySampleNotCollectedList, generateAllLinksForOrder, getColumnsForSampleNotCollected, false);
+        var dataViewForTodaySampleNotCollected = new Slick.Data.DataView({ inlineFilters: true });
+        var gridForTodaySampleNotCollected = new Slick.Grid(todaySampleNotCollectedObject.div, dataViewForTodaySampleNotCollected, todaySampleNotCollectedObject.columns,options);
+        createGrid(gridForTodaySampleNotCollected, dataViewForTodaySampleNotCollected, todaySampleNotCollectedObject, onRowSelection);
+
+        var backlogSampleNotCollectedObject = new order("#backlogSampleNotCollectedListContainer-slick-grid", backlogSampleNotCollectedList, generateAllLinksForOrder, getColumnsForSampleNotCollected, false);
+        var dataViewForBacklogSampleNotCollected = new Slick.Data.DataView({ inlineFilters: true });
+        var gridForBacklogSampleNotCollected = new Slick.Grid(backlogSampleNotCollectedObject.div, dataViewForBacklogSampleNotCollected, backlogSampleNotCollectedObject.columns,options);
+        createGrid(gridForBacklogSampleNotCollected, dataViewForBacklogSampleNotCollected, backlogSampleNotCollectedObject, onRowSelection);
 
         var backlogOrdersObject = new order("#backlogListContainer-slick-grid", backlogOrderList, generateAllLinksForOrder, getColumnsForBacklogOrder, <%= alwaysValidate%>);
         var dataViewForBacklogTab = new Slick.Data.DataView({ inlineFilters: true });

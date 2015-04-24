@@ -38,7 +38,11 @@ function generateLinkForPrint(order){
     return "<a target='_blank' href='ReportPrint.do?type=patient&report=patientHaitiClinical&accessionDirect="+ order.accessionNumber +"&patientNumberDirect=" + order.stNumber + "'>Print</a>";
 }
 
+
 function generateAllLinksForOrder(order, alwaysValidate){
+    if(order.accessionNumber == null){
+        return  "<a target='_blank' href='SamplePatientEntry.do'>Collect Sample</a>";
+    }
     var enterResultLink = "<a href='AccessionResults.do?accessionNumber=" + order.accessionNumber + "&referer=LabDashboard'>Result</a>";
     if(alwaysValidate){
         //TODO: &type= is required in the url because of a bug I can't find the source of. The bug causes people without
@@ -100,6 +104,15 @@ function getColumnsForBacklogOrder(alwaysValidate) {
             {id:"isPrinted", name:"Printed", field:"isPrinted", sortable:true, cssClass:"cell-title", index:7, formatter:Slick.Formatters.Checkmark, searchable:false, minWidth:100},
         ];
     }
+}
+function getColumnsForSampleNotCollected() {
+        return [
+            {id:"stNumber", name:"PatientID", field:"stNumber", sortable:true, editor:Slick.Editors.Text, index:0, minWidth:160},
+            {id:"name", name:"PatientName", field:"name", sortable:true, index:1, editor:Slick.Editors.Text, minWidth:160},
+            {id:"source", name:"Source", field:"source", sortable:false, index:2, editor:Slick.Editors.Text, minWidth:160},
+            {id:"totalTestCount", name:"Total", field:"totalTestCount", sortable:true, editor:Slick.Editors.Text, index:3, searchable:false, minWidth:70},
+            {id:"link", name:"Action", field:"link", cssClass:"cell-title", formatter:formatter, index:4, editor:Slick.Editors.Text, searchable:false, minWidth:180}
+        ];
 }
 
 

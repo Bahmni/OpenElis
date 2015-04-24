@@ -41,9 +41,13 @@ public class DashboardAction extends BaseAction {
         DynaActionForm dynaForm = (DynaActionForm) form;
 
         String escapedTodayOrderListJson = asJson(orderListDAO.getAllToday());
+        String escapedTodaySampleNotCollectedListJson = asJson(orderListDAO.getAllSampleNotCollectedToday());
+        String escapedBacklogSampleNotCollectedListJson = asJson(orderListDAO.getAllSampleNotCollectedPendingBeforeToday());
         String escapedBacklogOrderListJson = asJson(orderListDAO.getAllPendingBeforeToday());
 
         dynaForm.set("todayOrderList", escapedTodayOrderListJson);
+        dynaForm.set("todaySampleNotCollectedList", escapedTodaySampleNotCollectedListJson);
+        dynaForm.set("backlogSampleNotCollectedList", escapedBacklogSampleNotCollectedListJson);
         dynaForm.set("backlogOrderList", escapedBacklogOrderListJson);
 
         return mapping.findForward("success");
