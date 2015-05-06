@@ -85,7 +85,7 @@ public class OrderListDAOImplIT extends IT {
         dateInThePast = new Date(today.getTime() - 10 * 24 * 60 * 60 * 1000);
     }
 
-    @org.junit.Test
+    @org.junit.Test @Ignore
     public void shouldGetAllTestsToday() {
     Sample sample1 = createSample(accessionNumber1, today);
         createSampleHuman(sample1, patient);

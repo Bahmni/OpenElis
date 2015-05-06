@@ -159,7 +159,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
     public void process(OpenMRSEncounter openMRSEncounter) {
         logInfo(openMRSEncounter);
         FeedProcessState processState = new FeedProcessState();
-        Sample sample = sampleDAO.getSampleByUUID(openMRSEncounter.getUuid());
+        Sample sample = sampleDAO.getSampleByUUID(openMRSEncounter.getEncounterUuid());
         if (sample != null) {
             updateSample(openMRSEncounter, sample, processState);
         } else {
@@ -172,8 +172,8 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         String sysUserId = auditingService.getSysUserId();
         Date nowAsSqlDate = DateUtil.getNowAsSqlDate();
 
-        Patient patient = getPatient(openMRSEncounter.getPatient());
-        Sample sample = getSample(sysUserId, nowAsSqlDate, openMRSEncounter.getUuid());
+        Patient patient = getPatient(openMRSEncounter.getPatientUuid());
+        Sample sample = getSample(sysUserId, nowAsSqlDate, openMRSEncounter.getEncounterUuid());
         SampleHuman sampleHuman = getSampleHuman(sysUserId);
         List<SampleTestCollection> sampleTestCollections = getSampleTestCollections(openMRSEncounter, sysUserId, nowAsSqlDate, sample, processState);
 
@@ -257,8 +257,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         return sampleHuman;
     }
 
-    private Patient getPatient(OpenMRSPatient openMRSPatient) {
-        String patientUUID = openMRSPatient.getUuid();
+    private Patient getPatient(String patientUUID) {
         Patient patient = patientDAO.getPatientByUUID(patientUUID);
         if (patient == null) {
             throw new RuntimeException(String.format("Patient with uuid '%s' not found in ELIS", patientUUID));
@@ -342,11 +341,9 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
     }
 
     private Sample getSample(String sysUserId, Date nowAsSqlDate, String openMRSEncounterUuid) {
-        String accessionNumber = AccessionNumberUtil.getNextAccessionNumber("");
-
         Sample sample = new Sample();
         sample.setSysUserId(sysUserId);
-        sample.setAccessionNumber(accessionNumber);
+        sample.setAccessionNumber(null);
 
         // TODO : Mujir - remove this hardcoding??? Read this from the event???
         sample.setSampleSource(sampleSourceDAO.getByName("OPD"));
@@ -355,11 +352,6 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         // TODO: Aarthy - Send encounter Date Time as part of event
         sample.setEnteredDate(new java.util.Date());
         sample.setReceivedDate(nowAsSqlDate);
-
-//        if (useReceiveDateForCollectionDate) {
-//            sample.setCollectionDateForDisplay(collectionDateFromRecieveDate);
-//        }
-
         sample.setDomain(SystemConfiguration.getInstance().getHumanDomain());
         sample.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.OrderStatus.Entered));
 
@@ -376,7 +368,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
     }
 
     private void logInfo(OpenMRSEncounter openMRSEncounter) {
-        logger.info(String.format("Processing encounter with ID='%s'", openMRSEncounter.getUuid()));
+        logger.info(String.format("Processing encounter with ID='%s'", openMRSEncounter.getEncounterUuid()));
     }
 
     private HashSet<Integer> getCancelledAnalysisStatusIds() {

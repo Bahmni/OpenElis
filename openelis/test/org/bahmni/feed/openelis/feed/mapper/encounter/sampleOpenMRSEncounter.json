@@ -1,339 +1,36 @@
 {
-    "uuid": "7820b07d-50e9-4fed-b991-c38692b3d4ec",
-    "patient": {
-        "uuid": "105059a8-5226-4b1f-b512-0d3ae685287d",
-        "display": "GAN200102 - david walton",
-        "identifiers": [
-            {
-                "uuid": "d4cf87e3-c759-4b8e-9d0c-b46fd86dbd1d",
-                "display": "JSS = GAN200102",
-                "links": [
-                    {
-                        "uri": "http://192.168.33.10/openmrs/ws/rest/v1/patient/105059a8-5226-4b1f-b512-0d3ae685287d/identifier/d4cf87e3-c759-4b8e-9d0c-b46fd86dbd1d",
-                        "rel": "self"
-                    }
-                ]
-            }
-        ],
-        "person": {
-            "uuid": "105059a8-5226-4b1f-b512-0d3ae685287d",
-            "display": "david walton",
-            "gender": "M",
-            "age": 40,
-            "birthdate": "1973-10-01T00:00:00.000+0530",
-            "birthdateEstimated": true,
-            "dead": false,
-            "deathDate": null,
-            "causeOfDeath": null,
-            "preferredName": {
-                "uuid": "4f4ebeb6-480c-46c7-842d-954007a4a0f3",
-                "display": "david walton",
-                "links": [
-                    {
-                        "uri": "http://192.168.33.10/openmrs/ws/rest/v1/person/105059a8-5226-4b1f-b512-0d3ae685287d/name/4f4ebeb6-480c-46c7-842d-954007a4a0f3",
-                        "rel": "self"
-                    }
-                ]
-            },
-            "preferredAddress": {
-                "uuid": "6b5f4530-3762-4f3b-a9a2-fb3bdeac95f8",
-                "display": null,
-                "links": [
-                    {
-                        "uri": "http://192.168.33.10/openmrs/ws/rest/v1/person/105059a8-5226-4b1f-b512-0d3ae685287d/address/6b5f4530-3762-4f3b-a9a2-fb3bdeac95f8",
-                        "rel": "self"
-                    }
-                ]
-            },
-            "attributes": [
-                {
-                    "uuid": "e61ea89f-0d28-4118-a97c-09a441b4a497",
-                    "display": "healthCenter = 2",
-                    "links": [
-                        {
-                            "uri": "http://192.168.33.10/openmrs/ws/rest/v1/person/105059a8-5226-4b1f-b512-0d3ae685287d/attribute/e61ea89f-0d28-4118-a97c-09a441b4a497",
-                            "rel": "self"
-                        }
-                    ]
-                }
-            ],
-            "voided": false,
-            "links": [
-                {
-                    "uri": "http://192.168.33.10/openmrs/ws/rest/v1/person/105059a8-5226-4b1f-b512-0d3ae685287d",
-                    "rel": "self"
-                },
-                {
-                    "uri": "http://192.168.33.10/openmrs/ws/rest/v1/person/105059a8-5226-4b1f-b512-0d3ae685287d?v=full",
-                    "rel": "full"
-                }
-            ],
-            "resourceVersion": "1.8"
-        },
-        "voided": false,
-        "links": [
-            {
-                "uri": "http://192.168.33.10/openmrs/ws/rest/v1/patient/105059a8-5226-4b1f-b512-0d3ae685287d",
-                "rel": "self"
-            },
-            {
-                "uri": "http://192.168.33.10/openmrs/ws/rest/v1/patient/105059a8-5226-4b1f-b512-0d3ae685287d?v=full",
-                "rel": "full"
-            }
-        ],
-        "resourceVersion": "1.8"
-    },
-    "orders": [
+    "encounterUuid": "7820b07d-50e9-4fed-b991-c38692b3d4ec",
+    "patientUuid": "105059a8-5226-4b1f-b512-0d3ae685287d",
+    "testOrders": [
         {
             "uuid": "ac0819a9-11c1-4310-8f0a-feee71e5086b",
-            "orderType": {
-                "uuid": "42f409ca-2b21-11e3-afe4-0800271c1b75",
-                "display": "Lab Order",
-                "name": "Lab Order",
-                "description": "An order for laboratory tests",
-                "retired": false,
-                "links": [
-                    {
-                        "uri": "http://192.168.33.10/openmrs/ws/rest/v1/ordertype/42f409ca-2b21-11e3-afe4-0800271c1b75",
-                        "rel": "self"
-                    },
-                    {
-                        "uri": "http://192.168.33.10/openmrs/ws/rest/v1/ordertype/42f409ca-2b21-11e3-afe4-0800271c1b75?v=full",
-                        "rel": "full"
-                    }
-                ],
-                "resourceVersion": "1.8"
-            },
+            "orderTypeUuid": "519ab361-9bc6-11e3-927e-8840ab96f0f1",
+            "dateCreated": "2015-05-05T05:36:57.000+0000",
+            "orderType":"Lab Order",
             "concept": {
                 "uuid": "4e167df9-80f5-4caa-9a82-ec97908cbd59",
-                "display": "Anaemia Panel",
-                "name": {
-                    "display": "Anaemia Panel",
-                    "uuid": "753cbb2c-9b1d-4d80-9894-b4fcf76894aa",
-                    "name": "Anaemia Panel",
-                    "locale": "en",
-                    "localePreferred": true,
-                    "conceptNameType": "FULLY_SPECIFIED",
-                    "links": [
-                        {
-                            "uri": "http://192.168.33.10/openmrs/ws/rest/v1/concept/4e167df9-80f5-4caa-9a82-ec97908cbd59/name/753cbb2c-9b1d-4d80-9894-b4fcf76894aa",
-                            "rel": "self"
-                        },
-                        {
-                            "uri": "http://192.168.33.10/openmrs/ws/rest/v1/concept/4e167df9-80f5-4caa-9a82-ec97908cbd59/name/753cbb2c-9b1d-4d80-9894-b4fcf76894aa?v=full",
-                            "rel": "full"
-                        }
-                    ],
-                    "resourceVersion": "1.9"
-                },
-                "datatype": {
-                    "uuid": "8d4a4488-c2cc-11de-8d13-0010c6dffd0f",
-                    "display": "Numeric",
-                    "links": [
-                        {
-                            "uri": "http://192.168.33.10/openmrs/ws/rest/v1/conceptdatatype/8d4a4488-c2cc-11de-8d13-0010c6dffd0f",
-                            "rel": "self"
-                        }
-                    ]
-                },
-                "conceptClass": {
-                    "uuid": "8d492026-c2cc-11de-8d13-0010c6dffd0f",
-                    "display": "LabSet",
-                    "links": [
-                        {
-                            "uri": "http://192.168.33.10/openmrs/ws/rest/v1/conceptclass/8d492026-c2cc-11de-8d13-0010c6dffd0f",
-                            "rel": "self"
-                        }
-                    ]
-                },
-                "set": true,
-                "version": null,
-                "retired": false,
-                "names": [
-                    {
-                        "uuid": "753cbb2c-9b1d-4d80-9894-b4fcf76894aa",
-                        "display": "Anaemia Panel",
-                        "links": [
-                            {
-                                "uri": "http://192.168.33.10/openmrs/ws/rest/v1/concept/4e167df9-80f5-4caa-9a82-ec97908cbd59/name/753cbb2c-9b1d-4d80-9894-b4fcf76894aa",
-                                "rel": "self"
-                            }
-                        ]
-                    }
-                ],
-                "descriptions": [],
-                "mappings": [],
-                "answers": [],
-                "setMembers": [
-                    {
-                        "uuid": "ad9e6ae7-3b89-4d39-9b24-3f0616a45696",
-                        "display": "RBC Count",
-                        "links": [
-                            {
-                                "uri": "http://192.168.33.10/openmrs/ws/rest/v1/concept/ad9e6ae7-3b89-4d39-9b24-3f0616a45696",
-                                "rel": "self"
-                            }
-                        ]
-                    },
-                    {
-                        "uuid": "112211aa-40ca-4633-8fd8-44e128970c52",
-                        "display": "Platelet Count",
-                        "links": [
-                            {
-                                "uri": "http://192.168.33.10/openmrs/ws/rest/v1/concept/112211aa-40ca-4633-8fd8-44e128970c52",
-                                "rel": "self"
-                            }
-                        ]
-                    }
-                ],
-                "links": [
-                    {
-                        "uri": "http://192.168.33.10/openmrs/ws/rest/v1/concept/4e167df9-80f5-4caa-9a82-ec97908cbd59",
-                        "rel": "self"
-                    },
-                    {
-                        "uri": "http://192.168.33.10/openmrs/ws/rest/v1/concept/4e167df9-80f5-4caa-9a82-ec97908cbd59?v=full",
-                        "rel": "full"
-                    }
-                ],
-                "resourceVersion": "1.9"
-            }
+                "conceptClass": "LabSet",
+                "units": null,
+                "shortName": null,
+                "dataType": "N/A",
+                "name": "Anaemia Panel",
+                "set": true
+              }
         },
         {
             "uuid": "ce3eeba1-2176-48d0-9ff4-53b731121274",
-            "orderType": {
-                "uuid": "42f409ca-2b21-11e3-afe4-0800271c1b75",
-                "display": "Lab Order",
-                "name": "Lab Order",
-                "description": "An order for laboratory tests",
-                "retired": false,
-                "links": [
-                    {
-                        "uri": "http://192.168.33.10/openmrs/ws/rest/v1/ordertype/42f409ca-2b21-11e3-afe4-0800271c1b75",
-                        "rel": "self"
-                    },
-                    {
-                        "uri": "http://192.168.33.10/openmrs/ws/rest/v1/ordertype/42f409ca-2b21-11e3-afe4-0800271c1b75?v=full",
-                        "rel": "full"
-                    }
-                ],
-                "resourceVersion": "1.8"
-            },
+            "orderType": "Lab Order",
             "concept": {
                 "uuid": "8c47a469-1b8f-47d9-9363-b97b45e3e740",
                 "display": "Routine Blood",
-                "name": {
-                    "display": "Routine Blood",
-                    "uuid": "9491f38b-4a37-4fed-9bef-20604e25cc92",
-                    "name": "Routine Blood",
-                    "locale": "en",
-                    "localePreferred": true,
-                    "conceptNameType": "FULLY_SPECIFIED",
-                    "links": [
-                        {
-                            "uri": "http://192.168.33.10/openmrs/ws/rest/v1/concept/8c47a469-1b8f-47d9-9363-b97b45e3e740/name/9491f38b-4a37-4fed-9bef-20604e25cc92",
-                            "rel": "self"
-                        },
-                        {
-                            "uri": "http://192.168.33.10/openmrs/ws/rest/v1/concept/8c47a469-1b8f-47d9-9363-b97b45e3e740/name/9491f38b-4a37-4fed-9bef-20604e25cc92?v=full",
-                            "rel": "full"
-                        }
-                    ],
-                    "resourceVersion": "1.9"
-                },
-                "datatype": {
-                    "uuid": "8d4a4488-c2cc-11de-8d13-0010c6dffd0f",
-                    "display": "Numeric",
-                    "links": [
-                        {
-                            "uri": "http://192.168.33.10/openmrs/ws/rest/v1/conceptdatatype/8d4a4488-c2cc-11de-8d13-0010c6dffd0f",
-                            "rel": "self"
-                        }
-                    ]
-                },
-                "conceptClass": {
-                    "uuid": "8d492026-c2cc-11de-8d13-0010c6dffd0f",
-                    "display": "LabSet",
-                    "links": [
-                        {
-                            "uri": "http://192.168.33.10/openmrs/ws/rest/v1/conceptclass/8d492026-c2cc-11de-8d13-0010c6dffd0f",
-                            "rel": "self"
-                        }
-                    ]
-                },
                 "set": true,
-                "version": null,
-                "retired": false,
-                "names": [
-                    {
-                        "uuid": "9491f38b-4a37-4fed-9bef-20604e25cc92",
-                        "display": "Routine Blood",
-                        "links": [
-                            {
-                                "uri": "http://192.168.33.10/openmrs/ws/rest/v1/concept/8c47a469-1b8f-47d9-9363-b97b45e3e740/name/9491f38b-4a37-4fed-9bef-20604e25cc92",
-                                "rel": "self"
-                            }
-                        ]
-                    }
-                ],
-                "descriptions": [],
-                "mappings": [],
-                "answers": [],
-                "setMembers": [
-                    {
-                        "uuid": "73249ad2-144b-482a-8fda-bec1133fc605",
-                        "display": "Haemoglobin",
-                        "links": [
-                            {
-                                "uri": "http://192.168.33.10/openmrs/ws/rest/v1/concept/73249ad2-144b-482a-8fda-bec1133fc605",
-                                "rel": "self"
-                            }
-                        ]
-                    },
-                    {
-                        "uuid": "9fb441d0-5559-4fe0-bee3-e1cfecb99c4f",
-                        "display": "Sickling Test",
-                        "links": [
-                            {
-                                "uri": "http://192.168.33.10/openmrs/ws/rest/v1/concept/9fb441d0-5559-4fe0-bee3-e1cfecb99c4f",
-                                "rel": "self"
-                            }
-                        ]
-                    }
-                ],
-                "links": [
-                    {
-                        "uri": "http://192.168.33.10/openmrs/ws/rest/v1/concept/8c47a469-1b8f-47d9-9363-b97b45e3e740",
-                        "rel": "self"
-                    },
-                    {
-                        "uri": "http://192.168.33.10/openmrs/ws/rest/v1/concept/8c47a469-1b8f-47d9-9363-b97b45e3e740?v=full",
-                        "rel": "full"
-                    }
-                ],
-                "resourceVersion": "1.9"
+                "resourceVersion": "1.9",
+                "name":"Routine Blood"
             }
         },
         {
             "uuid": "3508dbea-6844-4174-8787-40ab809f2522",
-            "orderType": {
-                "uuid": "42f409ca-2b21-11e3-afe4-0800271c1b75",
-                "display": "Lab Order",
-                "name": "Lab Order",
-                "description": "An order for laboratory tests",
-                "retired": false,
-                "links": [
-                    {
-                        "uri": "http://192.168.33.10/openmrs/ws/rest/v1/ordertype/42f409ca-2b21-11e3-afe4-0800271c1b75",
-                        "rel": "self"
-                    },
-                    {
-                        "uri": "http://192.168.33.10/openmrs/ws/rest/v1/ordertype/42f409ca-2b21-11e3-afe4-0800271c1b75?v=full",
-                        "rel": "full"
-                    }
-                ],
-                "resourceVersion": "1.8"
-            },
+            "orderType": "Lab Order",
             "concept": {
                 "uuid": "15a9d9e5-edcb-4e64-85ad-551693aeed5c",
                 "display": "ESR",

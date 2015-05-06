@@ -20,15 +20,17 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OpenMRSOrder {
+    public static final String LAB_ORDER_TYPE = "Lab Order";
+
     private String uuid;
-    private OpenMRSOrderType orderType;
+    private String orderType;
     private Boolean voided;
     private OpenMRSConcept concept;
 
     public OpenMRSOrder() {
     }
 
-    public OpenMRSOrder(String uuid, OpenMRSOrderType orderType, OpenMRSConcept concept, Boolean voided) {
+    public OpenMRSOrder(String uuid, String orderType, OpenMRSConcept concept, Boolean voided) {
         this.uuid = uuid;
         this.orderType = orderType;
         this.voided = voided;
@@ -39,7 +41,7 @@ public class OpenMRSOrder {
         return uuid;
     }
 
-    public OpenMRSOrderType getOrderType() {
+    public String getOrderType() {
         return orderType;
     }
 
@@ -47,7 +49,7 @@ public class OpenMRSOrder {
         return concept;
     }
 
-    public void setOrderType(OpenMRSOrderType orderType) {
+    public void setOrderType(String orderType) {
         this.orderType = orderType;
     }
 
@@ -56,7 +58,7 @@ public class OpenMRSOrder {
     }
 
     public boolean isLabOrder() {
-        return orderType.isLabOrder();
+        return LAB_ORDER_TYPE.equals(orderType);
     }
 
     public boolean isLabOrderForPanel() {

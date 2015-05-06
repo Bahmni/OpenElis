@@ -13,7 +13,7 @@
         <version name="lastupdated" column="LASTUPDATED" type="timestamp" access="field"/>
 
         <property name="accessionNumber" type="java.lang.String">
-            <column name="ACCESSION_NUMBER" precision="20" not-null="true" unique="true" />
+            <column name="ACCESSION_NUMBER" precision="20" unique="true" />
         </property>
         <property name="packageId" type="us.mn.state.health.lims.hibernate.resources.usertype.LIMSStringNumberUserType">
             <column name="PACKAGE_ID" precision="10" scale="0" />

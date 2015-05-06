@@ -772,9 +772,10 @@ public class SampleDAOImpl extends BaseDAOImpl implements SampleDAO {
     @Override
     public Sample getSampleByUUID(String uuid) {
         try{
-            String sql = "from Sample as sample where sample.uuid = :uuid";
+            String sql = "from Sample as sample where sample.uuid = :uuid and sample.statusId <> :completedStatus";
             Query query = HibernateUtil.getSession().createQuery(sql);
             query.setParameter("uuid", uuid);
+            query.setParameter("completedStatus", Integer.parseInt(SystemConfiguration.getInstance().getSampleStatusEntry2Complete()));
             return (Sample) query.uniqueResult();
         } catch(HibernateException he) {
             LogEvent.logErrorStack("SampleDAOImpl", "getSampleByUUID(String uuid)", he);

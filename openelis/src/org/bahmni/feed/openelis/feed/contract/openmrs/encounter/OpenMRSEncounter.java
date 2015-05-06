@@ -24,46 +24,38 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OpenMRSEncounter {
-    private String uuid;
-    private OpenMRSPatient patient;
-    private List<OpenMRSOrder> orders = new ArrayList<>();
+    private String encounterUuid;
+    private String patientUuid;
+    private List<OpenMRSOrder> testOrders = new ArrayList<>();
 
     public OpenMRSEncounter() {
     }
 
-    public OpenMRSEncounter(String uuid, OpenMRSPatient patient, List<OpenMRSOrder> orders) {
+    public OpenMRSEncounter(String encounterUuid, String patientUuid, List<OpenMRSOrder> testOrders) {
 
-        this.uuid = uuid;
-        this.patient = patient;
-        this.orders = orders;
+        this.encounterUuid = encounterUuid;
+        this.testOrders = testOrders;
+        this.patientUuid = patientUuid;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setEncounterUuid(String encounterUuid) {
+        this.encounterUuid = encounterUuid;
     }
 
-    public void setPatient(OpenMRSPatient patient) {
-        this.patient = patient;
+    public String getEncounterUuid() {
+        return encounterUuid;
     }
 
-    public String getUuid() {
-        return uuid;
+    public List<OpenMRSOrder> getTestOrders() {
+        return testOrders;
     }
 
-    public List<OpenMRSOrder> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(List<OpenMRSOrder> orders) {
-        this.orders = orders;
-    }
-
-    public OpenMRSPatient getPatient() {
-        return patient;
+    public void setTestOrders(List<OpenMRSOrder> orders) {
+        this.testOrders = orders;
     }
 
     public boolean hasLabOrder() {
-        for (OpenMRSOrder openMRSOrder : orders) {
+        for (OpenMRSOrder openMRSOrder : testOrders) {
             if (openMRSOrder.isLabOrder())
                 return true;
         }
@@ -72,10 +64,18 @@ public class OpenMRSEncounter {
 
     public List<OpenMRSOrder> getLabOrders() {
         List<OpenMRSOrder> labOrders = new ArrayList<>();
-        for (OpenMRSOrder openMRSOrder : orders) {
+        for (OpenMRSOrder openMRSOrder : testOrders) {
             if (openMRSOrder.isLabOrder() && !openMRSOrder.isVoided())
                 labOrders.add(openMRSOrder);
         }
         return labOrders;
+    }
+
+    public String getPatientUuid() {
+        return patientUuid;
+    }
+
+    public void setPatientUuid(String patientUuid) {
+        this.patientUuid = patientUuid;
     }
 }
