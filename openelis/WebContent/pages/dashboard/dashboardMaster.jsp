@@ -98,15 +98,15 @@ basePath = path + "/";
             <li><a href="#backlogListContainer">Backlog</a></li>
          </ul>
         <div id="todayListContainer">
-            <span>Sample to be collected</span>
+            <span class="sample_title_dashboard">Sample to be collected</span>
             <div id="todaySampleNotCollectedListContainer-slick-grid"></div>
-            <span>Sample collected</span>
+            <span class="sample_title_dashboard">Sample collected</span>
             <div id="todayListContainer-slick-grid"></div>
         </div>
         <div id="backlogListContainer">
-            <span>Sample to be collected</span>
+            <span class="sample_title_dashboard">Sample to be collected</span>
             <div id="backlogSampleNotCollectedListContainer-slick-grid"></div>
-            <span>Sample collected</span>
+            <span class="sample_title_dashboard">Sample collected</span>
             <div id="backlogListContainer-slick-grid"></div>
         </div>
     </div>

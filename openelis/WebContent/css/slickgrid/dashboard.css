@@ -50,7 +50,7 @@ table td{
     color:#ffffff;
 }
 #todayListContainer,#backlogListContainer{
-	padding-bottom: 25px;
+	padding: 25px;
 }
 #todayListContainer{
     width:1091px;
@@ -69,6 +69,9 @@ table td{
 }
 #todayStat,#upload{
     margin-bottom:20px;
+}
+#todayStat{
+    margin: -25px 0 13px;
 }
 #todayStat table,#upload table{
     font-size: 15px;
@@ -100,4 +103,28 @@ table td{
 #uploadDetails #errorMessage {
     text-transform:capitalize;
     color:#ffffff;
+}
+
+
+
+#todayListContainer span.sample_title_dashboard, #backlogListContainer span.sample_title_dashboard{
+  font-weight: bold;
+  font-size: 17px;
+  line-height: 1;
+  display:block;
+  padding-bottom:5px
+}
+#todaySampleNotCollectedListContainer-slick-grid,#backlogSampleNotCollectedListContainer-slick-grid{
+    margin-bottom:25px !important;
+    border: 1px #cecece solid;
+}
+#todayListContainer .slick-header.ui-state-default,#todayListContainer .slick-headerrow.ui-state-default,
+#backlogListContainer .slick-header.ui-state-default,#backlogListContainer .slick-headerrow.ui-state-default  {
+    border : none !important
+}
+#todayListContainer  .slick-headerrow-column.ui-state-default,
+#backlogListContainer  .slick-headerrow-column.ui-state-default{
+  border-top: none;
+  border-left-color: transparent;
+  padding: 7px 4px 0px 4px;
 }
