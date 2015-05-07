@@ -208,7 +208,9 @@ public class SampleEditUpdateAction extends BaseAction {
 					}
 				}
                 Sample sample = sampleDAO.getSampleByAccessionNumber(dynaForm.getString("accessionNumber"));
-                accessionPublisher.publish(sample.getUUID(), request.getContextPath());
+				if(!StringUtil.isNullorNill(sample.getAccessionNumber())){
+					accessionPublisher.publish(sample.getUUID(), request.getContextPath());
+				}
 
 			} catch (LIMSRuntimeException lre) {
                 request.setAttribute(IActionConstants.REQUEST_FAILED, true);

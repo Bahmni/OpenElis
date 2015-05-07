@@ -23,6 +23,7 @@ import org.bahmni.openelis.domain.AccessionDetail;
 import org.bahmni.openelis.domain.AccessionNote;
 import org.bahmni.openelis.domain.TestDetail;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
+import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
 import us.mn.state.health.lims.note.dao.NoteDAO;
 import us.mn.state.health.lims.note.valueholder.Note;
@@ -47,6 +48,7 @@ import us.mn.state.health.lims.unitofmeasure.valueholder.UnitOfMeasure;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class AccessionService {
@@ -75,18 +77,41 @@ public class AccessionService {
     }
 
     public AccessionDetail getAccessionDetailFor(String sampleUuid) {
-        Sample sample = sampleDao.getSampleByUUID(sampleUuid);
-        Patient patient = sampleHumanDAO.getPatientForSample(sample);
-
-        return mapToAccessionDetail(sample, patient);
-    }
-
-    private AccessionDetail mapToAccessionDetail(Sample sample, Patient patient) {
-        AccessionDetail accessionDetail = new AccessionDetail();
-        mapSample(sample, accessionDetail);
-        mapPatient(patient, accessionDetail);
+        List<Sample> samples = sampleDao.getSamplesByEncounterUuid(sampleUuid);
+        if(samples.size()==0){
+            throw new LIMSRuntimeException("The sample with uuid ["+sampleUuid+"] does not exist");
+        }
+        Patient patient = sampleHumanDAO.getPatientForSample(samples.get(0));
+        List<AccessionDetail> accessionDetails = mapToAccessionDetail(samples, patient);
+        AccessionDetail accessionDetail = mergeAccessionDetailsForEncounter(accessionDetails);
 
         return accessionDetail;
+    }
+
+    protected AccessionDetail mergeAccessionDetailsForEncounter(List<AccessionDetail> accessionDetails) {
+        if(accessionDetails.size() == 1){
+            return accessionDetails.get(0);
+        }
+        Iterator<AccessionDetail> iterator = accessionDetails.iterator();
+        AccessionDetail accessionDetail = iterator.hasNext() ? iterator.next() : null;
+        while (iterator.hasNext()){
+            accessionDetail.getTestDetails().addAll(iterator.next().getTestDetails());
+        }
+
+        return accessionDetail;
+    }
+
+    private List<AccessionDetail> mapToAccessionDetail(List<Sample> samples, Patient patient) {
+
+        List<AccessionDetail> accessionDetails = new ArrayList<>();
+        for(Sample sample: samples){
+            AccessionDetail accessionDetail = new AccessionDetail();
+            mapSample(sample, accessionDetail);
+            mapPatient(patient, accessionDetail);
+            accessionDetails.add(accessionDetail);
+        }
+
+        return accessionDetails;
     }
 
     private void mapPatient(Patient patient, AccessionDetail accessionDetail) {

@@ -17,19 +17,10 @@
 */
 package us.mn.state.health.lims.sample.daoimpl;
 
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
-import java.util.Vector;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.validator.GenericValidator;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
-
 import org.hibernate.Session;
 import us.mn.state.health.lims.audittrail.dao.AuditTrailDAO;
 import us.mn.state.health.lims.audittrail.daoimpl.AuditTrailDAOImpl;
@@ -42,6 +33,10 @@ import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.valueholder.Sample;
+
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.*;
 
 /**
  * @author diane benz
@@ -770,16 +765,30 @@ public class SampleDAOImpl extends BaseDAOImpl implements SampleDAO {
 	}
 
     @Override
-    public Sample getSampleByUUID(String uuid) {
+    public Sample getSampleByUuidAndExcludedStatus(String uuid, int statusId) {
         try{
             String sql = "from Sample as sample where sample.uuid = :uuid and sample.statusId <> :completedStatus";
             Query query = HibernateUtil.getSession().createQuery(sql);
             query.setParameter("uuid", uuid);
-            query.setParameter("completedStatus", Integer.parseInt(SystemConfiguration.getInstance().getSampleStatusEntry2Complete()));
+            query.setParameter("completedStatus", statusId);
             return (Sample) query.uniqueResult();
         } catch(HibernateException he) {
-            LogEvent.logErrorStack("SampleDAOImpl", "getSampleByUUID(String uuid)", he);
-            throw new LIMSRuntimeException("Error in Sample getSampleByUUID(String uuid)", he);
+            LogEvent.logErrorStack("SampleDAOImpl", "getSampleByUuidAndExcludedStatus(String uuid)", he);
+            throw new LIMSRuntimeException("Error in Sample getSampleByUuidAndExcludedStatus(String uuid)", he);
         }
     }
+
+    @SuppressWarnings("unchecked")
+	@Override
+	public List<Sample> getSamplesByEncounterUuid(String uuid) {
+		try{
+			String sql = "from Sample as sample where sample.uuid = :uuid";
+			Query query = HibernateUtil.getSession().createQuery(sql);
+			query.setParameter("uuid", uuid);
+			return query.list();
+		} catch(HibernateException he) {
+			LogEvent.logErrorStack("SampleDAOImpl", "getSamplesByEncounterUuid(String uuid)", he);
+			throw new LIMSRuntimeException("Error in Sample getSamplesByEncounterUuid(String uuid)", he);
+		}
+	}
 }

@@ -32,6 +32,7 @@ import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 import static org.bahmni.openelis.builder.TestSetup.*;
 
@@ -54,8 +55,8 @@ public class AccessionHandlerIT extends IT{
         createResultNote(result, "Some note 1");
         createResultNote(result, "Some note 2");
 
-        AccessionDetail accessionDetail = new AccessionHandler().handle(sample.getUUID());
-        ObjectMapperRepository.objectMapper.writeValue(System.out, accessionDetail);
+        AccessionDetail accessionDetails = new AccessionHandler().handle(sample.getUUID());
+        ObjectMapperRepository.objectMapper.writeValue(System.out, accessionDetails);
     }
 
 }

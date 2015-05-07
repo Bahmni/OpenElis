@@ -22,19 +22,25 @@ import org.bahmni.feed.openelis.IT;
 import org.junit.Assert;
 import org.junit.Test;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
+import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.dbhelper.DBHelper;
 import us.mn.state.health.lims.panel.valueholder.Panel;
 import us.mn.state.health.lims.result.valueholder.Result;
+import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
 
+import java.util.List;
+
 public class SampleDAOImplTest extends IT{
+
+    SampleDAO sampleDAO = new SampleDAOImpl();
 
     @Test
     public void shouldBeAbleToRetrieveCompleteSampleTreeByUuid() {
-        String accessionNumber = "12345";
+        String accessionNumber = "12347";
 
         Sample sample = DBHelper.createAndSaveSample(accessionNumber);
         SampleItem sampleItem = DBHelper.createAndSaveSampleItem(sample);
@@ -44,11 +50,54 @@ public class SampleDAOImplTest extends IT{
         TestResult testResult = DBHelper.createAndSaveTestResult(test);
         Result result = DBHelper.createAndSaveResult(analysis, testResult);
 
+        int statusId = Integer.parseInt(SystemConfiguration.getInstance().getSampleStatusEntry2Complete()); //This is completed
 
-        Sample retrievedSample = new SampleDAOImpl().getSampleByUUID(sample.getUUID());
+        changeSampleStatus(sample, statusId);
+
+        Sample retrievedSample = new SampleDAOImpl().getSampleByUuidAndExcludedStatus(sample.getUUID(), statusId);
+        Assert.assertNull(retrievedSample);
+
+        statusId = Integer.parseInt(SystemConfiguration.getInstance().getSampleStatusEntry1Complete()); //This is In-Progress
+
+        changeSampleStatus(sample, statusId);
+        retrievedSample = new SampleDAOImpl().getSampleByUuidAndExcludedStatus(sample.getUUID(), statusId);
 
         Assert.assertNotNull(retrievedSample);
         SampleItem retrievedSampleItem = (SampleItem) retrievedSample.getSampleItems().toArray()[0];
+        Assert.assertNotNull(retrievedSampleItem);
+        Analysis retrievedAnalysis = (Analysis) retrievedSampleItem.getAnalyses().toArray()[0];
+        Assert.assertNotNull(retrievedAnalysis);
+        Assert.assertNotNull(retrievedAnalysis.getPanel());
+        Result retrievedResults = (Result) retrievedAnalysis.getResults().toArray()[0];
+        Assert.assertNotNull(retrievedResults);
+        Assert.assertNotNull(retrievedResults.getTestResult());
+        Assert.assertNotNull(retrievedResults.getTestResult().getTest());
+    }
+
+    private void changeSampleStatus(Sample sample, int status){
+        sample.setStatus(SystemConfiguration.getInstance().getSampleStatusEntry2Complete());
+        sample.setStatusId(SystemConfiguration.getInstance().getSampleStatusEntry2Complete());
+        sampleDAO.updateData(sample);
+
+    }
+
+    @Test
+    public void shouldRetrieveSamplesByUuid() {
+        String accessionNumber = "12347";
+
+        Sample sample = DBHelper.createAndSaveSample(accessionNumber);
+        SampleItem sampleItem = DBHelper.createAndSaveSampleItem(sample);
+        Panel panel = DBHelper.createAndSavePanel();
+        us.mn.state.health.lims.test.valueholder.Test test = DBHelper.createAndSaveTest();
+        Analysis analysis = DBHelper.createAndSaveAnalysis(sampleItem, StatusOfSampleUtil.AnalysisStatus.NotTested, "Hematology", panel, test);
+        TestResult testResult = DBHelper.createAndSaveTestResult(test);
+        Result result = DBHelper.createAndSaveResult(analysis, testResult);
+
+        List<Sample> retrievedSamples = new SampleDAOImpl().getSamplesByEncounterUuid(sample.getUUID());
+
+        Assert.assertEquals(retrievedSamples.size(), 1);
+        Assert.assertNotNull(retrievedSamples.get(0));
+        SampleItem retrievedSampleItem = (SampleItem) retrievedSamples.get(0).getSampleItems().toArray()[0];
         Assert.assertNotNull(retrievedSampleItem);
         Analysis retrievedAnalysis = (Analysis) retrievedSampleItem.getAnalyses().toArray()[0];
         Assert.assertNotNull(retrievedAnalysis);

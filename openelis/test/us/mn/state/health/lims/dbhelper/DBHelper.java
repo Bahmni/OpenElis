@@ -193,6 +193,13 @@ public class DBHelper {
         return enteredSampleItem;
     }
 
+    public static SampleItem createSaveAndCloseSample(Sample startedSample) {
+        SampleItem enteredSampleItem = createSampleItem(startedSample);
+        enteredSampleItem.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.SampleStatus.Entered));
+        new SampleItemDAOImpl().insertData(enteredSampleItem);
+        return enteredSampleItem;
+    }
+
     public static Sample createAndSaveSample(String accessionNumber) {
         Sample sample = createSample(accessionNumber);
         sample.setEnteredDate(DateUtil.convertStringDateToSqlDate("01/01/2001"));
@@ -201,6 +208,7 @@ public class DBHelper {
         new SampleDAOImpl().insertDataWithAccessionNumber(sample);
         return sample;
     }
+
 
     public static Result createAndSaveResult(Analysis analysis, TestResult testResult) {
         Result result = createResult(analysis, testResult);

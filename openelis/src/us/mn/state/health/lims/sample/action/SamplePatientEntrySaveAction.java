@@ -43,6 +43,7 @@ import us.mn.state.health.lims.common.provider.validation.IAccessionNumberValida
 import us.mn.state.health.lims.common.util.ConfigurationProperties;
 import us.mn.state.health.lims.common.util.ConfigurationProperties.Property;
 import us.mn.state.health.lims.common.util.DateUtil;
+import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 import us.mn.state.health.lims.common.util.validator.ActionError;
@@ -248,7 +249,9 @@ public class SamplePatientEntrySaveAction extends BaseAction {
                     orgAddressExtra, sample, sampleItemsTests, observations, sampleHuman, patientId,
                     null, providerId, currentUserId,
                     PROVIDER_REQUESTER_TYPE_ID, REFERRING_ORG_TYPE_ID);
-            accessionPublisher.publish(sample.getUUID(), request.getContextPath());
+			if(!StringUtil.isNullorNill(sample.getAccessionNumber())) {
+				accessionPublisher.publish(sample.getUUID(), request.getContextPath());
+			}
 
         } catch (LIMSInvalidSTNumberException e) {
             request.setAttribute(IActionConstants.REQUEST_FAILED, true);

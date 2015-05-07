@@ -21,6 +21,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -54,7 +57,7 @@ public class AccessionHandlerTest {
         AccessionDetail expectedAccessionDetail = new AccessionDetail();
         String uuid = "uuid";
         when(accessionService.getAccessionDetailFor(uuid)).thenReturn(expectedAccessionDetail);
-        AccessionDetail accessionDetail = new AccessionHandler(accessionService).handle(uuid);
-        assertEquals(expectedAccessionDetail, accessionDetail);
+        AccessionDetail accessionDetails = new AccessionHandler(accessionService).handle(uuid);
+        assertEquals(expectedAccessionDetail, accessionDetails);
     }
 }

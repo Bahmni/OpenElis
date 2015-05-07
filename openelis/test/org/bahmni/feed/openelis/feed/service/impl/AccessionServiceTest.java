@@ -29,6 +29,7 @@ import us.mn.state.health.lims.dbhelper.DBHelper;
 import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
 import us.mn.state.health.lims.note.dao.NoteDAO;
 import us.mn.state.health.lims.note.valueholder.Note;
+import us.mn.state.health.lims.panel.valueholder.Panel;
 import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.patientidentity.dao.PatientIdentityDAO;
 import us.mn.state.health.lims.patientidentitytype.dao.PatientIdentityTypeDAO;
@@ -39,6 +40,7 @@ import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.samplehuman.dao.SampleHumanDAO;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
 import us.mn.state.health.lims.systemuser.dao.SystemUserDAO;
+import us.mn.state.health.lims.testresult.valueholder.TestResult;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -86,7 +88,7 @@ public class AccessionServiceTest {
     @Test
     public void shouldReturnAccessionDetails() {
         AccessionService accessionService = new TestableAccessionService(sampleDao, sampleHumanDAO, externalReferenceDao, noteDao, dictionaryDao, patientIdentityDAO, patientIdentityTypeDAO);
-        when(sampleDao.getSampleByUUID(sample.getUUID())).thenReturn(sample);
+        when(sampleDao.getSamplesByEncounterUuid(sample.getUUID())).thenReturn(Arrays.asList(sample));
         when(sampleDao.getSampleByAccessionNumber(anyString())).thenReturn(sample);
         when(sampleHumanDAO.getPatientForSample(sample)).thenReturn(patient);
         when(externalReferenceDao.getDataByItemId(anyString(), anyString())).thenReturn(new ExternalReference(456789, "Ex Id", "type"));
@@ -94,6 +96,35 @@ public class AccessionServiceTest {
         when(noteDao.getNoteByRefIAndRefTableAndSubject(anyString(),anyString(),anyString())).thenReturn(Collections.EMPTY_LIST);
         AccessionDetail accessionDetail = accessionService.getAccessionDetailFor(sample.getUUID());
         assertNotNull(accessionDetail);
+    }
+
+    @Test
+    public void shouldReturnMergedAccessionDetailsForTwoSamples() {
+        AccessionService accessionService = new TestableAccessionService(sampleDao, sampleHumanDAO, externalReferenceDao, noteDao, dictionaryDao, patientIdentityDAO, patientIdentityTypeDAO);
+        Sample sample2 = DBHelper.createSample("ijkl");
+        sample2.setUUID(sample.getUUID());
+        SampleItem sampleItem = DBHelper.createSampleItem(sample2);
+        Panel panel = DBHelper.createPanel();
+        us.mn.state.health.lims.test.valueholder.Test test = DBHelper.createTest();
+        Analysis analysis = DBHelper.createAnalysis(sampleItem, panel, test);
+        TestResult testResult = DBHelper.createTestResult(test);
+        DBHelper.createResult(analysis, testResult);
+
+        when(externalReferenceDao.getDataByItemId(anyString(), anyString())).thenReturn(new ExternalReference(456789, "Ex Id", "type"));
+        when(patientIdentityTypeDAO.getNamedIdentityType("ST")).thenReturn(patienIdentityType);
+        when(noteDao.getNoteByRefIAndRefTableAndSubject(anyString(), anyString(), anyString())).thenReturn(Collections.EMPTY_LIST);
+
+        when(sampleDao.getSamplesByEncounterUuid(sample.getUUID())).thenReturn(Arrays.asList(sample,sample2));
+        when(sampleDao.getSampleByAccessionNumber(sample.getAccessionNumber())).thenReturn(sample);
+        when(sampleDao.getSampleByAccessionNumber(sample2.getAccessionNumber())).thenReturn(sample2);
+        when(sampleHumanDAO.getPatientForSample(sample)).thenReturn(patient);
+        when(sampleHumanDAO.getPatientForSample(sample2)).thenReturn(patient);
+
+        AccessionDetail accessionDetail = accessionService.getAccessionDetailFor(sample.getUUID());
+        assertNotNull(accessionDetail);
+        assertEquals(accessionDetail.getTestDetails().size(), 2);
+        assertEquals(accessionDetail.getTestDetails().get(0).getTestName(), sample.getSampleItems().iterator().next().getAnalyses().iterator().next().getTest().getTestName());
+        assertEquals(accessionDetail.getTestDetails().get(1).getTestName(), sample.getSampleItems().iterator().next().getAnalyses().iterator().next().getTest().getTestName());
     }
 
     @Test
@@ -105,7 +136,7 @@ public class AccessionServiceTest {
         Note latestNote = new Note();
         latestNote.setText("note latest");
 
-        when(sampleDao.getSampleByUUID(sample.getUUID())).thenReturn(sample);
+        when(sampleDao.getSamplesByEncounterUuid(sample.getUUID())).thenReturn(Arrays.asList(sample));
         when(sampleHumanDAO.getPatientForSample(sample)).thenReturn(patient);
         Analysis analysis = (Analysis) ((SampleItem) sample.getSampleItems().toArray()[0]).getAnalyses().toArray()[0];
         when(externalReferenceDao.getDataByItemId(analysis.getTest().getId(), "Test")).thenReturn(externalReferences);

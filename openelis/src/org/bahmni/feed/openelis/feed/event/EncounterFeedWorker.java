@@ -17,19 +17,16 @@
 package org.bahmni.feed.openelis.feed.event;
 
 import org.apache.log4j.Logger;
-import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.ObjectMapperRepository;
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoImpl;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
-import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPatient;
 import org.bahmni.feed.openelis.feed.contract.openmrs.encounter.OpenMRSEncounter;
 import org.bahmni.feed.openelis.feed.contract.openmrs.encounter.OpenMRSOrder;
 import org.bahmni.feed.openelis.feed.mapper.encounter.OpenMRSEncounterMapper;
 import org.bahmni.feed.openelis.utils.AuditingService;
 import org.bahmni.webclients.HttpClient;
 import org.ict4h.atomfeed.client.domain.Event;
-import org.joda.time.DateTime;
 import us.mn.state.health.lims.address.valueholder.OrganizationAddress;
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
@@ -55,7 +52,6 @@ import us.mn.state.health.lims.requester.daoimpl.RequesterTypeDAOImpl;
 import us.mn.state.health.lims.requester.valueholder.RequesterType;
 import us.mn.state.health.lims.sample.bean.SampleTestCollection;
 import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
-import us.mn.state.health.lims.sample.util.AccessionNumberUtil;
 import us.mn.state.health.lims.sample.util.AnalysisBuilder;
 import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.samplehuman.valueholder.SampleHuman;
@@ -159,7 +155,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
     public void process(OpenMRSEncounter openMRSEncounter) {
         logInfo(openMRSEncounter);
         FeedProcessState processState = new FeedProcessState();
-        Sample sample = sampleDAO.getSampleByUUID(openMRSEncounter.getEncounterUuid());
+        Sample sample = sampleDAO.getSampleByUuidAndExcludedStatus(openMRSEncounter.getEncounterUuid(), Integer.parseInt(SystemConfiguration.getInstance().getSampleStatusEntry2Complete()));
         if (sample != null) {
             updateSample(openMRSEncounter, sample, processState);
         } else {
