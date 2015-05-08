@@ -21,6 +21,7 @@ function getTestsForSampleType(sampleTypeId, labOrderTypeId, success, failure) {
 		method : 'get', // http method
 		parameters : "provider=SampleEntryTestsForTypeProvider" + request,
 		// indicator: 'throbbing'
+		asynchronous: false,
 		onSuccess : success,
 		onFailure : failure
 	});
@@ -35,6 +36,7 @@ function getSampleTypesAndTestsForSample(sampleId, success, failure) {
 		method : 'get', // http method
 		parameters : "provider=SampleTypeTestsForSampleProvider" + request,
 		// indicator: 'throbbing'
+		asynchronous: false,
 		onSuccess : success,
 		onFailure : failure
 	});

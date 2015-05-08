@@ -73,6 +73,8 @@ $jq(document).ready(function() {
 		$jq("#searchSTID").val('<%=patientId%>');
 		$jq("#searchButton").click();
 		getSampleTypesAndTestsForSample(sampleId, processGetSampleTypesAndTestsSuccess, processGetTestFailure);
+		$jq("#select_1").attr("checked","true");
+		sampleClicked("1");
 	}
 });
 
@@ -333,7 +335,6 @@ function processGetTestSuccess(xhr){
 	$("testSelections").show();
 
 	setSampleTests();
-	populateTheSelectedTests();
 }
 
 function populateTheSelectedTests() {
@@ -362,9 +363,9 @@ function processGetSampleTypesAndTestsSuccess(xhr){
 	for(var i=0; i< samplesTags.length; i++){
 		$jq("select#sampleTypeSelect").val(parseInt(samplesTags[i].getElementsByTagName("sampleType")[0].innerHTML));
 		addNewSamples();
+		sampleClicked(i+1)
+		populateTheSelectedTests();
 	}
-	$jq("#select_1").click();
-	$jq("#select_1").attr("checked","true");
 }
 
 function insertTestIntoTestTable( test, testTable ){
