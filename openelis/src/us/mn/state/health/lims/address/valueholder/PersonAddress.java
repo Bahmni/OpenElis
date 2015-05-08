@@ -17,7 +17,6 @@
 package us.mn.state.health.lims.address.valueholder;
 
 import org.apache.commons.validator.GenericValidator;
-
 import us.mn.state.health.lims.common.valueholder.BaseObject;
 import us.mn.state.health.lims.person.valueholder.Person;
 
@@ -49,7 +48,7 @@ public class PersonAddress extends BaseObject {
 	}
 
 	public String getId(){
-		return compoundId == null ? "0" : compoundId.getTargetId() + compoundId.getAddressPartId();
+		return compoundId == null ? "0" : compoundId.getTargetId();
 	}
 
 	public void setPersonId(String personId){
