@@ -68,5 +68,6 @@ public interface TestResultDAO extends BaseDAO {
 
 	public List<TestResult> getTestResultsByTest(String testId)throws LIMSRuntimeException;
 
+	public List<TestResult> getTestResultsByTestAndValue(String testId, String valueId)throws LIMSRuntimeException;
 
 }

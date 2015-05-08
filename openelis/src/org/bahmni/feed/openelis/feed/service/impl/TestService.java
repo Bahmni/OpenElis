@@ -23,8 +23,12 @@ import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.MinimalResource;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataTest;
 import org.bahmni.feed.openelis.utils.AuditingService;
+import org.hibernate.Transaction;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSException;
+import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
+import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
+import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
 import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 import us.mn.state.health.lims.test.dao.TestDAO;
@@ -32,19 +36,24 @@ import us.mn.state.health.lims.test.dao.TestSectionDAO;
 import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 import us.mn.state.health.lims.test.daoimpl.TestSectionDAOImpl;
 import us.mn.state.health.lims.test.valueholder.Test;
+import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
 import us.mn.state.health.lims.test.valueholder.TestSection;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleDAO;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleTestDAO;
 import us.mn.state.health.lims.typeofsample.util.TypeOfSampleUtil;
+import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.CodedTestAnswer;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.Date;
 
 public class TestService {
 
     public static final String CATEGORY_TEST = "Test";
+    public static final String CATEGORY_TEST_CODED_ANS = "CodedAns";
     public static final String DUMMY_TEST_SECTION_NAME = "New";
+    private DictionaryDAO dictionaryDao;
     private AuditingService auditingService;
     private TestDAO testDAO;
     private TestResultService testResultService;
@@ -59,6 +68,7 @@ public class TestService {
         this.testSectionDAO = new TestSectionDAOImpl();
         this.auditingService = new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl());
         this.unitOfMeasureService = new UnitOfMeasureService();
+        this.dictionaryDao = new DictionaryDAOImpl();
     }
 
     /**
@@ -70,21 +80,21 @@ public class TestService {
                        TestSectionDAO testSectionDAO,
                        AuditingService auditingService,
                        TypeOfSampleDAO typeOfSampleDAO,
-                       TypeOfSampleTestDAO typeOfSampleTestDAO) {
+                       TypeOfSampleTestDAO typeOfSampleTestDAO,
+                       DictionaryDAO dictionaryDao) {
 
         this.externalReferenceDao = externalReferenceDao;
         this.testDAO = testDAO;
         this.testResultService = testResultService;
         this.testSectionDAO = testSectionDAO;
         this.auditingService = auditingService;
+        this.dictionaryDao = dictionaryDao;
 
     }
 
     public void createOrUpdate(ReferenceDataTest referenceDataTest) throws IOException, LIMSException {
         try {
-
             String sysUserId = auditingService.getSysUserId();
-
             ExternalReference data = externalReferenceDao.getData(referenceDataTest.getId(), CATEGORY_TEST);
             Test test = new Test();
 
@@ -99,12 +109,42 @@ public class TestService {
                 testDAO.updateData(test);
             }
             if (referenceDataTest.getResultType().equals("Text")) {
-                testResultService.createOrUpdate(test, "R");
+                testResultService.createOrUpdate(test, "R", null);
+            }
+            if (referenceDataTest.getResultType().equals("Coded")) {
+                //TODO: Sandeep, Divya Deletion of coded answers from a test concept is not supported now. Elis DB Structure limitation
+                Collection<CodedTestAnswer> codedTestAnswer = (Collection<CodedTestAnswer>) referenceDataTest.getCodedTestAnswer();
+                Dictionary dict = null;
+                
+                for (CodedTestAnswer testAnswer : codedTestAnswer) {
+                    ExternalReference dictReference = externalReferenceDao.getData(testAnswer.getUuid(), CATEGORY_TEST_CODED_ANS);
+                    if(dictReference==null){
+                        dict = new Dictionary();
+                        dict.setDictEntry(testAnswer.getName());
+                        dict.setLastupdated(new Timestamp(new Date().getTime()));
+                        dict.setSysUserId(sysUserId);
+                        dictionaryDao.insertData(dict);
+                        saveExternalReference(testAnswer, dict);
+                    }else{
+                        dict = dictionaryDao.getDictionaryById(String.valueOf(dictReference.getItemId()));
+                        dict.setDictEntry(testAnswer.getName());
+                        dict.setLastupdated(new Timestamp(new Date().getTime()));
+                        dict.setSysUserId(sysUserId);
+                        dictionaryDao.updateData(dict, false);
+                    }
+                    testResultService.createOrUpdate(test, "D", dict.getId());
+                }
             }
             TypeOfSampleUtil.clearTestCache();
         } catch (Exception e) {
             throw new LIMSException(String.format("Error while saving test - %s", referenceDataTest.getName()));
         }
+    }
+
+    private void saveExternalReference(CodedTestAnswer codedTestAnswer, Dictionary dict) {
+        ExternalReference data;
+        data = new ExternalReference(Long.parseLong(dict.getId()), codedTestAnswer.getUuid(), CATEGORY_TEST_CODED_ANS);
+        externalReferenceDao.insertData(data);
     }
 
     private void saveExternalReference(ReferenceDataTest referenceDataTest, Test test) {

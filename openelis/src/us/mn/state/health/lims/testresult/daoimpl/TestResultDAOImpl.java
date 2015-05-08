@@ -34,6 +34,7 @@ import us.mn.state.health.lims.testanalyte.valueholder.TestAnalyte;
 import us.mn.state.health.lims.testresult.dao.TestResultDAO;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -339,17 +340,30 @@ public class TestResultDAOImpl extends BaseDAOImpl implements TestResultDAO {
 			String sql = "from TestResult t where  t.test = :testId";
 			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
 			query.setInteger("testId", Integer.parseInt(testId));
-
 			list = query.list();
-
 			closeSession();
 			return list;
-
 		} catch (Exception e) {
 			handleException(e, "getTestResultsByTest");
 		}
+		return new ArrayList<>();
+	}
 
-	return null;
+	@Override
+	public List<TestResult> getTestResultsByTestAndValue(String testId, String valueId) throws LIMSRuntimeException {
+		List<TestResult> list = null;
+		try {
+			String sql = "from TestResult t where t.test = :testId and t.value = :valueId";
+			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
+			query.setInteger("testId", Integer.parseInt(testId));
+			query.setString("valueId", valueId);
+			list = query.list();
+			closeSession();
+			return list;
+		} catch (Exception e) {
+			handleException(e, "getTestResultsByTestAndValue");
+		}
+		return new ArrayList<>();
 	}
 
 }

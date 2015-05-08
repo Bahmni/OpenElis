@@ -17,6 +17,8 @@
 package org.bahmni.feed.openelis.feed.contract.bahmnireferencedata;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import java.util.Collection;
+import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.CodedTestAnswer;
 
 import java.util.Date;
 
@@ -31,6 +33,16 @@ public class ReferenceDataTest {
     private Integer sortOrder;
     private String resultType;
     private String testUnitOfMeasure;
+
+    public Collection<CodedTestAnswer> getCodedTestAnswer() {
+        return codedTestAnswer;
+    }
+
+    public void setCodedTestAnswer(Collection<CodedTestAnswer> codedTestAnswer) {
+        this.codedTestAnswer = codedTestAnswer;
+    }
+
+    private Collection<CodedTestAnswer> codedTestAnswer;
 
     public ReferenceDataTest() {
     }
