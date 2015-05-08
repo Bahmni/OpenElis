@@ -110,6 +110,7 @@ function updateTestsWithAccessionNumber(accessionNumber, sampleId, typesAndTests
 			method: 'get', //http method
 			dataType:'json',
 			parameters: "provider=TestUpdateWithAccessionNumberProvider&accessionNumber=" + accessionNumber + "&typeAndTestIds="+ typesAndTests + "&sampleId="+ sampleId,
+			asynchronous: false,
 			onSuccess:  success,
 			onFailure:  failure
 		}

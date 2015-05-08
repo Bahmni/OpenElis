@@ -541,7 +541,7 @@ function  /*void*/ savePage()
 		var typeAndTestIdsJson = JSON.stringify(testsAndTypes);
 
 		updateTestsWithAccessionNumber(accessionNumber, sampleId, typeAndTestIdsJson, successUpdateAccession, processScanFailure)
-		form.action = "LabDashboard.do?activeTab=0";
+		form.action = "LabDashboard.do?";
 	}else {
 		form.action = "SamplePatientEntrySave.do";
 	}
