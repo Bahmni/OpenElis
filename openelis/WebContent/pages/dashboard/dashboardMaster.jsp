@@ -98,16 +98,24 @@ basePath = path + "/";
             <li><a href="#backlogListContainer">Backlog</a></li>
          </ul>
         <div id="todayListContainer">
-            <span class="sample_title_dashboard">Sample to be collected</span>
-            <div id="todaySampleNotCollectedListContainer-slick-grid"></div>
-            <span class="sample_title_dashboard">Sample collected</span>
-            <div id="todayListContainer-slick-grid"></div>
+            <div id="subtabs">
+                <ul>
+                    <li><a href="#todaySampleNotCollectedListContainer-slick-grid">Samples To Collect</a></li>
+                    <li><a href="#todayListContainer-slick-grid">Samples Collected</a></li>
+                </ul>
+                <div id="todaySampleNotCollectedListContainer-slick-grid"></div>
+                <div id="todayListContainer-slick-grid"></div>
+            </div>
         </div>
         <div id="backlogListContainer">
-            <span class="sample_title_dashboard">Sample to be collected</span>
-            <div id="backlogSampleNotCollectedListContainer-slick-grid"></div>
-            <span class="sample_title_dashboard">Sample collected</span>
-            <div id="backlogListContainer-slick-grid"></div>
+            <div id="subtabs1">
+                <ul>
+                    <li><a href="#backlogSampleNotCollectedListContainer-slick-grid">Samples To Collect</a></li>
+                    <li><a href="#backlogListContainer-slick-grid">Samples Collected</a></li>
+                </ul>
+                <div id="backlogSampleNotCollectedListContainer-slick-grid"></div>
+                <div id="backlogListContainer-slick-grid"></div>
+            </div>
         </div>
     </div>
 
@@ -198,7 +206,7 @@ basePath = path + "/";
             tabOptions.selected = activeTab;
         }
 
-        jQuery("#tabs").tabs(tabOptions);
+        jQuery("#tabs, #subtabs, #subtabs1").tabs(tabOptions);
         jQuery("#patientDetails").hide();
 
         jQuery("#refreshButton").on("click",function(){
