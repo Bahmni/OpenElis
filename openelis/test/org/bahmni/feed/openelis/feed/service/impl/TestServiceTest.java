@@ -26,6 +26,7 @@ import org.junit.Before;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import us.mn.state.health.lims.common.exception.LIMSException;
+import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
 import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.dao.TestSectionDAO;
 import us.mn.state.health.lims.test.valueholder.Test;
@@ -61,6 +62,8 @@ public class TestServiceTest {
     private TypeOfSampleDAO typeOfSampleDAOMock;
     @Mock
     private TypeOfSampleTestDAO typeOfSampleTestDAOMock;
+    @Mock
+    private DictionaryDAO dictionaryDAOMock;
 
     private TestService testService;
 
@@ -69,7 +72,7 @@ public class TestServiceTest {
         initMocks(this);
 
          testService = new TestService(externalReferenceDaoMock, testDAOMock, testResultServiceMock, testSectionDAOMock,
-                auditingServiceMock, typeOfSampleDAOMock, typeOfSampleTestDAOMock);
+                auditingServiceMock, typeOfSampleDAOMock, typeOfSampleTestDAOMock,dictionaryDAOMock);
 
     }
 

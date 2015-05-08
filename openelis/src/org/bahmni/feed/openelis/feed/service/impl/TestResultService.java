@@ -30,8 +30,7 @@ public class TestResultService {
         }
         if (existingTestResults == null || existingTestResults.isEmpty()) {
             testResultDAO.insertData(testResult);
-        } else {
-        }
+        } 
     }
-    
+
 }
