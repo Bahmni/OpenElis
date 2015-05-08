@@ -13,6 +13,8 @@
 			     us.mn.state.health.lims.common.util.IdValuePair" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.HashMap" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.ArrayList" %>
 
 <%@ taglib uri="/tags/struts-bean"		prefix="bean" %>
 <%@ taglib uri="/tags/struts-html"		prefix="html" %>
@@ -39,6 +41,7 @@
     boolean useSampleSource = false;
 	IAccessionNumberValidator accessionNumberValidator;
     Map<String,String> fieldsetToJspMap = new HashMap<String, String>() ;
+	String sampleId = "";
 %>
 <%
     boolean allHealthCenter = true;
@@ -57,6 +60,7 @@
     fieldsetToJspMap.put("patient","SamplePatientInfoSection.jsp");
     fieldsetToJspMap.put("samples","SamplePatientSampleSection.jsp");
     fieldsetToJspMap.put("order","SampleOrderInfoSection.jsp");
+	sampleId = request.getParameter("id");
 
 %>
 
@@ -84,6 +88,7 @@ var useSampleSource = <%= useSampleSource%>
 var dirty = false;
 var invalidSampleElements = new Array();
 var requiredFields = new Array("labNo", "receivedDateForDisplay" );
+var sampleId = "<%= sampleId %>";
 
 if( requesterLastNameRequired ){
 	requiredFields.push("providerLastNameID");
@@ -107,8 +112,8 @@ $jq(function() {
 		capitialize = true;
 		dropdown.combobox();
        // invalidLabID = '<bean:message key="error.site.invalid"/>'; // Alert if value is typed that's not on list. FIX - add badmessage icon
-        maxRepMsg = '<bean:message key="sample.entry.project.siteMaxMsg"/>'; 
-        
+        maxRepMsg = '<bean:message key="sample.entry.project.siteMaxMsg"/>';
+
         resultCallBack = function( textValue) {
   				siteListChanged(textValue);
   				makeDirty();
@@ -161,7 +166,7 @@ function submitTheForm(form)
 function  /*void*/ processValidateEntryDateSuccess(xhr){
 
     //alert(xhr.responseText);
-	
+
 	var message = xhr.responseXML.getElementsByTagName("message").item(0).firstChild.nodeValue;
 	var formField = xhr.responseXML.getElementsByTagName("formfield").item(0).firstChild.nodeValue;
 
@@ -179,9 +184,13 @@ function  /*void*/ processValidateEntryDateSuccess(xhr){
 	}
 }
 
+function successUpdateAccession(xhr)
+{
+
+}
 
 function checkValidEntryDate(date, dateRange)
-{	
+{
 	if(!date.value || date.value == ""){
 		setSave();
 		return;
@@ -289,7 +298,7 @@ function checkValidTime(time)
 		setFieldErrorDisplay(time);
 		setSampleFieldInvalid(time.name);
 	}
-
+5
 	setSave();
 }
 
@@ -412,7 +421,7 @@ function /*bool*/ requiredSampleEntryFieldsValid(){
 	for( var i = 0; i < requiredFields.length; ++i ){
 		if( $(requiredFields[i]).value.blank() ){
 			//special casing
-			if( requiredFields[i] == "requesterId" && 
+			if( requiredFields[i] == "requesterId" &&
 			   !( ($("requesterId").selectedIndex == 0)  &&  $("newRequesterName").value.blank())){
 				continue;
 			}
@@ -453,7 +462,6 @@ function orderTypeSelected( radioElement){
 		$("initialLabOrderPeriodId").show();
 		$("followupLabOrderPeriodId").hide();
 	}
-	
 	//$("sampleEntryPage").show();
 }
 function labPeriodChanged( labOrderPeriodElement){
@@ -463,12 +471,11 @@ function labPeriodChanged( labOrderPeriodElement){
 		$("labOrderPeriodOtherId").hide();
 		$("labOrderPeriodOtherId").value = "";
 	}
-	
 }
 
 function siteListChanged(textValue){
 	var siteList = $("requesterId");
-	
+
 	//if the index is 0 it is a new entry, if it is not then the textValue may include the index value
 	if( siteList.selectedIndex == 0 || siteList.options[siteList.selectedIndex].label != textValue){
 		  $("newRequesterName").value = textValue;
@@ -503,7 +510,7 @@ function /*void*/ makeDirty(){
 		showSuccessMessage(false); //refers to last save
 	}
 	// Adds warning when leaving page if content has been entered into makeDirty form fields
-	function formWarning(){ 
+	function formWarning(){
     return "<bean:message key="banner.menu.dataLossWarning"/>";
 	}
 	window.onbeforeunload = formWarning;
@@ -519,8 +526,26 @@ function  /*void*/ savePage()
         var val = concatenateSTNumberAndHealthCenter();
         form.elements.namedItem("patientProperties.STnumber").value = val;
     }
-    form.action = "SamplePatientEntrySave.do";
-    form.submit();
+	if(sampleId != "null"){
+		var accessionNumber = $("labNo").value
+		var rows = $jq('#samplesAddedTable tr');
+		var testIdsSelected = new Object();
+		var typeIdsSelected = new Object();
+		for (var i=1; i<rows.length; i++){
+			testIdsSelected[i-1]=$jq('#testIds'+rows[i].id).val();
+			typeIdsSelected[i-1] =$jq('#typeId'+rows[i].id).val();
+		}
+		var testsAndTypes = new Object();
+		testsAndTypes.tests = testIdsSelected;
+		testsAndTypes.types = typeIdsSelected;
+		var typeAndTestIdsJson = JSON.stringify(testsAndTypes);
+
+		updateTestsWithAccessionNumber(accessionNumber, sampleId, typeAndTestIdsJson, successUpdateAccession, processScanFailure)
+		form.action = "LabDashboard.do?activeTab=0";
+	}else {
+		form.action = "SamplePatientEntrySave.do";
+	}
+	form.submit();
 }
 
 

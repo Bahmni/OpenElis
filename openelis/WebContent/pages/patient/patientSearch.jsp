@@ -383,7 +383,7 @@ function /*void*/ dirtySearchInfo(e){
 	</td>
 	<% } %>
 	
-	<td class="searchButton"><html:button property="searchButton" onclick="searchPatients()"  >
+	<td class="searchButton" ><html:button property="searchButton" onclick="searchPatients()" styleId="searchButton" >
 			<bean:message key="sample.entry.runSearch"/>
 		</html:button>
 	</td>

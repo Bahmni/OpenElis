@@ -13,11 +13,14 @@
 
 <bean:define id="formName" value='<%=(String) request.getAttribute(IActionConstants.FORM_NAME)%>' />
 <bean:define id="entryDate" name="<%=formName%>" property="currentDate" />
+<bean:define id="patientId" value='<%= request.getParameter("patientId") == null || request.getParameter("patientId").isEmpty() ? "" : request.getParameter("patientId")%>' />
+
 
 
 
 <%!String path = "";
 	String basePath = "";
+	String sampleId = "";
 	boolean useCollectionDate = true;
 	boolean useInitialSampleCondition = false;
 	boolean useCollector = false;
@@ -28,6 +31,7 @@
 	useCollectionDate = FormFields.getInstance().useField(Field.CollectionDate);
 	useInitialSampleCondition = FormFields.getInstance().useField(Field.InitialSampleCondition);
 	useCollector = FormFields.getInstance().useField(Field.SampleEntrySampleCollector);
+	sampleId = request.getParameter("id");
 %>
 
 <script type="text/javascript" src="<%=basePath%>scripts/utilities.jsp"></script>
@@ -49,9 +53,12 @@ var selectedRowId = -1;
 var sampleChangeListeners = new Array();
 var sampleIdStart = 0;
 var labOrderType = "none"; //if set will be done by other tiles
+var sampleTypesForSample = new Array() ;
+var samplesTags;
+var sampleId = "<%= sampleId %>";
 
 
-function /*void*/ addSampleChangedListener( listener ){
+		function /*void*/ addSampleChangedListener( listener ){
 	sampleChangeListeners.push( listener );
 }
 
@@ -61,7 +68,18 @@ function /*void*/ notifyChangeListeners(){
 	}
 }
 
+$jq(document).ready(function() {
+	if(sampleId != "null"){
+		$jq("#searchSTID").val('<%=patientId%>');
+		$jq("#searchButton").click();
+		getSampleTypesAndTestsForSample(sampleId, processGetSampleTypesAndTestsSuccess, processGetTestFailure);
+	}
+});
+
+
+
 function addNewSamples(){
+
 	$("samplesAdded").show();
 
 	var addTable = $("samplesAddedTable");
@@ -315,6 +333,38 @@ function processGetTestSuccess(xhr){
 	$("testSelections").show();
 
 	setSampleTests();
+	populateTheSelectedTests();
+}
+
+function populateTheSelectedTests() {
+	for(var i=0; i< samplesTags.length; i++){
+		var testsBySample = samplesTags[i].getElementsByTagName("test");
+		var inputs = $("addTestTable").getElementsByTagName("input");
+		for (var j = 0; j < testsBySample.length; j++) {
+			var testId = testsBySample[j].innerHTML;
+			for (var k = 0; k < inputs.length; k++) {
+				var input = inputs[k];
+				if (input.value.toString() === testId) {
+					if (!input.checked){
+						var checkbox_id = "test_"+input.id.split("_")[1];
+						inputs[checkbox_id].checked = true;
+						break;
+					}
+				}
+			}
+		}
+		assignTestsToSelected();
+	}
+}
+
+function processGetSampleTypesAndTestsSuccess(xhr){
+	samplesTags = xhr.responseXML.getElementsByTagName("sample");
+	for(var i=0; i< samplesTags.length; i++){
+		$jq("select#sampleTypeSelect").val(parseInt(samplesTags[i].getElementsByTagName("sampleType")[0].innerHTML));
+		addNewSamples();
+	}
+	$jq("#select_1").click();
+	$jq("#select_1").attr("checked","true");
 }
 
 function insertTestIntoTestTable( test, testTable ){
@@ -603,12 +653,12 @@ function samplesHaveBeenAdded(){
 	</select>
 </div>
 
-<html:hidden name="<%=formName%>" property="sampleXML"  styleId="sampleXML"/>
+<html:hidden name="<%=formName%>" property="sampleXML" styleId="sampleXML"/>
 	<Table width="100%">
 		<tr>
 			<td>
 				<bean:message  key="sample.entry.sample.type"/>
-				<html:select name="<%=formName%>" property="sampleTypeSelect"  onchange="sampleTypeSelected(this);" styleId="sampleTypeSelect"
+				<html:select name="<%=formName%>" property="sampleTypeSelect" onchange="sampleTypeSelected(this);" styleId="sampleTypeSelect"
 					value="0">
 					<app:optionsCollection name="<%=formName%>" property="sampleTypes" label="value" value="id" />
 				</html:select>

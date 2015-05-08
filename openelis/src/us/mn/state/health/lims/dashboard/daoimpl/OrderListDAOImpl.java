@@ -174,6 +174,8 @@ public class OrderListDAOImpl implements OrderListDAO {
 
     private Order createOrder(ResultSet accessionResultSet, boolean completed) throws SQLException {
         return new Order(accessionResultSet.getString("accession_number"),
+                            accessionResultSet.getString("uuid"),
+                            accessionResultSet.getString("id"),
                             accessionResultSet.getString("st_number"),
                             accessionResultSet.getString("first_name"),
                             accessionResultSet.getString("middle_name"),
@@ -228,6 +230,8 @@ public class OrderListDAOImpl implements OrderListDAO {
     private String createSqlStringForPendingOrders(String condition) {
         return "SELECT \n" +
                 "sample.accession_number AS accession_number, \n" +
+                "sample.uuid AS uuid, \n" +
+                "sample.id AS id, \n" +
                 "sample.collection_date AS collection_date, \n" +
                 "person.first_name AS first_name, \n" +
                 "person.middle_name AS middle_name, \n" +
@@ -251,7 +255,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "INNER JOIN test ON test.id = analysis.test_id\n" +
                 "LEFT OUTER JOIN document_track as document_track ON sample.id = document_track.row_id AND document_track.name = 'patientHaitiClinical' and document_track.parent_id is null\n" +
                 "WHERE "+condition+"\n" +
-                "GROUP BY sample.accession_number, sample.collection_date, person.first_name, person.middle_name, person.last_name, sample_source.name, patient_identity.identity_data, document_track.report_generation_time\n" +
+                "GROUP BY sample.accession_number, sample.uuid,sample.id, sample.collection_date, person.first_name, person.middle_name, person.last_name, sample_source.name, patient_identity.identity_data, document_track.report_generation_time\n" +
                 "ORDER BY sample.accession_number DESC\n" +
                 "LIMIT 1000;";
     }
@@ -259,6 +263,8 @@ public class OrderListDAOImpl implements OrderListDAO {
     private String createSqlStringForTodayOrders(String condition) {
         return "SELECT \n" +
                 "sample.accession_number AS accession_number, \n" +
+                "sample.uuid AS uuid, \n" +
+                "sample.id AS id, \n" +
                 "sample.collection_date AS collection_date, \n" +
                 "person.first_name AS first_name, \n" +
                 "person.middle_name AS middle_name, \n" +
@@ -283,7 +289,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "INNER JOIN test ON test.id = analysis.test_id\n" +
                 "LEFT OUTER JOIN document_track as document_track ON sample.id = document_track.row_id AND document_track.name = 'patientHaitiClinical' and document_track.parent_id is null \n" +
                 "WHERE "+condition+"\n" +
-                "GROUP BY sample.accession_number, sample.collection_date, sample.lastupdated, person.first_name, person.middle_name, person.last_name, sample_source.name, patient_identity.identity_data, document_track.report_generation_time \n" +
+                "GROUP BY sample.accession_number, sample.uuid,sample.id, sample.collection_date, sample.lastupdated, person.first_name, person.middle_name, person.last_name, sample_source.name, patient_identity.identity_data, document_track.report_generation_time \n" +
                 "ORDER BY sample.accession_number DESC\n" +
                 "LIMIT 1000;";
     }

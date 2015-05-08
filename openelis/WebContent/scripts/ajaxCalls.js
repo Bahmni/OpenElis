@@ -26,6 +26,20 @@ function getTestsForSampleType(sampleTypeId, labOrderTypeId, success, failure) {
 	});
 }
 
+function getSampleTypesAndTestsForSample(sampleId, success, failure) {
+	var request = "&sampleId=" + sampleId;
+	if( !failure ){	failure = defaultFailure;}
+
+	new Ajax.Request('ajaxQueryXML', // url
+	{// options
+		method : 'get', // http method
+		parameters : "provider=SampleTypeTestsForSampleProvider" + request,
+		// indicator: 'throbbing'
+		onSuccess : success,
+		onFailure : failure
+	});
+}
+
 function testConnectionOnServer(connectionId, url, success, failure) {
 	var request = "&connectionId=" + connectionId + "&url=" + url;
 	
@@ -86,6 +100,20 @@ function patientSearch(lastName, firstName, middleName, STNumber, subjectNumber,
                onFailure:  failure
               }
            );	
+}
+
+function updateTestsWithAccessionNumber(accessionNumber, sampleId, typesAndTests, success, failure) {
+	if( !failure){failure = defaultFailure;	}
+	new Ajax.Request (
+		'ajaxQueryXML',  //url
+		{//options
+			method: 'get', //http method
+			dataType:'json',
+			parameters: "provider=TestUpdateWithAccessionNumberProvider&accessionNumber=" + accessionNumber + "&typeAndTestIds="+ typesAndTests + "&sampleId="+ sampleId,
+			onSuccess:  success,
+			onFailure:  failure
+		}
+	);
 }
 
 function getReflexUserChoice( resultId, analysisId, testId, accessionNumber, index, success, failure){

@@ -23,6 +23,8 @@ import java.util.Date;
 
 public class Order {
     private String accessionNumber;
+    private String uuid;
+    private String orderId;
     private String stNumber;
     private String firstName;
     private String middleName;
@@ -38,9 +40,11 @@ public class Order {
     public Order() {
     }
 
-    public Order(String accessionNumber, String stNumber, String firstName, String middleName, String lastName, String source, boolean isCompleted, boolean isPrinted,
+    public Order(String accessionNumber, String uuid, String orderId, String stNumber, String firstName, String middleName, String lastName, String source, boolean isCompleted, boolean isPrinted,
                  int pendingTestCount, int pendingValidationCount, int totalTestCount, Date collectionDate) {
         this.accessionNumber = accessionNumber;
+        this.uuid = uuid;
+        this.orderId = orderId;
         this.stNumber = stNumber;
         this.firstName = firstName;
         this.middleName = middleName;
@@ -130,7 +134,23 @@ public class Order {
         this.middleName = middleName;
     }
 
-    @JsonSerialize(using=JsonTimeSerializer.class)
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+
+    @JsonSerialize(using = JsonTimeSerializer.class)
     public Date getCollectionDate() {
         return collectionDate;
     }
