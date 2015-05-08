@@ -91,31 +91,26 @@ basePath = path + "/";
             </tr>
         </table>
     </div>
-
+<span>Samples to Collect</span>
+<span>Samples Collected</span>
     <div id="tabs">
         <ul>
-            <li><a href="#todayListContainer">Today</a></li>
-            <li><a href="#backlogListContainer">Backlog</a></li>
+            <li><a href="#todaySamplesToCollectListContainer">Today</a></li>
+            <li><a href="#backlogSamplesToCollectListContainer">Backlog</a></li>
+            <li><a href="#todaySamplesCollectedListContainer">Today</a></li>
+            <li><a href="#backlogSamplesCollectedListContainer">Backlog</a></li>
          </ul>
-        <div id="todayListContainer">
-            <div id="subtabs">
-                <ul>
-                    <li><a href="#todaySampleNotCollectedListContainer-slick-grid">Samples To Collect</a></li>
-                    <li><a href="#todayListContainer-slick-grid">Samples Collected</a></li>
-                </ul>
-                <div id="todaySampleNotCollectedListContainer-slick-grid"></div>
-                <div id="todayListContainer-slick-grid"></div>
-            </div>
+        <div id="todaySamplesToCollectListContainer">
+                <div id="todaySamplesToCollectListContainer-slick-grid"></div>
         </div>
-        <div id="backlogListContainer">
-            <div id="subtabs1">
-                <ul>
-                    <li><a href="#backlogSampleNotCollectedListContainer-slick-grid">Samples To Collect</a></li>
-                    <li><a href="#backlogListContainer-slick-grid">Samples Collected</a></li>
-                </ul>
-                <div id="backlogSampleNotCollectedListContainer-slick-grid"></div>
-                <div id="backlogListContainer-slick-grid"></div>
-            </div>
+        <div id="backlogSamplesToCollectListContainer">
+                <div id="backlogSamplesToCollectListContainer-slick-grid"></div>
+        </div>
+        <div id="todaySamplesCollectedListContainer">
+                <div id="todaySamplesCollectedListContainer-slick-grid"></div>
+        </div>
+        <div id="backlogSamplesCollectedListContainer">
+                <div id="backlogSamplesCollectedListContainer-slick-grid"></div>
         </div>
     </div>
 
@@ -174,22 +169,22 @@ basePath = path + "/";
 
         showStats(todayStats)
 
-        var todayOrdersObject = new order("#todayListContainer-slick-grid", todayOrderList, generateAllLinksForOrder, getColumnsForTodayOrder, <%= alwaysValidate%>);
+        var todayOrdersObject = new order("#todaySamplesCollectedListContainer-slick-grid", todayOrderList, generateAllLinksForOrder, getColumnsForTodayOrder, <%= alwaysValidate%>);
         var dataViewForTodayTab = new Slick.Data.DataView({ inlineFilters: true });
         var gridForTodayOrder = new Slick.Grid(todayOrdersObject.div, dataViewForTodayTab, todayOrdersObject.columns,options);
         createGrid(gridForTodayOrder, dataViewForTodayTab, todayOrdersObject, onRowSelection);
 
-        var todaySampleNotCollectedObject = new order("#todaySampleNotCollectedListContainer-slick-grid", todaySampleNotCollectedList, generateAllLinksForOrder, getColumnsForSampleNotCollected, false);
-        var dataViewForTodaySampleNotCollected = new Slick.Data.DataView({ inlineFilters: true });
-        var gridForTodaySampleNotCollected = new Slick.Grid(todaySampleNotCollectedObject.div, dataViewForTodaySampleNotCollected, todaySampleNotCollectedObject.columns,options);
-        createGrid(gridForTodaySampleNotCollected, dataViewForTodaySampleNotCollected, todaySampleNotCollectedObject, onRowSelection);
+        var todaySamplesToCollectObject = new order("#todaySamplesToCollectListContainer-slick-grid", todaySampleNotCollectedList, generateAllLinksForOrder, getColumnsForSampleNotCollected, false);
+        var dataViewForTodaySamplesToCollect = new Slick.Data.DataView({ inlineFilters: true });
+        var gridForTodaySamplesToCollect = new Slick.Grid(todaySamplesToCollectObject.div, dataViewForTodaySamplesToCollect, todaySamplesToCollectObject.columns,options);
+        createGrid(gridForTodaySamplesToCollect, dataViewForTodaySamplesToCollect, todaySamplesToCollectObject, onRowSelection);
 
-        var backlogSampleNotCollectedObject = new order("#backlogSampleNotCollectedListContainer-slick-grid", backlogSampleNotCollectedList, generateAllLinksForOrder, getColumnsForSampleNotCollected, false);
-        var dataViewForBacklogSampleNotCollected = new Slick.Data.DataView({ inlineFilters: true });
-        var gridForBacklogSampleNotCollected = new Slick.Grid(backlogSampleNotCollectedObject.div, dataViewForBacklogSampleNotCollected, backlogSampleNotCollectedObject.columns,options);
-        createGrid(gridForBacklogSampleNotCollected, dataViewForBacklogSampleNotCollected, backlogSampleNotCollectedObject, onRowSelection);
+        var backlogSamplesToCollectObject = new order("#backlogSamplesToCollectListContainer-slick-grid", backlogSampleNotCollectedList, generateAllLinksForOrder, getColumnsForSampleNotCollected, false);
+        var dataViewForBacklogSamplesToCollect = new Slick.Data.DataView({ inlineFilters: true });
+        var gridForBacklogSamplesToCollect = new Slick.Grid(backlogSamplesToCollectObject.div, dataViewForBacklogSamplesToCollect, backlogSamplesToCollectObject.columns,options);
+        createGrid(gridForBacklogSamplesToCollect, dataViewForBacklogSamplesToCollect, backlogSamplesToCollectObject, onRowSelection);
 
-        var backlogOrdersObject = new order("#backlogListContainer-slick-grid", backlogOrderList, generateAllLinksForOrder, getColumnsForBacklogOrder, <%= alwaysValidate%>);
+        var backlogOrdersObject = new order("#backlogSamplesCollectedListContainer-slick-grid", backlogOrderList, generateAllLinksForOrder, getColumnsForBacklogOrder, <%= alwaysValidate%>);
         var dataViewForBacklogTab = new Slick.Data.DataView({ inlineFilters: true });
         var gridForBacklogOrder = new Slick.Grid(backlogOrdersObject.div, dataViewForBacklogTab, backlogOrdersObject.columns,options);
         createGrid(gridForBacklogOrder, dataViewForBacklogTab, backlogOrdersObject, onRowSelection);
@@ -206,7 +201,7 @@ basePath = path + "/";
             tabOptions.selected = activeTab;
         }
 
-        jQuery("#tabs, #subtabs, #subtabs1").tabs(tabOptions);
+        jQuery("#tabs").tabs(tabOptions);
         jQuery("#patientDetails").hide();
 
         jQuery("#refreshButton").on("click",function(){
