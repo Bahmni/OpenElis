@@ -163,8 +163,37 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         }
     }
 
+    private void filterNewTestsAdded(OpenMRSEncounter openMRSEncounter) {
+        List<Sample> currentEncounterSamples = sampleDAO.getSamplesByEncounterUuid(openMRSEncounter.getEncounterUuid());
+
+        if(currentEncounterSamples.size() == 0)
+            return;
+
+        List<Analysis> currentEncounterAnalyses = new ArrayList<>();
+        for (Sample sample : currentEncounterSamples) {
+            currentEncounterAnalyses.addAll(analysisDAO.getAnalysesBySampleId(sample.getId()));
+        }
+        for (OpenMRSOrder order : openMRSEncounter.getLabOrders()) {
+            if(isOrderAlreadyExisting(currentEncounterAnalyses, order))
+                openMRSEncounter.getTestOrders().remove(order);
+        }
+    }
+
+    private boolean isOrderAlreadyExisting(List<Analysis> currentEncounterAnalyses, OpenMRSOrder order) {
+        for (Analysis existingAnalysis : currentEncounterAnalyses) {
+            if (order.getLabTestName().equals(existingAnalysis.getTest().getTestName()))
+                return true;
+        }
+        return false;
+    }
 
     private void createSample(OpenMRSEncounter openMRSEncounter, FeedProcessState processState) {
+        //A new sample can be created when the sample associated to this encounter is already collected.
+        filterNewTestsAdded(openMRSEncounter);
+        if(!openMRSEncounter.hasLabOrder()){
+            return;
+        }
+
         String sysUserId = auditingService.getSysUserId();
         Date nowAsSqlDate = DateUtil.getNowAsSqlDate();
 
