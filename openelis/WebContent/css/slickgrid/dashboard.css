@@ -185,5 +185,9 @@ table td{
     padding-left: 10px;
 }
 
+#tabs .ui-tabs .ui-tabs-nav li{
+    z-index: 9999;
+}
+
 
 
