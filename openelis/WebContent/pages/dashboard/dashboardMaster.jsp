@@ -91,12 +91,12 @@ basePath = path + "/";
             </tr>
         </table>
     </div>
-<span>Samples to Collect</span>
-<span>Samples Collected</span>
     <div id="tabs">
+        <span class="samplesToCollect sample_title_dashboard">Samples to Collect</span>
+        <span class="samplesCollected sample_title_dashboard">Samples Collected</span>
         <ul>
             <li><a href="#todaySamplesToCollectListContainer">Today</a></li>
-            <li><a href="#backlogSamplesToCollectListContainer">Backlog</a></li>
+            <li class="backLog_first"><a href="#backlogSamplesToCollectListContainer">Backlog</a></li>
             <li><a href="#todaySamplesCollectedListContainer">Today</a></li>
             <li><a href="#backlogSamplesCollectedListContainer">Backlog</a></li>
          </ul>

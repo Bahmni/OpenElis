@@ -7,8 +7,9 @@ table td{
 
 #tabs {
     display: block;
-    margin:0px auto;
+    margin: 0px auto;
     margin-bottom: 40px;
+    padding: 14px 18px 16px;
 }
 #todayListContainer-slick-grid,#backlogListContainer-slick-grid,#importStatusGrid{
     border:1px solid #cecece;
@@ -107,24 +108,82 @@ table td{
 
 
 
-#todayListContainer span.sample_title_dashboard, #backlogListContainer span.sample_title_dashboard{
+#tabs span.sample_title_dashboard{
   font-weight: bold;
-  font-size: 17px;
+  font-size: 15px;
   line-height: 1;
-  display:block;
-  padding-bottom:5px
+  display:inline-block;
+  padding-bottom: 10px;
+  padding-left: 7px;
 }
-#todaySampleNotCollectedListContainer-slick-grid,#backlogSampleNotCollectedListContainer-slick-grid{
-    margin-bottom:25px !important;
-    border: 1px #cecece solid;
+
+#tabs span.samplesCollected.sample_title_dashboard {
+  padding-left: 92px;
 }
-#todayListContainer .slick-header.ui-state-default,#todayListContainer .slick-headerrow.ui-state-default,
-#backlogListContainer .slick-header.ui-state-default,#backlogListContainer .slick-headerrow.ui-state-default  {
-    border : none !important
-}
-#todayListContainer  .slick-headerrow-column.ui-state-default,
-#backlogListContainer  .slick-headerrow-column.ui-state-default{
+
+#tabs #todaySamplesToCollectListContainer, #tabs #backlogSamplesToCollectListContainer {
+  padding: 0;
+  margin: 0;
+  border: 1px #cecece solid;
+  width: 739px;
+  background: #fff !important;
   border-top: none;
-  border-left-color: transparent;
-  padding: 7px 4px 0px 4px;
 }
+#tabs #todaySamplesCollectedListContainer{
+    width: 1189px;
+}
+#tabs #backlogSamplesCollectedListContainer{
+    width: 1069px;
+}
+#tabs #todaySamplesCollectedListContainer, #tabs #backlogSamplesCollectedListContainer{
+  padding: 0;
+  margin: 0;
+  border: 1px #cecece solid;
+  background: #fff !important;
+  border-top: none;
+}
+#tabs .ui-widget-header {
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.backLog_first {
+  margin-right: 70px !important;
+}
+
+#tabs .slick-sort-indicator{
+    margin-right: 5px;
+}
+
+#tabs .slick-header-columns, #tabs .slick-header.ui-state-default, #tabs .slick-headerrow.ui-state-default{
+    border-bottom: none;
+}
+#tabs #todaySamplesToCollectListContainer .slick-header-column.ui-state-default span.slick-column-name,
+#tabs #backlogSamplesToCollectListContainer .slick-header-column.ui-state-default span.slick-column-name,
+#tabs #backlogSamplesCollectedListContainer .slick-header-column.ui-state-default span.slick-column-name,
+#tabs #todaySamplesCollectedListContainer .slick-header-column.ui-state-default span.slick-column-name
+{
+    padding-left: 15px;
+    border-right:none; 
+}
+
+#tabs #todaySamplesToCollectListContainer .slick-header-column.ui-state-default.slick-header-sortable span.slick-column-name,
+#tabs #backlogSamplesToCollectListContainer .slick-header-column.ui-state-default.slick-header-sortable span.slick-column-name,
+#tabs #backlogSamplesCollectedListContainer .slick-header-column.ui-state-default.slick-header-sortable span.slick-column-name,
+#tabs #todaySamplesCollectedListContainer .slick-header-column.ui-state-default.slick-header-sortable span.slick-column-name
+{
+     padding-left: 0px;
+}
+
+#tabs .slick-headerrow-column.ui-state-default {
+  border-left: none;
+  border-top: none;
+}
+
+#tabs .slick-cell{
+    padding-left: 10px;
+}
+
+
+

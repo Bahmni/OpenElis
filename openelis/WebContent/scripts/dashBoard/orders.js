@@ -55,22 +55,22 @@ function generateAllLinksForOrder(order, alwaysValidate){
 function getColumnsForTodayOrder(alwaysValidate) {
     if (alwaysValidate) {
         return [
-            {id:"accessionNumber", name:"Accession Number", field:"accessionNumber", sortable:true, index:0, editor:Slick.Editors.Text, minWidth:140},
-            {id:"stNumber", name:"PatientID", field:"stNumber", sortable:true, editor:Slick.Editors.Text, index:1, minWidth:120},
-            {id:"name", name:"PatientName", field:"name", sortable:true, index:2, editor:Slick.Editors.Text, minWidth:140},
-            {id:"pendingTestCount", name:"Pending Tests", field:"pendingTestCount", sortable:true, editor:Slick.Editors.Text, index:3, searchable:false, minWidth:110},
-            {id:"pendingValidationCount", name:"Pending Validation", field:"pendingValidationCount", sortable:true, editor:Slick.Editors.Text, index:4, searchable:false, minWidth:140},
+            {id:"accessionNumber", name:"Accession Number", field:"accessionNumber", sortable:true, index:0, editor:Slick.Editors.Text, minWidth:180},
+            {id:"stNumber", name:"Patient ID", field:"stNumber", sortable:true, editor:Slick.Editors.Text, index:1, minWidth:120},
+            {id:"name", name:"Patient Name", field:"name", sortable:true, index:2, editor:Slick.Editors.Text, minWidth:140},
+            {id:"pendingTestCount", name:"Pending Tests", field:"pendingTestCount", sortable:true, editor:Slick.Editors.Text, index:3, searchable:false, minWidth:130},
+            {id:"pendingValidationCount", name:"Pending Validation", field:"pendingValidationCount", sortable:true, editor:Slick.Editors.Text, index:4, searchable:false, minWidth:160},
             {id:"totalTestCount", name:"Total", field:"totalTestCount", sortable:true, editor:Slick.Editors.Text, index:5, searchable:false, minWidth:50},
-            {id:"isCompleted", name:"Completed", field:"isCompleted", sortable:true, cssClass:"cell-title", index:6, formatter:Slick.Formatters.YesNo, searchable:false, minWidth:100},
+            {id:"isCompleted", name:"Completed", field:"isCompleted", sortable:true, cssClass:"cell-title", index:6, formatter:Slick.Formatters.YesNo, searchable:false, minWidth:120},
             {id:"link", name:"Action", field:"link", cssClass:"cell-title", formatter:formatter, index:7, editor:Slick.Editors.Text, searchable:false, minWidth:180},
-            {id:"isPrinted", name:"Printed", field:"isPrinted", sortable:true, cssClass:"cell-title", index:8, formatter:Slick.Formatters.Checkmark, searchable:false, minWidth:50},
+            {id:"isPrinted", name:"Printed", field:"isPrinted", sortable:true, cssClass:"cell-title", index:8, formatter:Slick.Formatters.Checkmark, searchable:false, minWidth:80},
         ];
     }
     else {
         return [
             {id:"accessionNumber", name:"Accession Number", field:"accessionNumber", sortable:true, index:0, editor:Slick.Editors.Text, minWidth:180},
-            {id:"stNumber", name:"PatientID", field:"stNumber", sortable:true, editor:Slick.Editors.Text, index:1, minWidth:160},
-            {id:"name", name:"PatientName", field:"name", sortable:true, index:2, editor:Slick.Editors.Text, minWidth:160},
+            {id:"stNumber", name:"Patient ID", field:"stNumber", sortable:true, editor:Slick.Editors.Text, index:1, minWidth:160},
+            {id:"name", name:"Patient Name", field:"name", sortable:true, index:2, editor:Slick.Editors.Text, minWidth:160},
             {id:"pendingTestCount", name:"Pending Tests", field:"pendingTestCount", sortable:true, editor:Slick.Editors.Text, index:3, searchable:false, minWidth:130},
             {id:"totalTestCount", name:"Total", field:"totalTestCount", sortable:true, editor:Slick.Editors.Text, index:5, searchable:false, minWidth:70},
             {id:"isCompleted", name:"Completed", field:"isCompleted", sortable:true, cssClass:"cell-title", index:6, formatter:Slick.Formatters.YesNo, searchable:false, minWidth:120},
@@ -83,32 +83,32 @@ function getColumnsForTodayOrder(alwaysValidate) {
 function getColumnsForBacklogOrder(alwaysValidate) {
     if (alwaysValidate) {
         return [
-            {id:"accessionNumber", name:"Accession Number", field:"accessionNumber", sortable:true, index:0, editor:Slick.Editors.Text, minWidth:140},
-            {id:"stNumber", name:"PatientID", field:"stNumber", sortable:true, editor:Slick.Editors.Text, index:1, minWidth:120},
-            {id:"name", name:"PatientName", field:"name", sortable:true, index:2, editor:Slick.Editors.Text, minWidth:140},
-            {id:"pendingTestCount", name:"Pending Tests", field:"pendingTestCount", sortable:true, editor:Slick.Editors.Text, index:3, searchable:false, minWidth:110},
-            {id:"pendingValidationCount", name:"Pending Validation", field:"pendingValidationCount", sortable:true, editor:Slick.Editors.Text, index:4, searchable:false, minWidth:140},
+            {id:"accessionNumber", name:"Accession Number", field:"accessionNumber", sortable:true, index:0, editor:Slick.Editors.Text, minWidth:180},
+            {id:"stNumber", name:"Patient ID", field:"stNumber", sortable:true, editor:Slick.Editors.Text, index:1, minWidth:120},
+            {id:"name", name:"Patient Name", field:"name", sortable:true, index:2, editor:Slick.Editors.Text, minWidth:140},
+            {id:"pendingTestCount", name:"Pending Tests", field:"pendingTestCount", sortable:true, editor:Slick.Editors.Text, index:3, searchable:false, minWidth:130},
+            {id:"pendingValidationCount", name:"Pending Validation", field:"pendingValidationCount", sortable:true, editor:Slick.Editors.Text, index:4, searchable:false, minWidth:160},
             {id:"totalTestCount", name:"Total", field:"totalTestCount", sortable:true, editor:Slick.Editors.Text, index:5, searchable:false, minWidth:50},
             {id:"link", name:"Action", field:"link", cssClass:"cell-title", formatter:formatter, index:6, editor:Slick.Editors.Text, searchable:false, minWidth:180},
-            {id:"isPrinted", name:"Printed", field:"isPrinted", sortable:true, cssClass:"cell-title", index:7, formatter:Slick.Formatters.Checkmark, searchable:false, minWidth:50},
+            {id:"isPrinted", name:"Printed", field:"isPrinted", sortable:true, cssClass:"cell-title", index:7, formatter:Slick.Formatters.Checkmark, searchable:false, minWidth:80},
         ];
     }
     else {
         return [
             {id:"accessionNumber", name:"Accession Number", field:"accessionNumber", sortable:true, index:0, editor:Slick.Editors.Text, minWidth:180},
-            {id:"stNumber", name:"PatientID", field:"stNumber", sortable:true, editor:Slick.Editors.Text, index:1, minWidth:160},
-            {id:"name", name:"PatientName", field:"name", sortable:true, index:2, editor:Slick.Editors.Text, minWidth:160},
+            {id:"stNumber", name:"Patient ID", field:"stNumber", sortable:true, editor:Slick.Editors.Text, index:1, minWidth:160},
+            {id:"name", name:"Patient Name", field:"name", sortable:true, index:2, editor:Slick.Editors.Text, minWidth:160},
             {id:"pendingTestCount", name:"Pending Tests", field:"pendingTestCount", sortable:true, editor:Slick.Editors.Text, index:3, searchable:false, minWidth:130},
             {id:"totalTestCount", name:"Total", field:"totalTestCount", sortable:true, editor:Slick.Editors.Text, index:5, searchable:false, minWidth:70},
             {id:"link", name:"Action", field:"link", cssClass:"cell-title", formatter:formatter, index:6, editor:Slick.Editors.Text, searchable:false, minWidth:180},
-            {id:"isPrinted", name:"Printed", field:"isPrinted", sortable:true, cssClass:"cell-title", index:7, formatter:Slick.Formatters.Checkmark, searchable:false, minWidth:100},
+            {id:"isPrinted", name:"Printed", field:"isPrinted", sortable:true, cssClass:"cell-title", index:7, formatter:Slick.Formatters.Checkmark, searchable:false, minWidth:80},
         ];
     }
 }
 function getColumnsForSampleNotCollected() {
         return [
-            {id:"stNumber", name:"PatientID", field:"stNumber", sortable:true, editor:Slick.Editors.Text, index:0, minWidth:160},
-            {id:"name", name:"PatientName", field:"name", sortable:true, index:1, editor:Slick.Editors.Text, minWidth:160},
+            {id:"stNumber", name:"Patient ID", field:"stNumber", sortable:true, editor:Slick.Editors.Text, index:0, minWidth:160},
+            {id:"name", name:"Patient Name", field:"name", sortable:true, index:1, editor:Slick.Editors.Text, minWidth:160},
             {id:"source", name:"Source", field:"source", sortable:false, index:2, editor:Slick.Editors.Text, minWidth:160},
             {id:"totalTestCount", name:"Total", field:"totalTestCount", sortable:true, editor:Slick.Editors.Text, index:3, searchable:false, minWidth:70},
             {id:"link", name:"Action", field:"link", cssClass:"cell-title", formatter:formatter, index:4, editor:Slick.Editors.Text, searchable:false, minWidth:180}
