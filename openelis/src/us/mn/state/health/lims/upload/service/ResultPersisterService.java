@@ -40,20 +40,14 @@ import us.mn.state.health.lims.testresult.daoimpl.TestResultDAOImpl;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
 import us.mn.state.health.lims.typeoftestresult.dao.TypeOfTestResultDAO;
 import us.mn.state.health.lims.typeoftestresult.daoimpl.TypeOfTestResultDAOImpl;
-import us.mn.state.health.lims.typeoftestresult.valueholder.TypeOfTestResult;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ResultPersisterService {
     private TestResultDAO testResultDAO;
     private DictionaryDAO dictionaryDAO;
     private ResultDAO resultDAO;
     private ResultsLoadUtility resultsLoadUtility;
-    private ResultLimitDAO resultLimitDAO;
-    private Map<String, String> typeOfTestResultsTypeToIdMap;
-    private TypeOfTestResultDAO typeOfTestResultDAO;
     private final String NUMERIC_RESULT_TYPE;
     private ResultSignatureDAOImpl resultSignatureDAO;
     private SystemUserDAOImpl systemUserDAO;
@@ -66,12 +60,9 @@ public class ResultPersisterService {
         this.testResultDAO = testResultDAO;
         this.dictionaryDAO = dictionaryDAO;
         this.resultDAO = resultDAO;
-        this.resultLimitDAO = resultLimitDAO;
-        this.typeOfTestResultDAO = typeOfTestResultDAO;
         this.resultSignatureDAO = resultSignatureDAO;
         this.systemUserDAO = systemUserDAO;
         this.resultsLoadUtility = resultsLoadUtility;
-        this.typeOfTestResultsTypeToIdMap = new HashMap<>();
         NUMERIC_RESULT_TYPE = "N";
     }
 
@@ -84,14 +75,12 @@ public class ResultPersisterService {
 
         Dictionary dictionary = null;
         List<TestResult> testResults = testResultDAO.getTestResultsByTest(test.getId());
-        if (!(testResults == null || testResults.isEmpty())) {
+        boolean testIsDictionaryOrRemark = !(testResults == null || testResults.isEmpty());
+        if (testIsDictionaryOrRemark) {
             for (TestResult testResult : testResults) {
                 String testResultType = testResult.getTestResultType();
                 result.setResultType(testResultType);
                 switch (testResultType) {
-                    case "N":
-                        saveNumericTestResult(result, testResultValue, test, patient);
-                        break;
                     case "R":
                         saveRemarkTestResult(result, testResult, testResultValue);
                         break;
@@ -106,10 +95,7 @@ public class ResultPersisterService {
                 }
             }
         } else {
-            List<ResultLimit> resultLimitsForTest = resultLimitDAO.getAllResultLimitsForTest(test.getId());
-            if (!(resultLimitsForTest.isEmpty()) && resultLimitsForTest.get(0).getResultTypeId().equals(getResultTypesId("N"))) {
                 saveNumericTestResult(result, testResultValue, test, patient);
-            }
         }
 
         SystemUser systemUser = systemUserDAO.getUserById(sysUserId);
@@ -119,16 +105,6 @@ public class ResultPersisterService {
         resultSignature.setNonUserName(systemUser.getName());
         resultSignature.setSystemUser(systemUser);
         resultSignatureDAO.insertData(resultSignature);
-    }
-
-    private String getResultTypesId(String testResultType) {
-        if (typeOfTestResultsTypeToIdMap.size() == 0) {
-            List<TypeOfTestResult> typeOfTestResults = typeOfTestResultDAO.getAllTypeOfTestResults();
-            for (TypeOfTestResult typeOfTestResult : typeOfTestResults) {
-                typeOfTestResultsTypeToIdMap.put(typeOfTestResult.getTestResultType(), typeOfTestResult.getId());
-            }
-        }
-        return typeOfTestResultsTypeToIdMap.get(testResultType);
     }
 
     private void saveNumericTestResult(Result result, String testResultValue, Test test, Patient patient) {
