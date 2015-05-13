@@ -124,7 +124,24 @@ $jq(function() {
         $('<%= fieldsetOrder.get(0) +"Display" %>').show();
 
         $('addEditPatient').hide();
+	if(sampleId != "null") {
+		getSampleOrderDetailsFromSampleId(sampleId, processSampleOrderDetailsSuccess, processSampleOrderDetailsFailure);
+	}
+
 });
+
+
+function processSampleOrderDetailsSuccess(xhr){
+	var sampleSource = xhr.responseXML.getElementsByTagName("sampleSource");
+	var sampleRequester = xhr.responseXML.getElementsByTagName("sampleRequester");
+	$jq("#sampleSourceID").val(sampleSource[0].innerHTML);
+	if(sampleRequester.length > 0)
+	{
+		$jq("#providerId").val(sampleRequester[0].innerHTML);
+	}
+}
+function processSampleOrderDetailsFailure(xhr){
+}
 
 function isFieldValid(fieldname)
 {

@@ -27,19 +27,34 @@ function getTestsForSampleType(sampleTypeId, labOrderTypeId, success, failure) {
 	});
 }
 
+function getSampleOrderDetailsFromSampleId(sampleId, success, failure) {
+	var request = "&sampleId=" + sampleId;
+	if( !failure ){	failure = defaultFailure;}
+
+	new Ajax.Request('ajaxQueryXML', // url
+		{// options
+			method : 'get', // http method
+			parameters : "provider=SampleOrderDetailsFromSampleProvider" + request,
+			// indicator: 'throbbing'
+			asynchronous: false,
+			onSuccess : success,
+			onFailure : failure
+		});
+}
+
 function getSampleTypesAndTestsForSample(sampleId, success, failure) {
 	var request = "&sampleId=" + sampleId;
 	if( !failure ){	failure = defaultFailure;}
 
 	new Ajax.Request('ajaxQueryXML', // url
-	{// options
-		method : 'get', // http method
-		parameters : "provider=SampleTypeTestsForSampleProvider" + request,
-		// indicator: 'throbbing'
-		asynchronous: false,
-		onSuccess : success,
-		onFailure : failure
-	});
+		{// options
+			method : 'get', // http method
+			parameters : "provider=SampleTypeTestsForSampleProvider" + request,
+			// indicator: 'throbbing'
+			asynchronous: false,
+			onSuccess : success,
+			onFailure : failure
+		});
 }
 
 function testConnectionOnServer(connectionId, url, success, failure) {
