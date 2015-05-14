@@ -18,6 +18,7 @@ package org.bahmni.feed.openelis.feed.service.impl;
 
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
+import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.CodedTestAnswer;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataDepartment;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataSample;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataTest;
@@ -27,6 +28,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import us.mn.state.health.lims.common.exception.LIMSException;
 import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
+import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
 import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.dao.TestSectionDAO;
 import us.mn.state.health.lims.test.valueholder.Test;
@@ -37,13 +39,12 @@ import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleTestDAO;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSample;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class TestServiceTest {
@@ -84,12 +85,45 @@ public class TestServiceTest {
 
         when(testSectionDAOMock.getTestSectionByName(anyString())).thenReturn(null);
         when(typeOfSampleDAOMock.getTypeOfSampleByUUID(anyString())).thenReturn(createDummyTypeOfSample());
-        when(externalReferenceDaoMock.getData(referenceDataTest.getId(), TestService.CATEGORY_TEST)).thenReturn(createDummyReferenceData());
+        when(externalReferenceDaoMock.getData(referenceDataTest.getId(), TestService.CATEGORY_TEST)).thenReturn(createDummyReferenceData(referenceDataTest.getId()));
         Test dummyTest = createDummyTest();
         when(testDAOMock.getTestById(anyString())).thenReturn(dummyTest);
 
         testService.createOrUpdate(referenceDataTest);
         verify(testDAOMock).updateData(dummyTest);
+    }
+
+    @org.junit.Test
+    public void savingATestWithCodedAnswer() throws IOException, LIMSException {
+
+        ReferenceDataTest referenceDataTest = createReferenceDataTest();
+        referenceDataTest.setResultType("Coded");
+        CodedTestAnswer codedTestAnswer1 = new CodedTestAnswer();
+        codedTestAnswer1.setUuid("uuid1");
+        codedTestAnswer1.setName("A+ve");
+        referenceDataTest.setCodedTestAnswer(Arrays.asList(codedTestAnswer1));
+
+        when(externalReferenceDaoMock.getData(referenceDataTest.getId(), TestService.CATEGORY_TEST)).thenReturn(createDummyReferenceData(referenceDataTest.getId()));
+        when(externalReferenceDaoMock.getData("uuid1", TestService.CATEGORY_TEST_CODED_ANS)).thenReturn(null);
+        Dictionary existingDictionary = new Dictionary();
+        existingDictionary.setId("123");
+        existingDictionary.setDictEntry("A+ve");
+        when(dictionaryDAOMock.getDictionaryByDictEntry("A+ve")).thenReturn(existingDictionary);
+        Test dummyTest = createDummyTest();
+        when(testDAOMock.getTestById(anyString())).thenReturn(dummyTest);
+
+        testService.createOrUpdate(referenceDataTest);
+
+        verify(testResultServiceMock).makeCodedAnswersInactive("1");
+        verify(testDAOMock).updateData(dummyTest);
+        assertEquals("A+ve", existingDictionary.getDictEntry());
+        verify(dictionaryDAOMock, never()).insertData(existingDictionary);
+        ArgumentCaptor<ExternalReference> externalReferenceArgumentCaptor = ArgumentCaptor.forClass(ExternalReference.class);
+        verify(externalReferenceDaoMock).insertData(externalReferenceArgumentCaptor.capture());
+        ExternalReference actualRef = externalReferenceArgumentCaptor.getValue();
+        assertEquals(123, actualRef.getItemId());
+        assertEquals("uuid1", actualRef.getExternalId());
+        assertEquals(TestService.CATEGORY_TEST_CODED_ANS, actualRef.getType());
     }
 
     //------- Private methods --------------
@@ -109,9 +143,9 @@ public class TestServiceTest {
         return typeOfSample;
     }
 
-    private ExternalReference createDummyReferenceData() {
+    private ExternalReference createDummyReferenceData(String itemId) {
         ExternalReference externalReference = new ExternalReference();
-        externalReference.setItemId(new Long("1"));
+        externalReference.setItemId(new Long(itemId));
         return externalReference;
     }
 

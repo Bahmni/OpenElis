@@ -53,6 +53,8 @@ public class TestResult extends EnumValueItemImpl {
 
     private Boolean abnormal;
 
+	private Boolean active;
+
     public static final String MULTI_RESULT_TYPE = "M";
 
     public TestResult() {
@@ -184,4 +186,12 @@ public class TestResult extends EnumValueItemImpl {
     public boolean canHaveMultipleValues() {
         return testResultType.equalsIgnoreCase(MULTI_RESULT_TYPE);
     }
+
+	public Boolean isActive() {
+		return active;
+	}
+
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
 }

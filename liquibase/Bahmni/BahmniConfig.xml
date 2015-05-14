@@ -1334,4 +1334,19 @@
                 schemaName="clinlims"
                 tableName="sample"/>
     </changeSet>
+
+    <changeSet id="105" author="Preethi, Sandeep" context="bahmni">
+        <addColumn tableName="test_result" schemaName="clinlims">
+            <column name="is_active" type="boolean" defaultValue="true"></column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="106" author="Preethi, Sandeep" context="bahmni">
+        <comment>set active flag for all test results</comment>
+        <sql>
+            update test_result set is_active=true;
+        </sql>
+    </changeSet>
+
+
 </databaseChangeLog>

@@ -112,18 +112,23 @@ public class TestService {
                 testResultService.createOrUpdate(test, "R", null);
             }
             if (referenceDataTest.getResultType().equals("Coded")) {
-                //TODO: Sandeep, Divya Deletion of coded answers from a test concept is not supported now. Elis DB Structure limitation
                 Collection<CodedTestAnswer> codedTestAnswer = (Collection<CodedTestAnswer>) referenceDataTest.getCodedTestAnswer();
                 Dictionary dict = null;
-                
+                //Mark all coded Ans inactive
+                testResultService.makeCodedAnswersInactive(test.getId());
                 for (CodedTestAnswer testAnswer : codedTestAnswer) {
                     ExternalReference dictReference = externalReferenceDao.getData(testAnswer.getUuid(), CATEGORY_TEST_CODED_ANS);
                     if(dictReference==null){
-                        dict = new Dictionary();
-                        dict.setDictEntry(testAnswer.getName());
-                        dict.setLastupdated(new Timestamp(new Date().getTime()));
-                        dict.setSysUserId(sysUserId);
-                        dictionaryDao.insertData(dict);
+                        Dictionary existingDictionary = dictionaryDao.getDictionaryByDictEntry(testAnswer.getName());
+                        if(existingDictionary == null) {
+                            dict = new Dictionary();
+                            dict.setDictEntry(testAnswer.getName());
+                            dict.setLastupdated(new Timestamp(new Date().getTime()));
+                            dict.setSysUserId(sysUserId);
+                            dictionaryDao.insertData(dict);
+                        }else{
+                            dict = existingDictionary;
+                        }
                         saveExternalReference(testAnswer, dict);
                     }else{
                         dict = dictionaryDao.getDictionaryById(String.valueOf(dictReference.getItemId()));
@@ -132,6 +137,7 @@ public class TestService {
                         dict.setSysUserId(sysUserId);
                         dictionaryDao.updateData(dict, false);
                     }
+                    //If there is existing rln make it active
                     testResultService.createOrUpdate(test, "D", dict.getId());
                 }
             }

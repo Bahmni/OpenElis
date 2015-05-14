@@ -26,6 +26,7 @@ import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.daoimpl.BaseDAOImpl;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
+import us.mn.state.health.lims.common.util.IntegerUtil;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
@@ -267,7 +268,7 @@ public class TestResultDAOImpl extends BaseDAOImpl implements TestResultDAO {
 
 		List list = new Vector();
 		try {
-			String sql = "from TestResult t where t.test = :testId order by t.resultGroup, t.id asc";
+			String sql = "from TestResult t where t.test = :testId and t.active = true order by t.resultGroup, t.id asc";
 			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
 			query.setInteger("testId", Integer.parseInt(test.getId()));
 
@@ -290,7 +291,7 @@ public class TestResultDAOImpl extends BaseDAOImpl implements TestResultDAO {
 
         List list = new Vector();
         try {
-            String sql = "from TestResult t where t.test = :testId order by t.resultGroup, t.id asc";
+            String sql = "from TestResult t where t.test = :testId and t.active = true  order by t.resultGroup, t.id asc";
             Query query = HibernateUtil.getSession().createQuery(sql);
             query.setInteger("testId", Integer.parseInt(testId));
 
@@ -299,7 +300,7 @@ public class TestResultDAOImpl extends BaseDAOImpl implements TestResultDAO {
             HibernateUtil.getSession().clear();
         } catch (Exception e) {
             //bugzilla 2154
-            LogEvent.logErrorStack("TestResultDAOImpl","getAllTestResultsPerTest(String testId)",e);
+            LogEvent.logErrorStack("TestResultDAOImpl", "getAllTestResultsPerTest(String testId)", e);
             throw new LIMSRuntimeException("Error in TestResult getAllTestResultsPerTest(String testId)",e);
         }
 
@@ -337,7 +338,7 @@ public class TestResultDAOImpl extends BaseDAOImpl implements TestResultDAO {
 	public List<TestResult> getTestResultsByTest(String testId) throws LIMSRuntimeException {
 		List<TestResult> list = null;
 		try {
-			String sql = "from TestResult t where  t.test = :testId";
+			String sql = "from TestResult t where  t.test = :testId and t.active = true";
 			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
 			query.setInteger("testId", Integer.parseInt(testId));
 			list = query.list();
@@ -350,20 +351,21 @@ public class TestResultDAOImpl extends BaseDAOImpl implements TestResultDAO {
 	}
 
 	@Override
-	public List<TestResult> getTestResultsByTestAndValue(String testId, String valueId) throws LIMSRuntimeException {
-		List<TestResult> list = null;
+	public void makeTestResultsInactive(String testId) {
 		try {
-			String sql = "from TestResult t where t.test = :testId and t.value = :valueId";
+			List<TestResult> list = null;
+			String sql = "from TestResult t where  t.test = :testId";
 			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
 			query.setInteger("testId", Integer.parseInt(testId));
-			query.setString("valueId", valueId);
 			list = query.list();
-			closeSession();
-			return list;
+
+			for (TestResult testResult : list) {
+				testResult.setActive(false);
+			}
 		} catch (Exception e) {
-			handleException(e, "getTestResultsByTestAndValue");
+			handleException(e, "makeTestResultsInactive");
 		}
-		return new ArrayList<>();
+
 	}
 
 }

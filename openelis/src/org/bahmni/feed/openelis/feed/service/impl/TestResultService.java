@@ -22,15 +22,26 @@ public class TestResultService {
         testResult.setTest(test);
         testResult.setTestResultType(testResultType);
         testResult.setValue(codedTestAnswerId);
-        List<TestResult> existingTestResults = null;
+        TestResult existingTestResult;
         if (!StringUtil.isNullorNill(codedTestAnswerId)) {
-            existingTestResults = testResultDAO.getTestResultsByTestAndValue(test.getId(), codedTestAnswerId);
+            existingTestResult = testResultDAO.getTestResultsByTestAndDictonaryResult(test.getId(), codedTestAnswerId);
         } else {
-            existingTestResults = testResultDAO.getTestResultsByTest(test.getId());
+            List<TestResult> testResultsByTest = testResultDAO.getTestResultsByTest(test.getId());
+            existingTestResult = testResultsByTest.isEmpty() ? null : testResultsByTest.get(0);
         }
-        if (existingTestResults == null || existingTestResults.isEmpty()) {
+        if (existingTestResult == null) {
+            testResult.setActive(true);
             testResultDAO.insertData(testResult);
-        } 
+        }else{
+            if (!StringUtil.isNullorNill(codedTestAnswerId)){
+                existingTestResult.setActive(true);
+                existingTestResult.setSysUserId("1");
+                testResultDAO.updateData(existingTestResult);
+            }
+        }
     }
 
+    public void makeCodedAnswersInactive(String testId) {
+        testResultDAO.makeTestResultsInactive(testId);
+    }
 }
