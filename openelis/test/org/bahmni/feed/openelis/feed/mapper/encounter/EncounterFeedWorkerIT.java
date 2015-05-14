@@ -288,24 +288,18 @@ public class EncounterFeedWorkerIT extends IT {
         EncounterFeedWorker encounterFeedWorker = new EncounterFeedWorker(null, null);
         encounterFeedWorker.process(openMRSEncounter);
 
+        Sample sample = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId()).get(0);
+        List<SampleItem> sampleItems = new SampleItemDAOImpl().getSampleItemsBySampleId(sample.getId());
+        assertEquals(2, sampleItems.size());
+
         deleteOrders(openMRSEncounter, Arrays.asList(openMRSLoneConcept, openMRSAneamiaConcept, openMRSDiabeticsConcept));  // tests for blood and urine sample type
         encounterFeedWorker.process(openMRSEncounter);
 
-        Sample sample = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId()).get(0);
-        List<SampleItem> sampleItems = new SampleItemDAOImpl().getSampleItemsBySampleId(sample.getId());
-        assertEquals(2,sampleItems.size());
+        sample = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId()).get(0);
+        sampleItems = new SampleItemDAOImpl().getSampleItemsBySampleId(sample.getId());
+        assertEquals(1,sampleItems.size());
 
-        String analysisCancelStatus = StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.Canceled);
-        HashSet<Integer> cancelledStatusIds = new HashSet<>(Arrays.asList(Integer.parseInt(analysisCancelStatus)));
-
-        List<Analysis> cancelledAnalysis = new AnalysisDAOImpl().getAnalysesBySampleIdAndStatusId(sample.getId(), cancelledStatusIds);
-        assertEquals(3, cancelledAnalysis.size());
-        assertTrue(containsTestInAnalysis(cancelledAnalysis, bloodSmearTest));
-        assertTrue(containsTestInAnalysis(cancelledAnalysis, loneTest));
-        assertTrue(containsTestInAnalysis(cancelledAnalysis, diabeticsTest));
-
-
-        List<Analysis> analysisListForBlood = new AnalysisDAOImpl().getAnalysesBySampleIdExcludedByStatusId(sample.getId(), cancelledStatusIds);
+        List<Analysis> analysisListForBlood = new AnalysisDAOImpl().getAnalysesBySampleId(sample.getId());
         assertEquals(1, analysisListForBlood.size());
         assertTrue(containsTestInAnalysis(analysisListForBlood, haemoglobinTest));
     }
@@ -395,14 +389,7 @@ public class EncounterFeedWorkerIT extends IT {
         List<SampleItem> sampleItems = new SampleItemDAOImpl().getSampleItemsBySampleId(sample.getId());
         assertEquals(1, sampleItems.size());
 
-        String analysisCancelStatus = StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.Canceled);
-        HashSet<Integer> cancelledStatusIds = new HashSet<>(Arrays.asList(Integer.parseInt(analysisCancelStatus)));
-
-        List<Analysis> cancelledAnalysis = new AnalysisDAOImpl().getAnalysesBySampleIdAndStatusId(sample.getId(), cancelledStatusIds);
-        assertEquals(1, cancelledAnalysis.size());
-        assertTrue(containsTestInAnalysis(cancelledAnalysis, bloodSmearTest));
-
-        List<Analysis> analysisListForBlood = new AnalysisDAOImpl().getAnalysesBySampleIdExcludedByStatusId(sample.getId(), cancelledStatusIds);
+        List<Analysis> analysisListForBlood = new AnalysisDAOImpl().getAnalysesBySampleId(sample.getId());
         assertEquals(1, analysisListForBlood.size());
         assertTrue(containsTestInAnalysis(analysisListForBlood, haemoglobinTest));
         assertTrue(analysisListForBlood.get(0).getPanel().getPanelName().equals(routineBloodPanel.getPanelName()));

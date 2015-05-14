@@ -16,6 +16,7 @@
 
 package org.bahmni.feed.openelis.feed.event;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.ObjectMapperRepository;
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
@@ -228,7 +229,9 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
 
         addTestsToExistingSample(sample, sysUserId, nowAsSqlDate, analysisBuilder, testOrderDiff);
         cancelAnalysisForDeletedTests(sample, sysUserId, testOrderDiff);
-        setCorrectPanelIdForUnchangedTests(sample, sysUserId, analysisBuilder, testOrderDiff);
+        if(sample!=null){
+            setCorrectPanelIdForUnchangedTests(sample, sysUserId, analysisBuilder, testOrderDiff);
+        }
     }
 
     private void setCorrectPanelIdForUnchangedTests(Sample sample, String sysUserId, AnalysisBuilder analysisBuilder, TestOrderDiff testOrderDiff) {
@@ -248,11 +251,32 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
             toBeDeletedTestIds.add(Integer.parseInt(test.getId()));
         }
         List<Analysis> analysisToBeCanceled = analysisDAO.getAnalysisBySampleAndTestIds(sample.getId(), toBeDeletedTestIds);
-        for (Analysis analysis : analysisToBeCanceled) {
+
+        for(Analysis analysis: analysisToBeCanceled){
             analysis.setSysUserId(sysUserId);
-            analysis.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.Canceled));
-            analysisDAO.updateData(analysis);
         }
+        analysisDAO.deleteData(analysisToBeCanceled);
+        cleanUpDanglingItems(sample,sysUserId);
+    }
+
+    private void cleanUpDanglingItems(Sample sample,String sysUserId) {
+        List<SampleItem> sampleItems = sampleItemDAO.getSampleItemsBySampleId(sample.getId());
+        List<SampleItem> deletedItems = new ArrayList<>();
+
+        for(SampleItem item: sampleItems){
+            List<Analysis> analysisList = analysisDAO.getAnalysesBySampleItem(item);
+            if(analysisList.size()==0){
+                item.setSysUserId(sysUserId);
+                deletedItems.add(item);
+            }
+        }
+        sampleItemDAO.deleteData(deletedItems);
+
+        if(sampleItems.equals(deletedItems)){
+            sample.setSysUserId(sysUserId);
+            sampleDAO.deleteData(Arrays.asList(sample));
+        }
+
     }
 
     private void addTestsToExistingSample(Sample sample, String sysUserId, Date nowAsSqlDate, AnalysisBuilder analysisBuilder, TestOrderDiff testOrderDiff) {
