@@ -134,7 +134,9 @@ $jq(function() {
 function processSampleOrderDetailsSuccess(xhr){
 	var sampleSource = xhr.responseXML.getElementsByTagName("sampleSource");
 	var sampleRequester = xhr.responseXML.getElementsByTagName("sampleRequester");
+	var sampleReceivedDateForDisplay = xhr.responseXML.getElementsByTagName("sampleReceivedDateForDisplay");
 	$jq("#sampleSourceID").val(sampleSource[0].innerHTML);
+	$jq("#receivedDateForDisplay").val(sampleReceivedDateForDisplay[0].innerHTML);
 	if(sampleRequester.length > 0)
 	{
 		$jq("#providerId").val(sampleRequester[0].innerHTML);

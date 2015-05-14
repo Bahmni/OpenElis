@@ -4,25 +4,23 @@ import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.common.util.XMLUtil;
-import us.mn.state.health.lims.sample.dao.SampleDAO;
-import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
-import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.sampleitem.dao.SampleItemDAO;
 import us.mn.state.health.lims.sampleitem.daoimpl.SampleItemDAOImpl;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
-import us.mn.state.health.lims.test.dao.TestDAO;
-import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
-import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleDAOImpl;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class SampleTypeTestsForSampleProvider extends BaseQueryProvider{
     private SampleItemDAO sampleItemDao = new SampleItemDAOImpl();
     private AnalysisDAO analysisDAO = new AnalysisDAOImpl();
+
+
 
     @Override
     public void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -43,15 +41,23 @@ public class SampleTypeTestsForSampleProvider extends BaseQueryProvider{
             xml.append("<sample>");
             XMLUtil.appendKeyValue("sampleType", sampleItem.getTypeOfSampleId(), xml);
             List<Analysis> analysesBySampleItems = analysisDAO.getAnalysesBySampleItem(sampleItem);
+            Set<String> selectedPanelList = new HashSet<>();
             for (Analysis analysis : analysesBySampleItems) {
                 XMLUtil.appendKeyValue("test", analysis.getTest().getId(), xml);
+                if(analysis.getPanel() != null) {
+                    selectedPanelList.add(analysis.getPanel().getId());
+                }
             }
+            for (String panel : selectedPanelList) {
+                XMLUtil.appendKeyValue("panel", panel, xml);
+            }
+
             xml.append("</sample>");
         }
         xml.append("</samples>");
 
-
         return success;
 
     }
+
 }

@@ -1,8 +1,5 @@
 package us.mn.state.health.lims.common.provider.query;
 
-import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
-import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
-import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.common.util.XMLUtil;
 import us.mn.state.health.lims.requester.dao.SampleRequesterDAO;
 import us.mn.state.health.lims.requester.daoimpl.SampleRequesterDAOImpl;
@@ -10,9 +7,6 @@ import us.mn.state.health.lims.requester.valueholder.SampleRequester;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
 import us.mn.state.health.lims.sample.valueholder.Sample;
-import us.mn.state.health.lims.sampleitem.dao.SampleItemDAO;
-import us.mn.state.health.lims.sampleitem.daoimpl.SampleItemDAOImpl;
-import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -41,6 +35,7 @@ public class SampleOrderDetailsFromSampleProvider extends BaseQueryProvider{
 
         xml.append("<sampleDetails>");
         XMLUtil.appendKeyValue("sampleSource", sample.getSampleSource().getId(), xml);
+        XMLUtil.appendKeyValue("sampleReceivedDateForDisplay", sample.getReceivedDateForDisplay(), xml);
         if(requesters.size() >0) {
             XMLUtil.appendKeyValue("sampleRequester", String.valueOf(requesters.get(0).getRequesterId()), xml);
         }

@@ -358,6 +358,13 @@ function populateTheSelectedTests() {
 	}
 }
 
+function populateSelectedPanels(i) {
+	var panels = samplesTags[i].getElementsByTagName("panel");
+	for (var i=0; i< panels.length;i++){
+		$jq('input[value='+panels[i].innerHTML+']')[0].click();
+	}
+}
+
 function processGetSampleTypesAndTestsSuccess(xhr){
 	samplesTags = xhr.responseXML.getElementsByTagName("sample");
 	for(var i=0; i< samplesTags.length; i++){
@@ -365,6 +372,7 @@ function processGetSampleTypesAndTestsSuccess(xhr){
 		addNewSamples();
 		sampleClicked(i+1)
 		populateTheSelectedTests();
+		populateSelectedPanels(i);
 	}
 }
 
@@ -417,6 +425,7 @@ function insertPanelIntoPanelTable( panel, panelTable ){
 	var name = getValueFromXmlElement( panel, "name" );
 	var id = getValueFromXmlElement( panel, "id");
 	var testMap = getValueFromXmlElement( panel, "testMap" );
+
 
 	//This sillyness is because a single value will be interperted as an array size rather than a member
 	if( testMap.indexOf( "," ) == -1 ){
