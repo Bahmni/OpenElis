@@ -41,7 +41,7 @@ function generateLinkForPrint(order){
 
 function generateAllLinksForOrder(order, alwaysValidate){
     if(order.accessionNumber == null){
-        return  "<a target='_blank' href='SamplePatientEntry.do?id="+ order.orderId +"&patientId=" + order.stNumber +"'>Collect Sample</a>";
+        return  "<a href='SamplePatientEntry.do?id="+ order.orderId +"&patientId=" + order.stNumber +"'>Collect Sample</a>";
     }
     var enterResultLink = "<a href='AccessionResults.do?accessionNumber=" + order.accessionNumber + "&referer=LabDashboard'>Result</a>";
     if(alwaysValidate){
