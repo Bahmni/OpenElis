@@ -315,19 +315,19 @@ public class SampleDAOImpl extends BaseDAOImpl implements SampleDAO {
 				samp = (Sample) samples.get(i);
 				samp.setEnteredDateForDisplay(DateUtil
 						.convertSqlDateToStringDate(new java.sql.Date(samp.getEnteredDate().getTime()),
-								locale));
+                                locale));
 				samp.setReceivedDateForDisplay(DateUtil
 						.convertSqlDateToStringDate(samp.getReceivedDate(),
-								locale));
+                                locale));
 				samp.setCollectionDateForDisplay(DateUtil
 						.convertTimestampToStringDate(samp.getCollectionDate(),
-								locale));
+                                locale));
 				samp.setTransmissionDateForDisplay(DateUtil
 						.convertSqlDateToStringDate(samp.getTransmissionDate(),
-								locale));
+                                locale));
 				samp.setReleasedDateForDisplay(DateUtil
 						.convertSqlDateToStringDate(samp.getReleasedDate(),
-								locale));
+                                locale));
 			}
 		} catch (Exception e) {
 			//bugzilla 2154
@@ -771,19 +771,30 @@ public class SampleDAOImpl extends BaseDAOImpl implements SampleDAO {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Sample> getSamplesByEncounterUuid(String uuid) {
-		try {
-			String sql = "from Sample as sample where sample.uuid = :uuid";
-			Query query = HibernateUtil.getSession().createQuery(sql);
-			query.setParameter("uuid", uuid);
-			return query.list();
-		} catch (HibernateException he) {
-			LogEvent.logErrorStack("SampleDAOImpl", "getSamplesByEncounterUuid(String uuid)", he);
-			throw new LIMSRuntimeException("Error in Sample getSamplesByEncounterUuid(String uuid)", he);
-
-		}
+		return getSamplesByUuidAndStatus(uuid, -1);
 	}
 
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Sample> getSamplesByUuidAndStatus(String uuid, int statusId) {
+        try {
+            String sql = "from Sample as sample where sample.uuid = :uuid";
+            if(statusId != -1){
+                sql += " and sample.statusId = :status";
+            }
+            Query query = HibernateUtil.getSession().createQuery(sql);
+            query.setParameter("uuid", uuid);
+            query.setParameter("status", statusId);
+            return query.list();
+        } catch (HibernateException he) {
+            LogEvent.logErrorStack("SampleDAOImpl", "getSamplesByEncounterUuid(String uuid)", he);
+            throw new LIMSRuntimeException("Error in Sample getSamplesByEncounterUuid(String uuid)", he);
+
+        }
+    }
+
+
+    @SuppressWarnings("unchecked")
 	@Override
 	public Sample getSampleByID(String id) {
 		try{

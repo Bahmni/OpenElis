@@ -79,6 +79,8 @@ public interface SampleDAO extends BaseDAO {
 
     public Sample getSampleByUuidAndExcludedStatus(String uuid, int statusId) throws LIMSRuntimeException;
 
+	List<Sample> getSamplesByUuidAndStatus(String uuid, int statusId);
+
     List<Sample> getSamplesByEncounterUuid(String uuid);
 
 	public Sample getSampleByID(String id) throws LIMSRuntimeException;

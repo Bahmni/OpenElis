@@ -164,7 +164,8 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
     }
 
     private void filterNewTestsAdded(OpenMRSEncounter openMRSEncounter) {
-        List<Sample> currentEncounterSamples = sampleDAO.getSamplesByEncounterUuid(openMRSEncounter.getEncounterUuid());
+        //Pick only those samples which are collected.
+        List<Sample> currentEncounterSamples = sampleDAO.getSamplesByUuidAndStatus(openMRSEncounter.getEncounterUuid(), Integer.parseInt(SystemConfiguration.getInstance().getSampleStatusEntry2Complete()));
 
         if(currentEncounterSamples.size() == 0)
             return;
@@ -213,6 +214,9 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
     }
 
     private void updateSample(OpenMRSEncounter openMRSEncounter, Sample sample, FeedProcessState processState) {
+        //Remove all those tests for which the sample has been collected already.
+        filterNewTestsAdded(openMRSEncounter);
+
         String sysUserId = auditingService.getSysUserId();
         Date nowAsSqlDate = DateUtil.getNowAsSqlDate();
 
