@@ -771,20 +771,27 @@ public class SampleDAOImpl extends BaseDAOImpl implements SampleDAO {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Sample> getSamplesByEncounterUuid(String uuid) {
-		return getSamplesByUuidAndStatus(uuid, -1);
+        try {
+            String sql = "from Sample as sample where sample.uuid = :uuid";
+            Query query = HibernateUtil.getSession().createQuery(sql);
+            query.setParameter("uuid", uuid);
+            return query.list();
+        } catch (HibernateException he) {
+            LogEvent.logErrorStack("SampleDAOImpl", "getSamplesByEncounterUuid(String uuid)", he);
+            throw new LIMSRuntimeException("Error in Sample getSamplesByEncounterUuid(String uuid)", he);
+
+        }
 	}
 
     @SuppressWarnings("unchecked")
     @Override
     public List<Sample> getSamplesByUuidAndStatus(String uuid, int statusId) {
         try {
-            String sql = "from Sample as sample where sample.uuid = :uuid";
-            if(statusId != -1){
-                sql += " and sample.statusId = :status";
-            }
+            String sql = "from Sample as sample where sample.uuid = :uuid and sample.statusId = :status";
             Query query = HibernateUtil.getSession().createQuery(sql);
             query.setParameter("uuid", uuid);
             query.setParameter("status", statusId);
+
             return query.list();
         } catch (HibernateException he) {
             LogEvent.logErrorStack("SampleDAOImpl", "getSamplesByEncounterUuid(String uuid)", he);
