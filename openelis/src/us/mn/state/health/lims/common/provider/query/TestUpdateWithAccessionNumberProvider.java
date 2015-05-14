@@ -32,7 +32,6 @@ public class TestUpdateWithAccessionNumberProvider extends BaseQueryProvider {
     private AnalysisDAO analysisDAO = new AnalysisDAOImpl();
     private SampleItemDAO sampleItemDao = new SampleItemDAOImpl();
     private TypeOfSampleDAO typeOfSampleDAO = new TypeOfSampleDAOImpl();
-
     private TestDAO testDAO = new TestDAOImpl();
 
     @Override

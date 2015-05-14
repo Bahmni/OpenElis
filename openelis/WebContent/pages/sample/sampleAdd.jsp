@@ -56,6 +56,7 @@ var labOrderType = "none"; //if set will be done by other tiles
 var sampleTypesForSample = new Array() ;
 var samplesTags;
 var sampleId = "<%= sampleId %>";
+var sampleTypeSelectedIds= new Array();
 
 
 		function /*void*/ addSampleChangedListener( listener ){
@@ -300,6 +301,10 @@ function convertSampleToXml( id ){
 
 
 function sampleTypeSelected( element ){
+	if(sampleTypeSelectedIds.contains($jq("#sampleTypeSelect").val())){
+		$("addSampleButton").disabled = true;
+		return;
+	}
 	currentTypeIndex = element.selectedIndex;
 	$("addSampleButton").disabled = currentTypeIndex == 0;
 }
@@ -337,8 +342,7 @@ function processGetTestSuccess(xhr){
 	setSampleTests();
 }
 
-function populateTheSelectedTests() {
-	for(var i=0; i< samplesTags.length; i++){
+function populateTheSelectedTests(i) {
 		var testsBySample = samplesTags[i].getElementsByTagName("test");
 		var inputs = $("addTestTable").getElementsByTagName("input");
 		for (var j = 0; j < testsBySample.length; j++) {
@@ -355,7 +359,6 @@ function populateTheSelectedTests() {
 			}
 		}
 		assignTestsToSelected();
-	}
 }
 
 function populateSelectedPanels(i) {
@@ -368,10 +371,12 @@ function populateSelectedPanels(i) {
 function processGetSampleTypesAndTestsSuccess(xhr){
 	samplesTags = xhr.responseXML.getElementsByTagName("sample");
 	for(var i=0; i< samplesTags.length; i++){
-		$jq("select#sampleTypeSelect").val(parseInt(samplesTags[i].getElementsByTagName("sampleType")[0].innerHTML));
+		var sampleType = samplesTags[i].getElementsByTagName("sampleType")[0].innerHTML;
+		sampleTypeSelectedIds.push(sampleType);
+		$jq("select#sampleTypeSelect").val(parseInt(sampleType));
 		addNewSamples();
 		sampleClicked(i+1)
-		populateTheSelectedTests();
+		populateTheSelectedTests(i);
 		populateSelectedPanels(i);
 	}
 }
