@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.dbhelper.DBHelper;
 import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
+import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
 import us.mn.state.health.lims.note.dao.NoteDAO;
 import us.mn.state.health.lims.note.valueholder.Note;
 import us.mn.state.health.lims.panel.valueholder.Panel;
@@ -35,6 +36,7 @@ import us.mn.state.health.lims.patientidentity.dao.PatientIdentityDAO;
 import us.mn.state.health.lims.patientidentitytype.dao.PatientIdentityTypeDAO;
 import us.mn.state.health.lims.patientidentitytype.valueholder.PatientIdentityType;
 import us.mn.state.health.lims.result.dao.ResultSignatureDAO;
+import us.mn.state.health.lims.result.valueholder.Result;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.samplehuman.dao.SampleHumanDAO;
@@ -48,6 +50,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -152,6 +155,61 @@ public class AccessionServiceTest {
         Assert.assertNotNull(accessionDetail.getPatientUuid());
         Assert.assertEquals(accessionDetail.getPatientUuid(), patient.getUuid());
         assertEquals(latestNote.getText(), testDetails.get(0).getNotes());
+    }
+
+
+    @Test
+    public void shouldSetTheResultUuidIfCodedAnswer() {
+        AccessionService accessionService = new TestableAccessionService(sampleDao, sampleHumanDAO, externalReferenceDao, noteDao, dictionaryDao, patientIdentityDAO, patientIdentityTypeDAO);
+        TestDetail testDetail = new TestDetail();
+        Result result = new Result();
+        result.setValue("result");
+        result.setResultType("D");
+
+        Dictionary dictionary = new Dictionary();
+        dictionary.setId("dictId");
+        dictionary.setDictEntry("dictEntry");
+        when(dictionaryDao.getDataForId(result.getValue())).thenReturn(dictionary);
+        when(externalReferenceDao.getDataByItemId("dictId", "CodedAns")).thenReturn(new ExternalReference(1, "resultUuid", "ctype"));
+        accessionService.setResultValue(testDetail, result);
+
+        assertEquals("resultUuid", testDetail.getResultUuid());
+        assertEquals("dictEntry", testDetail.getResult());
+
+    }
+
+    @Test
+    public void shouldNotSetTheResultUuidIfNotCodedAnswer() {
+        AccessionService accessionService = new TestableAccessionService(sampleDao, sampleHumanDAO, externalReferenceDao, noteDao, dictionaryDao, patientIdentityDAO, patientIdentityTypeDAO);
+        TestDetail testDetail = new TestDetail();
+        Result result = new Result();
+        result.setValue("result");
+        result.setResultType("D");
+
+        Dictionary dictionary = new Dictionary();
+        dictionary.setId("dictId");
+        dictionary.setDictEntry("dictEntry");
+        when(dictionaryDao.getDataForId(result.getValue())).thenReturn(dictionary);
+        when(externalReferenceDao.getDataByItemId("dictId", "CodedAns")).thenReturn(null);
+        accessionService.setResultValue(testDetail, result);
+
+        assertNull(testDetail.getResultUuid());
+        assertEquals("dictEntry", testDetail.getResult());
+
+    }
+
+    @Test
+    public void shouldSetResultValueForNumeric() {
+        AccessionService accessionService = new TestableAccessionService(sampleDao, sampleHumanDAO, externalReferenceDao, noteDao, dictionaryDao, patientIdentityDAO, patientIdentityTypeDAO);
+        TestDetail testDetail = new TestDetail();
+        Result result = new Result();
+        result.setValue("10");
+        result.setResultType("N");
+
+        accessionService.setResultValue(testDetail, result);
+
+        assertNull(testDetail.getResultUuid());
+        assertEquals("10", testDetail.getResult());
     }
 
     private class TestableAccessionService extends AccessionService {

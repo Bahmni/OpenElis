@@ -25,6 +25,7 @@ import org.bahmni.openelis.domain.TestDetail;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
+import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
 import us.mn.state.health.lims.note.dao.NoteDAO;
 import us.mn.state.health.lims.note.valueholder.Note;
 import us.mn.state.health.lims.panel.valueholder.Panel;
@@ -194,18 +195,27 @@ public class AccessionService {
         addRecentNotes(result.getId(), testDetail);
         testDetail.setMinNormal(result.getMinNormal() != null && result.getMinNormal() != Double.NEGATIVE_INFINITY ? result.getMinNormal() : null);
         testDetail.setMaxNormal(result.getMaxNormal() != null && result.getMaxNormal() != Double.POSITIVE_INFINITY ? result.getMaxNormal() : null);
-        testDetail.setResult(getResultValue(result));
+        setResultValue(testDetail, result);
         testDetail.setResultType(result.getResultType());
         testDetail.setIsAbnormal(result.getAbnormal());
         testDetail.setDateTime(result.getAnalysis().getEnteredDate());
         testDetail.setUploadedFileName(result.getUploadedFileName());
     }
 
+    protected void setResultValue(TestDetail testDetail, Result result) {
+        if (result.isValid()) {
+            if (result.isDictionary()) {
+                Dictionary dictionary = dictionaryDAO.getDataForId(result.getValue());
+                testDetail.setResult(dictionary.getDictEntry());
+                ExternalReference externalReference = externalReferenceDao.getDataByItemId(dictionary.getId(), TestService.CATEGORY_TEST_CODED_ANS);
+                if(externalReference!= null){
+                    testDetail.setResultUuid(externalReference.getExternalId());
+                }
+            }else{
+                testDetail.setResult(result.getValue());
+            }
+        }
 
-    private String getResultValue(Result result) {
-        if (!result.isValid()) return null;
-        if (result.isDictionary()) return dictionaryDAO.getDataForId(result.getValue()).getDictEntry();
-        return result.getValue();
     }
 
     private void setExternalIds(Analysis analysis, TestDetail tr) {

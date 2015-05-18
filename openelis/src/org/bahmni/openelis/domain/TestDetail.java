@@ -28,6 +28,7 @@ public class TestDetail {
     private String panelUuid;
     private Double minNormal;
     private Double maxNormal;
+    private String resultUuid;
     private String result;
     private String notes;
     private String resultType;
@@ -152,5 +153,13 @@ public class TestDetail {
 
     public void setUploadedFileName(String uploadedFileName) {
         this.uploadedFileName = uploadedFileName;
+    }
+
+    public String getResultUuid() {
+        return resultUuid;
+    }
+
+    public void setResultUuid(String resultUuid) {
+        this.resultUuid = resultUuid;
     }
 }
