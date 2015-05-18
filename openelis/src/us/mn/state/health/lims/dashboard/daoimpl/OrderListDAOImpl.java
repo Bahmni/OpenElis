@@ -47,7 +47,7 @@ public class OrderListDAOImpl implements OrderListDAO {
     public List<Order> getAllToday() {
         List<Order> orderList = new ArrayList<>();
         String condition = "sample.accession_number is not null and analysis.status_id IN (" + getAllNonReferredAnalysisStatus() + ") ";
-        String sqlForAllTestsToday = createSqlStringForTodayOrders(condition);
+        String sqlForAllTestsToday = createSqlStringForTodayOrders(condition, "sample.accession_number");
         PreparedStatement preparedStatement = null;
         ResultSet todayAccessions = null;
         try {
@@ -72,7 +72,7 @@ public class OrderListDAOImpl implements OrderListDAO {
     public List<Order> getAllPendingBeforeToday() {
         List<Order> orderList = new ArrayList<>();
         String condition = "sample.accession_number is not null and analysis.status_id IN (" + getAllNonReferredAnalysisStatus() + ")";
-        String sqlForAllTestsToday = createSqlStringForPendingOrders(condition);
+        String sqlForAllTestsToday = createSqlStringForPendingOrders(condition, "sample.accession_number");
 
         ResultSet pendingAccessions = null;
         PreparedStatement preparedStatement = null;
@@ -99,7 +99,7 @@ public class OrderListDAOImpl implements OrderListDAO {
     @Override
     public List<Order> getAllSampleNotCollectedToday() {
         List<Order> orderList = new ArrayList<>();
-        String sqlForAllSampleNotCollectedToday = createSqlStringForTodayOrders("sample.accession_number is null");
+        String sqlForAllSampleNotCollectedToday = createSqlStringForTodayOrders("sample.accession_number is null", "sample.lastupdated");
 
         ResultSet sampleNotCollectedToday = null;
         PreparedStatement preparedStatement = null;
@@ -124,7 +124,7 @@ public class OrderListDAOImpl implements OrderListDAO {
     @Override
     public List<Order> getAllSampleNotCollectedPendingBeforeToday() {
         List<Order> orderList = new ArrayList<>();
-        String sqlForAllSampleNotCollectedPendingBeforeToday = createSqlStringForPendingOrders("sample.accession_number is null");
+        String sqlForAllSampleNotCollectedPendingBeforeToday = createSqlStringForPendingOrders("sample.accession_number is null", "sample.lastupdated");
 
         ResultSet pendingAccessions = null;
         PreparedStatement preparedStatement = null;
@@ -227,7 +227,7 @@ public class OrderListDAOImpl implements OrderListDAO {
         return StringUtils.join(analysisStatuses.iterator(), ',');
     }
 
-    private String createSqlStringForPendingOrders(String condition) {
+    private String createSqlStringForPendingOrders(String condition, String OrderBy) {
         return "SELECT \n" +
                 "sample.accession_number AS accession_number, \n" +
                 "sample.uuid AS uuid, \n" +
@@ -256,11 +256,11 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "LEFT OUTER JOIN document_track as document_track ON sample.id = document_track.row_id AND document_track.name = 'patientHaitiClinical' and document_track.parent_id is null\n" +
                 "WHERE "+condition+"\n" +
                 "GROUP BY sample.accession_number, sample.uuid,sample.id, sample.collection_date, person.first_name, person.middle_name, person.last_name, sample_source.name, patient_identity.identity_data, document_track.report_generation_time\n" +
-                "ORDER BY sample.accession_number DESC\n" +
+                "ORDER BY "+ OrderBy +" DESC\n" +
                 "LIMIT 1000;";
     }
 
-    private String createSqlStringForTodayOrders(String condition) {
+    private String createSqlStringForTodayOrders(String condition, String OrderBy) {
         return "SELECT \n" +
                 "sample.accession_number AS accession_number, \n" +
                 "sample.uuid AS uuid, \n" +
@@ -290,7 +290,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "LEFT OUTER JOIN document_track as document_track ON sample.id = document_track.row_id AND document_track.name = 'patientHaitiClinical' and document_track.parent_id is null \n" +
                 "WHERE "+condition+"\n" +
                 "GROUP BY sample.accession_number, sample.uuid,sample.id, sample.collection_date, sample.lastupdated, person.first_name, person.middle_name, person.last_name, sample_source.name, patient_identity.identity_data, document_track.report_generation_time \n" +
-                "ORDER BY sample.accession_number DESC\n" +
+                "ORDER BY "+ OrderBy +" DESC\n" +
                 "LIMIT 1000;";
     }
 }
