@@ -54,16 +54,11 @@ public class SampleDAOImplTest extends IT{
 
         changeSampleStatus(sample, statusId);
 
-        Sample retrievedSample = new SampleDAOImpl().getSampleByUuidAndExcludedStatus(sample.getUUID(), statusId);
-        Assert.assertNull(retrievedSample);
-
-        statusId = Integer.parseInt(SystemConfiguration.getInstance().getSampleStatusEntry1Complete()); //This is In-Progress
-
-        changeSampleStatus(sample, statusId);
-        retrievedSample = new SampleDAOImpl().getSampleByUuidAndExcludedStatus(sample.getUUID(), statusId);
-
-        Assert.assertNotNull(retrievedSample);
-        SampleItem retrievedSampleItem = (SampleItem) retrievedSample.getSampleItems().toArray()[0];
+        List<Sample> retrievedSamples = new SampleDAOImpl().getSamplesByUuidAndStatus(sample.getUUID(), statusId);
+        Assert.assertEquals(1, retrievedSamples.size());
+        Sample sampleRetrieved = retrievedSamples.get(0);
+        Assert.assertNotNull(sampleRetrieved);
+        SampleItem retrievedSampleItem = (SampleItem) sampleRetrieved.getSampleItems().toArray()[0];
         Assert.assertNotNull(retrievedSampleItem);
         Analysis retrievedAnalysis = (Analysis) retrievedSampleItem.getAnalyses().toArray()[0];
         Assert.assertNotNull(retrievedAnalysis);

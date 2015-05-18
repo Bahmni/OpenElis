@@ -16,7 +16,6 @@
 
 package org.bahmni.feed.openelis.feed.event;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.ObjectMapperRepository;
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
@@ -156,7 +155,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
     public void process(OpenMRSEncounter openMRSEncounter) {
         logInfo(openMRSEncounter);
         FeedProcessState processState = new FeedProcessState();
-        Sample sample = sampleDAO.getSampleByUuidAndExcludedStatus(openMRSEncounter.getEncounterUuid(), Integer.parseInt(SystemConfiguration.getInstance().getSampleStatusEntry2Complete()));
+        Sample sample = sampleDAO.getSampleByUuidAndWithoutAccessionNumber(openMRSEncounter.getEncounterUuid());
         if (sample != null) {
             updateSample(openMRSEncounter, sample, processState);
         } else {
@@ -166,7 +165,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
 
     private void filterNewTestsAdded(OpenMRSEncounter openMRSEncounter) {
         //Pick only those samples which are collected.
-        List<Sample> currentEncounterSamples = sampleDAO.getSamplesByUuidAndStatus(openMRSEncounter.getEncounterUuid(), Integer.parseInt(SystemConfiguration.getInstance().getSampleStatusEntry2Complete()));
+        List<Sample> currentEncounterSamples = sampleDAO.getAllSamplesByUuidAndWithAccessionNumber(openMRSEncounter.getEncounterUuid());
 
         if(currentEncounterSamples.size() == 0)
             return;

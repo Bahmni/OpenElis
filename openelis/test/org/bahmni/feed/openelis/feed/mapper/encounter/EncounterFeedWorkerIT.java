@@ -37,6 +37,7 @@ import us.mn.state.health.lims.panel.valueholder.Panel;
 import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
+import us.mn.state.health.lims.sample.util.AccessionNumberUtil;
 import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.samplehuman.daoimpl.SampleHumanDAOImpl;
 import us.mn.state.health.lims.sampleitem.daoimpl.SampleItemDAOImpl;
@@ -466,49 +467,13 @@ public class EncounterFeedWorkerIT extends IT {
 
     }
 
-    @org.junit.Test
-    public void shouldNotCreateANewSampleWhenSampleIsPartiallyCollectedAndDoctorUpdatesTheOrder(){
-        OpenMRSConcept openMRSHaemoglobinConcept = createOpenMRSConcept(haemoglobinTest.getTestName(), haemoglobinTestConceptUUID, false);
-
-        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, identifier, firstName, lastName, Arrays.asList(openMRSHaemoglobinConcept));
-
-        EncounterFeedWorker encounterFeedWorker = new EncounterFeedWorker(null, null);
-        encounterFeedWorker.process(openMRSEncounter);
-
-        List<Sample> samples = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId());
-        assertEquals(1, samples.size());
-
-        //The lab assistant has collected the sample partially.
-        collectSamplesForPatient(patient.getId(), SystemConfiguration.getInstance().getSampleStatusEntry1Complete());
-
-        OpenMRSConcept openMRSLoneConcept = createOpenMRSConcept(loneTest.getTestName(), loneTestConceptUUID, false);
-
-        addNewOrders(openMRSEncounter, Arrays.asList(openMRSHaemoglobinConcept,openMRSLoneConcept));//The sample will contain previous orders from openmrs;
-        encounterFeedWorker.process(openMRSEncounter);
-
-        samples = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId());
-        assertEquals(1, samples.size());
-
-        List<SampleItem> sampleItems = new SampleItemDAOImpl().getSampleItemsBySampleId(samples.get(0).getId());
-        assertEquals(2,sampleItems.size());
-
-        List<Analysis> analysis1 = new AnalysisDAOImpl().getAnalysesBySampleItem(sampleItems.get(0));
-        assertEquals(1, analysis1.size());
-        assertTrue(containsTestInAnalysis(analysis1, haemoglobinTest));
-
-        List<Analysis> analysis2 = new AnalysisDAOImpl().getAnalysesBySampleItem(sampleItems.get(1));
-        assertEquals(1, analysis2.size());
-        assertTrue(containsTestInAnalysis(analysis2, loneTest));
-
-    }
-
-
     private void collectSamplesForPatient(String patientId, String status) {
         //Sample is already collected.
         List<Sample> samples = new SampleHumanDAOImpl().getSamplesForPatient(patientId);
 
         SampleDAO sampleDAO = new SampleDAOImpl();
         Sample sample = samples.get(0);
+        sample.setAccessionNumber(AccessionNumberUtil.getNextAccessionNumber(""));
         sample.setStatus(status);
         sample.setStatusId(status);
         sampleDAO.updateData(sample);

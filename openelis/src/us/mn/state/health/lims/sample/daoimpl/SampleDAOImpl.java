@@ -755,18 +755,31 @@ public class SampleDAOImpl extends BaseDAOImpl implements SampleDAO {
 	}
 
 	@Override
-	public Sample getSampleByUuidAndExcludedStatus(String uuid, int statusId) {
+	public Sample getSampleByUuidAndWithoutAccessionNumber(String uuid) {
 		try {
-			String sql = "from Sample as sample where sample.uuid = :uuid and sample.statusId <> :completedStatus";
+			String sql = "from Sample as sample where sample.uuid = :uuid and sample.accessionNumber is null";
 			Query query = HibernateUtil.getSession().createQuery(sql);
 			query.setParameter("uuid", uuid);
-			query.setParameter("completedStatus", statusId);
 			return (Sample) query.uniqueResult();
 		} catch (HibernateException he) {
-			LogEvent.logErrorStack("SampleDAOImpl", "getSampleByUuidAndExcludedStatus(String uuid)", he);
-			throw new LIMSRuntimeException("Error in Sample getSampleByUuidAndExcludedStatus(String uuid)", he);
+			LogEvent.logErrorStack("SampleDAOImpl", "getSampleByUuidAndWithoutAccessionNumber(String uuid)", he);
+			throw new LIMSRuntimeException("Error in Sample getSampleByUuidAndWithoutAccessionNumber(String uuid)", he);
 		}
 	}
+
+	@Override
+	public List<Sample> getAllSamplesByUuidAndWithAccessionNumber(String uuid) {
+		try {
+			String sql = "from Sample as sample where sample.uuid = :uuid and sample.accessionNumber is not null";
+			Query query = HibernateUtil.getSession().createQuery(sql);
+			query.setParameter("uuid", uuid);
+			return query.list();
+		} catch (HibernateException he) {
+			LogEvent.logErrorStack("SampleDAOImpl", "getAllSamplesByUuidAndWithAccessionNumber(String uuid)", he);
+			throw new LIMSRuntimeException("Error in Sample getAllSamplesByUuidAndWithAccessionNumber(String uuid)", he);
+		}
+	}
+
 
 	@SuppressWarnings("unchecked")
 	@Override
