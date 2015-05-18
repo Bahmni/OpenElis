@@ -69,6 +69,18 @@ basePath = path + "/";
                     <div class="arrow-text"> Today&#39;s Stats</div><div class="arrow-right"></div>
                 </td>
                 <td>
+                    <span>Samples to collect : </span>
+                    <span id="samplesToCollect"></span>
+                </td>
+                <td>
+                    <span>Samples collected : </span>
+                    <span id="samplesCollected"></span>
+                </td>
+                <td>
+                    <span>Total : </span>
+                    <span id="totalSamplesCount"></span>
+                </td>
+                <td>
                     <span>Awaiting Testing : </span>
                     <span id="awaitingTestCount"></span>
                 </td>
@@ -79,10 +91,6 @@ basePath = path + "/";
                 <td>
                     <span>Completed : </span>
                     <span id="completedTestCount"></span>
-                </td>
-                <td>
-                    <span>Total : </span>
-                    <span id="totalSamplesCount"></span>
                 </td>
                 <td>
                     <span class="stats-header"> Total Patients Today</span><span> : </span>
@@ -145,6 +153,8 @@ basePath = path + "/";
         jQuery("#completedTestCount").text(stats.completedTestCount);
         jQuery("#totalSamplesCount").text(stats.totalSamplesCount);
         jQuery("#totalCollectedTodayCount").text(stats.totalCollectedTodayCount);
+        jQuery("#samplesToCollect").text(stats.samplesToCollect);
+        jQuery("#samplesCollected").text(stats.samplesCollected);
     }
 
     jQuery(document).ready(function() {
@@ -163,8 +173,10 @@ basePath = path + "/";
             awaitingTestCount: todayOrderList.filter(function(order){ return order.pendingTestCount > 0 }).length,
             awaitingValidationCount: todayOrderList.filter(function(order){ return order.pendingTestCount == 0 && order.pendingValidationCount > 0 }).length,
             completedTestCount: todayOrderList.filter(function(order){ return order.isCompleted }).length,
-            totalSamplesCount: todayOrderList.length,
+            totalSamplesCount: todayOrderList.length + todaySampleNotCollectedList.length,
             totalCollectedTodayCount: todayOrderList.filter(function(order){ return isToday(new Date(order.collectionDate)) }).length,
+            samplesToCollect: todaySampleNotCollectedList.length,
+            samplesCollected: todayOrderList.length
         }
 
         showStats(todayStats)
