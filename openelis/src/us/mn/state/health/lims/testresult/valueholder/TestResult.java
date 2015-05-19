@@ -53,7 +53,7 @@ public class TestResult extends EnumValueItemImpl {
 
     private Boolean abnormal;
 
-	private Boolean active;
+	private Boolean active = true;
 
     public static final String MULTI_RESULT_TYPE = "M";
 
