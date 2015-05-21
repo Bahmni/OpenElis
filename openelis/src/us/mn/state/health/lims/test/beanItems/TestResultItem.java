@@ -111,6 +111,7 @@ public class TestResultItem implements ResultItem, Serializable{
 	private boolean referralCanceled = false;
 	private String referralId = "";
 	private String referralReasonId = "";
+	private String referralOrganizationId = "";
 	private String multiSelectResultValues;
 	private String initialSampleCondition;
 	private String sampleType;
@@ -186,6 +187,14 @@ public class TestResultItem implements ResultItem, Serializable{
 	}
 	public void setSupervisorSignatureId(String superviserId) {
 		this.supervisorSignatureId = superviserId;
+	}
+
+	public String getReferralOrganizationId() {
+		return referralOrganizationId;
+	}
+
+	public void setReferralOrganizationId(String referralOrganizationId) {
+		this.referralOrganizationId = referralOrganizationId;
 	}
 
 	public String getTestKitInventoryId() {

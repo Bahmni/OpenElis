@@ -265,6 +265,10 @@ function /*void*/ handleReferralCheckChange(checkbox){
     var isTestReferredOut = checkbox.checked;
     referralReason.disabled = !isTestReferredOut;
 
+	var referralOrganization = $(testResult).down('.referralOrganization');
+	referralOrganization.value = 0;
+	referralOrganization.disabled = !isTestReferredOut;
+
     var result = $(testResult).down('.testResultValue');
     result.style.background = "#ffffff";
     result.disabled = isTestReferredOut;
@@ -541,15 +545,15 @@ function /*void*/ processTestReflexCD4Success(xhr)
 		</logic:equal>
 		<% } %>
 
-		<th>
-			<bean:message key="result.test.date"/><br/>
-			<bean:message key="sample.date.format"/>
-		</th>
-		<logic:equal  name="<%=formName%>" property="displayTestMethod" value="true">
-			<th width="5%" style="text-align: left">
-				<bean:message key="result.method.auto"/>
-			</th>
-		</logic:equal>
+		<%--<th>--%>
+			<%--<bean:message key="result.test.date"/><br/>--%>
+			<%--<bean:message key="sample.date.format"/>--%>
+		<%--</th>--%>
+		<%--<logic:equal  name="<%=formName%>" property="displayTestMethod" value="true">--%>
+			<%--<th width="5%" style="text-align: left">--%>
+				<%--<bean:message key="result.method.auto"/>--%>
+			<%--</th>--%>
+		<%--</logic:equal>--%>
 		<th>
 			<bean:message key="result.test"/>
 		</th>
@@ -565,15 +569,9 @@ function /*void*/ processTestReflexCD4Success(xhr)
 			<bean:message key="referral.referandreason"/>
 		</th>
 		<% } %>
-		<% if( useTechnicianName ){ %>
 		<th>
-			<bean:message key="result.technician"/>
-			<span class="requiredlabel">*</span><br/>
-			<% if(autofillTechBox){ %>
-			Autofill:<input type="text" size='10em' onchange="autofill( this )">
-			<% } %>
+			<bean:message key="referral.institute"/>
 		</th>
-		<% }%>
 		<th width="5%">
 			<bean:message key="result.notes"/>
 		</th>
@@ -670,19 +668,6 @@ function /*void*/ processTestReflexCD4Success(xhr)
 			</td>
 		</logic:equal>
 		<% } %>
-		<!-- date cell -->
-		<td class="ruled">
-			<html:text name="testResult" property="testDate" indexed="true" size="10" tabindex='-1' onchange='<%="markUpdated(" + index + ");" %>'/>
-		</td>
-		<logic:equal  name="<%=formName%>" property="displayTestMethod" value="true">
-			<td class="ruled">
-				<html:checkbox name="testResult"
-							property="analysisMethod"
-							indexed="true"
-							tabindex='-1'
-							onchange='<%="markUpdated(" + index + ");"%>' />
-			</td>
-		</logic:equal>
 		<!-- results -->
 		<logic:equal name="testResult" property="resultDisplayType" value="HIV">
 			<td valign="top" class="ruled">
@@ -904,11 +889,6 @@ function /*void*/ processTestReflexCD4Success(xhr)
                     class="referralReason"
 					onchange='<%="markUpdated(" + index + "); handleReferralReasonChange( this, " + index + ")" %>'
                     <%= (testResult.isReferredOut() && "0".equals(testResult.getReferralReasonId())) ? "" : "disabled='disabled'" %> >
-					<option value='0' >
-					   <logic:equal name="testResult" property="referralCanceled" value="true"  >
-					   		<bean:message key="referral.canceled" />
-					   </logic:equal>
-					</option>
 			<logic:iterate id="optionValue" name='<%=formName %>' property="referralReasons" type="IdValuePair" >
 					<option value='<%=optionValue.getId()%>'  <%if(optionValue.getId().equals(testResult.getReferralReasonId())) out.print("selected='selected'"); %>  >
 							<bean:write name="optionValue" property="value"/>
@@ -917,18 +897,26 @@ function /*void*/ processTestReflexCD4Success(xhr)
 			</select>
 		</td>
 		<% } %>
-		<% if( useTechnicianName){ %>
-		<td style="text-align: left" class="ruled">
-			<app:text name="testResult"
-					   styleId='<%="technicianSig_" + index %>'
-					   styleClass='<%= GenericValidator.isBlankOrNull(testResult.getTechnicianSignatureId()) ? "techName" : "" %>'
-					   property="technician"
-					   disabled='<%= testResult.isReadOnly() %>'
-					   indexed="true" style="margin: 1px"
-					   size="10em"
-					   onchange='<%="markUpdated(" + index + ");"%>'/>
+
+		<td style="white-space: nowrap" class="ruled">
+			<html:hidden name="testResult" property="referralOrganizationId" indexed='true'/>
+			<select name="<%="testResult[" + index + "].referralOrganizationId" %>"
+					id='<%="referralOrganizationId_" + index%>'
+					class="referralOrganization"
+					onchange='<%="markUpdated(" + index + "); handleReferralReasonChange( this, " + index + ")" %>'
+					<%= (testResult.isReferredOut() && "0".equals(testResult.getReferralReasonId())) ? "" : "disabled='disabled'" %> >
+					<logic:equal name="testResult" property="referralCanceled" value="true"  >
+						<bean:message key="referral.canceled" />
+					</logic:equal>
+				</option>
+				<logic:iterate id="optionValue" name='<%=formName %>' property="referralOrganizations" type="IdValuePair" >
+					<option value='<%=optionValue.getId()%>'  <%if(optionValue.getId().equals(testResult.getReferralOrganizationId())) out.print("selected='selected'"); %>  >
+						<bean:write name="optionValue" property="value"/>
+					</option>
+				</logic:iterate>
+			</select>
 		</td>
-		<% } %>
+
 		<td align="left" class="ruled">
 						 	<img src="./images/note-add.gif"
 						 	     onclick='<%= "showHideNotes(this, " + index + ");" %>'
