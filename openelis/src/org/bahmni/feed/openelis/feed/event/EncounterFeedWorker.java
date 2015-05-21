@@ -23,6 +23,7 @@ import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoIm
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import org.bahmni.feed.openelis.feed.contract.openmrs.encounter.OpenMRSEncounter;
 import org.bahmni.feed.openelis.feed.contract.openmrs.encounter.OpenMRSOrder;
+import org.bahmni.feed.openelis.feed.contract.openmrs.encounter.OpenMRSProvider;
 import org.bahmni.feed.openelis.feed.mapper.encounter.OpenMRSEncounterMapper;
 import org.bahmni.feed.openelis.utils.AuditingService;
 import org.bahmni.webclients.HttpClient;
@@ -47,6 +48,9 @@ import us.mn.state.health.lims.panelitem.valueholder.PanelItem;
 import us.mn.state.health.lims.patient.dao.PatientDAO;
 import us.mn.state.health.lims.patient.daoimpl.PatientDAOImpl;
 import us.mn.state.health.lims.patient.valueholder.Patient;
+import us.mn.state.health.lims.provider.dao.ProviderDAO;
+import us.mn.state.health.lims.provider.daoimpl.ProviderDAOImpl;
+import us.mn.state.health.lims.provider.valueholder.Provider;
 import us.mn.state.health.lims.requester.dao.RequesterTypeDAO;
 import us.mn.state.health.lims.requester.daoimpl.RequesterTypeDAOImpl;
 import us.mn.state.health.lims.requester.valueholder.RequesterType;
@@ -97,6 +101,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
     private TestDAO testDAO;
     private AnalysisDAO analysisDAO;
     private SampleItemDAO sampleItemDAO;
+    private ProviderDAO providerDAO;
 
     private static long provider_requester_type_id;
     private static String referring_org_type_id;
@@ -107,7 +112,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
                                TypeOfSampleTestDAO typeOfSampleTestDAO, TypeOfSampleDAO typeOfSampleDAO,
                                RequesterTypeDAO requesterTypeDAO, OrganizationTypeDAO organizationTypeDAO,
                                SampleSourceDAO sampleSourceDAO, SampleDAOImpl sampleDAO, PatientDAO patientDAO,
-                               TestDAO testDAO, AnalysisDAO analysisDAO, SampleItemDAOImpl sampleItemDAO) {
+                               TestDAO testDAO, AnalysisDAO analysisDAO, SampleItemDAOImpl sampleItemDAO, ProviderDAO providerDAO) {
         this.webClient = webClient;
         this.urlPrefix = urlPrefix;
         this.externalReferenceDao = externalReferenceDao;
@@ -123,6 +128,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         this.testDAO = testDAO;
         this.analysisDAO = analysisDAO;
         this.sampleItemDAO = sampleItemDAO;
+        this.providerDAO = providerDAO;
     }
 
     public EncounterFeedWorker(HttpClient authenticatedWebClient, String urlPrefix) {
@@ -130,7 +136,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
                 new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl()),
                 new PanelItemDAOImpl(), new TypeOfSampleTestDAOImpl(), new TypeOfSampleDAOImpl(),
                 new RequesterTypeDAOImpl(), new OrganizationTypeDAOImpl(), new SampleSourceDAOImpl(),
-                new SampleDAOImpl(), new PatientDAOImpl(), new TestDAOImpl(), new AnalysisDAOImpl(), new SampleItemDAOImpl());
+                new SampleDAOImpl(), new PatientDAOImpl(), new TestDAOImpl(), new AnalysisDAOImpl(), new SampleItemDAOImpl(), new ProviderDAOImpl());
     }
 
     @Override
@@ -204,12 +210,18 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         List<SampleTestCollection> sampleTestCollections = getSampleTestCollections(openMRSEncounter, sysUserId, nowAsSqlDate, sample, processState);
 
         AnalysisBuilder analysisBuilder = getAnalysisBuilder(processState);
+        OpenMRSProvider openMRSProvider = openMRSEncounter.getProviders().get(0);
+        Provider providerByPersonName = providerDAO.getProviderByPersonName(openMRSProvider.getName());
+        String requesterId = null;
+        if(providerByPersonName != null){
+            requesterId = providerByPersonName.getId();
+        }
 
         AddSampleService addSampleService = new AddSampleService(false);
         addSampleService.persist(analysisBuilder, false, null, null,
                 new ArrayList<OrganizationAddress>(), sample,
                 sampleTestCollections, new ArrayList<ObservationHistory>(), sampleHuman,
-                patient.getId(), null, null, sysUserId,
+                patient.getId(), null, requesterId, sysUserId,
                 getProviderRequesterTypeId(), getReferringOrgTypeId());
     }
 

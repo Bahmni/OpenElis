@@ -252,4 +252,27 @@ public class ProviderDAOImpl extends BaseDAOImpl implements ProviderDAO {
             throw new LIMSRuntimeException("Error in Provider getAllActiveProviders()", e);
         }
     }
+
+    @Override
+    public Provider getProviderByPersonName(String name) throws LIMSRuntimeException {
+        List<Provider> list = null;
+        try {
+            String sql = "from Provider p where p.person.firstName || ' '|| p.person.middleName || ' '|| p.person.lastName = :name";
+            Query query = HibernateUtil.getSession().createQuery(sql);
+            query.setString("name", name);
+            HibernateUtil.getSession().flush();
+            HibernateUtil.getSession().clear();
+
+            list = query.list();
+        } catch (Exception e) {
+            LogEvent.logErrorStack("ProviderDAOImpl", "getAllActiveProviders()", e);
+            throw new LIMSRuntimeException("Error in Provider getAllActiveProviders()", e);
+        }
+
+        if (list.size() > 0) {
+            return list.get(0);
+        } else {
+            return null;
+        }
+    }
 }

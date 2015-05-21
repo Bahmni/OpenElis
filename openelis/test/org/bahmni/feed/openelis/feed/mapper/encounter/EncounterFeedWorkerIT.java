@@ -20,10 +20,6 @@ import org.apache.commons.io.IOUtils;
 import org.bahmni.feed.openelis.IT;
 import org.bahmni.feed.openelis.ObjectMapperRepository;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
-import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSName;
-import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPatient;
-import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPatientIdentifier;
-import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPerson;
 import org.bahmni.feed.openelis.feed.contract.openmrs.encounter.*;
 import org.bahmni.feed.openelis.feed.event.EncounterFeedWorker;
 import org.junit.Assert;
@@ -31,10 +27,11 @@ import org.junit.Before;
 import org.junit.Ignore;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
-import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.panel.valueholder.Panel;
 import us.mn.state.health.lims.patient.valueholder.Patient;
+import us.mn.state.health.lims.requester.daoimpl.SampleRequesterDAOImpl;
+import us.mn.state.health.lims.requester.valueholder.SampleRequester;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
 import us.mn.state.health.lims.sample.util.AccessionNumberUtil;
@@ -47,9 +44,10 @@ import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.typeofsample.util.TypeOfSampleUtil;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSample;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.*;
-
-import java.io.*;
 
 import static org.bahmni.openelis.builder.TestSetup.*;
 import static org.junit.Assert.*;
@@ -141,6 +139,8 @@ public class EncounterFeedWorkerIT extends IT {
         createTypeOfSampleTest(diabeticsTest.getId(), urineSample.getId());
         createTypeOfSampleTest(loneTest.getId(), urineSample.getId());
         createTypeOfSampleTest(sickleTest.getId(), bloodSample.getId());
+
+        createProvider("person1", "middleName", "lastName");
     }
 
     @org.junit.Test
@@ -171,7 +171,7 @@ public class EncounterFeedWorkerIT extends IT {
         OpenMRSConcept openMRSDiabeticsConcept = createOpenMRSConcept(diabeticsPanel.getPanelName(), diabeticsPanelConceptUUID, true);
         OpenMRSConcept openMRSLoneConcept = createOpenMRSConcept(loneTest.getTestName(), loneTestConceptUUID, false);
 
-        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, identifier, firstName, lastName,
+        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID,
                 Arrays.asList(openMRSAneamiaConcept, openMRSHaemoglobinConcept, openMRSDiabeticsConcept, openMRSLoneConcept));
 
         EncounterFeedWorker encounterFeedWorker = new EncounterFeedWorker(null, null);
@@ -200,7 +200,7 @@ public class EncounterFeedWorkerIT extends IT {
         OpenMRSConcept openMRSAneamiaConcept = createOpenMRSConcept(anaemiaPanel.getPanelName(), anaemiaPanelConceptUUID, true);
         OpenMRSConcept openMRSSickleConcept = createOpenMRSConcept(sickleTest.getTestName(), sickleTestConceptUUID, false);
 
-        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, identifier, firstName, lastName, Arrays.asList(openMRSAneamiaConcept, openMRSSickleConcept));
+        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, Arrays.asList(openMRSAneamiaConcept, openMRSSickleConcept));
 
         EncounterFeedWorker encounterFeedWorker = new EncounterFeedWorker(null, null);
         encounterFeedWorker.process(openMRSEncounter);
@@ -209,6 +209,8 @@ public class EncounterFeedWorkerIT extends IT {
         List<SampleItem> sampleItems = new SampleItemDAOImpl().getSampleItemsBySampleId(sample.getId());
         assertEquals(1, sampleItems.size());
 
+        List<SampleRequester> requesters = new SampleRequesterDAOImpl().getRequestersForSampleId(sample.getId());
+        assertEquals(1, requesters.size());
         SampleItem sampleItemForBlood = getSampleItemForSampleType(bloodSample, sampleItems);
         List<Analysis> analysisListForBlood = new AnalysisDAOImpl().getAnalysesBySampleItem(sampleItemForBlood);
         assertEquals(3,analysisListForBlood.size());
@@ -225,7 +227,7 @@ public class EncounterFeedWorkerIT extends IT {
         //this test shouldnt be added to sample Item blood as this test is included in anaemia panel
         OpenMRSConcept openMRSHaemoglobinConcept = createOpenMRSConcept(haemoglobinTest.getTestName(), haemoglobinTestConceptUUID, false);
 
-        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, identifier, firstName, lastName, Arrays.asList(openMRSAneamiaConcept, openMRSHaemoglobinConcept));
+        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, Arrays.asList(openMRSAneamiaConcept, openMRSHaemoglobinConcept));
 
         EncounterFeedWorker encounterFeedWorker = new EncounterFeedWorker(null, null);
         encounterFeedWorker.process(openMRSEncounter);
@@ -250,7 +252,7 @@ public class EncounterFeedWorkerIT extends IT {
         OpenMRSConcept openMRSLoneConcept = createOpenMRSConcept(loneTest.getTestName(), loneTestConceptUUID, false);
 
         List<OpenMRSConcept> labTests = Arrays.asList(openMRSHaemoglobinConcept); //test for only blood sample type
-        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, identifier, firstName, lastName, labTests);
+        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, labTests);
         EncounterFeedWorker encounterFeedWorker = new EncounterFeedWorker(null, null);
         encounterFeedWorker.process(openMRSEncounter);
 
@@ -285,7 +287,7 @@ public class EncounterFeedWorkerIT extends IT {
         OpenMRSConcept openMRSLoneConcept = createOpenMRSConcept(loneTest.getTestName(), loneTestConceptUUID, false);
 
         List<OpenMRSConcept> labTests = Arrays.asList(openMRSHaemoglobinConcept, openMRSLoneConcept, openMRSAneamiaConcept, openMRSDiabeticsConcept); //test for only blood sample type
-        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, identifier, firstName, lastName, labTests);
+        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, labTests);
         EncounterFeedWorker encounterFeedWorker = new EncounterFeedWorker(null, null);
         encounterFeedWorker.process(openMRSEncounter);
 
@@ -313,7 +315,7 @@ public class EncounterFeedWorkerIT extends IT {
         OpenMRSConcept openMRSLoneConcept = createOpenMRSConcept(loneTest.getTestName(), loneTestConceptUUID, false);
 
         List<OpenMRSConcept> labTests = Arrays.asList(openMRSHaemoglobinConcept, openMRSLoneConcept, openMRSAneamiaConcept, openMRSDiabeticsConcept); //test for only blood sample type
-        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, identifier, firstName, lastName, labTests);
+        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, labTests);
         EncounterFeedWorker encounterFeedWorker = new EncounterFeedWorker(null, null);
         encounterFeedWorker.process(openMRSEncounter);
 
@@ -342,7 +344,7 @@ public class EncounterFeedWorkerIT extends IT {
         OpenMRSConcept openMRSLoneConcept = createOpenMRSConcept(loneTest.getTestName(), loneTestConceptUUID, false);
 
         List<OpenMRSConcept> labTests = Arrays.asList(openMRSHaemoglobinConcept, openMRSAneamiaConcept, openMRSDiabeticsConcept); //test for only blood sample type
-        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, identifier, firstName, lastName, labTests);
+        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, labTests);
         EncounterFeedWorker encounterFeedWorker = new EncounterFeedWorker(null, null);
         encounterFeedWorker.process(openMRSEncounter);
 
@@ -379,7 +381,7 @@ public class EncounterFeedWorkerIT extends IT {
         OpenMRSConcept openMRSRoutineBloodConcept = createOpenMRSConcept(routineBloodPanel.getPanelName(), routineBloodPanelConceptUUID, true);
 
         List<OpenMRSConcept> labTests = Arrays.asList(openMRSAneamiaConcept, openMRSRoutineBloodConcept); // haemoglobin is common test
-        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, identifier, firstName, lastName, labTests);
+        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, labTests);
         EncounterFeedWorker encounterFeedWorker = new EncounterFeedWorker(null, null);
         encounterFeedWorker.process(openMRSEncounter);
 
@@ -404,7 +406,7 @@ public class EncounterFeedWorkerIT extends IT {
         String labOrderType = createLabOrderType();
         List<OpenMRSOrder> voidedOrders = createOpenMRSOrders(Arrays.asList(openMRSHaemoglobinConcept), labOrderType, true);
         List<OpenMRSOrder> nonVoidedOrders = createOpenMRSOrders(Arrays.asList(openMRSLoneConcept), labOrderType, false);
-        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, identifier, firstName, lastName, new ArrayList<OpenMRSConcept>());
+        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, new ArrayList<OpenMRSConcept>());
         openMRSEncounter.setTestOrders(Arrays.asList(voidedOrders.get(0), nonVoidedOrders.get(0)));
 
         EncounterFeedWorker encounterFeedWorker = new EncounterFeedWorker(null, null);
@@ -432,7 +434,7 @@ public class EncounterFeedWorkerIT extends IT {
         OpenMRSConcept openMRSLoneConcept = createOpenMRSConcept(loneTest.getTestName(), loneTestConceptUUID, false);
 
         List<OpenMRSConcept> labTests = Arrays.asList(openMRSHaemoglobinConcept); //test for only blood sample type
-        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, identifier, firstName, lastName, labTests);
+        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, labTests);
         EncounterFeedWorker encounterFeedWorker = new EncounterFeedWorker(null, null);
         encounterFeedWorker.process(openMRSEncounter);
 
@@ -497,16 +499,14 @@ public class EncounterFeedWorkerIT extends IT {
         return null;
     }
 
-    private OpenMRSEncounter createOpenMRSEncounter(String patientUUID, String identifier, String firstName, String lastName, List<OpenMRSConcept> openmrsConcepts) {
-        OpenMRSName openMRSName = new OpenMRSName(firstName, lastName);
-        OpenMRSPerson openMRSPerson = new OpenMRSPerson(openMRSName, patientUUID, "M", DateUtil.convertStringDateToTimestamp("01/01/2001 00:00"), false, null);
-        OpenMRSPatient openMRSPatient = new OpenMRSPatient(patientUUID,openMRSPerson ,Arrays.asList(new OpenMRSPatientIdentifier(identifier)));
+    private OpenMRSEncounter createOpenMRSEncounter(String patientUUID, List<OpenMRSConcept> openmrsConcepts) {
+        OpenMRSProvider openMRSProvider = new OpenMRSProvider("abcd-1234", "person1 middleName lastName");
 
         String labOrderType = createLabOrderType();
         List<OpenMRSOrder> openMRSOrders = createOpenMRSOrders(openmrsConcepts, labOrderType);
 
         String encounterUUID = UUID.randomUUID().toString();
-        return new OpenMRSEncounter(encounterUUID, patientUUID, openMRSOrders);
+        return new OpenMRSEncounter(encounterUUID, patientUUID, openMRSOrders, Arrays.asList(openMRSProvider));
     }
 
     private void addNewOrders(OpenMRSEncounter openMRSEncounter, List<OpenMRSConcept> concepts) {

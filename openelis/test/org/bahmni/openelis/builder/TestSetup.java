@@ -41,6 +41,8 @@ import us.mn.state.health.lims.patientidentity.valueholder.PatientIdentity;
 import us.mn.state.health.lims.patientidentitytype.util.PatientIdentityTypeMap;
 import us.mn.state.health.lims.person.daoimpl.PersonDAOImpl;
 import us.mn.state.health.lims.person.valueholder.Person;
+import us.mn.state.health.lims.provider.daoimpl.ProviderDAOImpl;
+import us.mn.state.health.lims.provider.valueholder.Provider;
 import us.mn.state.health.lims.result.action.util.ResultsLoadUtility;
 import us.mn.state.health.lims.result.daoimpl.ResultDAOImpl;
 import us.mn.state.health.lims.result.daoimpl.ResultSignatureDAOImpl;
@@ -318,13 +320,7 @@ public class TestSetup {
     }
 
     public static Patient createPatient(String firstName, String middleName, String lastName, String patientIdentityData, String uuid) {
-        Person person = new Person();
-        person.setFirstName(firstName);
-        person.setMiddleName(middleName);
-        person.setLastName(lastName);
-        person.setSysUserId("1");
-        new PersonDAOImpl().insertData(person);
-
+        Person person = createPerson(firstName, middleName, lastName);
         Patient patient = new Patient();
         patient.setPerson(person);
         patient.setGender("M");
@@ -342,6 +338,26 @@ public class TestSetup {
         new PatientIdentityDAOImpl().insertData(patientIdentity);
 
         return patient;
+    }
+
+    public static Person createPerson(String firstName, String middleName, String lastName) {
+        Person person = new Person();
+        person.setFirstName(firstName);
+        person.setMiddleName(middleName);
+        person.setLastName(lastName);
+        person.setSysUserId("1");
+        new PersonDAOImpl().insertData(person);
+        return person;
+    }
+
+    public static Provider createProvider(String firstName, String middleName, String lastName) {
+        Person person = createPerson(firstName, middleName, lastName);
+
+        Provider provider = new Provider();
+        provider.setPerson(person);
+        provider.setSysUserId("1");
+        new ProviderDAOImpl().insertData(provider);
+        return provider;
     }
 
     public static Test createTestWithAnalyte(String testName) {

@@ -16,7 +16,6 @@
 
 package org.bahmni.feed.openelis.feed.contract.openmrs.encounter;
 
-import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPatient;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 import java.util.ArrayList;
@@ -27,15 +26,17 @@ public class OpenMRSEncounter {
     private String encounterUuid;
     private String patientUuid;
     private List<OpenMRSOrder> testOrders = new ArrayList<>();
+    private List<OpenMRSProvider> providers = new ArrayList<>();
 
     public OpenMRSEncounter() {
     }
 
-    public OpenMRSEncounter(String encounterUuid, String patientUuid, List<OpenMRSOrder> testOrders) {
+    public OpenMRSEncounter(String encounterUuid, String patientUuid, List<OpenMRSOrder> testOrders, List<OpenMRSProvider> providers) {
 
         this.encounterUuid = encounterUuid;
         this.testOrders = testOrders;
         this.patientUuid = patientUuid;
+        this.providers = providers;
     }
 
     public void setEncounterUuid(String encounterUuid) {
@@ -77,5 +78,13 @@ public class OpenMRSEncounter {
 
     public void setPatientUuid(String patientUuid) {
         this.patientUuid = patientUuid;
+    }
+
+    public List<OpenMRSProvider> getProviders() {
+        return providers;
+    }
+
+    public void setProviders(List<OpenMRSProvider> providers) {
+        this.providers = providers;
     }
 }
