@@ -889,6 +889,11 @@ function /*void*/ processTestReflexCD4Success(xhr)
                     class="referralReason"
 					onchange='<%="markUpdated(" + index + "); handleReferralReasonChange( this, " + index + ")" %>'
                     <%= (testResult.isReferredOut() && "0".equals(testResult.getReferralReasonId())) ? "" : "disabled='disabled'" %> >
+                <option value='0' >
+                    <logic:equal name="testResult" property="referralCanceled" value="true"  >
+                        <bean:message key="referral.canceled" />
+                    </logic:equal>
+                </option>
 			<logic:iterate id="optionValue" name='<%=formName %>' property="referralReasons" type="IdValuePair" >
 					<option value='<%=optionValue.getId()%>'  <%if(optionValue.getId().equals(testResult.getReferralReasonId())) out.print("selected='selected'"); %>  >
 							<bean:write name="optionValue" property="value"/>
@@ -905,10 +910,11 @@ function /*void*/ processTestReflexCD4Success(xhr)
 					class="referralOrganization"
 					onchange='<%="markUpdated(" + index + "); handleReferralReasonChange( this, " + index + ")" %>'
 					<%= (testResult.isReferredOut() && "0".equals(testResult.getReferralReasonId())) ? "" : "disabled='disabled'" %> >
-					<logic:equal name="testResult" property="referralCanceled" value="true"  >
-						<bean:message key="referral.canceled" />
-					</logic:equal>
-				</option>
+                <option value='0' >
+                    <logic:equal name="testResult" property="referralCanceled" value="true"  >
+                        <bean:message key="referral.canceled" />
+                    </logic:equal>
+                </option>
 				<logic:iterate id="optionValue" name='<%=formName %>' property="referralOrganizations" type="IdValuePair" >
 					<option value='<%=optionValue.getId()%>'  <%if(optionValue.getId().equals(testResult.getReferralOrganizationId())) out.print("selected='selected'"); %>  >
 						<bean:write name="optionValue" property="value"/>

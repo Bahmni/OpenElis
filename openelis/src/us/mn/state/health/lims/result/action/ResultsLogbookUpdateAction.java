@@ -16,6 +16,7 @@
  */
 package us.mn.state.health.lims.result.action;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.GenericValidator;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -52,6 +53,9 @@ import us.mn.state.health.lims.note.dao.NoteDAO;
 import us.mn.state.health.lims.note.daoimpl.NoteDAOImpl;
 import us.mn.state.health.lims.note.util.NoteUtil;
 import us.mn.state.health.lims.note.valueholder.Note;
+import us.mn.state.health.lims.organization.dao.OrganizationDAO;
+import us.mn.state.health.lims.organization.daoimpl.OrganizationDAOImpl;
+import us.mn.state.health.lims.organization.valueholder.Organization;
 import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.referral.dao.ReferralDAO;
 import us.mn.state.health.lims.referral.dao.ReferralResultDAO;
@@ -137,6 +141,7 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
     private ResultLimitDAO resultLimitDAO = new ResultLimitDAOImpl();
     private static Logger logger = LogManager.getLogger(ResultsLogbookUpdateAction.class);
     private static final String RESULT_SUBJECT = "Result Note";
+    private OrganizationDAO organizationDAO = new OrganizationDAOImpl();
 
     private static String REFERRAL_CONFORMATION_ID;
 
@@ -347,6 +352,11 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
 
 
     private void insertNewReferralAndReferralResult(ResultSet resultSet) {
+        if (StringUtils.isNotBlank(resultSet.newReferral.getOrganizationId())) {
+            Organization organization = organizationDAO.getOrganizationById(resultSet.newReferral.getOrganizationId());
+            organizationDAO.getData(organization);
+            resultSet.newReferral.setOrganization(organization);
+        }
         referralDAO.insertData(resultSet.newReferral);
         ReferralResult referralResult = new ReferralResult();
         referralResult.setReferralId(resultSet.newReferral.getId());
@@ -532,6 +542,7 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
                     referral.setRequesterName(testResultItem.getTechnician());
                     referral.setAnalysis(analysis);
                     referral.setReferralReasonId(testResultItem.getReferralReasonId());
+                    referral.setOrganizationId(testResultItem.getReferralOrganizationId());
                 } else if (testResultItem.isReferralCanceled()) {
                     existingReferral = referralDAO.getReferralById(testResultItem.getReferralId());
                     existingReferral.setCanceled(false);

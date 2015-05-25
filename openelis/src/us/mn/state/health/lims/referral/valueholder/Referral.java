@@ -71,6 +71,11 @@ public class Referral extends BaseObject {
         this.organizationName = organizationName;
     }
 
+    public String getOrganizationId() {
+        return organizationId;
+    }
+
+
     public Timestamp getSendReadyDate() {
         return sendReadyDate;
     }
@@ -163,5 +168,9 @@ public class Referral extends BaseObject {
 
     public void setReferralResults(Set<ReferralResult> referralResults) {
         this.referralResults = referralResults;
+    }
+
+    public void setOrganizationId(String organizationId) {
+        this.organizationId = organizationId;
     }
 }

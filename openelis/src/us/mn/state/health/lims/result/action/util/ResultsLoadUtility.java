@@ -44,6 +44,7 @@ import us.mn.state.health.lims.note.valueholder.Note;
 import us.mn.state.health.lims.observationhistory.dao.ObservationHistoryDAO;
 import us.mn.state.health.lims.observationhistory.daoimpl.ObservationHistoryDAOImpl;
 import us.mn.state.health.lims.observationhistory.valueholder.ObservationHistory;
+import us.mn.state.health.lims.organization.valueholder.Organization;
 import us.mn.state.health.lims.patient.util.PatientUtil;
 import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.patientidentity.daoimpl.PatientIdentityDAOImpl;
@@ -823,6 +824,7 @@ public class ResultsLoadUtility {
 
         String referralId = null;
         String referralReasonId = null;
+        String referralOrganizationId = null;
         boolean referralCanceled = false;
         if (supportReferrals) {
             if (analysis != null) {
@@ -832,6 +834,9 @@ public class ResultsLoadUtility {
                     referralId = referral.getId();
                     if (!referral.isCanceled()) {
                         referralReasonId = referral.getReferralReasonId();
+                        Organization organization = referral.getOrganization();
+                        if (organization != null)
+                        referralOrganizationId = organization.getId();
                     }
                 }
             }
@@ -894,6 +899,7 @@ public class ResultsLoadUtility {
         testItem.setReferralId(referralId);
         testItem.setReferredOut(!GenericValidator.isBlankOrNull(referralId) && !referralCanceled);
         testItem.setReferralReasonId(referralReasonId);
+        testItem.setReferralOrganizationId(referralOrganizationId);
         testItem.setReferralCanceled(referralCanceled);
         testItem.setInitialSampleCondition(initialSampleConditions);
         testItem.setSampleType(sampleType);

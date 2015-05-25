@@ -43,6 +43,7 @@ import us.mn.state.health.lims.login.dao.UserModuleDAO;
 import us.mn.state.health.lims.login.daoimpl.UserModuleDAOImpl;
 import us.mn.state.health.lims.organization.dao.OrganizationDAO;
 import us.mn.state.health.lims.organization.daoimpl.OrganizationDAOImpl;
+import us.mn.state.health.lims.organization.util.OrganizationUtils;
 import us.mn.state.health.lims.organization.valueholder.Organization;
 import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.referral.util.ReferralUtil;
@@ -87,9 +88,8 @@ public class AccessionResultsAction extends BaseAction {
 
 		DynaActionForm dynaForm = (DynaActionForm) form;
 		PropertyUtils.setProperty(dynaForm, "referralReasons", ReferralUtil.getReferralReasons());
+		PropertyUtils.setProperty(dynaForm, "referralOrganizations", OrganizationUtils.getReferralOrganizations());
 
-		List<IdValuePair> referralOrganizations = getReferralOrganizations();
-		PropertyUtils.setProperty(dynaForm, "referralOrganizations", referralOrganizations);
 
 		ResultsPaging paging = new ResultsPaging();
 		String newPage = request.getParameter("page");
@@ -147,20 +147,6 @@ public class AccessionResultsAction extends BaseAction {
 
 		return mapping.findForward(forward);
 	}
-
-	private List<IdValuePair> getReferralOrganizations() {
-		List<IdValuePair> pairs = new ArrayList<>();
-
-		OrganizationDAO orgDAO = new OrganizationDAOImpl();
-		List<Organization> orgs = orgDAO.getOrganizationsByTypeName("organizationName", REFERRAL_LAB);
-
-		for (Organization org : orgs) {
-			pairs.add(new IdValuePair(org.getId(), org.getOrganizationName()));
-		}
-
-		return pairs;
-	}
-
 
 	private boolean modifyResultsRoleBased() {
 		return "true".equals(ConfigurationProperties.getInstance().getPropertyValue(Property.roleRequiredForModifyResults));
