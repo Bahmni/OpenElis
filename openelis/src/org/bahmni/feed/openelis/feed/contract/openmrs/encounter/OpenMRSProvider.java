@@ -8,6 +8,9 @@ public class OpenMRSProvider {
     private String uuid;
     private String name;
 
+    public OpenMRSProvider() {
+    }
+
     public OpenMRSProvider(String uuid, String name) {
         this.uuid = uuid;
         this.name = name;
