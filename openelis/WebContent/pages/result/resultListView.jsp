@@ -904,17 +904,14 @@ function /*void*/ processTestReflexCD4Success(xhr)
 		<% } %>
 
 		<td style="white-space: nowrap" class="ruled">
-			<html:hidden name="testResult" property="referralOrganizationId" indexed='true'/>
 			<select name="<%="testResult[" + index + "].referralOrganizationId" %>"
 					id='<%="referralOrganizationId_" + index%>'
 					class="referralOrganization"
 					onchange='<%="markUpdated(" + index + "); handleReferralReasonChange( this, " + index + ")" %>'
 					<%= (testResult.isReferredOut() && "0".equals(testResult.getReferralReasonId())) ? "" : "disabled='disabled'" %> >
-                <option value='0' >
                     <logic:equal name="testResult" property="referralCanceled" value="true"  >
                         <bean:message key="referral.canceled" />
                     </logic:equal>
-                </option>
 				<logic:iterate id="optionValue" name='<%=formName %>' property="referralOrganizations" type="IdValuePair" >
 					<option value='<%=optionValue.getId()%>'  <%if(optionValue.getId().equals(testResult.getReferralOrganizationId())) out.print("selected='selected'"); %>  >
 						<bean:write name="optionValue" property="value"/>
