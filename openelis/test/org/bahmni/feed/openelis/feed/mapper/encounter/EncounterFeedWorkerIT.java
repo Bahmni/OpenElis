@@ -466,6 +466,25 @@ public class EncounterFeedWorkerIT extends IT {
 
         SampleItem sampleItemForBlood = getSampleItemForSampleType(bloodSample, sampleItems);
         Assert.assertNull(sampleItemForBlood);
+    }
+
+    @org.junit.Test
+    public void shouldNotAddSamePanelMultipleTimes(){
+        OpenMRSConcept openMRSAneamiaConcept = createOpenMRSConcept(anaemiaPanel.getPanelName(), anaemiaPanelConceptUUID, true);
+        List<OpenMRSConcept> labTests = Arrays.asList(openMRSAneamiaConcept);
+        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, labTests);
+        EncounterFeedWorker encounterFeedWorker = new EncounterFeedWorker(null, null);
+        encounterFeedWorker.process(openMRSEncounter);
+
+        //The lab assistant has collected the sample.
+        collectSamplesForPatient(patient.getId(), SystemConfiguration.getInstance().getSampleStatusEntry2Complete());
+
+        //Try to sync the same Panel once again.  It should not create a new panel.
+        addNewOrders(openMRSEncounter, Arrays.asList(openMRSAneamiaConcept));  // tests for blood and urine sample type
+        encounterFeedWorker.process(openMRSEncounter);
+
+        List<Sample> samples = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId());
+        assertEquals(1, samples.size());
 
     }
 

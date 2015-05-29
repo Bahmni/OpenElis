@@ -188,8 +188,13 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
 
     private boolean isOrderAlreadyExisting(List<Analysis> currentEncounterAnalyses, OpenMRSOrder order) {
         for (Analysis existingAnalysis : currentEncounterAnalyses) {
-            if (order.getLabTestName().equals(existingAnalysis.getTest().getTestName()))
+            if(order.getConcept().isSet() && existingAnalysis.getPanel()!=null && order.getLabTestName().equals(existingAnalysis.getPanel().getPanelName())){
                 return true;
+            }
+
+            if (order.getLabTestName().equals(existingAnalysis.getTest().getTestName())) {
+                return true;
+            }
         }
         return false;
     }
