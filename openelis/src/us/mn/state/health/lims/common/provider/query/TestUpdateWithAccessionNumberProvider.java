@@ -1,5 +1,7 @@
 package us.mn.state.health.lims.common.provider.query;
 
+import org.bahmni.feed.openelis.feed.service.EventPublishers;
+import org.bahmni.feed.openelis.feed.service.impl.OpenElisUrlPublisher;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -7,6 +9,7 @@ import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.common.util.DateUtil;
+import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
 import us.mn.state.health.lims.sample.valueholder.Sample;
@@ -33,6 +36,7 @@ public class TestUpdateWithAccessionNumberProvider extends BaseQueryProvider {
     private SampleItemDAO sampleItemDao = new SampleItemDAOImpl();
     private TypeOfSampleDAO typeOfSampleDAO = new TypeOfSampleDAOImpl();
     private TestDAO testDAO = new TestDAOImpl();
+    private OpenElisUrlPublisher accessionPublisher = new EventPublishers().accessionPublisher();
 
     @Override
     public void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -101,6 +105,10 @@ public class TestUpdateWithAccessionNumberProvider extends BaseQueryProvider {
 
             removedSampleTypeIds.removeAll(allTypeAndTestIdsFromForm.keySet());
             deleteRemovedSampleItemAndAnalysis(sysUserId, sampleItems, removedSampleTypeIds);
+
+            if(!StringUtil.isNullorNill(sample.getAccessionNumber())){
+                accessionPublisher.publish(sample.getUUID(), request.getContextPath());
+            }
 
             ajaxServlet.sendData(xml.toString(), VALID, request, response);
         } catch (ParseException e) {
