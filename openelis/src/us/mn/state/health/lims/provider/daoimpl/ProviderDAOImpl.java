@@ -256,8 +256,10 @@ public class ProviderDAOImpl extends BaseDAOImpl implements ProviderDAO {
     @Override
     public Provider getProviderByPersonName(String name) throws LIMSRuntimeException {
         List<Provider> list = null;
+
+        name = name.replaceAll(" ", "");
         try {
-            String sql = "from Provider p where p.person.firstName || ' '|| p.person.middleName || ' '|| p.person.lastName = :name";
+            String sql = "from Provider p where replace(concat(p.person.firstName , p.person.middleName, p.person.lastName), ' ','') = :name";
             Query query = HibernateUtil.getSession().createQuery(sql);
             query.setString("name", name);
             HibernateUtil.getSession().flush();
