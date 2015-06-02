@@ -48,7 +48,10 @@ public class TestUpdateWithAccessionNumberProvider extends BaseQueryProvider {
         sample.setAccessionNumber(accessionNumber);
         String sysUserId = sample.getSysUserId();
 
-        List<SampleItem> sampleItems = sampleItemDao.getSampleItemsBySampleId(sampleId);
+        Set includedSampleStatusList = new HashSet<Integer>();
+        includedSampleStatusList.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.SampleStatus.Entered)));
+
+        List<SampleItem> sampleItems = sampleItemDao.getSampleItemsBySampleIdAndStatus(sampleId,includedSampleStatusList);
         int noOfSampleItems = sampleItems.size();
 
         StringBuilder xml = new StringBuilder();
@@ -133,10 +136,15 @@ public class TestUpdateWithAccessionNumberProvider extends BaseQueryProvider {
     private void deleteAnalysisForRemovedTests(String accessionNumber, String sysUserId, List<String> deletedTests) {
         for (String deletedTest : deletedTests) {
             List<Analysis> analysisByAccessionAndTestId = analysisDAO.getAnalysisByAccessionAndTestId(accessionNumber, deletedTest);
-            for (Analysis analysis : analysisByAccessionAndTestId) {
-                analysis.setSysUserId(sysUserId);
-            }
-            analysisDAO.deleteData(analysisByAccessionAndTestId);
+            setCancelledStatusForAnalysisList(analysisByAccessionAndTestId, sysUserId);
+        }
+    }
+
+    private void setCancelledStatusForAnalysisList(List<Analysis> analysisByAccessionAndTestId, String sysUserId){
+        for (Analysis analysis : analysisByAccessionAndTestId) {
+            analysis.setSysUserId(sysUserId);
+            analysis.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.Canceled));
+            analysisDAO.updateData(analysis);
         }
     }
 
@@ -153,15 +161,14 @@ public class TestUpdateWithAccessionNumberProvider extends BaseQueryProvider {
     private void deleteRemovedSampleItemAndAnalysis(String sysUserId, List<SampleItem> sampleItems, List<String> deletedSampleTypeIds) {
         for (String deletedSampleTypeId : deletedSampleTypeIds) {
             SampleItem sampleItem = getSampleItemByTypeOfSampleIdFromSampleItems(deletedSampleTypeId, sampleItems);
-            sampleItem.setSysUserId(sysUserId);
-            List<SampleItem> deletedList = new ArrayList<>();
-            deletedList.add(sampleItem);
+
             List<Analysis> analysesBySampleItem = analysisDAO.getAnalysesBySampleItem(sampleItem);
-            for (Analysis analysis : analysesBySampleItem) {
-                analysis.setSysUserId(sysUserId);
-            }
-            analysisDAO.deleteData(analysesBySampleItem);
-            sampleItemDao.deleteData(deletedList);
+            setCancelledStatusForAnalysisList(analysesBySampleItem, sysUserId);
+
+            sampleItem.setSysUserId(sysUserId);
+            sampleItem.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.SampleStatus.Canceled));
+            sampleItemDao.updateData(sampleItem);
+
         }
     }
 

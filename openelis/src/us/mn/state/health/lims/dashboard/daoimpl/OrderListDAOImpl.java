@@ -99,7 +99,7 @@ public class OrderListDAOImpl implements OrderListDAO {
     @Override
     public List<Order> getAllSampleNotCollectedToday() {
         List<Order> orderList = new ArrayList<>();
-        String sqlForAllSampleNotCollectedToday = createSqlStringForTodayOrders("sample.accession_number is null", "sample.lastupdated");
+        String sqlForAllSampleNotCollectedToday = createSqlStringForTodayOrders("sample.accession_number is null and analysis.status_id IN (" + getAllNonReferredAnalysisStatus() + ")", "sample.lastupdated");
 
         ResultSet sampleNotCollectedToday = null;
         PreparedStatement preparedStatement = null;
@@ -124,7 +124,7 @@ public class OrderListDAOImpl implements OrderListDAO {
     @Override
     public List<Order> getAllSampleNotCollectedPendingBeforeToday() {
         List<Order> orderList = new ArrayList<>();
-        String sqlForAllSampleNotCollectedPendingBeforeToday = createSqlStringForPendingOrders("sample.accession_number is null", "sample.lastupdated");
+        String sqlForAllSampleNotCollectedPendingBeforeToday = createSqlStringForPendingOrders("sample.accession_number is null and analysis.status_id IN (" + getAllNonReferredAnalysisStatus() + ")","sample.lastupdated");
 
         ResultSet pendingAccessions = null;
         PreparedStatement preparedStatement = null;
@@ -219,7 +219,6 @@ public class OrderListDAOImpl implements OrderListDAO {
     private String analysesReferredOrInFinalStatus() {
         List<Object> analysisStatuses = new ArrayList<>();
         analysisStatuses.add(parseInt(getStatusID(ReferedOut)));
-        analysisStatuses.add(parseInt(getStatusID(Canceled)));
         analysisStatuses.add(parseInt(getStatusID(ReferedOut)));
         analysisStatuses.add(parseInt(getStatusID(ReferredIn)));
         analysisStatuses.add(parseInt(getStatusID(Finalized)));

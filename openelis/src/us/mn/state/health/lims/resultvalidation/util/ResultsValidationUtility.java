@@ -867,6 +867,9 @@ public class ResultsValidationUtility {
 	}
 
     public List<Note> getAccessionNotes(String accessionNumber) {
+		if(StringUtil.isNullorNill(accessionNumber)){
+			return Collections.EMPTY_LIST;
+		}
         Sample sample = sampleDAO.getSampleByAccessionNumber(accessionNumber);
         if(sample != null){
             String tableReferenceId = NoteUtil.getTableReferenceId(SAMPLE_TABLE_NAME);
