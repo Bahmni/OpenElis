@@ -121,6 +121,9 @@ public class ResultsValidation {
 		if (item.isReferredOut() && "0".equals(item.getReferralReasonId())) {
 			errors.add(new ActionError("error.referral.noReason"));
 		}
+		if (item.isReferredOut() && "0".equals(item.getReferralOrganizationId())){
+			errors.add(new ActionError("error.referral.missingInstitution", item.getAccessionNumber(), null));
+		}
 	}
 	
 	private void validateRequiredNote(TestResultItem item, List<ActionError> errors) {
