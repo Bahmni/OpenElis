@@ -268,35 +268,38 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         }
         List<Analysis> analysisToBeCanceled = analysisDAO.getAnalysisBySampleAndTestIds(sample.getId(), toBeDeletedTestIds);
 
-        for(Analysis analysis: analysisToBeCanceled){
+        for (Analysis analysis : analysisToBeCanceled) {
             analysis.setSysUserId(sysUserId);
+            analysis.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.Canceled));
+            analysisDAO.updateData(analysis);
         }
-        analysisDAO.deleteData(analysisToBeCanceled);
+
         cleanUpDanglingItems(sample,sysUserId);
     }
 
     private void cleanUpDanglingItems(Sample sample,String sysUserId) {
+        Set excludedAnalysisStatusList = new HashSet<Integer>();
+        excludedAnalysisStatusList.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.Canceled)));
+
         List<SampleItem> sampleItems = sampleItemDAO.getSampleItemsBySampleId(sample.getId());
-        List<SampleItem> deletedItems = new ArrayList<>();
+        List<SampleItem> cancelledItems = new ArrayList<>();
 
         for(SampleItem item: sampleItems){
-            List<Analysis> analysisList = analysisDAO.getAnalysesBySampleItem(item);
+            List<Analysis> analysisList = analysisDAO.getAnalysesBySampleItemsExcludingByStatusIds(item, excludedAnalysisStatusList);
             if(analysisList.size()==0){
                 item.setSysUserId(sysUserId);
-                deletedItems.add(item);
+                item.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.SampleStatus.Canceled));
+                sampleItemDAO.updateData(item);
+                cancelledItems.add(item);
             }
         }
-        sampleItemDAO.deleteData(deletedItems);
-
-        if(sampleItems.equals(deletedItems)){
-            sample.setSysUserId(sysUserId);
-            sampleDAO.deleteData(Arrays.asList(sample));
-        }
-
     }
 
     private void addTestsToExistingSample(Sample sample, String sysUserId, Date nowAsSqlDate, AnalysisBuilder analysisBuilder, TestOrderDiff testOrderDiff) {
-        List<SampleItem> existingSampleItems = sampleItemDAO.getSampleItemsBySampleId(sample.getId());
+        Set includedSampleStatusList = new HashSet<Integer>();
+        includedSampleStatusList.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.SampleStatus.Entered)));
+
+        List<SampleItem> existingSampleItems = sampleItemDAO.getSampleItemsBySampleIdAndStatus(sample.getId(),includedSampleStatusList);
         int sortOrder = existingSampleItems.size();
         String analysisRevision = SystemConfiguration.getInstance().getAnalysisDefaultRevision();
 
