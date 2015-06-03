@@ -161,11 +161,22 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
         }
     }
 
+    public String getActiveTab() {
+        return activeTab;
+    }
+
+    public void setActiveTab(String activeTab) {
+        this.activeTab = activeTab;
+    }
+
+    private String activeTab;
+
     protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
             throws Exception {
 
         String forward = FWD_SUCCESS;
         String referer = request.getParameter("referer");
+        activeTab = request.getParameter("activeTab");
         List<IResultUpdate> updaters = ResultUpdateRegister.getRegisteredUpdaters();
 
         BaseActionForm dynaForm = (BaseActionForm) form;
@@ -323,7 +334,9 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
         setSuccessFlag(request, forward);
 
         if (referer != null && referer.matches("LabDashboard")) {
-            return mapping.findForward(FWD_DASHBOARD);
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("activeTab", activeTab);
+            return getForwardWithParameters(mapping.findForward(FWD_DASHBOARD), params);
         }
 
         if (GenericValidator.isBlankOrNull(dynaForm.getString("logbookType"))) {

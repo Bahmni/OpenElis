@@ -725,7 +725,8 @@
             <forward name="fail" path="samplePatientEntryDefinition"/>
         </action>
 
-        <action path="/CancelSamplePatientEntry" forward="homePageDefinition">
+        <action path="/CancelSamplePatientEntry" type="us.mn.state.health.lims.common.action.CommonCancelAction">
+            <forward name="success" path="/LabDashboard.do"/>
         </action>
 
         <action path="/SampleConfirmationEntry"
@@ -856,8 +857,8 @@
             <forward name="fail" path="homePageDefinition"/>
         </action>
 
-
-        <action path="/CancelAccessionResults" forward="homePageDefinition">
+        <action path="/CancelAccessionResults" type="us.mn.state.health.lims.common.action.CommonCancelAction">
+            <forward name="success" path="/LabDashboard.do"/>
         </action>
 
         <action path="/StatusResults" name="StatusResultsForm"
@@ -906,7 +907,8 @@
             <forward name="fail" path="homePageDefinition"/>
         </action>
 
-        <action path="/CancelResultValidation" forward="homePageDefinition">
+        <action path="/CancelResultValidation" type="us.mn.state.health.lims.common.action.CommonCancelAction">
+            <forward name="success" path="/LabDashboard.do"/>
         </action>
 
         <action path="/WorkPlanByTest" name="WorkplanForm"

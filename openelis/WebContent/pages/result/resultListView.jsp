@@ -31,6 +31,7 @@
 <%@ taglib uri="/tags/sourceforge-ajax" prefix="ajax"%>
 
 <bean:define id='formName' value='<%= (String)request.getAttribute(IActionConstants.FORM_NAME) %>' />
+
 <bean:define id="tests" name='<%=formName%>' property="testResult" />
 <bean:size id="testCount" name="tests"/>
 <bean:define id="inventory" name="<%=formName%>" property="inventoryItems" />
@@ -76,6 +77,7 @@
 	basePath = path + "/";
 
 	searchTerm = request.getParameter("searchTerm");
+	String activeTab = request.getParameter("activeTab");
 
 	accessionNumberValidator = new AccessionNumberValidatorFactory().getValidator();
 	useSTNumber = FormFields.getInstance().useField(Field.StNumber);
@@ -414,6 +416,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 <logic:notEmpty name="<%=formName%>" property="logbookType" >
 	<html:hidden name="<%=formName%>" property="logbookType" />
 </logic:notEmpty>
+<html:hidden property="activeTab" name="activeTab" value="<%=activeTab%>"/>
 
 <logic:notEqual name="testCount" value="0">
 <logic:equal name="<%=formName%>" property="displayTestKit" value="true">
