@@ -26,6 +26,7 @@ import us.mn.state.health.lims.analyte.valueholder.Analyte;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.dashboard.valueholder.Order;
+import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.patient.daoimpl.PatientDAOImpl;
 import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.patientidentity.daoimpl.PatientIdentityDAOImpl;
@@ -50,6 +51,10 @@ import us.mn.state.health.lims.test.valueholder.TestSection;
 import us.mn.state.health.lims.testanalyte.daoimpl.TestAnalyteDAOImpl;
 import us.mn.state.health.lims.testanalyte.valueholder.TestAnalyte;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -79,15 +84,15 @@ public class OrderListDAOImplIT extends IT {
         firstName = "Some";
         lastName = "One";
         patient = createPatient(firstName, lastName, patientIdentityData);
-        TestDAOImpl testDAO = createTests("SampleTest1", "SampleTest2", "SampleTest3", "SampleTest4");
+        TestDAOImpl testDAO = createTests("SampleTest1", "SampleTest2", "SampleTest3", "SampleTest4", "SampleTest5");
         allTests = testDAO.getAllTests(true);
         today = new Date();
         dateInThePast = new Date(today.getTime() - 10 * 24 * 60 * 60 * 1000);
     }
 
-    @org.junit.Test @Ignore
+    @org.junit.Test
     public void shouldGetAllTestsToday() {
-    Sample sample1 = createSample(accessionNumber1, today);
+        Sample sample1 = createSample(accessionNumber1, today);
         createSampleHuman(sample1, patient);
         SampleItem sampleItem1 = createSampleItem(sample1);
 
@@ -123,7 +128,114 @@ public class OrderListDAOImplIT extends IT {
         assertEquals( true, getByAccessionNumber(allToday, accessionNumber2).getIsCompleted());
     }
 
-    @org.junit.Test @Ignore
+    @org.junit.Test
+    public void shouldGetSampleNotCollectedToday() {
+        Sample sample1 = createSample(null, today);
+        createSampleHuman(sample1, patient);
+        SampleItem sampleItem1 = createSampleItem(sample1);
+
+        Sample sample2 = createSample(null, today);
+        createSampleHuman(sample2, patient);
+        SampleItem sampleItem2 = createSampleItem(sample2);
+
+        Sample sample3 = createSample(null, dateInThePast);
+        createSampleHuman(sample3, patient);
+        SampleItem sampleItem3 = createSampleItem(sample3);
+
+        Sample sample4 = createSample(accessionNumber3, dateInThePast);
+        createSampleHuman(sample4, patient);
+        SampleItem sampleItem4 = createSampleItem(sample4);
+
+        Sample sample5 = createSample(accessionNumber1, today);
+        createSampleHuman(sample5, patient);
+        SampleItem sampleItem5 = createSampleItem(sample5);
+
+        createAnalysis(sampleItem1, StatusOfSampleUtil.AnalysisStatus.NotTested, "Hematology", allTests.get(0));
+        createAnalysis(sampleItem2, StatusOfSampleUtil.AnalysisStatus.NotTested, "Hematology", allTests.get(1));
+        createAnalysis(sampleItem3, StatusOfSampleUtil.AnalysisStatus.NotTested, "Hematology", allTests.get(2));
+        createAnalysis(sampleItem4, StatusOfSampleUtil.AnalysisStatus.Finalized, "Hematology", allTests.get(3));
+        createAnalysis(sampleItem5, StatusOfSampleUtil.AnalysisStatus.Finalized, "Hematology", allTests.get(4));
+
+        List<Order> sampleNotCollectedToday = new OrderListDAOImpl().getAllSampleNotCollectedToday();
+
+        assertEquals(2, sampleNotCollectedToday.size());
+    }
+
+    @org.junit.Test
+    public void shouldGetSampleNotCollectedPendingBeforeToday() {
+        Sample sample1 = createSample(null, today);
+        createSampleHuman(sample1, patient);
+        SampleItem sampleItem1 = createSampleItem(sample1);
+
+        Sample sample2 = createSample(null, today);
+        createSampleHuman(sample2, patient);
+        SampleItem sampleItem2 = createSampleItem(sample2);
+
+        Sample sample3 = createSample(null, dateInThePast);
+        createSampleHuman(sample3, patient);
+        SampleItem sampleItem3 = createSampleItem(sample3);
+
+        Sample sample4 = createSample(accessionNumber3, dateInThePast);
+        createSampleHuman(sample4, patient);
+        SampleItem sampleItem4 = createSampleItem(sample4);
+
+        createAnalysis(sampleItem1, StatusOfSampleUtil.AnalysisStatus.NotTested, "Hematology", allTests.get(0));
+        createAnalysis(sampleItem2, StatusOfSampleUtil.AnalysisStatus.NotTested, "Hematology", allTests.get(1));
+        createAnalysis(sampleItem3, StatusOfSampleUtil.AnalysisStatus.NotTested, "Hematology", allTests.get(2));
+        createAnalysis(sampleItem4, StatusOfSampleUtil.AnalysisStatus.Finalized, "Hematology", allTests.get(3));
+
+        List<Order> sampleNotCollectedPendingBeforeToday = new OrderListDAOImpl().getAllSampleNotCollectedPendingBeforeToday();
+
+        assertEquals(1, sampleNotCollectedPendingBeforeToday.size());
+    }
+
+    @org.junit.Test
+    public void shouldMoveSampleFrom_SampleNotCollectedPendginBeforeToday_To_AllTodayAndAllPendingOrderBeforeToday_AfterSampleCollection() {
+        Sample sample1 = createSample(null, dateInThePast);
+        createSampleHuman(sample1, patient);
+        SampleItem sampleItem1 = createSampleItem(sample1);
+
+        createAnalysis(sampleItem1, StatusOfSampleUtil.AnalysisStatus.NotTested, "Hematology", allTests.get(0));
+
+        assertEquals(1, new OrderListDAOImpl().getAllSampleNotCollectedPendingBeforeToday().size());
+        assertEquals(0, new OrderListDAOImpl().getAllPendingBeforeToday().size());
+
+        sample1.setAccessionNumber(accessionNumber1);
+        sample1.setLastupdated(new Timestamp(today.getTime()));
+        new SampleDAOImpl().updateData(sample1);
+
+        assertEquals(0, new OrderListDAOImpl().getAllSampleNotCollectedPendingBeforeToday().size());
+        assertEquals(1, new OrderListDAOImpl().getAllPendingBeforeToday().size());
+        assertEquals(1, new OrderListDAOImpl().getAllToday().size());
+    }
+
+    @org.junit.Test
+    public void shouldMoveSampleFrom_PendingBeforeToday_To_AllToday_AfterChangeInAnalysis() {
+        Sample sample1 = createSample(accessionNumber1, dateInThePast);
+        createSampleHuman(sample1, patient);
+        SampleItem sampleItem1 = createSampleItem(sample1);
+
+        Analysis analysis1 = createAnalysis(sampleItem1, StatusOfSampleUtil.AnalysisStatus.NotTested, "Hematology", allTests.get(0));
+        Analysis analysis2 = createAnalysis(sampleItem1, StatusOfSampleUtil.AnalysisStatus.NotTested, "Hematology", allTests.get(1));
+
+        assertEquals(1, new OrderListDAOImpl().getAllPendingBeforeToday().size());
+        assertEquals(0, new OrderListDAOImpl().getAllToday().size());
+
+        analysis1.setLastupdated(new Timestamp(today.getTime()));
+        new AnalysisDAOImpl().updateData(analysis1);
+
+        assertEquals(1, new OrderListDAOImpl().getAllPendingBeforeToday().size());
+        assertEquals(1, new OrderListDAOImpl().getAllToday().size());
+
+        analysis2.setLastupdated(new Timestamp(today.getTime()));
+        new AnalysisDAOImpl().updateData(analysis2);
+
+        assertEquals(0, new OrderListDAOImpl().getAllPendingBeforeToday().size());
+        assertEquals(1, new OrderListDAOImpl().getAllToday().size());
+    }
+
+
+    @org.junit.Test
     public void shouldGetAllPendingTestsBeforeToday() {
         Sample sample1 = createSample(accessionNumber1, dateInThePast);
         createSampleHuman(sample1, patient);

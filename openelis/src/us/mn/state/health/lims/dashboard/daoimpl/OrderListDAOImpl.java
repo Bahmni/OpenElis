@@ -55,6 +55,7 @@ public class OrderListDAOImpl implements OrderListDAO {
             //Dont'use current_date in prepared_statement. I know its weird, but
             //The session fires query with current_date = date_on_which_session_was_created and gives wron result on next daypreparedStatement.setTimestamp(1, DateUtil.getTodayAsTimestamp());
             preparedStatement.setTimestamp(1, DateUtil.getTodayAsTimestamp());
+            preparedStatement.setTimestamp(2, DateUtil.getTodayAsTimestamp());
             todayAccessions = preparedStatement.executeQuery();
             while (todayAccessions.next()) {
                 orderList.add(createOrder(todayAccessions, todayAccessions.getBoolean("is_completed")));
@@ -106,6 +107,7 @@ public class OrderListDAOImpl implements OrderListDAO {
         try {
             preparedStatement = getPreparedStatement(sqlForAllSampleNotCollectedToday);
             preparedStatement.setTimestamp(1, DateUtil.getTodayAsTimestamp());
+            preparedStatement.setTimestamp(2, DateUtil.getTodayAsTimestamp());
             sampleNotCollectedToday = preparedStatement.executeQuery();
             while (sampleNotCollectedToday.next()) {
                 Order order = createOrder(sampleNotCollectedToday, false);
@@ -242,7 +244,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "COUNT(test.id) AS total_test_count,\n" +
                 "CASE WHEN document_track.report_generation_time is null THEN false ELSE true END as is_printed\n" +
                 "FROM Sample AS sample\n" +
-                "inner join (select distinct s.id from analysis a inner join sample_item si on a.sampitem_id = si.id inner join sample s on si.samp_id = s.id where a.status_id not in (" +  analysesReferredOrInFinalStatus() + ") and s.lastupdated < ?) x on x.id = sample.id \n" +
+                "inner join (select distinct s.id from analysis a inner join sample_item si on a.sampitem_id = si.id inner join sample s on si.samp_id = s.id where a.status_id not in (" +  analysesReferredOrInFinalStatus() + ") and a.lastupdated < ?) x on x.id = sample.id \n" +
                 "LEFT OUTER JOIN Sample_Human AS sampleHuman ON sampleHuman.samp_Id = sample.id \n" +
                 "LEFT  JOIN sample_source ON sample_source.id = sample.sample_source_id \n" +
                 "INNER JOIN Patient AS patient ON sampleHuman.patient_id = patient.id \n" +
@@ -276,7 +278,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "CASE WHEN COUNT(analysis.id) = SUM(CASE WHEN  analysis.status_id IN (" +getCompletedStatus()+ ") THEN 1 ELSE 0 END) THEN true ELSE false END as is_completed,\n" +
                 "CASE WHEN document_track.report_generation_time is null THEN false ELSE true END as is_printed\n" +
                 "FROM Sample AS sample\n" +
-                "INNER JOIN (select distinct s.id from analysis a inner join sample_item si on a.sampitem_id = si.id inner join sample s on si.samp_id = s.id where a.lastupdated >= ?) list on list.id = sample.id\n" +
+                "INNER JOIN (select distinct s.id from analysis a inner join sample_item si on a.sampitem_id = si.id inner join sample s on si.samp_id = s.id where a.lastupdated >= ? or s.lastupdated >= ?) list on list.id = sample.id\n" +
                 "LEFT OUTER JOIN Sample_Human AS sampleHuman ON sampleHuman.samp_Id = sample.id \n" +
                 "LEFT  JOIN sample_source ON sample_source.id = sample.sample_source_id \n" +
                 "INNER JOIN Patient AS patient ON sampleHuman.patient_id = patient.id \n" +
