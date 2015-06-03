@@ -51,7 +51,18 @@ public class SamplePatientEntryAction extends BaseSampleEntryAction {
     private SampleSourceDAO sampleSourceDAO;
     private ProviderDAO providerDAO;
 
-    public SamplePatientEntryAction() {
+	public String getActiveTab() {
+		return activeTab;
+	}
+
+	public void setActiveTab(String activeTab) {
+		this.activeTab = activeTab;
+	}
+
+	private String activeTab;
+
+
+	public SamplePatientEntryAction() {
         this.sampleSourceDAO = new SampleSourceDAOImpl();
         this.providerDAO = new ProviderDAOImpl();
     }

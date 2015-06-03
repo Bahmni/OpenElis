@@ -4861,7 +4861,7 @@
           <forward name="fail" path="loginPageDefinition"/> 
        </action>
        <action path="/ValidateLogin" name="loginValidateForm" type="us.mn.state.health.lims.login.action.LoginValidateAction" validate="false">
-          <forward name="success" path="/HomePage.do"/> 
+          <forward name="success" path="/LabDashboard.do"/>
           <forward name="fail" path="/LoginPage.do"/> 
           <!--bugzilla 2286-->
           <forward name="changePassword" path="/ChangePasswordLogin.do" />
