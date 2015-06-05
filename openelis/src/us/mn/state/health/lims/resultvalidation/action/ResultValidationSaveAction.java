@@ -84,15 +84,6 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 	private static final String RESULT_TYPE = "I";
 	private static final String RESULT_SUBJECT = "Result Note";
 
-	public String getActiveTab() {
-		return activeTab;
-	}
-
-	public void setActiveTab(String activeTab) {
-		this.activeTab = activeTab;
-	}
-
-	private String activeTab;
 
     @Override
 	protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
@@ -100,7 +91,6 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 
 		String forward = FWD_SUCCESS;
         String referer = request.getParameter("referer");
-		activeTab = request.getParameter("activeTab");
         String accessionNumber = request.getParameter(ACCESSION_NUMBER);
 
         request.getSession().setAttribute(SAVE_DISABLED, "true");
@@ -145,9 +135,7 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 		}
 
         if(referer != null && referer.matches("LabDashboard")) {
-			Map<String, String> params = new HashMap<String, String>();
-			params.put("activeTab", activeTab);
-			return getForwardWithParameters(mapping.findForward(FWD_DASHBOARD), params);
+			return mapping.findForward(FWD_DASHBOARD);
 		}
 
 		if (GenericValidator.isBlankOrNull(testSectionName)) {

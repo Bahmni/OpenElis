@@ -103,10 +103,10 @@ basePath = path + "/";
         <span class="samplesToCollect sample_title_dashboard">Samples to Collect</span>
         <span class="samplesCollected sample_title_dashboard">Samples Collected</span>
         <ul>
-            <li><a href="#todaySamplesToCollectListContainer">Today</a></li>
-            <li class="backLog_first"><a href="#backlogSamplesToCollectListContainer">Backlog</a></li>
-            <li><a href="#todaySamplesCollectedListContainer">Today</a></li>
-            <li><a href="#backlogSamplesCollectedListContainer">Backlog</a></li>
+            <li><a href="#todaySamplesToCollectListContainer" id="todaySamplesToCollectListContainerId" >Today</a></li>
+            <li class="backLog_first"><a href="#backlogSamplesToCollectListContainer" id="backlogSamplesToCollectListContainerId">Backlog</a></li>
+            <li><a href="#todaySamplesCollectedListContainer" id="todaySamplesCollectedListContainerId" >Today</a></li>
+            <li><a href="#backlogSamplesCollectedListContainer" id="backlogSamplesCollectedListContainerId" >Backlog</a></li>
          </ul>
         <div id="todaySamplesToCollectListContainer">
                 <div id="todaySamplesToCollectListContainer-slick-grid"></div>
@@ -182,27 +182,27 @@ basePath = path + "/";
 
        showStats(todayStats)
 
-        var todaySamplesToCollectObject = new order("#todaySamplesToCollectListContainer-slick-grid", todaySampleNotCollectedList, generateAllLinksForOrder, getColumnsForSampleNotCollected, false,0);
+        var todaySamplesToCollectObject = new order("#todaySamplesToCollectListContainer-slick-grid", todaySampleNotCollectedList, generateAllLinksForOrder, getColumnsForSampleNotCollected, false);
         var dataViewForTodaySamplesToCollect = new Slick.Data.DataView({ inlineFilters: true });
         var gridForTodaySamplesToCollect = new Slick.Grid(todaySamplesToCollectObject.div, dataViewForTodaySamplesToCollect, todaySamplesToCollectObject.columns,options);
         createGrid(gridForTodaySamplesToCollect, dataViewForTodaySamplesToCollect, todaySamplesToCollectObject, onRowSelection);
 
-        var backlogSamplesToCollectObject = new order("#backlogSamplesToCollectListContainer-slick-grid", backlogSampleNotCollectedList, generateAllLinksForOrder, getColumnsForSampleNotCollected, false,1);
+        var backlogSamplesToCollectObject = new order("#backlogSamplesToCollectListContainer-slick-grid", backlogSampleNotCollectedList, generateAllLinksForOrder, getColumnsForSampleNotCollected, false);
         var dataViewForBacklogSamplesToCollect = new Slick.Data.DataView({ inlineFilters: true });
         var gridForBacklogSamplesToCollect = new Slick.Grid(backlogSamplesToCollectObject.div, dataViewForBacklogSamplesToCollect, backlogSamplesToCollectObject.columns,options);
         createGrid(gridForBacklogSamplesToCollect, dataViewForBacklogSamplesToCollect, backlogSamplesToCollectObject, onRowSelection);
 
-        var todayOrdersObject = new order("#todaySamplesCollectedListContainer-slick-grid", todayOrderList, generateAllLinksForOrder, getColumnsForTodayOrder, <%= alwaysValidate%>,2);
+        var todayOrdersObject = new order("#todaySamplesCollectedListContainer-slick-grid", todayOrderList, generateAllLinksForOrder, getColumnsForTodayOrder, <%= alwaysValidate%>);
         var dataViewForTodayTab = new Slick.Data.DataView({ inlineFilters: true });
         var gridForTodayOrder = new Slick.Grid(todayOrdersObject.div, dataViewForTodayTab, todayOrdersObject.columns,options);
         createGrid(gridForTodayOrder, dataViewForTodayTab, todayOrdersObject, onRowSelection);
 
-        var backlogOrdersObject = new order("#backlogSamplesCollectedListContainer-slick-grid", backlogOrderList, generateAllLinksForOrder, getColumnsForBacklogOrder, <%= alwaysValidate%>,3);
+        var backlogOrdersObject = new order("#backlogSamplesCollectedListContainer-slick-grid", backlogOrderList, generateAllLinksForOrder, getColumnsForBacklogOrder, <%= alwaysValidate%>);
         var dataViewForBacklogTab = new Slick.Data.DataView({ inlineFilters: true });
         var gridForBacklogOrder = new Slick.Grid(backlogOrdersObject.div, dataViewForBacklogTab, backlogOrdersObject.columns,options);
         createGrid(gridForBacklogOrder, dataViewForBacklogTab, backlogOrdersObject, onRowSelection);
 
-        var activeTab = <%= request.getParameter("activeTab") %>;
+        var activeTab = <%= (String)request.getSession().getAttribute("activeTab") %>;
         var tabOptions = {
             select: function(event, ui) {
                 jQuery("#patientDetails").hide();
@@ -222,6 +222,29 @@ basePath = path + "/";
             var link =location.href.split("?")[0];
             location.href = link + "?activeTab=" + index;
             return false;
+        });
+
+        function saveActiveTab(tabPosition) {
+            new Ajax.Request(
+                    'tabSelectServlet',  //url
+                    {//options
+                        method: 'get', //http method
+                        parameters: 'activeTab=' + tabPosition
+                    }
+            );
+        }
+
+        jQuery("#todaySamplesToCollectListContainerId").on("click", function(){
+            saveActiveTab(0);
+        });
+        jQuery("#backlogSamplesToCollectListContainerId").on("click", function(){
+            saveActiveTab(1);
+        });
+        jQuery("#todaySamplesCollectedListContainerId").on("click", function(){
+            saveActiveTab(2);
+        });
+        jQuery("#backlogSamplesCollectedListContainerId").on("click", function(){
+            saveActiveTab(3);
         });
 
     });

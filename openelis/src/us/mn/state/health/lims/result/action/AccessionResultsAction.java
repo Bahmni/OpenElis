@@ -64,7 +64,6 @@ import us.mn.state.health.lims.userrole.daoimpl.UserRoleDAOImpl;
 public class AccessionResultsAction extends BaseAction {
 
 	private String accessionNumber;
-	private String activeTab;
 	private Sample sample;
 	private InventoryUtility inventoryUtility = new InventoryUtility();
 	private static SampleDAO sampleDAO = new SampleDAOImpl();
@@ -97,7 +96,6 @@ public class AccessionResultsAction extends BaseAction {
 		if (GenericValidator.isBlankOrNull(newPage)) {
 
 			accessionNumber = request.getParameter("accessionNumber");
-//			activeTab = request.getParameter("activeTab");
 			PropertyUtils.setProperty(dynaForm, "displayTestKit", false);
 
 			if (!GenericValidator.isBlankOrNull(accessionNumber)) {
@@ -215,11 +213,4 @@ public class AccessionResultsAction extends BaseAction {
 		return "banner.menu.results";
 	}
 
-	public String getActiveTab() {
-		return activeTab;
-	}
-
-	public void setActiveTab(String activeTab) {
-		this.activeTab = activeTab;
-	}
 }

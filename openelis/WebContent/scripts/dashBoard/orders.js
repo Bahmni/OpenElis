@@ -1,5 +1,5 @@
 
-function order(div, orderArray, generateLink, getColumns, alwaysValidate, activeTab) {
+function order(div, orderArray, generateLink, getColumns, alwaysValidate) {
      this.div = div;
      this.orderArray = orderArray;
      this.columns = getColumns(alwaysValidate);
@@ -25,7 +25,7 @@ function order(div, orderArray, generateLink, getColumns, alwaysValidate, active
 
             this.orders = jQuery.map(this.orderArray, function(order, i) {
                 order.id= i;
-                order.link = generateLink(order, alwaysValidate, activeTab);
+                order.link = generateLink(order, alwaysValidate);
                 order.name = order.firstName + " " + (order.middleName ? order.middleName + " " : "") + order.lastName;
                 return order;
             });
@@ -39,14 +39,14 @@ function generateLinkForPrint(order){
 }
 
 
-function generateAllLinksForOrder(order, alwaysValidate, activeTab){
+function generateAllLinksForOrder(order, alwaysValidate){
     if(order.accessionNumber == null){
-        return  "<a href='SamplePatientEntry.do?id="+ order.orderId +"&patientId=" + order.stNumber + "&activeTab=" + activeTab+"'>Collect Sample</a>";
+        return  "<a href='SamplePatientEntry.do?id="+ order.orderId +"&patientId=" + order.stNumber + "'>Collect Sample</a>";
     }
-    var enterResultLink = "<a href='AccessionResults.do?accessionNumber=" + order.accessionNumber + "&referer=LabDashboard&activeTab=" + activeTab+"'>Result</a>";
+    var enterResultLink = "<a href='AccessionResults.do?accessionNumber=" + order.accessionNumber + "&referer=LabDashboard"+"'>Result</a>";
     if(alwaysValidate){
         //TODO: &type= is required in the url because of a bug I can't find the source of. The bug causes people without
-        var validationLink = "<a href='ResultValidationForAccessionNumber.do?accessionNumber=" + order.accessionNumber + "&activeTab=" + activeTab+ "&patientId=" + order.stNumber + "&referer=LabDashboard&type=&test='>Validate</a>";
+        var validationLink = "<a href='ResultValidationForAccessionNumber.do?accessionNumber=" + order.accessionNumber + "&patientId=" + order.stNumber + "&referer=LabDashboard&type=&test='>Validate</a>";
         return enterResultLink + " | " + validationLink + " | " + generateLinkForPrint(order);
     }
     return enterResultLink + " | " + generateLinkForPrint(order);

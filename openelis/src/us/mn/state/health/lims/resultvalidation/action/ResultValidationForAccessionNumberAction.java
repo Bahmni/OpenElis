@@ -32,23 +32,12 @@ import java.util.List;
 
 public class ResultValidationForAccessionNumberAction extends BaseResultValidationAction {
 
-    public String getActiveTab() {
-        return activeTab;
-    }
-
-    public void setActiveTab(String activeTab) {
-        this.activeTab = activeTab;
-    }
-
-    private String activeTab;
-
     @Override
     protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request,
                                           HttpServletResponse response) throws Exception {
         ResultsValidationUtility resultsValidationUtility = new ResultsValidationUtility();
         BaseActionForm dynaForm = (BaseActionForm) form;
         String accessionNumber = request.getParameter("accessionNumber");
-        activeTab = request.getParameter("activeTab");
         ResultValidationPaging paging = new ResultValidationPaging();
         // Initialize the form.
         dynaForm.initialize(mapping);

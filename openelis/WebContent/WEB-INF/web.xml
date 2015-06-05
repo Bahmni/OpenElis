@@ -58,6 +58,13 @@
         <servlet-class>us.mn.state.health.lims.common.servlet.validation.AjaxTextServlet</servlet-class>
         <load-on-startup>3</load-on-startup>
     </servlet>
+    <servlet>
+        <servlet-name>tabSelectServlet</servlet-name>
+        <display-name>tabSelectServlet</display-name>
+        <servlet-class>us.mn.state.health.lims.common.servlet.AjaxTabSelectServlet</servlet-class>
+        <load-on-startup>3</load-on-startup>
+    </servlet>
+
 
     <servlet>
         <servlet-name>ajaxXML</servlet-name>
@@ -151,6 +158,10 @@
     <servlet-mapping>
         <servlet-name>ajaxText</servlet-name>
         <url-pattern>/ajaxText</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>tabSelectServlet</servlet-name>
+        <url-pattern>/tabSelectServlet</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

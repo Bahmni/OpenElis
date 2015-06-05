@@ -62,7 +62,6 @@
     fieldsetToJspMap.put("samples","SamplePatientSampleSection.jsp");
     fieldsetToJspMap.put("order","SampleOrderInfoSection.jsp");
 	sampleId = request.getParameter("id");
-	String activeTab = request.getParameter("activeTab");
 %>
 
 <script type="text/javascript" src="<%=basePath%>scripts/utilities.js?ver=<%= Versioning.getBuildNumber() %>" ></script>
@@ -511,7 +510,6 @@ function capitalizeValue( text){
 
 <bean:define id="orderTypeList"  name='<%=formName%>' property="orderTypes" type="java.util.Collection"/>
 <html:hidden property="currentDate" name="<%=formName%>" styleId="currentDate"/>
-<html:hidden property="activeTab" name="activeTab" value="<%=activeTab%>"/>
 <html:hidden property="domain" name="<%=formName%>" value="<%=genericDomain%>" styleId="domain"/>
 <html:hidden property="removedSampleItem" value="" styleId="removedSampleItem"/>
 <html:hidden property="newRequesterName" name='<%=formName %>' styleId="newRequesterName" />

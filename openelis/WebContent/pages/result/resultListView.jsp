@@ -77,7 +77,6 @@
 	basePath = path + "/";
 
 	searchTerm = request.getParameter("searchTerm");
-	String activeTab = request.getParameter("activeTab");
 
 	accessionNumberValidator = new AccessionNumberValidatorFactory().getValidator();
 	useSTNumber = FormFields.getInstance().useField(Field.StNumber);
@@ -281,10 +280,14 @@ function /*void*/ handleReferralCheckChange(checkbox){
     }
 }
 
-function /*void*/ handleReferralReasonChange(select,  index ){
-	if( select.value == 0 ){
+function /*void*/ handleReferralReasonAndInstituteChange(index ){
+    var organizationSelect = $( "referralOrganizationId_" + index );
+    var reasonSelectSelect = $( "referralReasonId_" + index );
+
+	if( reasonSelectSelect.value == 0 && organizationSelect.value == 0){
 		$( "referralId_" + index ).checked = false;
-		select.disabled = true;
+		organizationSelect.disabled = true;
+		reasonSelectSelect.disabled = true;
 	}
 }
 
@@ -416,7 +419,6 @@ function /*void*/ processTestReflexCD4Success(xhr)
 <logic:notEmpty name="<%=formName%>" property="logbookType" >
 	<html:hidden name="<%=formName%>" property="logbookType" />
 </logic:notEmpty>
-<html:hidden property="activeTab" name="activeTab" value="<%=activeTab%>"/>
 
 <logic:notEqual name="testCount" value="0">
 <logic:equal name="<%=formName%>" property="displayTestKit" value="true">
@@ -890,8 +892,8 @@ function /*void*/ processTestReflexCD4Success(xhr)
 			<select name="<%="testResult[" + index + "].referralReasonId" %>"
 			        id='<%="referralReasonId_" + index%>'
                     class="referralReason"
-					onchange='<%="markUpdated(" + index + "); handleReferralReasonChange( this, " + index + ")" %>'
-                    <%= (testResult.isReferredOut() && "0".equals(testResult.getReferralReasonId())) ? "" : "disabled='disabled'" %> >
+					onchange='<%="markUpdated(" + index + "); handleReferralReasonAndInstituteChange(" + index + ")" %>'
+                    <%= (testResult.isReferredOut() && ("0".equals(testResult.getReferralReasonId()) || "0".equals(testResult.getReferralOrganizationId()))) ? "" : "disabled='disabled'" %> >
                 <option value='0' >
                     <logic:equal name="testResult" property="referralCanceled" value="true"  >
                         <bean:message key="referral.canceled" />
@@ -910,8 +912,8 @@ function /*void*/ processTestReflexCD4Success(xhr)
 			<select name="<%="testResult[" + index + "].referralOrganizationId" %>"
 					id='<%="referralOrganizationId_" + index%>'
 					class="referralOrganization"
-					onchange='<%="markUpdated(" + index + "); handleReferralReasonChange( this, " + index + ")" %>'
-					<%= (testResult.isReferredOut() && "0".equals(testResult.getReferralReasonId())) ? "" : "disabled='disabled'" %> >
+					onchange='<%="markUpdated(" + index + "); handleReferralReasonAndInstituteChange(" + index + ")" %>'
+					<%= (testResult.isReferredOut() && ("0".equals(testResult.getReferralReasonId()) || "0".equals(testResult.getReferralOrganizationId()))) ? "" : "disabled='disabled'" %> >
                     <logic:equal name="testResult" property="referralCanceled" value="true"  >
                         <bean:message key="referral.canceled" />
                     </logic:equal>
