@@ -48,7 +48,6 @@
 	currentAccessionNumber="";
 	accessionNumberValidator = new AccessionNumberValidatorFactory().getValidator();
 	searchTerm = request.getParameter("searchTerm");
-	String activeTab = request.getParameter("activeTab");
 
 %>
 <script type="text/javascript" src="<%=basePath%>scripts/math-extend.js?ver=<%= Versioning.getBuildNumber() %>" ></script>
@@ -332,7 +331,6 @@ function enableOnlyForRemark(index, resultType, isReferredOut) {
 </div>
 </logic:notEqual>
 </div>
-<html:hidden property="activeTab" name="activeTab" value="<%=activeTab%>"/>
 <html:hidden name="<%=formName%>"  property="testSection" value="<%=testSection%>" />
 <html:hidden name="<%=formName%>"  property="testName" value="<%=testName%>" />
 <%
