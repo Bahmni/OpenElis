@@ -188,7 +188,9 @@ public class OrderListDAOImpl implements OrderListDAO {
                             accessionResultSet.getInt("pending_tests_count"),
                             accessionResultSet.getInt("pending_validation_count"),
                             accessionResultSet.getInt("total_test_count"),
-                            accessionResultSet.getDate("collection_date"));
+                            accessionResultSet.getDate("collection_date"),
+                            accessionResultSet.getDate("entered_date")
+        );
     }
 
     private String getCompletedStatus() {
@@ -234,6 +236,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "sample.uuid AS uuid, \n" +
                 "sample.id AS id, \n" +
                 "sample.collection_date AS collection_date, \n" +
+                "sample.entered_date AS entered_date, \n" +
                 "person.first_name AS first_name, \n" +
                 "person.middle_name AS middle_name, \n" +
                 "person.last_name AS last_name, \n" +
@@ -267,6 +270,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "sample.uuid AS uuid, \n" +
                 "sample.id AS id, \n" +
                 "sample.collection_date AS collection_date, \n" +
+                "sample.entered_date AS entered_date, \n" +
                 "person.first_name AS first_name, \n" +
                 "person.middle_name AS middle_name, \n" +
                 "person.last_name AS last_name, \n" +
