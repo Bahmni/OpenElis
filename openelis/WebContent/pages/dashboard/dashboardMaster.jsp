@@ -174,7 +174,7 @@ basePath = path + "/";
             awaitingValidationCount: todayOrderList.filter(function(order){ return order.pendingTestCount == 0 && order.pendingValidationCount > 0 }).length,
             completedTestCount: todayOrderList.filter(function(order){ return order.isCompleted }).length,
             totalSamplesCount: todayOrderList.length + todaySampleNotCollectedList.length,
-            totalCollectedTodayCount: todayOrderList.filter(function(order){ return isToday(new Date(order.collectionDate)) }).length,
+            totalCollectedTodayCount: todayOrderList.filter(function(order){ return isToday(new Date(order.enteredDate)) }).length,
             samplesToCollect: todaySampleNotCollectedList.length,
             samplesCollected: todayOrderList.length
         }

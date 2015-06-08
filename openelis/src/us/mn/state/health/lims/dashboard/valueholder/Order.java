@@ -36,12 +36,13 @@ public class Order {
     private Date collectionDate;
     private boolean isPrinted;
     private boolean isCompleted;
+    private Date enteredDate;
 
     public Order() {
     }
 
     public Order(String accessionNumber, String uuid, String orderId, String stNumber, String firstName, String middleName, String lastName, String source, boolean isCompleted, boolean isPrinted,
-                 int pendingTestCount, int pendingValidationCount, int totalTestCount, Date collectionDate) {
+                 int pendingTestCount, int pendingValidationCount, int totalTestCount, Date collectionDate,Date enteredDate) {
         this.accessionNumber = accessionNumber;
         this.uuid = uuid;
         this.orderId = orderId;
@@ -56,6 +57,7 @@ public class Order {
         this.pendingValidationCount = pendingValidationCount;
         this.totalTestCount = totalTestCount;
         this.collectionDate = collectionDate;
+        this.enteredDate = enteredDate;
     }
 
     public String getAccessionNumber() {
@@ -146,6 +148,15 @@ public class Order {
         return orderId;
     }
 
+    @JsonSerialize(using = JsonTimeSerializer.class)
+    public Date getEnteredDate() {
+        return enteredDate;
+    }
+
+    public void setEnteredDate(Date enteredDate) {
+        this.enteredDate = enteredDate;
+    }
+
     public void setOrderId(String orderId) {
         this.orderId = orderId;
     }
@@ -171,6 +182,8 @@ public class Order {
             return false;
         if (collectionDate != null ? !collectionDate.equals(order.collectionDate) : order.collectionDate != null)
             return false;
+        if (enteredDate != null ? !enteredDate.equals(order.enteredDate) : order.enteredDate != null)
+            return false;
         if (firstName != null ? !firstName.equals(order.firstName) : order.firstName != null) return false;
         if (lastName != null ? !lastName.equals(order.lastName) : order.lastName != null) return false;
         if (middleName != null ? !middleName.equals(order.middleName) : order.middleName != null) return false;
@@ -192,6 +205,7 @@ public class Order {
         result = 31 * result + pendingValidationCount;
         result = 31 * result + totalTestCount;
         result = 31 * result + (collectionDate != null ? collectionDate.hashCode() : 0);
+        result = 31 * result + (enteredDate != null ? enteredDate.hashCode() : 0);
         result = 31 * result + (isPrinted ? 1 : 0);
         result = 31 * result + (isCompleted ? 1 : 0);
         return result;
