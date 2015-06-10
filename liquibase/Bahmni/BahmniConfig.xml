@@ -1348,5 +1348,28 @@
         </sql>
     </changeSet>
 
+    <changeSet id="108" author="Sudhakar, Abishek" context="bahmni" runOnChange="true">
+        <addColumn tableName="failed_events" schemaName="clinlims" >
+            <column name="retries" type="int"/>
+        </addColumn>
+
+        <addNotNullConstraint columnDataType="int"
+                              columnName="retries"
+                              defaultNullValue="0"
+                              schemaName="clinlims"
+                              tableName="failed_events"/>
+
+        <createTable tableName="failed_event_retry_log" schemaName="clinlims">
+            <column name="id" type="serial">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="feed_uri" type="varchar(255)"/>
+            <column name="failed_at" type="timestamp"/>
+            <column name="error_message" type="varchar(4000)"/>
+            <column name="event_id" type="varchar(255)"/>
+            <column name="event_content" type="varchar(4000)"/>
+            <column name="error_hash_code" type="int"/>
+        </createTable>
+    </changeSet>
 
 </databaseChangeLog>
