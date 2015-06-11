@@ -36,7 +36,6 @@ import org.w3c.dom.NodeList;
 
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
-import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 import us.mn.state.health.lims.common.util.validator.ActionError;
 import us.mn.state.health.lims.common.valueholder.tree.Tree;
 import us.mn.state.health.lims.common.valueholder.tree.TreeNode;
@@ -113,7 +112,7 @@ public abstract class BaseTreeAction extends BaseAction implements IActionConsta
 			request.setAttribute(PAGE_SUBTITLE_KEY, pageSubtitle);
 
 		// Set the form attributes
-		setFormAttributes(form, request);
+		setFormAttributes(form, request, mapping);
 
 		//check for account disabled
 		//bugzilla 2160
@@ -235,7 +234,7 @@ public abstract class BaseTreeAction extends BaseAction implements IActionConsta
 		return null;
 	}
 
-	protected void setFormAttributes(ActionForm form, HttpServletRequest request)
+	protected void setFormAttributes(ActionForm form, HttpServletRequest request, ActionMapping mapping)
 			throws Exception {
 		try {
 			if (null != form) {

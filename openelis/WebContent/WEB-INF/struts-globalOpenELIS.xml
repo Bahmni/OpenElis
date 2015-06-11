@@ -729,6 +729,10 @@
             <forward name="success" path="/LabDashboard.do"/>
         </action>
 
+        <action path="/CancelReferredOutTests" type="us.mn.state.health.lims.common.action.CommonCancelAction">
+            <forward name="success" path="/LabDashboard.do"/>
+        </action>
+
         <action path="/SampleConfirmationEntry"
                 name="SampleConfirmationEntryForm"
                 type="us.mn.state.health.lims.sample.action.SampleConfirmationEntryAction"

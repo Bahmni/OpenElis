@@ -58,8 +58,9 @@ public class PageIdentityUtil {
 		} else if (actionName.equals("QaEventsEntryAddQaEventsToTestsPopup")
 				|| actionName.equals("QaEventsEntryAddActionsToQaEventsPopup")) {
 			actionName = "QaEventsEntry";
+		}else if (actionName.startsWith("Cancel")){
+			actionName = actionName.substring(6);
 		}
-
 		actionName = actionName.endsWith("Menu") ? actionName.substring(0, actionName.length() - 4) : actionName;
 
         String parameter = request.getParameter(TYPE_PARAMETER);
@@ -71,7 +72,6 @@ public class PageIdentityUtil {
         if (!GenericValidator.isBlankOrNull(parameter)) {
             actionName += ":" + parameter;
         }
-
 		return actionName;
 	}
 
