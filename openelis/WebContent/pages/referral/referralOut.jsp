@@ -450,6 +450,12 @@ function showAllTests() {
     window.location = "ReferredOutTests.do";
 }
 
+function  /*void*/ setMyCancelAction(form, action, validate, parameters)
+{
+	//first turn off any further validation
+	setAction(window.document.forms[0], 'Cancel', 'no', '');
+}
+
 var referralPage = {
     <%
      if (request.getAttribute(IActionConstants.MENU_TOTAL_RECORDS) != null) {

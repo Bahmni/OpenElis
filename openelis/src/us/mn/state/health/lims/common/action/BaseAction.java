@@ -108,7 +108,7 @@ public abstract class BaseAction extends Action implements IActionConstants {
             request.setAttribute(PAGE_SUBTITLE_KEY, pageSubtitle);
 
         // Set the form attributes
-        setFormAttributes(form, request);
+        setFormAttributes(form, request, mapping);
 
         // check for account disabled
         // bugzilla 2160
@@ -266,7 +266,7 @@ public abstract class BaseAction extends Action implements IActionConstants {
         return ResourceLocator.getInstance().getMessageResources().getMessage(locale, messageKey, arg0);
     }
 
-    protected void setFormAttributes(ActionForm form, HttpServletRequest request) throws Exception {
+    protected void setFormAttributes(ActionForm form, HttpServletRequest request, ActionMapping mapping) throws Exception {
         try {
             if (null != form) {
                 DynaActionForm theForm = (DynaActionForm) form;
@@ -280,11 +280,22 @@ public abstract class BaseAction extends Action implements IActionConstants {
                 request.setAttribute(ACTION_KEY, actionName);
                 // bugzilla 2154
                 LogEvent.logInfo("BaseAction", "setFormAttributes()", actionName);
+            } else {
+                //In case of cancel action, there is no form assosiated.. so action will be null
+                request.setAttribute(ACTION_KEY, getActionName(mapping));
             }
         } catch (ClassCastException e) {
             // bugzilla 2154
             LogEvent.logError("BaseAction", "setFormAttributes()", e.toString());
             throw new ClassCastException("Error Casting form into DynaForm");
+        }
+    }
+
+    protected String getActionName(ActionMapping mapping) {
+        if (mapping.getPath().startsWith("/")) {
+            return mapping.getPath().substring(1);
+        } else {
+            return mapping.getPath();
         }
     }
 

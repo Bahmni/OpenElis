@@ -54,8 +54,8 @@ public class MasterListsPageAction extends BaseAction {
 		return mapping.findForward(forward);
 	}
 
-	protected void setFormAttributes(ActionForm form, HttpServletRequest request) throws Exception {
-		super.setFormAttributes(form, request);
+	protected void setFormAttributes(ActionForm form, HttpServletRequest request, ActionMapping mapping) throws Exception {
+		super.setFormAttributes(form, request, mapping);
 
 		request.setAttribute(ACTION_KEY, ACTION_NAME );
 	}
