@@ -253,56 +253,63 @@ public abstract class HaitiPatientReport extends Report {
         }
     }
 
-    public void initializeReport(BaseActionForm dynaForm) {
-        super.initializeReport();
-        errorFound = false;
-        lowerNumber = dynaForm.getString("accessionDirect");
-        upperNumber = dynaForm.getString("highAccessionDirect");
-        String patientNumber = dynaForm.getString("patientNumberDirect").toUpperCase();
+            public void initializeReport(BaseActionForm dynaForm) {
+                super.initializeReport();
+                errorFound = false;
+                lowerNumber = dynaForm.getString("accessionDirect");
+                upperNumber = dynaForm.getString("highAccessionDirect");
+                String patientNumber = dynaForm.getString("patientNumberDirect").toUpperCase();
 
-        handledOrders = new ArrayList<String>();
+                handledOrders = new ArrayList<String>();
 
-        createReportParameters();
+                createReportParameters();
 
-        boolean valid = false;
-        List<Sample> reportSampleList = new ArrayList<Sample>();
+                boolean valid = false;
+                List<Sample> reportSampleList = new ArrayList<Sample>();
+                List<Sample> sampleListWithLabNUmber = new ArrayList<Sample>();
 
-        if (GenericValidator.isBlankOrNull(lowerNumber) && GenericValidator.isBlankOrNull(upperNumber)) {
-            valid = findPatientByPatientNumber(patientNumber);
+                if (GenericValidator.isBlankOrNull(lowerNumber) && GenericValidator.isBlankOrNull(upperNumber)) {
+                    valid = findPatientByPatientNumber(patientNumber);
 
-            if (valid) {
-                reportSampleList = findReportSamplesForReportPatient();
+                    if (valid) {
+                        reportSampleList = findReportSamplesForReportPatient();
+                    }
+                } else {
+                    valid = validateAccessionNumbers();
+
+                    if (valid) {
+                        reportSampleList = findReportSamples(lowerNumber, upperNumber);
+                    }
+                }
+
+                sampleCompleteMap = new HashMap<String, Boolean>();
+                initializeReportItems();
+
+                    if (reportSampleList.isEmpty()) {
+                        add1LineErrorMessage("report.error.message.noPrintableItems");
+                        } else {
+                         for(Sample sample: reportSampleList){
+                             if(sample.getAccessionNumber() != null)
+                                 sampleListWithLabNUmber.add(sample);
+                         }
+                        if(sampleListWithLabNUmber.size() != 0) {
+                            for (Sample sample : sampleListWithLabNUmber) {
+                                currentSampleService = new SampleService(sample);
+                                handledOrders.add(sample.getId());
+                                reportSample = sample;
+                                sampleCompleteMap.put(sample.getAccessionNumber(), Boolean.TRUE);
+                                findCompleationDate();
+                                findPatientFromSample();
+                                findContactInfo();
+                                findPatientInfo();
+                                createReportItems();
+                            }
+                            postSampleBuild();
+                        }
+                        else
+                            add1LineErrorMessage("report.no.results");
+                        }
             }
-        } else {
-            valid = validateAccessionNumbers();
-
-            if (valid) {
-                reportSampleList = findReportSamples(lowerNumber, upperNumber);
-            }
-        }
-
-        sampleCompleteMap = new HashMap<String, Boolean>();
-        initializeReportItems();
-
-        if (reportSampleList.isEmpty()) {
-            add1LineErrorMessage("report.error.message.noPrintableItems");
-        } else {
-
-            for (Sample sample : reportSampleList) {
-                currentSampleService = new SampleService(sample);
-                handledOrders.add(sample.getId());
-                reportSample = sample;
-                sampleCompleteMap.put(sample.getAccessionNumber(), Boolean.TRUE);
-                findCompleationDate();
-                findPatientFromSample();
-                findContactInfo();
-                findPatientInfo();
-                createReportItems();
-            }
-
-            postSampleBuild();
-        }
-    }
 
     private void findCompleationDate() {
         Date date = currentSampleService.getCompletedDate();
