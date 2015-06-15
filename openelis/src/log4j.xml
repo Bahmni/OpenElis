@@ -16,20 +16,8 @@
         </layout>
     </appender>
 
-    <!-- TO DISABLE ALL LOGGING FOR ELIS ATOM FEEDS -->
-    <!--
-    <logger name="org.ict4h.atomfeed.client.service">
-        <level value="OFF"/>
-    </logger>
-
-    <logger name="org.bahmni.feed.openelis">
-        <level value="OFF"/>
-    </logger>
-    -->
-
     <root>
         <priority value="INFO"/>
-        <appender-ref ref="console"/>
         <appender-ref ref="file"/>
     </root>
 
