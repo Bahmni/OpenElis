@@ -1348,17 +1348,12 @@
         </sql>
     </changeSet>
 
-    <changeSet id="108" author="Sudhakar, Abishek" context="bahmni" runOnChange="true">
+    <changeSet id="108" author="Sudhakar, Abishek" context="bahmni">
         <addColumn tableName="failed_events" schemaName="clinlims" >
-            <column name="retries" type="int"/>
+            <column name="retries" type="int" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
         </addColumn>
-
-        <addNotNullConstraint columnDataType="int"
-                              columnName="retries"
-                              defaultNullValue="0"
-                              schemaName="clinlims"
-                              tableName="failed_events"/>
-
         <createTable tableName="failed_event_retry_log" schemaName="clinlims">
             <column name="id" type="serial">
                 <constraints nullable="false" primaryKey="true"/>
@@ -1371,5 +1366,4 @@
             <column name="error_hash_code" type="int"/>
         </createTable>
     </changeSet>
-
 </databaseChangeLog>
