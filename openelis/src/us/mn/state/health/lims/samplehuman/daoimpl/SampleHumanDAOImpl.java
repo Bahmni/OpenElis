@@ -231,4 +231,24 @@ public class SampleHumanDAOImpl extends BaseDAOImpl implements SampleHumanDAO {
 
 		return samples;
 	}
+
+	@SuppressWarnings("unchecked")
+	public List<Sample> getCollectedSamplesForPatient(String patientID) throws LIMSRuntimeException {
+
+		List<Sample> samples;
+
+		try {
+			String sql = "select sample from Sample as sample, SampleHuman as sampleHuman where sampleHuman.sampleId = sample.id and sampleHuman.patientId = :patientId and sample.accessionNumber is not null order by sample.id";
+			Query query = HibernateUtil.getSession().createQuery(sql);
+			query.setInteger("patientId", Integer.parseInt(patientID));
+			samples = query.list();
+			HibernateUtil.getSession().flush();
+			HibernateUtil.getSession().clear();
+		} catch (HibernateException he) {
+			LogEvent.logError("SampleHumanDAOImpl", "getSamplesForPatient()", he.toString());
+			throw new LIMSRuntimeException("Error in SampleHuman getSamplesForPatient()", he);
+		}
+
+		return samples;
+	}
 }
