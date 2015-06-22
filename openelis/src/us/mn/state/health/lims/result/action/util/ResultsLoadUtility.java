@@ -200,7 +200,7 @@ public class ResultsLoadUtility {
         activeKits = null;
         inventoryNeeded = false;
 
-        samples = sampleHumanDAO.getSamplesForPatient(patient.getId());
+        samples = sampleHumanDAO.getCollectedSamplesForPatient(patient.getId());
 
         return getGroupedTestsForSamples();
     }

@@ -342,7 +342,7 @@ public class AnalysisDAOImpl extends BaseDAOImpl implements AnalysisDAO {
 	public List getAllAnalysisByTestAndExcludedStatus(String testId, List<Integer> statusIdList) throws LIMSRuntimeException {
 		List list = new Vector();
 		try {
-			String sql = "from Analysis a where a.test = :testId and a.statusId not IN (:statusIdList) order by a.sampleItem.sample.accessionNumber";
+			String sql = "from Analysis a where a.test = :testId and a.statusId not IN (:statusIdList) and a.sampleItem.sample.accessionNumber is not null order by a.sampleItem.sample.accessionNumber";
 
 			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
 			query.setInteger("testId", Integer.parseInt(testId));
