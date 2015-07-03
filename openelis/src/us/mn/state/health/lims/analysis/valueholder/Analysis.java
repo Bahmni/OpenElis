@@ -43,6 +43,7 @@ public class Analysis extends BaseObject {
     private static final long serialVersionUID = 1L;
 
     private String id;
+    private String comment;
     private ValueHolderInterface sampleItem;
     private String analysisType;
     private ValueHolderInterface testSection;
@@ -533,4 +534,14 @@ public class Analysis extends BaseObject {
     public void setTest(Test test) {
         this.test = test;
     }
+
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
 }

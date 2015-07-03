@@ -24,6 +24,16 @@ public class OpenMRSOrder {
 
     private String uuid;
     private String orderType;
+
+    public String getCommentToFulfiller() {
+        return commentToFulfiller;
+    }
+
+    public void setCommentToFulfiller(String commentToFulfiller) {
+        this.commentToFulfiller = commentToFulfiller;
+    }
+
+    private String commentToFulfiller;
     private Boolean voided;
     private OpenMRSConcept concept;
 

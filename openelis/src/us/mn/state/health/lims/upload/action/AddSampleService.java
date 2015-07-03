@@ -16,6 +16,8 @@
 
 package us.mn.state.health.lims.upload.action;
 
+import org.bahmni.feed.openelis.feed.contract.SampleTestOrderCollection;
+import org.bahmni.feed.openelis.feed.contract.TestOrder;
 import us.mn.state.health.lims.address.daoimpl.OrganizationAddressDAOImpl;
 import us.mn.state.health.lims.address.valueholder.OrganizationAddress;
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
@@ -35,7 +37,6 @@ import us.mn.state.health.lims.project.valueholder.Project;
 import us.mn.state.health.lims.requester.dao.SampleRequesterDAO;
 import us.mn.state.health.lims.requester.daoimpl.SampleRequesterDAOImpl;
 import us.mn.state.health.lims.requester.valueholder.SampleRequester;
-import us.mn.state.health.lims.sample.bean.SampleTestCollection;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
 import us.mn.state.health.lims.sample.util.AnalysisBuilder;
@@ -50,7 +51,6 @@ import us.mn.state.health.lims.sampleproject.daoimpl.SampleProjectDAOImpl;
 import us.mn.state.health.lims.sampleproject.valueholder.SampleProject;
 import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
-import us.mn.state.health.lims.test.valueholder.Test;
 
 import java.util.List;
 
@@ -66,7 +66,7 @@ public class AddSampleService {
     public void persist(AnalysisBuilder analysisBuilder, boolean useInitialSampleCondition,
                         Organization newOrganization, SampleRequester requesterSite,
                         List<OrganizationAddress> orgAddressExtra,
-                        Sample sample, List<SampleTestCollection> sampleItemsTests,
+                        Sample sample, List<SampleTestOrderCollection> sampleItemsTests,
                         List<ObservationHistory> observations, SampleHuman sampleHuman,
                         String patientId, String projectId,
                         String providerId, String currentUserId,
@@ -99,7 +99,7 @@ public class AddSampleService {
     }
 
     private static void persistSampleData(AnalysisBuilder analysisBuilder, Sample sample, String projectId,
-                                          List<SampleTestCollection> sampleItemsTests,
+                                          List<SampleTestOrderCollection> sampleTestOrderCollectionList,
                                           SampleHuman sampleHuman, String patientId, String providerId, String currentUserId) {
         SampleDAO sampleDAO = new SampleDAOImpl();
         SampleHumanDAO sampleHumanDAO = new SampleHumanDAOImpl();
@@ -114,15 +114,15 @@ public class AddSampleService {
             persistSampleProject(projectId, sample, currentUserId);
         }
 
-        for (SampleTestCollection sampleTestPair : sampleItemsTests) {
+        for (SampleTestOrderCollection sampleTestOrderCollection : sampleTestOrderCollectionList) {
 
-            sampleItemDAO.insertData(sampleTestPair.item);
+            sampleItemDAO.insertData(sampleTestOrderCollection.item);
 
-            for (Test test : sampleTestPair.tests) {
+            for (TestOrder testOrder : sampleTestOrderCollection.tests) {
                 if (shouldLoadTests)
-                    testDAO.getData(test);
+                    testDAO.getData(testOrder.getTest());
 
-                Analysis analysis = analysisBuilder.populateAnalysis(analysisRevision, sampleTestPair, test);
+                Analysis analysis = analysisBuilder.populateAnalysis(analysisRevision, sampleTestOrderCollection, testOrder);
                 analysisDAO.insertData(analysis, false); // false--do not check
                 // for duplicates
             }
@@ -170,10 +170,10 @@ public class AddSampleService {
         }
     }
 
-    private static void persistInitialSampleConditions(List<SampleTestCollection> sampleItemsTests, String patientId, String currentUserId) {
+    private static void persistInitialSampleConditions(List<SampleTestOrderCollection> sampleItemsTests, String patientId, String currentUserId) {
         ObservationHistoryDAO ohDAO = new ObservationHistoryDAOImpl();
 
-        for (SampleTestCollection sampleTestCollection : sampleItemsTests) {
+        for (SampleTestOrderCollection sampleTestCollection : sampleItemsTests) {
             List<ObservationHistory> initialConditions = sampleTestCollection.initialSampleConditionIdList;
 
             if (initialConditions != null) {

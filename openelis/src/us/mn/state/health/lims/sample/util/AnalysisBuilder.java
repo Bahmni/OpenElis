@@ -17,6 +17,8 @@
 package us.mn.state.health.lims.sample.util;
 
 import org.apache.commons.validator.GenericValidator;
+import org.bahmni.feed.openelis.feed.contract.SampleTestOrderCollection;
+import org.bahmni.feed.openelis.feed.contract.TestOrder;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.panel.dao.PanelDAO;
@@ -41,6 +43,11 @@ public class AnalysisBuilder {
     private PanelDAO panelDAO = new PanelDAOImpl();
     private Map<String, Panel> panelIdPanelMap;
 
+    public Analysis populateAnalysis(String analysisRevision, SampleTestOrderCollection sampleTestCollection, TestOrder testOrder) {
+        Date collectionDateTime = DateUtil.convertStringDateTimeToSqlDate(sampleTestCollection.collectionDate);
+        return populateAnalysis(analysisRevision, sampleTestCollection.item, testOrder, sampleTestCollection.item.getSysUserId(), collectionDateTime);
+    }
+
     public Analysis populateAnalysis(String analysisRevision, SampleTestCollection sampleTestCollection, Test test) {
         Date collectionDateTime = DateUtil.convertStringDateTimeToSqlDate(sampleTestCollection.collectionDate);
         return populateAnalysis(analysisRevision, sampleTestCollection.item, test, sampleTestCollection.item.getSysUserId(), collectionDateTime);
@@ -60,7 +67,14 @@ public class AnalysisBuilder {
         analysis.setStartedDate(collectionDate);
         analysis.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.NotTested));
         analysis.setTestSection(test.getTestSection());
+
         return analysis;
+    }
+        public Analysis populateAnalysis(String analysisRevision, SampleItem sampleItem, TestOrder testOrder, String sysUserId, Date collectionDate) {
+        Test test = testOrder.getTest();
+            Analysis analysis = populateAnalysis(analysisRevision, sampleItem, test, sysUserId, collectionDate);
+            analysis.setComment(testOrder.getComment());
+            return analysis;
     }
 
     public void augmentPanelIdToPanelMap(String panelIDs) {
