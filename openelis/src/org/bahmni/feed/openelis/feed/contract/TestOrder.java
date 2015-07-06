@@ -29,4 +29,13 @@ public class TestOrder {
         this.comment = comment;
     }
 
+    public int hashCode() {
+        return test.hashCode();
+    }
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        TestOrder testOrder = (TestOrder) o;
+
+        return test.equals(((TestOrder) o).getTest());
+    }
 }

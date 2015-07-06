@@ -254,7 +254,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
     private void setCorrectPanelIdForUnchangedTests(Sample sample, String sysUserId, AnalysisBuilder analysisBuilder, TestOrderDiff testOrderDiff) {
         List<Analysis> analysesIntersection = analysisDAO.getAnalysesBySampleIdExcludedByStatusId(sample.getId(), getCancelledAnalysisStatusIds());
         for (Analysis analysis : analysesIntersection) {
-            if (testOrderDiff.getTestsIntersection().contains(analysis.getTest())) {
+            if (testOrderDiff.getTestsIntersection().contains(new TestOrder(analysis.getTest(),analysis.getComment()))) {
                 analysis.setPanel(analysisBuilder.getPanelForTest(analysis.getTest()));
                 analysis.setSysUserId(sysUserId);
                 analysisDAO.updateData(analysis);
@@ -264,8 +264,8 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
 
     private void cancelAnalysisForDeletedTests(Sample sample, String sysUserId, TestOrderDiff testOrderDiff) {
         List<Integer> toBeDeletedTestIds = new ArrayList<>();
-        for (Test test : testOrderDiff.getTestsDeleted()) {
-            toBeDeletedTestIds.add(Integer.parseInt(test.getId()));
+        for (TestOrder testOrder : testOrderDiff.getTestsDeleted()) {
+            toBeDeletedTestIds.add(Integer.parseInt(testOrder.getTest().getId()));
         }
         List<Analysis> analysisToBeCanceled = analysisDAO.getAnalysisBySampleAndTestIds(sample.getId(), toBeDeletedTestIds);
 
@@ -548,23 +548,23 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
             return newTests;
         }
 
-        private Set<Test> getTestsDeleted() {
-            Set<Test> existingTests = getPreviouslyOrderedTest();
+        private Set<TestOrder> getTestsDeleted() {
+            Set<TestOrder> existingTests = getPreviouslyOrderedTest();
             existingTests.removeAll(getNewlyOrderedTests());
             return existingTests;
         }
 
         private Set<TestOrder> getTestsIntersection() {
             Set<TestOrder> newTests = getNewlyOrderedTests();
-            Set<Test> existingTests = getPreviouslyOrderedTest();
+            Set<TestOrder> existingTests = getPreviouslyOrderedTest();
             newTests.retainAll(existingTests);
             return newTests;
         }
 
-        private Set<Test> getPreviouslyOrderedTest() {
-            Set<Test> existingTests = new HashSet<>();
+        private Set<TestOrder> getPreviouslyOrderedTest() {
+            Set<TestOrder> existingTests = new HashSet<>();
             for (Analysis analysis : existingAnalyses) {
-                existingTests.add(analysis.getTest());
+                existingTests.add(new TestOrder(analysis.getTest(),analysis.getComment()));
             }
             return existingTests;
         }
