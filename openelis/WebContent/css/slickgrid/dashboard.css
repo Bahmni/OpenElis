@@ -130,10 +130,10 @@ table td{
   border-top: none;
 }
 #tabs #todaySamplesCollectedListContainer{
-    width: 1189px;
+    width: 1280px;
 }
 #tabs #backlogSamplesCollectedListContainer{
-    width: 1069px;
+    width: 1160px;
 }
 #tabs #todaySamplesCollectedListContainer, #tabs #backlogSamplesCollectedListContainer{
   padding: 0;
