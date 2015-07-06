@@ -5,6 +5,7 @@ function createGrid(grid, dataView, orderObject, onRowSelection) {
         grid.setSelectionModel(new Slick.CellSelectionModel());
         grid.setSelectionModel(new Slick.RowSelectionModel());
         grid.registerPlugin(new Slick.CellExternalCopyManager());
+        grid.registerPlugin(new Slick.AutoTooltips({ enableForHeaderCells: true }));
 
         grid.onSort.subscribe(function(e, args){ // args: sort information.
            var field = args.sortCol.field;

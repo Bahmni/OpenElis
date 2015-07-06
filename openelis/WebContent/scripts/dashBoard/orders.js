@@ -111,7 +111,7 @@ function getColumnsForSampleNotCollected() {
             {id:"name", name:"Patient Name", field:"name", sortable:true, index:1, editor:Slick.Editors.Text, minWidth:160},
             {id:"source", name:"Source", field:"source", sortable:false, index:2, editor:Slick.Editors.Text, minWidth:160},
             {id:"totalTestCount", name:"Total", field:"totalTestCount", sortable:true, editor:Slick.Editors.Text, index:3, searchable:false, minWidth:70},
-            {id:"comment", name:"Comment", field:"comments", sortable:true, index:4, editor:Slick.Editors.Text, minWidth:160},
+            {id:"notes", name:"Notes", field:"comments", sortable:true, index:4, editor:Slick.Editors.Text, minWidth:160},
             {id:"link", name:"Action", field:"link", cssClass:"cell-title", formatter:formatter, index:5, editor:Slick.Editors.Text, searchable:false, minWidth:180}
         ];
 }
