@@ -189,7 +189,8 @@ public class OrderListDAOImpl implements OrderListDAO {
                             accessionResultSet.getInt("pending_validation_count"),
                             accessionResultSet.getInt("total_test_count"),
                             accessionResultSet.getDate("collection_date"),
-                            accessionResultSet.getDate("entered_date")
+                            accessionResultSet.getDate("entered_date"),
+                            accessionResultSet.getString("analysis_comments")
         );
     }
 
@@ -244,6 +245,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "sample_source.name AS sample_source, \n" +
                 "SUM(CASE WHEN  analysis.status_id IN (" + getPendingAnalysisStatus() + ") THEN 1 ELSE 0 END) as pending_tests_count,\n" +
                 "SUM(CASE WHEN  analysis.status_id IN ("+ getPendingValidationAnalysisStatus() + ") THEN 1 ELSE 0 END) as pending_validation_count,\n" +
+                "string_agg(analysis.comment, '|||') AS analysis_comments,\n" +
                 "COUNT(test.id) AS total_test_count,\n" +
                 "CASE WHEN document_track.report_generation_time is null THEN false ELSE true END as is_printed\n" +
                 "FROM Sample AS sample\n" +
@@ -278,6 +280,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "sample_source.name AS sample_source, \n" +
                 "SUM(CASE WHEN  analysis.status_id IN (" + getPendingAnalysisStatus() + ") THEN 1 ELSE 0 END) as pending_tests_count,\n" +
                 "SUM(CASE WHEN  analysis.status_id IN ("+ getPendingValidationAnalysisStatus() + ") THEN 1 ELSE 0 END) as pending_validation_count,\n" +
+                "string_agg(analysis.comment, '|||') AS analysis_comments,\n" +
                 "COUNT(test.id) AS total_test_count,\n" +
                 "CASE WHEN COUNT(analysis.id) = SUM(CASE WHEN  analysis.status_id IN (" +getCompletedStatus()+ ") THEN 1 ELSE 0 END) THEN true ELSE false END as is_completed,\n" +
                 "CASE WHEN document_track.report_generation_time is null THEN false ELSE true END as is_printed\n" +
