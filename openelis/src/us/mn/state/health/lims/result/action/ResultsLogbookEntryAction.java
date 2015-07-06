@@ -43,6 +43,7 @@ import us.mn.state.health.lims.common.util.ConfigurationProperties.Property;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.inventory.action.InventoryUtility;
 import us.mn.state.health.lims.inventory.form.InventoryKitItem;
+import us.mn.state.health.lims.organization.util.OrganizationUtils;
 import us.mn.state.health.lims.referral.util.ReferralUtil;
 import us.mn.state.health.lims.result.action.util.ResultsLoadUtility;
 import us.mn.state.health.lims.result.action.util.ResultsPaging;
@@ -73,6 +74,7 @@ public class ResultsLogbookEntryAction extends BaseAction {
         PropertyUtils.setProperty(dynaForm, "logbookType", type);
         PropertyUtils.setProperty(dynaForm, "referralReasons", ReferralUtil.getReferralReasons());
         PropertyUtils.setProperty(dynaForm, "displayTestMethod", true);
+        PropertyUtils.setProperty(dynaForm, "referralOrganizations", OrganizationUtils.getReferralOrganizations());
 
         testSectionName = getDecoded(type);
 
