@@ -19,8 +19,10 @@ package us.mn.state.health.lims.dashboard.daoimpl;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jfree.util.ShapeUtilities;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.util.DateUtil;
+import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.dashboard.dao.OrderListDAO;
 import us.mn.state.health.lims.dashboard.valueholder.Order;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
@@ -30,6 +32,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import static java.lang.Integer.parseInt;
@@ -39,6 +43,8 @@ import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.get
 public class OrderListDAOImpl implements OrderListDAO {
 
     private Logger logger = LogManager.getLogger(OrderListDAOImpl.class);
+
+    private static String COMMENT_SEPARATOR = "<~~>";
 
     public OrderListDAOImpl() {
     }
@@ -126,7 +132,7 @@ public class OrderListDAOImpl implements OrderListDAO {
     @Override
     public List<Order> getAllSampleNotCollectedPendingBeforeToday() {
         List<Order> orderList = new ArrayList<>();
-        String sqlForAllSampleNotCollectedPendingBeforeToday = createSqlStringForPendingOrders("sample.accession_number is null and analysis.status_id IN (" + getAllNonReferredAnalysisStatus() + ")","sample.lastupdated");
+        String sqlForAllSampleNotCollectedPendingBeforeToday = createSqlStringForPendingOrders("sample.accession_number is null and analysis.status_id IN (" + getAllNonReferredAnalysisStatus() + ")", "sample.lastupdated");
 
         ResultSet pendingAccessions = null;
         PreparedStatement preparedStatement = null;
@@ -175,6 +181,7 @@ public class OrderListDAOImpl implements OrderListDAO {
     }
 
     private Order createOrder(ResultSet accessionResultSet, boolean completed) throws SQLException {
+        String comments = getUniqueComments(accessionResultSet);
         return new Order(accessionResultSet.getString("accession_number"),
                             accessionResultSet.getString("uuid"),
                             accessionResultSet.getString("id"),
@@ -190,8 +197,19 @@ public class OrderListDAOImpl implements OrderListDAO {
                             accessionResultSet.getInt("total_test_count"),
                             accessionResultSet.getDate("collection_date"),
                             accessionResultSet.getDate("entered_date"),
-                            accessionResultSet.getString("analysis_comments")
+                            comments
         );
+    }
+
+    private String getUniqueComments(ResultSet accessionResultSet) throws SQLException {
+        String analysis_comments = accessionResultSet.getString("analysis_comments");
+        if(StringUtils.isNotBlank(analysis_comments)) {
+            String[] comments = analysis_comments.split(COMMENT_SEPARATOR);
+            String[] unique = new HashSet<String>(Arrays.asList(comments)).toArray(new String[0]);
+            return StringUtils.join(unique, ",");
+        }else{
+            return "";
+        }
     }
 
     private String getCompletedStatus() {
@@ -245,7 +263,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "sample_source.name AS sample_source, \n" +
                 "SUM(CASE WHEN  analysis.status_id IN (" + getPendingAnalysisStatus() + ") THEN 1 ELSE 0 END) as pending_tests_count,\n" +
                 "SUM(CASE WHEN  analysis.status_id IN ("+ getPendingValidationAnalysisStatus() + ") THEN 1 ELSE 0 END) as pending_validation_count,\n" +
-                "string_agg(analysis.comment, '|||') AS analysis_comments,\n" +
+                "string_agg(analysis.comment, '" + COMMENT_SEPARATOR + "') AS analysis_comments,\n" +
                 "COUNT(test.id) AS total_test_count,\n" +
                 "CASE WHEN document_track.report_generation_time is null THEN false ELSE true END as is_printed\n" +
                 "FROM Sample AS sample\n" +
@@ -280,7 +298,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "sample_source.name AS sample_source, \n" +
                 "SUM(CASE WHEN  analysis.status_id IN (" + getPendingAnalysisStatus() + ") THEN 1 ELSE 0 END) as pending_tests_count,\n" +
                 "SUM(CASE WHEN  analysis.status_id IN ("+ getPendingValidationAnalysisStatus() + ") THEN 1 ELSE 0 END) as pending_validation_count,\n" +
-                "string_agg(analysis.comment, '|||') AS analysis_comments,\n" +
+                "string_agg(analysis.comment, '" + COMMENT_SEPARATOR + "') AS analysis_comments,\n" +
                 "COUNT(test.id) AS total_test_count,\n" +
                 "CASE WHEN COUNT(analysis.id) = SUM(CASE WHEN  analysis.status_id IN (" +getCompletedStatus()+ ") THEN 1 ELSE 0 END) THEN true ELSE false END as is_completed,\n" +
                 "CASE WHEN document_track.report_generation_time is null THEN false ELSE true END as is_printed\n" +

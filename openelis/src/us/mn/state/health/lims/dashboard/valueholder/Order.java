@@ -150,6 +150,14 @@ public class Order {
         return orderId;
     }
 
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
     @JsonSerialize(using = JsonTimeSerializer.class)
     public Date getEnteredDate() {
         return enteredDate;
