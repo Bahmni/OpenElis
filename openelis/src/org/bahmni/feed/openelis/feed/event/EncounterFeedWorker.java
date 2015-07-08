@@ -246,6 +246,8 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
 
         addTestsToExistingSample(sample, sysUserId, nowAsSqlDate, analysisBuilder, testOrderDiff);
         cancelAnalysisForDeletedTests(sample, sysUserId, testOrderDiff);
+        updateAnalysisForNotDeletedTests(sample, sysUserId, testOrderDiff);
+
         if(sample!=null){
             setCorrectPanelIdForUnchangedTests(sample, sysUserId, analysisBuilder, testOrderDiff);
         }
@@ -263,19 +265,40 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
     }
 
     private void cancelAnalysisForDeletedTests(Sample sample, String sysUserId, TestOrderDiff testOrderDiff) {
-        List<Integer> toBeDeletedTestIds = new ArrayList<>();
+        //Perform Cancels
+        Map<Integer,TestOrder> commentsMapOfTestToBeDeleted = new HashMap<>();
+
         for (TestOrder testOrder : testOrderDiff.getTestsDeleted()) {
-            toBeDeletedTestIds.add(Integer.parseInt(testOrder.getTest().getId()));
+            commentsMapOfTestToBeDeleted.put(Integer.parseInt(testOrder.getTest().getId()), testOrder);
         }
-        List<Analysis> analysisToBeCanceled = analysisDAO.getAnalysisBySampleAndTestIds(sample.getId(), toBeDeletedTestIds);
+        List<Analysis> analysisToBeCanceled = analysisDAO.getAnalysisBySampleAndTestIds(sample.getId(), new ArrayList<Integer>(commentsMapOfTestToBeDeleted.keySet()));
 
         for (Analysis analysis : analysisToBeCanceled) {
             analysis.setSysUserId(sysUserId);
             analysis.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.Canceled));
+            analysis.setComment(commentsMapOfTestToBeDeleted.get(analysis.getTest().getId()).getComment());
             analysisDAO.updateData(analysis);
         }
 
         cleanUpDanglingItems(sample,sysUserId);
+
+    }
+
+    private void updateAnalysisForNotDeletedTests(Sample sample, String sysUserId, TestOrderDiff testOrderDiff) {
+        //Update comments for intersection
+        Map<Integer,TestOrder> commentsMapOfTestIntersection = new HashMap<>();
+
+        for (TestOrder testOrder : testOrderDiff.getTestsIntersection()) {
+            commentsMapOfTestIntersection.put(Integer.parseInt(testOrder.getTest().getId()), testOrder);
+        }
+
+        List<Analysis> analysisToBeUpdated = analysisDAO.getAnalysisBySampleAndTestIds(sample.getId(), new ArrayList<Integer>(commentsMapOfTestIntersection.keySet()));
+
+        for (Analysis analysis : analysisToBeUpdated) {
+            analysis.setSysUserId(sysUserId);
+            analysis.setComment(commentsMapOfTestIntersection.get(analysis.getTest().getId()).getComment());
+            analysisDAO.updateData(analysis);
+        }
     }
 
     private void cleanUpDanglingItems(Sample sample,String sysUserId) {
@@ -283,7 +306,6 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         excludedAnalysisStatusList.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.Canceled)));
 
         List<SampleItem> sampleItems = sampleItemDAO.getSampleItemsBySampleId(sample.getId());
-        List<SampleItem> cancelledItems = new ArrayList<>();
 
         for(SampleItem item: sampleItems){
             List<Analysis> analysisList = analysisDAO.getAnalysesBySampleItemsExcludingByStatusIds(item, excludedAnalysisStatusList);
@@ -291,7 +313,6 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
                 item.setSysUserId(sysUserId);
                 item.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.SampleStatus.Canceled));
                 sampleItemDAO.updateData(item);
-                cancelledItems.add(item);
             }
         }
     }

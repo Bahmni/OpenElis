@@ -12,8 +12,6 @@ import java.util.List;
 
 public class SampleTestOrderCollection {
 
-
-    //hiding tests in the base class.. bad can't help
     public List<TestOrder> tests;
     public SampleItem item;
     public String collectionDate;

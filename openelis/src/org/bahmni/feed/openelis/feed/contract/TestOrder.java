@@ -34,8 +34,6 @@ public class TestOrder {
     }
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        TestOrder testOrder = (TestOrder) o;
-
-        return test.equals(((TestOrder) o).getTest());
+        return this.test.equals(((TestOrder) o).getTest());
     }
 }

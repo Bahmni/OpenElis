@@ -15,6 +15,7 @@
 */
 package us.mn.state.health.lims.test.valueholder;
 
+import org.hibernate.proxy.HibernateProxy;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
@@ -100,9 +101,9 @@ public class Test extends EnumValueItemImpl {
 	private String sortOrder;
 
 	private String localAbbrev;
-	
+
 	private Boolean orderable;
-	
+
 	public String getSortOrder() {
 		return sortOrder;
 	}
@@ -461,11 +462,21 @@ public class Test extends EnumValueItemImpl {
 		this.orderable = orderable;
 	}
 
+    public Test unwrap(Object proxy) {
+        if (proxy instanceof HibernateProxy) {
+            return  (Test) ((HibernateProxy) proxy).getHibernateLazyInitializer()
+                    .getImplementation();
+
+        } else {
+            return (Test)proxy;
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
+        o = unwrap(o);
         Test test = (Test) o;
 
         if (activeBeginDate != null ? !activeBeginDate.equals(test.activeBeginDate) : test.activeBeginDate != null)
