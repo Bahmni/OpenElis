@@ -234,7 +234,7 @@ public class EncounterFeedWorkerIT extends IT {
 
         Sample sample = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId()).get(0);
         List<SampleItem> sampleItems = new SampleItemDAOImpl().getSampleItemsBySampleId(sample.getId());
-        assertEquals(1,sampleItems.size());
+        assertEquals(1, sampleItems.size());
 
         SampleItem sampleItemForBlood = getSampleItemForSampleType(bloodSample, sampleItems);
         List<Analysis> analysisListForBlood = new AnalysisDAOImpl().getAnalysesBySampleItem(sampleItemForBlood);
@@ -300,7 +300,7 @@ public class EncounterFeedWorkerIT extends IT {
 
         sample = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId()).get(0);
         sampleItems = new SampleItemDAOImpl().getSampleItemsBySampleId(sample.getId());
-        assertEquals(2,sampleItems.size());
+        assertEquals(2, sampleItems.size());
 
         String analysisCancelStatus = StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.Canceled);
         HashSet<Integer> cancelledStatusIds = new HashSet<>(Arrays.asList(Integer.parseInt(analysisCancelStatus)));
@@ -569,6 +569,9 @@ public class EncounterFeedWorkerIT extends IT {
         for (OpenMRSConcept openmrsConcept : openmrsConcepts) {
             String orderUUID = UUID.randomUUID().toString();
             OpenMRSOrder openMRSOrder = new OpenMRSOrder(orderUUID, openMRSOrderType, openmrsConcept, voided);
+            if(voided){
+                openMRSOrder.setDateStopped(new Date());
+            }
             openMRSOrders.add(openMRSOrder);
         }
         return openMRSOrders;
