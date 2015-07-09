@@ -30,10 +30,13 @@ public class TestOrder {
     }
 
     public int hashCode() {
-        return test.hashCode();
+        return 31 * test.hashCode() + (comment != null ? comment.hashCode() : 0);
     }
     public boolean equals(Object o) {
+        TestOrder testOrder = (TestOrder) o;
         if (o == null || getClass() != o.getClass()) return false;
-        return this.test.equals(((TestOrder) o).getTest());
+        if (getComment() != null ? !getComment().equals(testOrder.getComment()) : testOrder.getComment() != null)
+            return false;
+        return this.test.equals(testOrder.getTest());
     }
 }

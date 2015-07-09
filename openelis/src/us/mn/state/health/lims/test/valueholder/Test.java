@@ -475,8 +475,8 @@ public class Test extends EnumValueItemImpl {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        o = unwrap(o);
+		o = unwrap(o);
+		if (o == null || getClass() != o.getClass()) return false;
         Test test = (Test) o;
 
         if (activeBeginDate != null ? !activeBeginDate.equals(test.activeBeginDate) : test.activeBeginDate != null)

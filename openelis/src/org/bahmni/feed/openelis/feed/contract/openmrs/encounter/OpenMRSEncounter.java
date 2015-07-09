@@ -16,6 +16,8 @@
 
 package org.bahmni.feed.openelis.feed.contract.openmrs.encounter;
 
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 import java.util.ArrayList;
@@ -66,7 +68,7 @@ public class OpenMRSEncounter {
     public List<OpenMRSOrder> getLabOrders() {
         List<OpenMRSOrder> labOrders = new ArrayList<>();
         for (OpenMRSOrder openMRSOrder : testOrders) {
-            if (openMRSOrder.isLabOrder() && !openMRSOrder.isVoided())
+            if (openMRSOrder.isLabOrder() && openMRSOrder.getDateStopped()==null && !"DISCONTINUE".equals(openMRSOrder.getAction()))
                 labOrders.add(openMRSOrder);
         }
         return labOrders;
