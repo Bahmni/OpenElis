@@ -54,6 +54,7 @@ basePath = path + "/";
 <script type="text/javascript" src="<%=basePath%>scripts/ui/jquery.ui.tabs.js"></script>
 <script type="text/javascript" src="<%=basePath%>scripts/dashBoard/orders.js"></script>
 <script type="text/javascript" src="<%=basePath%>scripts/dashBoard/createGrid.js"></script>
+<script type="text/javascript" src="<%=basePath%>scripts/slickgrid/slick.autotooltips.js"></script>
 <script type="text/javascript" src="<%=basePath%>scripts/utils.js"></script>
 
   

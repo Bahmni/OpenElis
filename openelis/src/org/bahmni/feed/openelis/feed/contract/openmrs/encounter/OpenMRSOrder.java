@@ -18,12 +18,27 @@ package org.bahmni.feed.openelis.feed.contract.openmrs.encounter;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
+import java.util.Date;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OpenMRSOrder {
     public static final String LAB_ORDER_TYPE = "Lab Order";
 
     private String uuid;
     private String orderType;
+
+    public String getCommentToFulfiller() {
+        return commentToFulfiller;
+    }
+
+    public void setCommentToFulfiller(String commentToFulfiller) {
+        this.commentToFulfiller = commentToFulfiller;
+    }
+
+    private String commentToFulfiller;
+    private String action;
+    private Date dateStopped;
+
     private Boolean voided;
     private OpenMRSConcept concept;
 
@@ -83,5 +98,21 @@ public class OpenMRSOrder {
         if (!isLabOrder())
             return null;
         return concept.getUuid();
+    }
+
+    public Date getDateStopped() {
+        return dateStopped;
+    }
+
+    public void setDateStopped(Date dateStopped) {
+        this.dateStopped = dateStopped;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
     }
 }

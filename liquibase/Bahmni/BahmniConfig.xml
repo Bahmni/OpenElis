@@ -1366,4 +1366,12 @@
             <column name="error_hash_code" type="int"/>
         </createTable>
     </changeSet>
+
+    <changeSet id="109" author="Shan, Sandeep" context="bahmni">
+        <addColumn tableName="analysis" schemaName="clinlims">
+            <column name="comment" type="varchar(1024)"  >
+                <constraints nullable="true"></constraints>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

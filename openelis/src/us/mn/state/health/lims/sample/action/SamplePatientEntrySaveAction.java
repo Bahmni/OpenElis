@@ -19,6 +19,7 @@ package us.mn.state.health.lims.sample.action;
 
 import org.apache.struts.Globals;
 import org.apache.struts.action.*;
+import org.bahmni.feed.openelis.feed.contract.SampleTestOrderCollection;
 import org.bahmni.feed.openelis.feed.service.EventPublishers;
 import org.bahmni.feed.openelis.feed.service.impl.OpenElisUrlPublisher;
 import org.dom4j.Document;
@@ -85,7 +86,6 @@ import us.mn.state.health.lims.upload.action.AddSampleService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Timestamp;
 import java.util.*;
 
 import static org.apache.commons.validator.GenericValidator.isBlankOrNull;
@@ -246,7 +246,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 
             AddSampleService addSampleService = new AddSampleService(true);
             addSampleService.persist(analysisBuilder, useInitialSampleCondition, newOrganization, requesterSite,
-                    orgAddressExtra, sample, sampleItemsTests, observations, sampleHuman, patientId,
+                    orgAddressExtra, sample, getTestOrderList(sampleItemsTests), observations, sampleHuman, patientId,
                     null, providerId, currentUserId,
                     PROVIDER_REQUESTER_TYPE_ID, REFERRING_ORG_TYPE_ID);
 			if(!StringUtil.isNullorNill(sample.getAccessionNumber())) {
@@ -276,6 +276,13 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 		return mapping.findForward(forward);
 	}
 
+	private List<SampleTestOrderCollection> getTestOrderList(List<SampleTestCollection> sampleTestCollectionList) {
+		List<SampleTestOrderCollection> list = new ArrayList<>();
+		for (SampleTestCollection sampleTestCollection : sampleTestCollectionList) {
+			list.add(SampleTestOrderCollection.getTestOrderCollectionFrom(sampleTestCollection));
+		}
+		return list;
+	}
 
     private ActionForward addErrorMessageAndForward(ActionMapping mapping, HttpServletRequest request, ActionError error) {
         ActionMessages errors = new ActionMessages();

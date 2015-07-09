@@ -37,12 +37,13 @@ public class Order {
     private boolean isPrinted;
     private boolean isCompleted;
     private Date enteredDate;
+    private String comments;
 
     public Order() {
     }
 
     public Order(String accessionNumber, String uuid, String orderId, String stNumber, String firstName, String middleName, String lastName, String source, boolean isCompleted, boolean isPrinted,
-                 int pendingTestCount, int pendingValidationCount, int totalTestCount, Date collectionDate,Date enteredDate) {
+                 int pendingTestCount, int pendingValidationCount, int totalTestCount, Date collectionDate,Date enteredDate, String comments) {
         this.accessionNumber = accessionNumber;
         this.uuid = uuid;
         this.orderId = orderId;
@@ -58,6 +59,7 @@ public class Order {
         this.totalTestCount = totalTestCount;
         this.collectionDate = collectionDate;
         this.enteredDate = enteredDate;
+        this.comments = comments;
     }
 
     public String getAccessionNumber() {
@@ -146,6 +148,14 @@ public class Order {
 
     public String getOrderId() {
         return orderId;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
     }
 
     @JsonSerialize(using = JsonTimeSerializer.class)
