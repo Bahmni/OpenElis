@@ -30,13 +30,19 @@ public class TestOrder {
     }
 
     public int hashCode() {
-        return 31 * test.hashCode() + (comment != null ? comment.hashCode() : 0);
+        int result = this.test.getId() != null ? this.test.getId().hashCode() : 0;
+        result = 31 * result + this.test.getTestName().hashCode();
+        return result;
     }
+
     public boolean equals(Object o) {
         TestOrder testOrder = (TestOrder) o;
+        Test newTest = testOrder.getTest();
         if (o == null || getClass() != o.getClass()) return false;
-        if (getComment() != null ? !getComment().equals(testOrder.getComment()) : testOrder.getComment() != null)
-            return false;
-        return this.test.equals(testOrder.getTest());
+//        if (getComment() != null ? !getComment().equals(testOrder.getComment()) : testOrder.getComment() != null)
+//            return false;
+        if (this.test.getId() != null ? !this.test.getId().equals(newTest.getId()) : newTest.getId() != null) return false;
+        if (this.test.getTestName() != null ? !this.test.getTestName().equals(newTest.getTestName()) : newTest.getTestName() != null) return false;
+        return true;
     }
 }
