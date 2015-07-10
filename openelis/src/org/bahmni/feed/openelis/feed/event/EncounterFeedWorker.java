@@ -246,11 +246,31 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
 
         addTestsToExistingSample(sample, sysUserId, nowAsSqlDate, analysisBuilder, testOrderDiff);
         cancelAnalysisForDeletedTests(sample, sysUserId, testOrderDiff);
-
+        updateAnalysisForNotDeletedTests(sample, sysUserId, testOrderDiff);
         if(sample!=null){
             setCorrectPanelIdForUnchangedTests(sample, sysUserId, analysisBuilder, testOrderDiff);
         }
     }
+
+    private void updateAnalysisForNotDeletedTests(Sample sample, String sysUserId, TestOrderDiff testOrderDiff) {
+        //Update comments for intersection
+        Map<Integer, TestOrder> commentsMapOfTestIntersection = new HashMap<>();
+
+        for (TestOrder testOrder : testOrderDiff.getTestsIntersection()) {
+            commentsMapOfTestIntersection.put(Integer.parseInt(testOrder.getTest().getId()), testOrder);
+
+        }
+
+        List<Analysis> analysisToBeUpdated = analysisDAO.getAnalysisBySampleAndTestIds(sample.getId(), new ArrayList<Integer>(commentsMapOfTestIntersection.keySet()));
+
+        for (Analysis analysis : analysisToBeUpdated) {
+            analysis.setSysUserId(sysUserId);
+            analysis.setComment(commentsMapOfTestIntersection.get(Integer.valueOf(analysis.getTest().getId())).getComment());
+            analysisDAO.updateData(analysis);
+
+        }
+    }
+
 
     private void setCorrectPanelIdForUnchangedTests(Sample sample, String sysUserId, AnalysisBuilder analysisBuilder, TestOrderDiff testOrderDiff) {
         List<Analysis> analysesIntersection = analysisDAO.getAnalysesBySampleIdExcludedByStatusId(sample.getId(), getCancelledAnalysisStatusIds());
