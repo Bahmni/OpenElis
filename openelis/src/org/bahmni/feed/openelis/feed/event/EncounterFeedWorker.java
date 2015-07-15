@@ -215,7 +215,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
     private void createSample(OpenMRSEncounter openMRSEncounter, FeedProcessState processState, String sysUserId) {
         //A new sample can be created when the sample associated to this encounter is already collected.
         filterNewTestsAdded(openMRSEncounter, sysUserId);
-        if(!openMRSEncounter.hasLabOrder()){
+        if(!openMRSEncounter.hasLabOrder() || isEmpty(openMRSEncounter.getLabOrders())){
             return;
         }
 
@@ -240,6 +240,10 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
                 sampleTestOrderCollectionList, new ArrayList<ObservationHistory>(), sampleHuman,
                 patient.getId(), null, requesterId, sysUserId,
                 getProviderRequesterTypeId(), getReferringOrgTypeId());
+    }
+
+    private boolean isEmpty(List<OpenMRSOrder> labOrders) {
+        return labOrders==null || labOrders.size()==0 ;
     }
 
     private void updateSample(OpenMRSEncounter openMRSEncounter, Sample sample, FeedProcessState processState, String sysUserId) {
