@@ -494,14 +494,19 @@ public class EncounterFeedWorkerIT extends IT {
 
         //The lab assistant has collected the sample.
         collectSamplesForPatient(patient.getId(), SystemConfiguration.getInstance().getSampleStatusEntry2Complete());
-
+        setStopDate(openMRSEncounter.getLabOrders().get(0));
         //Try to sync the same Panel once again.  It should not create a new panel.
+
         addNewOrders(openMRSEncounter, Arrays.asList(openMRSAneamiaConcept));  // tests for blood and urine sample type
         encounterFeedWorker.process(openMRSEncounter);
 
         List<Sample> samples = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId());
         assertEquals(1, samples.size());
 
+    }
+
+    private void setStopDate(OpenMRSOrder openMRSOrder) {
+        openMRSOrder.setDateStopped(new Date());
     }
 
     private void collectSamplesForPatient(String patientId, String status) {
