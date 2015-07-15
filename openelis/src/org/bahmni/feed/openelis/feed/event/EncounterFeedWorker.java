@@ -163,14 +163,15 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         logInfo(openMRSEncounter);
         FeedProcessState processState = new FeedProcessState();
         Sample sample = sampleDAO.getSampleByUuidAndWithoutAccessionNumber(openMRSEncounter.getEncounterUuid());
+        String sysUserId = auditingService.getSysUserId();
         if (sample != null) {
-            updateSample(openMRSEncounter, sample, processState);
+            updateSample(openMRSEncounter, sample, processState,sysUserId);
         } else {
-            createSample(openMRSEncounter, processState);
+            createSample(openMRSEncounter, processState,sysUserId);
         }
     }
 
-    private void filterNewTestsAdded(OpenMRSEncounter openMRSEncounter) {
+    private void filterNewTestsAdded(OpenMRSEncounter openMRSEncounter, String sysUserId) {
         //Pick only those samples which are collected.
         List<Sample> currentEncounterSamples = sampleDAO.getAllSamplesByUuidAndWithAccessionNumber(openMRSEncounter.getEncounterUuid());
 
@@ -181,33 +182,43 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         for (Sample sample : currentEncounterSamples) {
             currentEncounterAnalyses.addAll(analysisDAO.getAnalysesBySampleId(sample.getId()));
         }
-        for (OpenMRSOrder order : openMRSEncounter.getLabOrders()) {
-            if(isOrderAlreadyExisting(currentEncounterAnalyses, order))
-                openMRSEncounter.getTestOrders().remove(order);
-        }
+        updateCommentsAndRemoveTestOrders(currentEncounterAnalyses, openMRSEncounter, sysUserId);
     }
 
-    private boolean isOrderAlreadyExisting(List<Analysis> currentEncounterAnalyses, OpenMRSOrder order) {
-        for (Analysis existingAnalysis : currentEncounterAnalyses) {
-            if(order.getConcept().isSet() && existingAnalysis.getPanel()!=null && order.getLabTestName().equals(existingAnalysis.getPanel().getPanelName())){
-                return true;
+    private void updateCommentsAndRemoveTestOrders(List<Analysis> existingAnalysis, OpenMRSEncounter openMRSEncounter, String sysUserId) {
+        Set<OpenMRSOrder> ordersToRemove = new HashSet<OpenMRSOrder>();
+        for (Analysis analysis : existingAnalysis) {
+            boolean isPresent = false;
+            OpenMRSOrder currentOrder = null;
+            for (OpenMRSOrder order : openMRSEncounter.getLabOrders()) {
+                currentOrder = order;
+                if(order.getConcept().isSet() && analysis.getPanel()!=null && order.getLabTestName().equals(analysis.getPanel().getPanelName())){
+                    analysis.setComment(order.getCommentToFulfiller());
+                    isPresent = true;
+                    break;
+                }
+                else if (order.getLabTestName().equals(analysis.getTest().getTestName())) {
+                    analysis.setComment(order.getCommentToFulfiller());
+                    isPresent = true;
+                    break;
+                }
             }
-
-            if (order.getLabTestName().equals(existingAnalysis.getTest().getTestName())) {
-                return true;
+            if(isPresent){
+                analysis.setSysUserId(sysUserId);
+                analysisDAO.updateData(analysis);
+                ordersToRemove.add(currentOrder);
             }
         }
-        return false;
+        openMRSEncounter.getTestOrders().removeAll(ordersToRemove);
     }
 
-    private void createSample(OpenMRSEncounter openMRSEncounter, FeedProcessState processState) {
+    private void createSample(OpenMRSEncounter openMRSEncounter, FeedProcessState processState, String sysUserId) {
         //A new sample can be created when the sample associated to this encounter is already collected.
-        filterNewTestsAdded(openMRSEncounter);
+        filterNewTestsAdded(openMRSEncounter, sysUserId);
         if(!openMRSEncounter.hasLabOrder()){
             return;
         }
 
-        String sysUserId = auditingService.getSysUserId();
         Date nowAsSqlDate = DateUtil.getNowAsSqlDate();
 
         Patient patient = getPatient(openMRSEncounter.getPatientUuid());
@@ -231,11 +242,10 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
                 getProviderRequesterTypeId(), getReferringOrgTypeId());
     }
 
-    private void updateSample(OpenMRSEncounter openMRSEncounter, Sample sample, FeedProcessState processState) {
+    private void updateSample(OpenMRSEncounter openMRSEncounter, Sample sample, FeedProcessState processState, String sysUserId) {
         //Remove all those tests for which the sample has been collected already.
-        filterNewTestsAdded(openMRSEncounter);
+        filterNewTestsAdded(openMRSEncounter,sysUserId);
 
-        String sysUserId = auditingService.getSysUserId();
         Date nowAsSqlDate = DateUtil.getNowAsSqlDate();
 
         List<SampleTestOrderCollection> sampleTestOrderCollectionList = getSampleTestCollections(openMRSEncounter, sysUserId, nowAsSqlDate, sample, processState);
