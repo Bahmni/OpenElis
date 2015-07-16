@@ -209,7 +209,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
                 ordersToRemove.add(currentOrder);
             }
         }
-        openMRSEncounter.getTestOrders().removeAll(ordersToRemove);
+        openMRSEncounter.getOrders().removeAll(ordersToRemove);
     }
 
     private void createSample(OpenMRSEncounter openMRSEncounter, FeedProcessState processState, String sysUserId) {

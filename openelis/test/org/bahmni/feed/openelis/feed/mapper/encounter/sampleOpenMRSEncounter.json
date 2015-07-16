@@ -1,7 +1,7 @@
 {
     "encounterUuid": "7820b07d-50e9-4fed-b991-c38692b3d4ec",
     "patientUuid": "105059a8-5226-4b1f-b512-0d3ae685287d",
-    "testOrders": [
+    "orders": [
         {
             "uuid": "ac0819a9-11c1-4310-8f0a-feee71e5086b",
             "orderTypeUuid": "519ab361-9bc6-11e3-927e-8840ab96f0f1",
