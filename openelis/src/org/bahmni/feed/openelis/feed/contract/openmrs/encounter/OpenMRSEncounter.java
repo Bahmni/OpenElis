@@ -16,8 +16,6 @@
 
 package org.bahmni.feed.openelis.feed.contract.openmrs.encounter;
 
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 import java.util.ArrayList;
@@ -27,16 +25,16 @@ import java.util.List;
 public class OpenMRSEncounter {
     private String encounterUuid;
     private String patientUuid;
-    private List<OpenMRSOrder> testOrders = new ArrayList<>();
+    private List<OpenMRSOrder> orders = new ArrayList<>();
     private List<OpenMRSProvider> providers = new ArrayList<>();
 
     public OpenMRSEncounter() {
     }
 
-    public OpenMRSEncounter(String encounterUuid, String patientUuid, List<OpenMRSOrder> testOrders, List<OpenMRSProvider> providers) {
+    public OpenMRSEncounter(String encounterUuid, String patientUuid, List<OpenMRSOrder> orders, List<OpenMRSProvider> providers) {
 
         this.encounterUuid = encounterUuid;
-        this.testOrders = testOrders;
+        this.orders = orders;
         this.patientUuid = patientUuid;
         this.providers = providers;
     }
@@ -49,16 +47,16 @@ public class OpenMRSEncounter {
         return encounterUuid;
     }
 
-    public List<OpenMRSOrder> getTestOrders() {
-        return testOrders;
+    public List<OpenMRSOrder> getOrders() {
+        return orders;
     }
 
-    public void setTestOrders(List<OpenMRSOrder> orders) {
-        this.testOrders = orders;
+    public void setOrders(List<OpenMRSOrder> orders) {
+        this.orders = orders;
     }
 
     public boolean hasLabOrder() {
-        for (OpenMRSOrder openMRSOrder : testOrders) {
+        for (OpenMRSOrder openMRSOrder : orders) {
             if (openMRSOrder.isLabOrder())
                 return true;
         }
@@ -67,7 +65,7 @@ public class OpenMRSEncounter {
 
     public List<OpenMRSOrder> getLabOrders() {
         List<OpenMRSOrder> labOrders = new ArrayList<>();
-        for (OpenMRSOrder openMRSOrder : testOrders) {
+        for (OpenMRSOrder openMRSOrder : orders) {
             if (openMRSOrder.isLabOrder() && openMRSOrder.getDateStopped()==null && !"DISCONTINUE".equals(openMRSOrder.getAction()))
                 labOrders.add(openMRSOrder);
         }

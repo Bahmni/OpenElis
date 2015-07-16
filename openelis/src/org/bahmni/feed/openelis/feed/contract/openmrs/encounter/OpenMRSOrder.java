@@ -22,7 +22,7 @@ import java.util.Date;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OpenMRSOrder {
-    public static final String LAB_ORDER_TYPE = "Lab Order";
+    public static final String LAB_ORDER_TYPE = "Order";
 
     private String uuid;
     private String orderType;

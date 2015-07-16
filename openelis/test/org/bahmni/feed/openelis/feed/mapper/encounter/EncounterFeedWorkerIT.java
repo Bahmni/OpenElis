@@ -423,7 +423,7 @@ public class EncounterFeedWorkerIT extends IT {
         List<OpenMRSOrder> voidedOrders = createOpenMRSOrders(Arrays.asList(openMRSHaemoglobinConcept), labOrderType, true);
         List<OpenMRSOrder> nonVoidedOrders = createOpenMRSOrders(Arrays.asList(openMRSLoneConcept), labOrderType, false);
         OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, new ArrayList<OpenMRSConcept>());
-        openMRSEncounter.setTestOrders(Arrays.asList(voidedOrders.get(0), nonVoidedOrders.get(0)));
+        openMRSEncounter.setOrders(Arrays.asList(voidedOrders.get(0), nonVoidedOrders.get(0)));
 
         EncounterFeedWorker encounterFeedWorker = new EncounterFeedWorker(null, null);
         encounterFeedWorker.process(openMRSEncounter);
@@ -550,15 +550,15 @@ public class EncounterFeedWorkerIT extends IT {
     }
 
     private void addNewOrders(OpenMRSEncounter openMRSEncounter, List<OpenMRSConcept> concepts) {
-        List<OpenMRSOrder> orders = openMRSEncounter.getTestOrders();
+        List<OpenMRSOrder> orders = openMRSEncounter.getOrders();
         String labOrderType = orders.get(0).getOrderType();
         List<OpenMRSOrder> newOrders = createOpenMRSOrders(concepts, labOrderType);
         orders.addAll(newOrders);
-        openMRSEncounter.setTestOrders(orders);
+        openMRSEncounter.setOrders(orders);
     }
 
     private void deleteOrders(OpenMRSEncounter openMRSEncounter, List<OpenMRSConcept> concepts) {
-        List<OpenMRSOrder> orders = openMRSEncounter.getTestOrders();
+        List<OpenMRSOrder> orders = openMRSEncounter.getOrders();
         List<OpenMRSOrder> toBeRemovedOrders = new ArrayList<>();
         for (OpenMRSOrder order : orders) {
             if(concepts.contains(order.getConcept())) {
@@ -566,7 +566,7 @@ public class EncounterFeedWorkerIT extends IT {
             }
         }
         orders.removeAll(toBeRemovedOrders);
-        openMRSEncounter.setTestOrders(orders);
+        openMRSEncounter.setOrders(orders);
     }
 
     private List<OpenMRSOrder> createOpenMRSOrders(List<OpenMRSConcept> openmrsConcepts, String openMRSOrderType, Boolean voided) {

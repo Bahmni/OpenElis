@@ -33,7 +33,7 @@ public class OpenMRSEncounterTest {
         encounterOrders.add(labOrder);
 
         OpenMRSEncounter openMRSEncounter = new OpenMRSEncounter();
-        openMRSEncounter.setTestOrders(encounterOrders);
+        openMRSEncounter.setOrders(encounterOrders);
 
         Assert.assertTrue("Should return true. This encounter has a lab order", openMRSEncounter.hasLabOrder());
     }
@@ -47,7 +47,7 @@ public class OpenMRSEncounterTest {
         encounterOrders.add(nonLabOrder);
 
         OpenMRSEncounter openMRSEncounter = new OpenMRSEncounter();
-        openMRSEncounter.setTestOrders(encounterOrders);
+        openMRSEncounter.setOrders(encounterOrders);
 
         Assert.assertFalse("Should return false. This encounter does not have a lab order", openMRSEncounter.hasLabOrder());
 
