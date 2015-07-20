@@ -125,15 +125,15 @@ table td{
   padding: 0;
   margin: 0;
   border: 1px #cecece solid;
-  width: 860px;
+  width: 1360px;
   background: #fff !important;
   border-top: none;
 }
 #tabs #todaySamplesCollectedListContainer{
-    width: 1280px;
+    width: 1360px;
 }
 #tabs #backlogSamplesCollectedListContainer{
-    width: 1160px;
+    width: 1360px;
 }
 #tabs #todaySamplesCollectedListContainer, #tabs #backlogSamplesCollectedListContainer{
   padding: 0;
