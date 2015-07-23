@@ -587,7 +587,7 @@ public class EncounterFeedWorkerIT extends IT {
     }
 
     private String createLabOrderType() {
-        return "Lab Order";
+        return "Order";
     }
 
     private OpenMRSConcept createOpenMRSConcept(String conceptName, String conceptUUID, Boolean isSet) {
