@@ -267,7 +267,6 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "COUNT(test.id) AS total_test_count,\n" +
                 "CASE WHEN document_track.report_generation_time is null THEN false ELSE true END as is_printed\n" +
                 "FROM Sample AS sample\n" +
-                "inner join (select distinct s.id from analysis a inner join sample_item si on a.sampitem_id = si.id inner join sample s on si.samp_id = s.id where a.status_id not in (" +  analysesReferredOrInFinalStatus() + ") and a.lastupdated < ?) x on x.id = sample.id \n" +
                 "LEFT OUTER JOIN Sample_Human AS sampleHuman ON sampleHuman.samp_Id = sample.id \n" +
                 "LEFT  JOIN sample_source ON sample_source.id = sample.sample_source_id \n" +
                 "INNER JOIN Patient AS patient ON sampleHuman.patient_id = patient.id \n" +
@@ -275,7 +274,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "INNER JOIN patient_identity ON patient_identity.patient_id = patient.id \n" +
                 "INNER JOIN patient_identity_type ON patient_identity.identity_type_id = patient_identity_type.id AND patient_identity_type.identity_type='ST' \n" +
                 "INNER JOIN sample_item ON sample_item.samp_id = sample.id \n" +
-                "INNER JOIN analysis ON analysis.sampitem_id = sample_item.id \n" +
+                "INNER JOIN analysis ON analysis.sampitem_id = sample_item.id and analysis.status_id not in (" +  analysesReferredOrInFinalStatus() + ") and analysis.lastupdated < ?\n" +
                 "INNER JOIN test ON test.id = analysis.test_id\n" +
                 "LEFT OUTER JOIN document_track as document_track ON sample.id = document_track.row_id AND document_track.name = 'patientHaitiClinical' and document_track.parent_id is null\n" +
                 "WHERE "+condition+"\n" +
