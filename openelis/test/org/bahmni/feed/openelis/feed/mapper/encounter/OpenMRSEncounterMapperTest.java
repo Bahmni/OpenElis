@@ -49,7 +49,7 @@ public class OpenMRSEncounterMapperTest extends OpenMRSMapperBaseTest {
 
     private void checkOrder(OpenMRSOrder openMRSOrder, String expectedOrderUUID, String expectedTestOrPanelUUID, String testOrPanelName, boolean isPanel) {
         Assert.assertEquals(expectedOrderUUID, openMRSOrder.getUuid());
-        Assert.assertEquals("Order", openMRSOrder.getOrderType());
+        Assert.assertEquals("Lab Order", openMRSOrder.getOrderType());
 
         OpenMRSConcept concept = openMRSOrder.getConcept();
         Assert.assertEquals(expectedTestOrPanelUUID, concept.getUuid());

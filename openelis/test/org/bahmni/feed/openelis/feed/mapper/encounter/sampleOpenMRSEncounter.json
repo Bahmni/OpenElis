@@ -6,7 +6,7 @@
             "uuid": "ac0819a9-11c1-4310-8f0a-feee71e5086b",
             "orderTypeUuid": "519ab361-9bc6-11e3-927e-8840ab96f0f1",
             "dateCreated": "2015-05-05T05:36:57.000+0000",
-            "orderType":"Order",
+            "orderType":"Lab Order",
             "concept": {
                 "uuid": "4e167df9-80f5-4caa-9a82-ec97908cbd59",
                 "conceptClass": "LabSet",
@@ -19,7 +19,7 @@
         },
         {
             "uuid": "ce3eeba1-2176-48d0-9ff4-53b731121274",
-            "orderType": "Order",
+            "orderType": "Lab Order",
             "concept": {
                 "uuid": "8c47a469-1b8f-47d9-9363-b97b45e3e740",
                 "display": "Routine Blood",
@@ -30,7 +30,7 @@
         },
         {
             "uuid": "3508dbea-6844-4174-8787-40ab809f2522",
-            "orderType": "Order",
+            "orderType": "Lab Order",
             "concept": {
                 "uuid": "15a9d9e5-edcb-4e64-85ad-551693aeed5c",
                 "display": "ESR",
