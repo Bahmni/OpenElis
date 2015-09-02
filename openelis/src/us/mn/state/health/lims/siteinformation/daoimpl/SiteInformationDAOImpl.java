@@ -70,7 +70,7 @@ public class SiteInformationDAOImpl extends BaseDAOImpl implements SiteInformati
 			
 			AuditTrailDAO auditDAO = new AuditTrailDAOImpl();
 			auditDAO.saveNewHistory(siteInformation, siteInformation.getSysUserId(), "SITE_INFORMATION");
-			
+
 			HibernateUtil.getSession().flush();
 			HibernateUtil.getSession().clear();
 						

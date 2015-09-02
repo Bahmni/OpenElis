@@ -1,7 +1,6 @@
 package org.bahmni.feed.openelis.feed.service.impl;
 
 import org.bahmni.feed.openelis.IT;
-import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoImpl;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.CodedTestAnswer;
@@ -53,6 +52,7 @@ public class TestServiceIT extends IT {
         referenceDataTest = new ReferenceDataTest(testUuid, "Test Desc", true, new Date(), "Test Name", null, "short", 23, "Numeric", "uom");
         referenceDataTest1 = new ReferenceDataTest(testUuid, "Test Desc", true, new Date(), "Text Test", null, "short", 24, "Text", "uom");
         codedReferenceDataTest = new ReferenceDataTest(testUuid, "Test Desc", true, new Date(), "Test Coded1", null, "short", 24, "Coded", "uom");
+        session.createSQLQuery("insert into site_information(id, name, value_type, value) values(nextVal( 'site_information_seq' ), 'defaultOrganizationName','text', 'Haiti')").executeUpdate();
     }
 
     private CodedTestAnswer getCodedTestAnswer(String uuid, String name) {
@@ -100,8 +100,7 @@ public class TestServiceIT extends IT {
         String departmentUuid = UUID.randomUUID().toString();
         ReferenceDataDepartment referenceDataDepartment = new ReferenceDataDepartment(departmentUuid, new Date(), "Dept Desc", true, new Date(), "Bio Department");
         referenceDataDepartment.addTest(new MinimalResource(referenceDataTest.getId(), referenceDataTest.getName()));
-        Organization organization = (Organization) new OrganizationDAOImpl().getAllOrganizations().get(0);
-        testSectionService.createOrUpdate(referenceDataDepartment, organization.getOrganizationName());
+        testSectionService.createOrUpdate(referenceDataDepartment);
         savedTest = testDAO.getTestByName("Test Name");
         assertEquals("Bio Department", savedTest.getTestSection().getTestSectionName());
     }
@@ -116,8 +115,7 @@ public class TestServiceIT extends IT {
         String departmentUuid = UUID.randomUUID().toString();
         ReferenceDataDepartment referenceDataDepartment = new ReferenceDataDepartment(departmentUuid, new Date(), "Dept Desc", true, new Date(), "Bio Department");
         referenceDataDepartment.addTest(new MinimalResource(referenceDataTest1.getId(), referenceDataTest1.getName()));
-        Organization organization = (Organization) new OrganizationDAOImpl().getAllOrganizations().get(0);
-        testSectionService.createOrUpdate(referenceDataDepartment, organization.getOrganizationName());
+        testSectionService.createOrUpdate(referenceDataDepartment);
         savedTest = testDAO.getTestByName("Text Test");
         assertEquals("Bio Department", savedTest.getTestSection().getTestSectionName());
 

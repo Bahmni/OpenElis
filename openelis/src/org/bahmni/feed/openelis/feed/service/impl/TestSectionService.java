@@ -25,7 +25,9 @@ import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
 import us.mn.state.health.lims.organization.dao.OrganizationDAO;
 import us.mn.state.health.lims.organization.daoimpl.OrganizationDAOImpl;
 import us.mn.state.health.lims.organization.valueholder.Organization;
+import us.mn.state.health.lims.siteinformation.dao.SiteInformationDAO;
 import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
+import us.mn.state.health.lims.siteinformation.valueholder.SiteInformation;
 import us.mn.state.health.lims.test.dao.TestSectionDAO;
 import us.mn.state.health.lims.test.daoimpl.TestSectionDAOImpl;
 import us.mn.state.health.lims.test.valueholder.Test;
@@ -42,23 +44,30 @@ public class TestSectionService {
     private PanelService panelService;
     private TestSectionDAO testSectionDAO;
     private AuditingService auditingService;
+    private SiteInformationDAO siteInformationDAO;
 
     public TestSectionService() {
-        this(new TestSectionDAOImpl(), new OrganizationDAOImpl(), new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl()), new TestService(), new PanelService());
+        this(new TestSectionDAOImpl(), new OrganizationDAOImpl(), new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl()), new TestService(), new PanelService(), new SiteInformationDAOImpl());
     }
 
-    public TestSectionService(TestSectionDAO testSectionDAO, OrganizationDAO organizationDAO, AuditingService auditingService, TestService testService, PanelService panelService) {
+    public TestSectionService(TestSectionDAO testSectionDAO, OrganizationDAO organizationDAO, AuditingService auditingService, TestService testService, PanelService panelService, SiteInformationDAO siteInformationDAO) {
         this.testSectionDAO = testSectionDAO;
         this.auditingService = auditingService;
         this.organizationDAO = organizationDAO;
         this.testService = testService;
         this.panelService = panelService;
+        this.siteInformationDAO = siteInformationDAO;
     }
 
-    public void createOrUpdate(ReferenceDataDepartment department, final String organizationName) throws IOException, LIMSException {
+    public void createOrUpdate(ReferenceDataDepartment department) throws IOException, LIMSException {
         try {
             String sysUserId = auditingService.getSysUserId();
             TestSection testSection = testSectionDAO.getTestSectionByUUID(department.getId());
+            SiteInformation defaultOrganizationName = siteInformationDAO.getSiteInformationByName("defaultOrganizationName");
+            if(defaultOrganizationName == null){
+                throw new LIMSRuntimeException("no property found for 'defaultOrganizationName' in site_information table");
+            }
+            final String organizationName = defaultOrganizationName.getValue();
 
             Organization organization = organizationDAO.getOrganizationByName(new Organization() {{
                 this.setOrganizationName(organizationName);

@@ -26,8 +26,8 @@ import us.mn.state.health.lims.hibernate.HibernateUtil;
 
 @Ignore
 public abstract class IT {
-    private Transaction transaction;
-    private Session session;
+    protected Transaction transaction;
+    protected Session session;
 
     @Before
     public void before() {

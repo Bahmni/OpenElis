@@ -18,7 +18,6 @@ import us.mn.state.health.lims.hibernate.HibernateUtil;
 import java.io.IOException;
 
 public class LabFeedEventWorker extends OpenElisEventWorker {
-    public static final String REFERENCE_DATA_DEFAULT_ORGANIZATION = "reference.data.default.organization";
     private final TypeOfSampleService typeOfSampleService;
     private HttpClient webClient;
     private String urlPrefix;
@@ -58,7 +57,6 @@ public class LabFeedEventWorker extends OpenElisEventWorker {
     @Override
     public void process(Event event) {
         try {
-            AtomFeedProperties atomFeedProperties = AtomFeedProperties.getInstance();
             String content = event.getContent();
             if (title.sample.toUrlString().equals(event.getTitle())) {
                 ReferenceDataSample sample = webClient.get(urlPrefix + content, ReferenceDataSample.class);
@@ -75,7 +73,7 @@ public class LabFeedEventWorker extends OpenElisEventWorker {
             } else if (title.department.toUrlString().equals(event.getTitle())) {
                 ReferenceDataDepartment department = webClient.get(urlPrefix + content, ReferenceDataDepartment.class);
                 logger.info(String.format("Processing department with UUID=%s", department.getId()));
-                testSectionService.createOrUpdate(department, getDefaultOrganization(atomFeedProperties));
+                testSectionService.createOrUpdate(department);
             } else if (title.all_tests_and_panels.toUrlString().equals(event.getTitle())) {
                 ReferenceDataAllTestsAndPanels allTestsAndPanels = webClient.get(urlPrefix + content, ReferenceDataAllTestsAndPanels.class);
                 logger.info(String.format("Processing all tests and panels with UUID=%s", allTestsAndPanels.getId()));
@@ -101,14 +99,4 @@ public class LabFeedEventWorker extends OpenElisEventWorker {
         }
     }
 
-    private String getDefaultOrganization(AtomFeedProperties atomFeedProperties) {
-        final String ELIS_DEF_ORG_ENVIRONMENT_VARIABLE = "ELIS_DEFAULT_ORGANIZATION_NAME";
-        String envValue = System.getenv(ELIS_DEF_ORG_ENVIRONMENT_VARIABLE);
-        if (StringUtils.isNotEmpty(envValue)) {
-            logger.info("Environment variable " + ELIS_DEF_ORG_ENVIRONMENT_VARIABLE + " found with value: " + envValue);
-            return envValue;
-        } else {
-            return atomFeedProperties.getProperty(REFERENCE_DATA_DEFAULT_ORGANIZATION);
-        }
-    }
 }

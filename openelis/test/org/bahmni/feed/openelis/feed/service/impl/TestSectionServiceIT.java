@@ -11,6 +11,7 @@ import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
 import us.mn.state.health.lims.organization.dao.OrganizationDAO;
 import us.mn.state.health.lims.organization.daoimpl.OrganizationDAOImpl;
 import us.mn.state.health.lims.organization.valueholder.Organization;
+import us.mn.state.health.lims.siteinformation.dao.SiteInformationDAO;
 import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 import us.mn.state.health.lims.test.dao.TestSectionDAO;
 import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
@@ -32,6 +33,7 @@ public class TestSectionServiceIT extends IT{
     private TestService testService;
     private PanelService panelService;
     private TestDAOImpl testDAO;
+    private SiteInformationDAO siteInformationDAO;
     private ReferenceDataDepartment dummyDepartment;
 
     @Before
@@ -42,17 +44,19 @@ public class TestSectionServiceIT extends IT{
         organizationDAO = new OrganizationDAOImpl();
         testService = new TestService();
         panelService = new PanelService();
-        testSectionService = new TestSectionService(testSectionDAO, organizationDAO, auditingService, testService, panelService);
+        siteInformationDAO = new SiteInformationDAOImpl();
+        testSectionService = new TestSectionService(testSectionDAO, organizationDAO, auditingService, testService, panelService, siteInformationDAO);
         testDAO = new TestDAOImpl();
     }
 
     @Test
     public void shouldCreateADepartmentWithSomeTests() throws Exception {
+        session.createSQLQuery("insert into site_information(id, name, value_type, value) values(nextVal( 'site_information_seq' ), 'defaultOrganizationName','text', 'Haiti')").executeUpdate();
+
         String departmentId = UUID.randomUUID().toString();
         ReferenceDataDepartment referenceDataDepartment = new ReferenceDataDepartment(departmentId, new Date(), "Dept Desc", true, new Date(), "Bio Department");
-        Organization organization = (Organization) organizationDAO.getAllOrganizations().get(0);
         String testId = UUID.randomUUID().toString();
-        testSectionService.createOrUpdate(dummyDepartment, organization.getOrganizationName());
+        testSectionService.createOrUpdate(dummyDepartment);
 
         ReferenceDataTest referenceDataTest = new ReferenceDataTest(testId, "Test Desc", true, new Date(), "Test Name", null, "short", 23, "Test", "uom");
         testService.createOrUpdate(referenceDataTest);
@@ -60,14 +64,14 @@ public class TestSectionServiceIT extends IT{
         assertEquals("New", savedTest.getTestSection().getTestSectionName());
         assertEquals("Test Name", savedTest.getTestName());
 
-        testSectionService.createOrUpdate(referenceDataDepartment, organization.getOrganizationName());
+        testSectionService.createOrUpdate(referenceDataDepartment);
         TestSection savedTestSection = testSectionDAO.getTestSectionByUUID(departmentId);
         assertNotNull(savedTestSection);
         assertEquals(savedTestSection.getUUID(), departmentId);
         assertEquals("Bio Department", savedTestSection.getTestSectionName());
         assertEquals("Bio Department", savedTestSection.getDescription());
         referenceDataDepartment.addTest(new MinimalResource(referenceDataTest.getId(), referenceDataTest.getName()));
-        testSectionService.createOrUpdate(referenceDataDepartment, organization.getOrganizationName());
+        testSectionService.createOrUpdate(referenceDataDepartment);
         savedTest = testDAO.getTestByName("Test Name");
         assertEquals("Bio Department", savedTest.getTestSection().getTestSectionName());
         assertEquals("Test Name", savedTest.getTestName());
