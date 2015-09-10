@@ -18,7 +18,9 @@ package org.bahmni.feed.openelis.feed.service;
 
 import org.bahmni.feed.openelis.feed.service.impl.OpenElisUrlPublisher;
 import org.bahmni.feed.openelis.feed.transaction.support.AtomFeedHibernateTransactionManager;
+import org.ict4h.atomfeed.server.repository.AllEventRecordsQueue;
 import org.ict4h.atomfeed.server.repository.jdbc.AllEventRecordsJdbcImpl;
+import org.ict4h.atomfeed.server.repository.jdbc.AllEventRecordsQueueJdbcImpl;
 import org.ict4h.atomfeed.server.service.EventService;
 import org.ict4h.atomfeed.server.service.EventServiceImpl;
 
@@ -33,7 +35,7 @@ public class EventPublishers {
 
     public EventPublishers() {
         this.transactionManager = new AtomFeedHibernateTransactionManager();
-        AllEventRecordsJdbcImpl records = new AllEventRecordsJdbcImpl(transactionManager);
+        AllEventRecordsQueue records = new AllEventRecordsQueueJdbcImpl(transactionManager);
         this.eventService = new EventServiceImpl(records);
     }
 
