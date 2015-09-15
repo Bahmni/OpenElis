@@ -18,7 +18,6 @@ package us.mn.state.health.lims.scheduler;
 
 import org.apache.log4j.Logger;
 import org.bahmni.feed.openelis.feed.job.event.EventRecordsNumberOffsetMarkerTask;
-import org.bahmni.feed.openelis.feed.job.event.EventRecordsPublisherTask;
 import org.bahmni.feed.openelis.feed.job.openmrs.*;
 import org.hibernate.Transaction;
 import org.quartz.*;
@@ -64,7 +63,6 @@ public class LateStartScheduler {
         scheduleJobMap.put("atom-feed-openmrs-lab-failed", OpenMRSLabFeedFailedEventsJob.class);
 
         scheduleJobMap.put("atom-feed-events-offset-marker", EventRecordsNumberOffsetMarkerTask.class);
-        scheduleJobMap.put("atom-feed-events-publisher", EventRecordsPublisherTask.class);
     }
 
     public void restartSchedules() {
