@@ -1402,4 +1402,29 @@
         </createTable>
 
     </changeSet>
+
+    <changeSet id="06102015170630" author="Achinta, Sudhakar" context="bahmni">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                select count(i.relname)
+                from pg_class t,
+                    pg_class i,
+                    pg_index ix,
+                    pg_attribute a
+                where
+                    t.oid = ix.indrelid
+                    and i.oid = ix.indexrelid
+                    and a.attrelid = t.oid
+                    and a.attnum = ANY(ix.indkey)
+                    and t.relkind = 'r'
+                    and t.relname = 'event_records'
+                    and i.relname = 'event_records_category_idx'
+            </sqlCheck>
+        </preConditions>
+        <comment>Add index to the category column in event_records table for performance (if it is not already present)</comment>
+        <createIndex tableName="event_records" indexName="event_records_category_idx">
+            <column name="category"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>
