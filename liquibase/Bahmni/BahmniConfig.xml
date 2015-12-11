@@ -1427,4 +1427,11 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="151120151208" author="Sourav" context="bahmni">
+        <comment>altering the data type of identity_data to accept 50 characters in patient_identity table</comment>
+        <modifyColumn schemaName="clinlims" tableName="patient_identity">
+            <column name="identity_data" type="varchar(50)"/>
+        </modifyColumn>
+    </changeSet>
+
 </databaseChangeLog>
