@@ -151,6 +151,19 @@ $jq(document).ready( function() {
     if (jQuery(".alert-error").length == 0) {
         $jq("html, body").animate({ scrollTop: $jq("#resultsDisplayBlock").offset().top }, 500);
     }
+
+	$jq("input[type=checkbox][class=referralCheckBox]").each(
+			function(){
+				var index = this.id.slice(this.id.length-1,this.id.length);
+				var checked = this.checked;
+				var disabled = this.disabled;
+				if(checked  && !disabled) {
+					markUpdated(index);
+					handleReferralCheckChange(this);
+					handleReferralReasonAndInstituteChange(index);
+				}
+			}
+	);
 });
 
 function handleMultiSelectChange( e, data ){
@@ -262,13 +275,15 @@ function validateForm(){
 function /*void*/ handleReferralCheckChange(checkbox){
     var testResult = $(checkbox).up('.testResult');
     var referralReason = $(testResult).down('.referralReason');
-	referralReason.value = 0;
+	referralReason.value = (referralReason.value != "0") ? referralReason.value : 0;
     var isTestReferredOut = checkbox.checked;
     referralReason.disabled = !isTestReferredOut;
 
 	var referralOrganization = $(testResult).down('.referralOrganization');
-	referralOrganization.value = 0;
+	referralOrganization.value = (referralOrganization.value != "0") ? referralOrganization.value : 0;
 	referralOrganization.disabled = !isTestReferredOut;
+
+	var isReferredOutValueChanged = $(testResult).down('#isReferredOutValueChanged');
 
     var result = $(testResult).down('.testResultValue');
     result.style.background = "#ffffff";
@@ -277,7 +292,12 @@ function /*void*/ handleReferralCheckChange(checkbox){
     if(isTestReferredOut) {
         result.value = "";
         abnormal.checked = false;
-    }
+		isReferredOutValueChanged.value = false;
+    }else{
+		referralReason.value = 0;
+		referralOrganization.value = 0;
+		isReferredOutValueChanged.value = true;
+	}
 }
 
 function /*void*/ handleReferralReasonAndInstituteChange(index ){
@@ -654,7 +674,8 @@ function /*void*/ processTestReflexCD4Success(xhr)
 			<html:hidden name="testResult" property="referralId" indexed="true" />
 			<html:hidden name="testResult" property="referralCanceled" indexed="true" />
 			<html:hidden name="testResult" property="userChoicePending"  styleId='<%="userChoicePendingId_" + index%>' indexed="true"/>
-			<logic:notEmpty name="testResult" property="thisReflexKey">
+			<html:hidden name="testResult" property="isReferredOutValueChanged" indexed="true" styleId='<%="isReferredOutValueChanged"%>'/>
+		    <logic:notEmpty name="testResult" property="thisReflexKey">
 					<input type="hidden" id='<%= testResult.getThisReflexKey() %>' value='<%= index %>' />
 			</logic:notEmpty>
 		 <% if( !compactHozSpace ){ %>

@@ -437,6 +437,11 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
         modifiedItems = new ArrayList<TestResultItem>();
 
         for (TestResultItem item : allItems) {
+            if(item.getIsReferredOutValueChanged() && item.isReferredOut()){
+                item.setReferredOut(false);
+                item.setReferralReasonId(null);
+                item.setReferralOrganizationId(null);
+            }
             if (item.getIsModified() && (ResultUtil.areResults(item) || ResultUtil.areNotes(item) || item.isReferredOut() || ResultUtil.areFiles(item))) {
                 modifiedItems.add(item);
             }

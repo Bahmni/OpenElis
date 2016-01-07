@@ -28,6 +28,7 @@ import us.mn.state.health.lims.scriptlet.valueholder.Scriptlet;
 import us.mn.state.health.lims.testtrailer.valueholder.TestTrailer;
 import us.mn.state.health.lims.unitofmeasure.valueholder.UnitOfMeasure;
 
+import java.lang.Boolean;
 import java.sql.Date;
 
 /**
@@ -104,13 +105,9 @@ public class Test extends EnumValueItemImpl {
 
 	private Boolean orderable;
 
-	public String getSortOrder() {
-		return sortOrder;
-	}
+	private Boolean isReferredOut;
 
-	public void setSortOrder(String sortOrder) {
-		this.sortOrder = sortOrder;
-	}
+	private  Boolean isReferredOutValueChanged = false;
 
 	public Test() {
 		super();
@@ -119,6 +116,22 @@ public class Test extends EnumValueItemImpl {
 		this.testTrailer = new ValueHolder();
 		this.testSection = new ValueHolder();
 		this.scriptlet = new ValueHolder();
+	}
+
+	public Boolean getIsReferredOutValueChanged() {
+		return isReferredOutValueChanged;
+	}
+
+	public void setIsReferredOutValueChanged(Boolean isReferredOutValueChanged) {
+		this.isReferredOutValueChanged = isReferredOutValueChanged;
+	}
+
+	public String getSortOrder() {
+		return sortOrder;
+	}
+
+	public void setSortOrder(String sortOrder) {
+		this.sortOrder = sortOrder;
 	}
 
 	public void setId(String id) {
@@ -462,7 +475,17 @@ public class Test extends EnumValueItemImpl {
 		this.orderable = orderable;
 	}
 
-    public Test unwrap(Object proxy) {
+
+	public Boolean getIsReferredOut() {
+		return isReferredOut;
+	}
+
+	public void setIsReferredOut(Boolean isReferredOut) {
+		this.isReferredOut = isReferredOut;
+	}
+
+
+	public Test unwrap(Object proxy) {
         if (proxy instanceof HibernateProxy) {
             return  (Test) ((HibernateProxy) proxy).getHibernateLazyInitializer()
                     .getImplementation();
@@ -564,6 +587,7 @@ public class Test extends EnumValueItemImpl {
         result = 31 * result + (sortOrder != null ? sortOrder.hashCode() : 0);
         result = 31 * result + (localAbbrev != null ? localAbbrev.hashCode() : 0);
         result = 31 * result + (orderable != null ? orderable.hashCode() : 0);
+        result = 31 * result + (isReferredOut != null ? isReferredOut.hashCode() : 0);
         return result;
     }
 }

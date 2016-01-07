@@ -90,6 +90,9 @@
         <property name="nameKey" type="java.lang.String">
             <column name="display_key" length="60" not-null="false" />
         </property>
+        <property name="isReferredOut" type="java.lang.Boolean">
+            <column name="IS_REFERRED_OUT"/>
+        </property>
         
         <property name="orderable" type="java.lang.Boolean" column="orderable" />
     </class>

@@ -17,9 +17,14 @@
  */
 package us.mn.state.health.lims.result.action;
 
+import java.lang.Object;
+import java.lang.String;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -60,6 +65,9 @@ import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisSt
 import us.mn.state.health.lims.test.beanItems.TestResultItem;
 import us.mn.state.health.lims.userrole.dao.UserRoleDAO;
 import us.mn.state.health.lims.userrole.daoimpl.UserRoleDAOImpl;
+import us.mn.state.health.lims.test.valueholder.Test;
+import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
+import us.mn.state.health.lims.test.dao.TestDAO;
 
 public class AccessionResultsAction extends BaseAction {
 
@@ -73,7 +81,7 @@ public class AccessionResultsAction extends BaseAction {
 
 	static{
 		Role editRole = new RoleDAOImpl().getRoleByName("Results modifier");
-		
+
 		if( editRole != null){
 			RESULT_EDIT_ROLE_ID = editRole.getId();
 		}
@@ -135,6 +143,8 @@ public class AccessionResultsAction extends BaseAction {
 					}
 
 					paging.setDatabaseResults(request, dynaForm, results);
+
+                    setReferredOutForTests(dynaForm);
 				} else {
 					setEmptyResults(dynaForm);
 				}
@@ -148,69 +158,126 @@ public class AccessionResultsAction extends BaseAction {
 		return mapping.findForward(forward);
 	}
 
-	private boolean modifyResultsRoleBased() {
-		return "true".equals(ConfigurationProperties.getInstance().getPropertyValue(Property.roleRequiredForModifyResults));
-	}
+    private void setReferredOutForTests(DynaActionForm dynaForm) throws Exception {
 
-	private boolean userNotInRole(HttpServletRequest request) {
-		if( userModuleDAO.isUserAdmin(request)){
-			return false;
-		}
-		
-		UserRoleDAO userRoleDAO = new UserRoleDAOImpl();
-		
-		List<String> roleIds = userRoleDAO.getRoleIdsForUser( currentUserId );
-		
-		return !roleIds.contains(RESULT_EDIT_ROLE_ID);
-	}
+        Object testResultObject = PropertyUtils.getProperty(dynaForm, "testResult");
+        Object referralReasonsObject = PropertyUtils.getProperty(dynaForm, "referralReasons");
+        Object referralOrganizationsObject = PropertyUtils.getProperty(dynaForm, "referralOrganizations");
 
-	private void setEmptyResults(DynaActionForm dynaForm) throws IllegalAccessException, InvocationTargetException,
-			NoSuchMethodException {
-		PropertyUtils.setProperty(dynaForm, "testResult", new ArrayList<TestResultItem>());
-		PropertyUtils.setProperty(dynaForm, "displayTestKit", false);
-		addEmptyInventoryList(dynaForm);
-	}
+        String referralReasonId = null;
+        String referralOrganizationId = null;
+        List<IdValuePair> referralReasonsList = null;
+        List<IdValuePair> referralOrganizationsList = null;
 
-	private void addInventory(DynaActionForm dynaForm) throws IllegalAccessException, InvocationTargetException,
-			NoSuchMethodException {
 
-		List<InventoryKitItem> list = inventoryUtility.getExistingActiveInventory();
-		PropertyUtils.setProperty(dynaForm, "inventoryItems", list);
-	}
+        if (referralReasonsObject != null) {
+            referralReasonsList = (ArrayList) referralReasonsObject;
+            for (IdValuePair referralReasonItem : referralReasonsList) {
+                if (referralReasonItem.getValue().equals("Auto Referred Out")) {
+                    referralReasonId = referralReasonItem.getId();
+                }
+            }
+        }
 
-	private void addEmptyInventoryList(DynaActionForm dynaForm) throws IllegalAccessException,
-			InvocationTargetException, NoSuchMethodException {
-		PropertyUtils.setProperty(dynaForm, "inventoryItems", new ArrayList<InventoryKitItem>());
-	}
+        if (referralOrganizationsObject != null) {
+            referralOrganizationsList = (ArrayList) referralOrganizationsObject;
+            for (IdValuePair referralOrganization : referralOrganizationsList) {
+                if (referralOrganization.getValue().equals("External Lab")) {
+                    referralOrganizationId = referralOrganization.getId();
+                }
+            }
+        }
 
-	private ActionMessages validateAll(HttpServletRequest request, ActionMessages errors, DynaActionForm dynaForm) {
+        List<TestResultItem> testResultItems = null;
+        if (testResultObject != null) {
+            testResultItems = (ArrayList) testResultObject;
+        }
 
-		Sample sample = sampleDAO.getSampleByAccessionNumber(accessionNumber);
 
-		if (sample == null) {
-			ActionError error = new ActionError("sample.edit.sample.notFound", accessionNumber, null, null);
-			errors.add(ActionMessages.GLOBAL_MESSAGE, error);
-		}
+        for (TestResultItem testResultItem : testResultItems) {
+            if (testResultItem.getTestId() != null) {
+                Test test = getTestById(testResultItem.getTestId());
+                if (test.getIsReferredOut() && !testResultItem.isReferredOut() && (testResultItem.getResult() == null)) {
+                    testResultItem.setReferredOut(test.getIsReferredOut());
+                    testResultItem.setReferralReasonId(referralReasonId);
+                    testResultItem.setReferralOrganizationId(referralOrganizationId);
+                }
+            }
+        }
 
-		return errors;
-	}
+        PropertyUtils.setProperty(dynaForm, "testResult", testResultItems);
 
-	private Patient getPatient() {
-		SampleHumanDAO sampleHumanDAO = new SampleHumanDAOImpl();
-		return sampleHumanDAO.getPatientForSample(sample);
-	}
+    }
 
-	private void getSample() {
-		sample = sampleDAO.getSampleByAccessionNumber(accessionNumber);
-	}
+    private boolean modifyResultsRoleBased() {
+        return "true".equals(ConfigurationProperties.getInstance().getPropertyValue(Property.roleRequiredForModifyResults));
+    }
 
-	protected String getPageTitleKey() {
-		return "banner.menu.results";
+    private boolean userNotInRole(HttpServletRequest request) {
+        if (userModuleDAO.isUserAdmin(request)) {
+            return false;
+        }
 
-	}
+        UserRoleDAO userRoleDAO = new UserRoleDAOImpl();
 
-	protected String getPageSubtitleKey() {
-		return "banner.menu.results";
-	}
+        List<String> roleIds = userRoleDAO.getRoleIdsForUser(currentUserId);
+
+        return !roleIds.contains(RESULT_EDIT_ROLE_ID);
+    }
+
+    private void setEmptyResults(DynaActionForm dynaForm) throws IllegalAccessException, InvocationTargetException,
+            NoSuchMethodException {
+        PropertyUtils.setProperty(dynaForm, "testResult", new ArrayList<TestResultItem>());
+        PropertyUtils.setProperty(dynaForm, "displayTestKit", false);
+        addEmptyInventoryList(dynaForm);
+    }
+
+    private void addInventory(DynaActionForm dynaForm) throws IllegalAccessException, InvocationTargetException,
+            NoSuchMethodException {
+
+        List<InventoryKitItem> list = inventoryUtility.getExistingActiveInventory();
+        PropertyUtils.setProperty(dynaForm, "inventoryItems", list);
+    }
+
+    private void addEmptyInventoryList(DynaActionForm dynaForm) throws IllegalAccessException,
+            InvocationTargetException, NoSuchMethodException {
+        PropertyUtils.setProperty(dynaForm, "inventoryItems", new ArrayList<InventoryKitItem>());
+    }
+
+    private ActionMessages validateAll(HttpServletRequest request, ActionMessages errors, DynaActionForm dynaForm) {
+
+        Sample sample = sampleDAO.getSampleByAccessionNumber(accessionNumber);
+
+        if (sample == null) {
+            ActionError error = new ActionError("sample.edit.sample.notFound", accessionNumber, null, null);
+            errors.add(ActionMessages.GLOBAL_MESSAGE, error);
+        }
+
+        return errors;
+    }
+
+    private Patient getPatient() {
+        SampleHumanDAO sampleHumanDAO = new SampleHumanDAOImpl();
+        return sampleHumanDAO.getPatientForSample(sample);
+    }
+
+    private Test getTestById(String testId) {
+        TestDAO testDAO = new TestDAOImpl();
+        return testDAO.getTestById(testId);
+    }
+
+
+    private void getSample() {
+        sample = sampleDAO.getSampleByAccessionNumber(accessionNumber);
+    }
+
+    protected String getPageTitleKey() {
+        return "banner.menu.results";
+
+    }
+
+    protected String getPageSubtitleKey() {
+        return "banner.menu.results";
+    }
 
 }

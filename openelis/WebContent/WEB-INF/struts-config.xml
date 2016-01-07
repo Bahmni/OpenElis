@@ -1521,6 +1521,8 @@
     <form-property name="labelQuantity" type="java.lang.String" initial=""/> 
     <form-property name="sortOrder" type="java.lang.String" initial=""/> 
     <form-property name="lastupdated" type="java.sql.Timestamp" initial=""/>
+    <form-property name="isReferredOut" type="java.lang.Boolean" initial=""/>
+    <form-property name="isReferredOutValueChanged" type="java.lang.Boolean" initial=""/>
  </form-bean>
   <form-bean name="testMenuForm" type="us.mn.state.health.lims.common.action.BaseActionForm">
     <form-property name="menuList" type="java.util.List"/> 

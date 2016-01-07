@@ -1434,4 +1434,55 @@
         </modifyColumn>
     </changeSet>
 
+    <changeSet id="115420153112" author="Hanisha,Shashi" context="bahmni">
+        <comment>Add isReferredOut Column to Test </comment>
+        <addColumn tableName="test" schemaName="clinlims">
+            <column name="is_referred_out" type="boolean" defaultValue="false"></column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="120020160501" author="Hanisha, Shashi" context="bahmni">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM referral_reason where name = 'Auto Referred Out';
+            </sqlCheck>
+        </preConditions>
+        <comment>Adding new organization External Lab</comment>
+        <insert schemaName="clinlims" tableName="referral_reason">
+        <column name="id" valueNumeric=" nextval( 'referral_reason_seq' ) "/>
+        <column name="name" value="Auto Referred Out"/>
+        <column name="description" value="Auto Referred Out"/>
+        <column name="display_key" value="referral.reason.autoReferredOut"/>
+        <column name="lastupdated" valueDate=" now() "/>
+    </insert>
+    </changeSet>
+
+    <changeSet id="042120160501" author="Hanisha,Shashi" runOnChange="false" context="bahmni">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM organization where name = 'External Lab';
+            </sqlCheck>
+        </preConditions>
+        <insert schemaName="clinlims" tableName="organization">
+            <column name="id" valueNumeric=" nextval('organization_seq') "/>
+            <column name="name" value="External Lab"/>
+            <column name="is_active" value="Y"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="042220160501" author="Hanisha,Shashi" context="bahmni">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+            SELECT COUNT(*) from organization_organization_type where org_id = (
+            SELECT id from organization where name = 'External Lab')
+        </sqlCheck>
+    </preConditions>
+        <comment>Adding new organization External Lab to organization_organization_type</comment>
+        <sql>
+        INSERT into organization_organization_type (org_id, org_type_id)
+        SELECT org.id,org_type.id from organization org, organization_type org_type
+        where org.name = 'External Lab' AND
+        org_type.short_name = 'referralLab';
+    </sql>
+    </changeSet>
 </databaseChangeLog>

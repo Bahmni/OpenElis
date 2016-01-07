@@ -169,6 +169,9 @@ public class TestUpdateAction extends BaseAction {
 		test.setScriptlet(s);
         test.setOrderable(Boolean.TRUE);
         test.setUnitOfMeasure(unitOfMeasure);
+		if(test.getIsReferredOutValueChanged() && test.getIsReferredOut()){
+			test.setIsReferredOut(false);
+		}
 
 		try {
 

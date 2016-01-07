@@ -129,6 +129,7 @@ public class TestResultItem implements ResultItem, Serializable{
     private List<IdValuePair> abnormalTestResult;
     private FormFile uploadedFile;
     private String uploadedFileName;
+	private boolean isReferredOutValueChanged = false;
 
     public String getAccessionNumber() {
 		return accessionNumber;
@@ -136,6 +137,8 @@ public class TestResultItem implements ResultItem, Serializable{
     public void setAccessionNumber(String accessionNumber) {
 		this.accessionNumber = accessionNumber;
 	}
+	public boolean getIsReferredOutValueChanged() { return isReferredOutValueChanged; }
+	public void setIsReferredOutValueChanged(boolean isReferredOutValueChanged) { this.isReferredOutValueChanged = isReferredOutValueChanged; }
 	public String getSequenceNumber() {
 		return sequenceNumber;
 	}

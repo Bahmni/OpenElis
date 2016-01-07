@@ -39,6 +39,18 @@ function processFailure(xhr) {
   //ajax call failed
 }
 
+function setReferredOutValue(checkbox) {
+    var testItem = $(checkbox).up('.testItem');
+    var isReferredOutValueChanged = $(testItem).down('#isReferredOutValueChanged');
+    var isTestReferredOut = checkbox.checked;
+    if(isTestReferredOut) {
+        isReferredOutValueChanged.value = false;
+    }else{
+        isReferredOutValueChanged.value = true;
+    }
+
+}
+
 //bugzilla 2443
 function processSuccess(xhr) {
   var message = xhr.responseXML.getElementsByTagName("message")[0];
@@ -74,7 +86,7 @@ function getNextSortOrder() {
 }
 </script>
 <%--  Note this page is no longer good enough for _adding_ a test entity to the database, because it does not include all fields --%>
-<table>
+<table class="testItem">
 		<tr>
 						<td class="label">
 							<bean:message key="test.id"/>:
@@ -127,6 +139,17 @@ function getNextSortOrder() {
                 <html:option value=""/>
                 <html:optionsCollection name="<%=formName%>" property="unitOfMeasureList" label="unitOfMeasureName" value="id" />
             </html:select>
+        </td>
+    </tr>
+    <tr>
+        <td class="label">
+            <bean:message key="test.isReferredOut"/>:</span>
+        </td>
+        <td width="1">
+            <html:hidden name='<%=formName %>' property="isReferredOutValueChanged" styleId='<%="isReferredOutValueChanged"%>'/>
+            <html:checkbox name='<%=formName %>'
+                           property="isReferredOut" onchange='<%="setReferredOutValue(this)"%>'/>
+
         </td>
     </tr>
         <tr>
