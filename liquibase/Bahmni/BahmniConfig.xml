@@ -1473,16 +1473,29 @@
     <changeSet id="042220160501" author="Hanisha,Shashi" context="bahmni">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">
-            SELECT COUNT(*) from organization_organization_type where org_id = (
-            SELECT id from organization where name = 'External Lab')
-        </sqlCheck>
-    </preConditions>
+                SELECT COUNT(*) from organization_organization_type where org_id = (
+                SELECT id from organization where name = 'External Lab')
+            </sqlCheck>
+        </preConditions>
         <comment>Adding new organization External Lab to organization_organization_type</comment>
         <sql>
         INSERT into organization_organization_type (org_id, org_type_id)
         SELECT org.id,org_type.id from organization org, organization_type org_type
         where org.name = 'External Lab' AND
         org_type.short_name = 'referralLab';
-    </sql>
+        </sql>
+    </changeSet>
+
+
+    <changeSet id="2016-01-12-1202" author="Jaswanth, JP" context="bahmni">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+            SELECT COUNT(*) from site_information where name = 'resultsPageSize'
+            </sqlCheck>
+        </preConditions>
+        <update schemaName="clinlims" tableName="site_information">
+            <column name="value" value="100"/>
+            <where>name='resultsPageSize'</where>
+        </update>
     </changeSet>
 </databaseChangeLog>
