@@ -1434,4 +1434,15 @@
         </modifyColumn>
     </changeSet>
 
+    <changeSet id="2016-01-12-1202" author="Jaswanth, JP" context="bahmni">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+            SELECT COUNT(*) from site_information where name = 'resultsPageSize'
+            </sqlCheck>
+        </preConditions>
+        <update schemaName="clinlims" tableName="site_information">
+            <column name="value" value="100"/>
+            <where>name='resultsPageSize'</where>
+        </update>
+    </changeSet>
 </databaseChangeLog>
