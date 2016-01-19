@@ -1498,4 +1498,29 @@
             <where>name='resultsPageSize'</where>
         </update>
     </changeSet>
+
+    <changeSet id="011920161233" context="bahmni" author="Shashi, Hanisha">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists schemaName="clinlims" columnName="date_created" tableName="event_records"/>
+            </not>
+        </preConditions>
+        <comment>Creating column date_created for queue table. This indicates the time event was raised or created.</comment>
+        <addColumn  tableName="event_records" schemaName="clinlims">
+            <column name="date_created" type="TIMESTAMP" defaultValueDate="CURRENT_TIMESTAMP"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="0119290161232" context="bahmni" author="Shashi, Hanisha">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists schemaName="clinlims" columnName="tags" tableName="failed_events"/>
+            </not>
+        </preConditions>
+        <comment>Creating column tags for failed_events table. This is same as atom spec feed.entry.categories.</comment>
+        <addColumn  tableName="failed_events"  schemaName="clinlims">
+            <column name="tags" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
