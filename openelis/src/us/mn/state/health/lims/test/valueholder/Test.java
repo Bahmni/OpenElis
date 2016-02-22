@@ -105,7 +105,7 @@ public class Test extends EnumValueItemImpl {
 
 	private Boolean orderable;
 
-	private Boolean isReferredOut = false;
+	private Boolean isReferredOut;
 
 	private  Boolean isReferredOutValueChanged = false;
 
