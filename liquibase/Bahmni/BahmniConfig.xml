@@ -1522,5 +1522,10 @@
             <column name="tags" type="varchar(255)"/>
         </addColumn>
     </changeSet>
-
+    <changeSet id="240220161208" author="Vinay" context="bahmni">
+        <comment>Identity data should contain full length of a concept name, which is 255 characters</comment>
+        <modifyColumn schemaName="clinlims" tableName="patient_identity">
+            <column name="identity_data" type="varchar(255)"/>
+        </modifyColumn>
+    </changeSet>
 </databaseChangeLog>
