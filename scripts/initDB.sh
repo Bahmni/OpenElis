@@ -10,7 +10,7 @@ if [ -f /etc/bahmni-installer/bahmni.conf ]; then
 fi
 # set -e
 
-if [ "$(psql -Upostgres -lqt | cut -d \| -f 1 | grep -w $DATABASE_NAME | wc -l)" -eq 0 ]; then
+if [ "$(psql -Upostgres -h $OPENELIS_DB_SERVER -lqt | cut -d \| -f 1 | grep -w $DATABASE_NAME | wc -l)" -eq 0 ]; then
     echo "Creating database : $DATABASE_NAME"
     psql -U postgres -h $OPENELIS_DB_SERVER -f $SCRIPTS_DIR/setupDB.sql
     pg_restore -U postgres -h $OPENELIS_DB_SERVER -d $DATABASE_NAME $ROOT_DIR/db_backup/$1
