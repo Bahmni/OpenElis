@@ -44,6 +44,7 @@ import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.testanalyte.dao.TestAnalyteDAO;
 import us.mn.state.health.lims.testanalyte.daoimpl.TestAnalyteDAOImpl;
 import us.mn.state.health.lims.testanalyte.valueholder.TestAnalyte;
+import us.mn.state.health.lims.typeofsample.util.TypeOfSampleUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -82,6 +83,7 @@ public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
 			HibernateUtil.getSession().flush();
 			HibernateUtil.getSession().clear();
 
+			TypeOfSampleUtil.clearTestCache();
 		} catch (Exception e) {
 			//bugzilla 2154
 			LogEvent.logError("TestDAOImpl","insertData()",e.toString());
@@ -1092,8 +1094,8 @@ public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
                 String sysUserId = data.getSysUserId();
                 String event = IActionConstants.AUDIT_TRAIL_DELETE;
                 String tableName = "TEST";
-                auditDAO.saveHistory(newData,oldData,sysUserId,event,tableName);
-            }
+                auditDAO.saveHistory(newData, oldData, sysUserId, event, tableName);
+			}
         } catch (Exception e) {
             //bugzilla 2154
             LogEvent.logError("TestDAOImpl","AuditTrail deleteData()",e.toString());
@@ -1117,6 +1119,7 @@ public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
             LogEvent.logError("TestDAOImpl","deleteData()",e.toString());
             throw new LIMSRuntimeException("Error in Test deleteData()", e);
         }
+		TypeOfSampleUtil.clearTestCache();
 
         clearIDMaps();
     }

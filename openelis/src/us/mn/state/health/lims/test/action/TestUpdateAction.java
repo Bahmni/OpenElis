@@ -186,7 +186,6 @@ public class TestUpdateAction extends BaseAction {
 				// INSERT
 				testDAO.insertData(test);
 			}
-			TypeOfSampleUtil.clearTestCache();
 		} catch (LIMSRuntimeException lre) {
     		//bugzilla 2154
 			LogEvent.logError("TestUpdateAction","performAction()",lre.toString());

@@ -36,6 +36,7 @@ import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.panel.dao.PanelDAO;
 import us.mn.state.health.lims.panel.valueholder.Panel;
+import us.mn.state.health.lims.typeofsample.util.TypeOfSampleUtil;
 
 /**
  * @author diane benz
@@ -133,10 +134,12 @@ public class PanelDAOImpl extends BaseDAOImpl implements PanelDAO {
 			String sysUserId = panel.getSysUserId();
 			String tableName = "PANEL";
 			auditDAO.saveNewHistory(panel,sysUserId,tableName);
-			
+
 			HibernateUtil.getSession().flush();
-			HibernateUtil.getSession().clear();		
-										
+			HibernateUtil.getSession().clear();
+
+			TypeOfSampleUtil.clearTestCache();
+
 		} catch (Exception e) {
 			//bugzilla 2154
 			LogEvent.logError("PanelDAOImpl","insertData()",e.toString());
@@ -182,8 +185,8 @@ public class PanelDAOImpl extends BaseDAOImpl implements PanelDAO {
 			//bugzilla 2154
 			LogEvent.logError("PanelDAOImpl","AuditTrail updateData()",e.toString());
 			throw new LIMSRuntimeException("Error in Panel AuditTrail updateData()", e);
-		}  
-			
+		}
+
 		try {
 			HibernateUtil.getSession().merge(panel);
 			HibernateUtil.getSession().flush();
@@ -195,7 +198,8 @@ public class PanelDAOImpl extends BaseDAOImpl implements PanelDAO {
 			LogEvent.logError("PanelDAOImpl","updateData()",e.toString());
 			throw new LIMSRuntimeException("Error in Panel updateData()", e);
 		}
-		
+		TypeOfSampleUtil.clearTestCache();
+
 		clearIDMaps();
 	}
 

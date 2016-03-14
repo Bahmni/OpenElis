@@ -33,6 +33,7 @@ import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleTestDAO;
+import us.mn.state.health.lims.typeofsample.util.TypeOfSampleUtil;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSampleTest;
 
 public class TypeOfSampleTestDAOImpl extends BaseDAOImpl implements TypeOfSampleTestDAO {
@@ -49,6 +50,8 @@ public class TypeOfSampleTestDAOImpl extends BaseDAOImpl implements TypeOfSample
 				HibernateUtil.getSession().flush();
 				HibernateUtil.getSession().clear();
 			}
+
+			TypeOfSampleUtil.clearTestCache();
 
 		} catch (Exception e) {
 			// bugzilla 2154
@@ -67,6 +70,8 @@ public class TypeOfSampleTestDAOImpl extends BaseDAOImpl implements TypeOfSample
 			auditDAO.saveNewHistory(typeOfSampleTest, typeOfSampleTest.getSysUserId(), "SAMPLETYPE_TEST");
 			HibernateUtil.getSession().flush();
 			HibernateUtil.getSession().clear();
+
+			TypeOfSampleUtil.clearTestCache();
 		} catch (Exception e) {
 			LogEvent.logError("TypeOfSampleTestDAOImpl", "insertData()", e.toString());
 			throw new LIMSRuntimeException("Error in TypeOfSampleTest insertData()", e);

@@ -38,6 +38,7 @@ import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleDAO;
+import us.mn.state.health.lims.typeofsample.util.TypeOfSampleUtil;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSample;
 
 /**
@@ -112,6 +113,8 @@ public class TypeOfSampleDAOImpl extends BaseDAOImpl implements TypeOfSampleDAO 
 
 			HibernateUtil.getSession().flush();
 			HibernateUtil.getSession().clear();
+
+			TypeOfSampleUtil.clearTestCache();
 		} catch (Exception e) {
 			//bugzilla 2154
 			LogEvent.logError("TypeOfSampleDAOImpl","insertData()",e.toString());

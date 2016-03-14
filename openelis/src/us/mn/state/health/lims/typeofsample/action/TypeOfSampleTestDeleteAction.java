@@ -53,7 +53,6 @@ public class TypeOfSampleTestDeleteAction extends BaseAction {
 		try {
 			TypeOfSampleTestDAO typeOfSampleTestDAO = new TypeOfSampleTestDAOImpl();
 			typeOfSampleTestDAO.deleteData(selectedIDs, currentUserId);
-            TypeOfSampleUtil.clearTestCache();
 		} catch (LIMSRuntimeException lre) {
 			LogEvent.logError("TypeOfSampleTestDeleteAction","performAction()",lre.toString());
             request.setAttribute(IActionConstants.REQUEST_FAILED, true);

@@ -66,7 +66,6 @@ public class TypeOfSampleTestUpdateAction extends BaseAction {
 
         try {
             sampleTestDAO.insertData(sampleTest);
-            TypeOfSampleUtil.clearTestCache();
         } catch (LIMSRuntimeException e) {
             request.setAttribute(IActionConstants.REQUEST_FAILED, true);
             throw e;

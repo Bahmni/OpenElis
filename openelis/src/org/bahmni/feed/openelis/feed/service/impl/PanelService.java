@@ -79,7 +79,6 @@ public class PanelService {
                 panelDAO.updateData(panel);
                 saveTestsForPanel(panel, referenceDataPanel, sysUserId);
             }
-            TypeOfSampleUtil.clearTestCache();
         } catch (Exception e) {
             throw new LIMSException(String.format("Error while saving panel - %s", referenceDataPanel.getName()));
         }
