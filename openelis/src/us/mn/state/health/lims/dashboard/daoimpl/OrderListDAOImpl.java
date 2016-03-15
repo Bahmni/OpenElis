@@ -19,10 +19,8 @@ package us.mn.state.health.lims.dashboard.daoimpl;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jfree.util.ShapeUtilities;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.util.DateUtil;
-import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.dashboard.dao.OrderListDAO;
 import us.mn.state.health.lims.dashboard.valueholder.Order;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
@@ -37,7 +35,14 @@ import java.util.HashSet;
 import java.util.List;
 
 import static java.lang.Integer.parseInt;
-import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.*;
+import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.BiologistRejected;
+import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.Finalized;
+import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.FinalizedRO;
+import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.NotTested;
+import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.ReferedOut;
+import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.ReferredIn;
+import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance;
+import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.TechnicalRejected;
 import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.getStatusID;
 
 public class OrderListDAOImpl implements OrderListDAO {
@@ -302,7 +307,15 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "CASE WHEN COUNT(analysis.id) = SUM(CASE WHEN  analysis.status_id IN (" +getCompletedStatus()+ ") THEN 1 ELSE 0 END) THEN true ELSE false END as is_completed,\n" +
                 "CASE WHEN document_track.report_generation_time is null THEN false ELSE true END as is_printed\n" +
                 "FROM Sample AS sample\n" +
-                "INNER JOIN (select distinct s.id from analysis a inner join sample_item si on a.sampitem_id = si.id inner join sample s on si.samp_id = s.id where a.lastupdated >= ? or s.lastupdated >= ?) list on list.id = sample.id\n" +
+                "INNER JOIN (\n" +
+                    "SELECT DISTINCT si.samp_id as id\n" +
+                    "FROM analysis a INNER JOIN sample_item si ON a.sampitem_id = si.id\n" +
+                    "WHERE a.lastupdated >= ?\n" +
+                    "UNION\n" +
+                    "SELECT DISTINCT s.id as id\n" +
+                    "FROM sample s\n" +
+                    "WHERE s.lastupdated >= ?\n" +
+                ") list on list.id = sample.id\n" +
                 "LEFT OUTER JOIN Sample_Human AS sampleHuman ON sampleHuman.samp_Id = sample.id \n" +
                 "LEFT  JOIN sample_source ON sample_source.id = sample.sample_source_id \n" +
                 "INNER JOIN Patient AS patient ON sampleHuman.patient_id = patient.id \n" +

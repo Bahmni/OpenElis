@@ -1528,4 +1528,25 @@
             <column name="identity_data" type="varchar(255)"/>
         </modifyColumn>
     </changeSet>
+    <changeSet id="140320161800" author="Vinay" context="bahmni">
+        <comment>Add index on lastupdated for sample</comment>
+        <createIndex indexName="sample_lastupdated_idx"
+                     tableName="sample">
+            <column name="lastupdated"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="140320161801" author="Vinay" context="bahmni">
+        <comment>Add index on lastupdated for analysis</comment>
+        <createIndex indexName="analysis_lastupdated_idx"
+                     tableName="analysis">
+            <column name="lastupdated"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="150320161101" author="Vinay" context="bahmni">
+        <comment>Add index on patient_id for patient_identity table</comment>
+        <createIndex indexName="patient_identity_patient_id_idx"
+                     tableName="patient_identity">
+            <column name="patient_id"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>
