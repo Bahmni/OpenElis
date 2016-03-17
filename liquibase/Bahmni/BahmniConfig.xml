@@ -1549,4 +1549,16 @@
             <column name="patient_id"/>
         </createIndex>
     </changeSet>
+    <changeSet id="201603171606" author="Jaswanth,Swathi" context="bahmni">
+        <comment>Increase schedule interval to 24 hours</comment>
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                select count(*) from quartz_cron_scheduler where name = 'atom-feed-events-offset-marker';
+            </sqlCheck>
+        </preConditions>
+        <update schemaName="clinlims" tableName="quartz_cron_scheduler">
+            <column name="cron_statement" value="0 0 12 * * ?"/>
+            <where>name='atom-feed-events-offset-marker'</where>
+        </update>
+    </changeSet>
 </databaseChangeLog>
