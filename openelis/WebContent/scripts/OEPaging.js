@@ -3,6 +3,7 @@ function OEPager(formName, sufix) {
 	this.sufix = sufix;
 	this.curentPageNumber = 0;
 	this.form = window.document.forms[0];
+	this.form.enctype = "multipart/form-data";
 
 	this.setCurrentPageNumber = function(number) {
 		this.currentPageNumber = Number(number);
