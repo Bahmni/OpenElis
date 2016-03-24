@@ -1561,4 +1561,16 @@
             <where>name='atom-feed-events-offset-marker'</where>
         </update>
     </changeSet>
+
+    <changeSet id="2016-03-24-9732" author="Jaswanth, Hemanth" context="bahmni">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) from site_information where name = 'resultsPageSize'
+            </sqlCheck>
+        </preConditions>
+        <update schemaName="clinlims" tableName="site_information">
+            <column name="value" value="30"/>
+            <where>name='resultsPageSize'</where>
+        </update>
+    </changeSet>
 </databaseChangeLog>
