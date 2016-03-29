@@ -20,8 +20,6 @@ package us.mn.state.health.lims.sample.daoimpl;
 import org.apache.commons.validator.GenericValidator;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.provider.query.PatientSearchResults;
-import us.mn.state.health.lims.healthcenter.dao.HealthCenterDAO;
-import us.mn.state.health.lims.healthcenter.daoimpl.HealthCenterDAOImpl;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.patientidentitytype.util.PatientIdentityTypeMap;
 import us.mn.state.health.lims.sample.dao.SearchResultsDAO;
@@ -82,7 +80,7 @@ public class SearchResultsDAOImp implements SearchResultsDAO {
 				query.setString(EXTERNAL_ID_PARAM, nationalID.toLowerCase());
 			}
 			if (querySTNumber) {
-				query.setParameterList(ST_NUMBER_PARAM, getHealthPrefixedList(STNumber));
+				query.setParameterList(ST_NUMBER_PARAM, getAllInLowerCase(getHealthPrefixedList(STNumber)));
 			}
 			if (querySubjectNumber) {
 				query.setString(SUBJECT_NUMBER_PARAM, subjectNumber);
@@ -110,6 +108,14 @@ public class SearchResultsDAOImp implements SearchResultsDAO {
 		}
 
 		return results;
+	}
+
+	private List<String> getAllInLowerCase(List<String> healthPrefixedList) {
+		List<String> patientIdsInLowerCase = new ArrayList<>();
+		for (String healthPrefixedItem : healthPrefixedList) {
+			patientIdsInLowerCase.add(healthPrefixedItem.toLowerCase());
+		}
+		return patientIdsInLowerCase;
 	}
 
 	/**
@@ -184,7 +190,7 @@ public class SearchResultsDAOImp implements SearchResultsDAO {
 		}
 
 		if (STNumber) {
-            queryBuilder.append(" pi.identity_data in ( :" + ST_NUMBER_PARAM + " ) or ");
+            queryBuilder.append(" lower(pi.identity_data) in ( :" + ST_NUMBER_PARAM + " ) or ");
 		}
 
 		if (subjectNumber) {
