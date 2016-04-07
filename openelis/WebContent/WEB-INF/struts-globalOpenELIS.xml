@@ -829,6 +829,7 @@
                 validate="false"
                 >
             <forward name="success" path="patientResultDefinition"/>
+            <forward name="postSuccess" path="/PatientResults.do"/>
         </action>
 
         <action path="/PatientResultsUpdate" name="PatientResultsForm"

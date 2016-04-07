@@ -26,10 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.validator.GenericValidator;
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
-import org.apache.struts.action.DynaActionForm;
+import org.apache.struts.action.*;
 
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.common.action.IActionConstants;
@@ -112,6 +109,12 @@ public class PatientResultsAction extends BaseAction {
 			paging.page(request, dynaForm, newPage);
 		}
 
+		if(request.getMethod().equals("POST") && request.getParameter("patientID") == null) {
+			ActionRedirect actionRedirect = new ActionRedirect(mapping.findForward("postSuccess"));
+			String page = request.getParameter("page") == null ? "1" : request.getParameter("page");
+			actionRedirect.addParameter("page", page);
+			return actionRedirect;
+		}
 		return mapping.findForward(forward);
 	}
 
