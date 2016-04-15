@@ -1573,4 +1573,18 @@
             <where>name='resultsPageSize'</where>
         </update>
     </changeSet>
+
+    <changeSet id="201615041044" author="Chethan" context="bahmni">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                select count(*) from quartz_cron_scheduler where name = 'atom-feed-events-offset-marker';
+            </sqlCheck>
+        </preConditions>
+        <comment>atom-feed-events-offset-marker job should be run on 12 am everyday</comment>
+        <update schemaName="clinlims" tableName="quartz_cron_scheduler">
+            <column name="cron_statement" value="0 0 0 1/1 * ? *"/>
+            <where>name='atom-feed-events-offset-marker'</where>
+        </update>
+    </changeSet>
+
 </databaseChangeLog>
