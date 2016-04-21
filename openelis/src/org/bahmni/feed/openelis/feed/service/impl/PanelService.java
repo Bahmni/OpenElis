@@ -80,7 +80,7 @@ public class PanelService {
                 saveTestsForPanel(panel, referenceDataPanel, sysUserId);
             }
         } catch (Exception e) {
-            throw new LIMSException(String.format("Error while saving panel - %s", referenceDataPanel.getName()));
+            throw new LIMSException(String.format("Error while saving panel - %s", referenceDataPanel.getName()), e);
         }
     }
 
