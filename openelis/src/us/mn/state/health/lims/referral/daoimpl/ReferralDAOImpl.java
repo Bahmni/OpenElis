@@ -89,9 +89,12 @@ public class ReferralDAOImpl extends BaseDAOImpl implements ReferralDAO {
 
     @SuppressWarnings("unchecked")
     public List<Referral> getAllUncanceledOpenReferrals(int resultPageSize,int resultPageNumber) throws LIMSRuntimeException {
-        String sql = "From Referral r where" +
-                " r.analysis.statusId in (" + StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.ReferedOut) + "," + StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.BiologistRejectedRO) + ")" +
-                " and r.canceled = 'false' order by r.requestDate desc";
+        String sql = "select r From Referral r, Analysis a, Test t, SampleItem si, Sample s where r.analysis.id = a.id and a.test.id = t.id " +
+                "and a.sampleItem.id = si.id and si.sample.id = s.id " +
+                "and a.statusId in (" + StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.ReferedOut) + "," + StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.BiologistRejectedRO) + ") " +
+                "and r.canceled = 'false' " +
+                "order by date(r.requestDate) DESC, s.accessionNumber DESC , t.sortOrder ASC";
+
         try {
             Query query = HibernateUtil.getSession().createQuery(sql).setMaxResults(resultPageSize).setFirstResult(resultPageSize*resultPageNumber);
             List<Referral> referrals = query.list();
@@ -119,12 +122,13 @@ public class ReferralDAOImpl extends BaseDAOImpl implements ReferralDAO {
     }
 
     public List<Referral> getAllUncanceledOpenReferralsByPatientSTNumber(String patientSTNumber) throws LIMSRuntimeException {
-        String sql = "select r From Referral r, SampleHuman sh, PatientIdentity pi"+
-                " where r.analysis.sampleItem.sample.id = sh.sampleId" +
+        String sql = "select r From Referral r, SampleHuman sh, PatientIdentity pi, Test t, SampleItem si, Sample s"+
+                " where r.analysis.sampleItem.sample.id = sh.sampleId and r.analysis.test.id = t.id and r.analysis.sampleItem.id = si.id and si.sample.id = s.id" +
                 " and r.analysis.statusId in (" + StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.ReferedOut) + "," + StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.BiologistRejectedRO) + ")" +
                 " and sh.patientId = pi.patientId and pi.identityTypeId = "+ PatientIdentityTypeMap.getInstance().getIDForType("ST") +
                 " and pi.identityData in ( :patientSTNumber )" +
-                " and r.canceled = 'false' order by r.requestDate desc";
+                " and r.canceled = 'false' " +
+                " order by date(r.requestDate) desc, s.accessionNumber DESC , t.sortOrder ASC";
         try {
             Query query = HibernateUtil.getSession().createQuery(sql);
             query.setParameterList("patientSTNumber", getHealthPrefixedList(patientSTNumber));
