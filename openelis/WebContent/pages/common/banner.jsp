@@ -23,7 +23,7 @@
 	path = request.getContextPath();
 	basePath = path + "/";
 	bannerStyle = SystemConfiguration.getInstance().getBannerStyle();
-	languageSwitch = "true".equals(ConfigurationProperties.getInstance().getPropertyValue(Property.languageSwitch));
+	languageSwitch = "true".equals(ConfigurationProperties.getInstance().getPropertyValue(Property.allowLanguageChange));
 %>
 
 

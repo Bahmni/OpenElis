@@ -51,7 +51,7 @@ public abstract class ConfigurationProperties {
 						     PatientSearchUserName,
 						     PatientSearchPassword,
 						     labDirectorName,
-						     languageSwitch,
+                             allowLanguageChange,
 						     reportResults,
 						     resultReportingURL,
 						     malariaSurveillanceReport,
