@@ -53,11 +53,11 @@ basePath = path + "/";
         <form method="POST" action="/openelis/DoUpload.do" enctype="multipart/form-data">
             <table>
                 <tr>
-                <td><button type="button" id="refresh">Refresh</button></td>
+                <td><button type="button" id="refresh"><bean:message key="upload.refresh"/></button></td>
                 <td><input type="file" name="file" value="test_results_Upload_Template.csv"></td>
-                <td><span><input type="radio" name="importType" value="patient" checked="checked"> Patient</span></td>
-                <td><span><input type="radio" name="importType" value="sample"> Sample</span> </td>
-                <td><input type="submit" value="Upload">  </td>
+                <td><span><input type="radio" name="importType" value="patient" checked="checked"><bean:message key="upload.patient"/></span></td>
+                <td><span><input type="radio" name="importType" value="sample"><bean:message key="upload.sample"/></span> </td>
+                <td><input type="submit" value='<bean:message key="upload.upload"/>'>  </td>
             </table>
         </form>
     </div>

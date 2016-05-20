@@ -64,50 +64,50 @@ basePath = path + "/";
         <table>
             <tr>
                 <td>
-                    <input id="refreshButton" type="button" value="Refresh">
+                    <input id="refreshButton" type="button" value='<bean:message key="dashboard.msg.refresh"/>'>
                 </td>
                 <td>
-                    <div class="arrow-text"> Today&#39;s Stats</div><div class="arrow-right"></div>
+                    <div class="arrow-text"><bean:message key="dashboard.todayStatus.todayStatus"/></div><div class="arrow-right"></div>
                 </td>
                 <td>
-                    <span>Samples to collect : </span>
+                    <span><bean:message key="dashboard.todayStatus.samplesToCollect"/></span>
                     <span id="samplesToCollect"></span>
                 </td>
                 <td>
-                    <span>Samples collected : </span>
+                    <span><bean:message key="dashboard.todayStatus.samplesCollected"/></span>
                     <span id="samplesCollected"></span>
                 </td>
                 <td>
-                    <span>Total : </span>
+                    <span><bean:message key="dashboard.todayStatus.total"/></span>
                     <span id="totalSamplesCount"></span>
                 </td>
                 <td>
-                    <span>Awaiting Testing : </span>
+                    <span><bean:message key="dashboard.todayStatus.awaitingTesting"/></span>
                     <span id="awaitingTestCount"></span>
                 </td>
                 <td style="<% if (!alwaysValidate) { %> display:none <% } %>">
-                    <span>Awaiting Validation : </span>
+                    <span><bean:message key="dashboard.todayStatus.awaitingValidation"/></span>
                     <span id="awaitingValidationCount"></span>
                 </td>
                 <td>
-                    <span>Completed : </span>
+                    <span><bean:message key="dashboard.todayStatus.Completed"/></span>
                     <span id="completedTestCount"></span>
                 </td>
                 <td>
-                    <span class="stats-header"> Total Patients Today</span><span> : </span>
+                    <span class="stats-header"><bean:message key="dashboard.todayStatus.totalPatientsToday"/></span><span> : </span>
                     <span id="totalCollectedTodayCount"></span>
                 </td>
             </tr>
         </table>
     </div>
     <div id="tabs">
-        <span class="samplesToCollect sample_title_dashboard">Samples to Collect</span>
-        <span class="samplesCollected sample_title_dashboard">Samples Collected</span>
+        <span class="samplesToCollect sample_title_dashboard"><bean:message key="dashboard.msg.samplesToCollect"/></span>
+        <span class="samplesCollected sample_title_dashboard"><bean:message key="dashboard.msg.samplesCollected"/></span>
         <ul>
-            <li><a href="#todaySamplesToCollectListContainer" id="todaySamplesToCollectListContainerId" >Today</a></li>
-            <li class="backLog_first"><a href="#backlogSamplesToCollectListContainer" id="backlogSamplesToCollectListContainerId">Backlog</a></li>
-            <li><a href="#todaySamplesCollectedListContainer" id="todaySamplesCollectedListContainerId" >Today</a></li>
-            <li><a href="#backlogSamplesCollectedListContainer" id="backlogSamplesCollectedListContainerId" >Backlog</a></li>
+            <li><a href="#todaySamplesToCollectListContainer" id="todaySamplesToCollectListContainerId" ><bean:message key="dashboard.table.today"/></a></li>
+            <li class="backLog_first"><a href="#backlogSamplesToCollectListContainer" id="backlogSamplesToCollectListContainerId"><bean:message key="dashboard.table.backlog"/></a></li>
+            <li><a href="#todaySamplesCollectedListContainer" id="todaySamplesCollectedListContainerId" ><bean:message key="dashboard.table.today"/></a></li>
+            <li><a href="#backlogSamplesCollectedListContainer" id="backlogSamplesCollectedListContainerId" ><bean:message key="dashboard.table.backlog"/></a></li>
          </ul>
         <div id="todaySamplesToCollectListContainer">
                 <div id="todaySamplesToCollectListContainer-slick-grid"></div>
