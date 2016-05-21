@@ -39,7 +39,7 @@ public class LoginPageAction extends LoginBaseAction {
 
 		cleanUpSession(request);
 
-		if ("true".equals(ConfigurationProperties.getInstance().getPropertyValue(Property.languageSwitch))) {
+		if ("true".equals(ConfigurationProperties.getInstance().getPropertyValue(Property.allowLanguageChange))) {
 			String language = request.getParameter("lang");
 
 			if (language != null) {
