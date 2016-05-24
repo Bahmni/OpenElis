@@ -35,18 +35,22 @@ function order(div, orderArray, generateLink, getColumns, alwaysValidate) {
 }
 
 function generateLinkForPrint(order){
-    return "<a target='_blank' href='ReportPrint.do?type=patient&report=patientHaitiClinical&accessionDirect="+ order.accessionNumber +"&patientNumberDirect=" + order.stNumber + "'>Print</a>";
+    var print = jQuery("#translatedColumnNames").attr("data-link-print");
+    return "<a target='_blank' href='ReportPrint.do?type=patient&report=patientHaitiClinical&accessionDirect="+ order.accessionNumber +"&patientNumberDirect=" + order.stNumber + "'>"+print+"</a>";
 }
 
 
 function generateAllLinksForOrder(order, alwaysValidate){
     if(order.accessionNumber == null){
-        return  "<a href='SamplePatientEntry.do?id="+ order.orderId +"&patientId=" + order.stNumber + "'>Collect Sample</a>";
+        var linkSample = jQuery("#translatedColumnNames").attr("data-link-collectSample");
+        return  "<a href='SamplePatientEntry.do?id="+ order.orderId +"&patientId=" + order.stNumber + "'>"+linkSample+"</a>";
     }
-    var enterResultLink = "<a href='AccessionResults.do?accessionNumber=" + order.accessionNumber + "&referer=LabDashboard"+"'>Result</a>";
+    var result = jQuery("#translatedColumnNames").attr("data-link-result");
+    var enterResultLink = "<a href='AccessionResults.do?accessionNumber=" + order.accessionNumber + "&referer=LabDashboard"+"'>"+result+"</a>";
     if(alwaysValidate){
         //TODO: &type= is required in the url because of a bug I can't find the source of. The bug causes people without
-        var validationLink = "<a href='ResultValidationForAccessionNumber.do?accessionNumber=" + order.accessionNumber + "&patientId=" + order.stNumber + "&referer=LabDashboard&type=&test='>Validate</a>";
+        var validate = jQuery("#translatedColumnNames").attr("data-link-validate");
+        var validationLink = "<a href='ResultValidationForAccessionNumber.do?accessionNumber=" + order.accessionNumber + "&patientId=" + order.stNumber + "&referer=LabDashboard&type=&test='>"+validate+"</a>";
         return enterResultLink + " | " + validationLink + " | " + generateLinkForPrint(order);
     }
     return enterResultLink + " | " + generateLinkForPrint(order);
