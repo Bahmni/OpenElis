@@ -100,6 +100,20 @@ basePath = path + "/";
             </tr>
         </table>
     </div>
+    <span id = "translatedColumnNames"
+        data-patientID = <bean:message key="dashboard.sample.column.patientID"/>
+        data-patientName=<bean:message key="dashboard.sample.column.patientName"/>
+        data-source=<bean:message key="dashboard.sample.column.source"/>
+        data-total=<bean:message key="dashboard.sample.column.total"/>
+        data-notes=<bean:message key="dashboard.sample.column.notes"/>
+        data-action=<bean:message key="dashboard.sample.column.action"/>
+
+        data-accessionNumber=<bean:message key="dashboard.sample.column.accessionNumber"/>
+        data-pendingTests=<bean:message key="dashboard.sample.column.pendingTests"/>
+        data-pendingValidation=<bean:message key="dashboard.sample.column.pendingValidation"/>
+        data-completed=<bean:message key="dashboard.sample.column.completed"/>
+        data-printed=<bean:message key="dashboard.sample.column.printed"/>
+    ></span>
     <div id="tabs">
         <span class="samplesToCollect sample_title_dashboard"><bean:message key="dashboard.msg.samplesToCollect"/></span>
         <span class="samplesCollected sample_title_dashboard"><bean:message key="dashboard.msg.samplesCollected"/></span>

@@ -48,7 +48,7 @@ basePath = path + "/";
 <script type="text/javascript" src="<%=basePath%>scripts/slickgrid/slick.autotooltips.js"></script>
 
 <div>
-    <h1>Uploaded file</h1>
+    <h1><bean:message key="result.uploadedFile"/></h1>
     <div id="upload">
         <form method="POST" action="/openelis/DoUpload.do" enctype="multipart/form-data">
             <table>
