@@ -427,6 +427,17 @@ public class ResultsLoadUtility {
     }
 
     @SuppressWarnings("unchecked")
+    public List<Analysis> getAnalysisFromSample(List<Sample> samples) {
+        List<Integer> sampleIds = new ArrayList<>();
+        for(Sample sample:samples){
+            sampleIds.add(Integer.parseInt(sample.getId()));
+        }
+        return analysisDAO.getAnalysisBySampleIds(sampleIds,excludedAnalysisStatus);
+    }
+
+
+
+    @SuppressWarnings("unchecked")
     private List<TestResultItem> getTestResultItemFromAnalysis(Analysis analysis, String patientName, String patientInfo, String patientSTNumber)
             throws LIMSRuntimeException {
         List<TestResultItem> testResultList = new ArrayList<>();
@@ -434,7 +445,6 @@ public class ResultsLoadUtility {
         Test test = analysis.getTest();
         SampleItem sampleItem = analysis.getSampleItem();
         List<Result> resultList = resultDAO.getResultsByAnalysis(analysis);
-
         ResultInventory testKit = null;
 
         String techSignature = "";
@@ -575,27 +585,32 @@ public class ResultsLoadUtility {
         return testList;
     }
 
+    private Sample getSampleFromAnalysis(Analysis analysis) {
+
+        for(Sample sample:samples){
+            if(sample == analysis.getSampleItem().getSample())
+                return sample;
+        }
+
+        return null;
+    }
+
     private TestResultItem[] getSortedTestsFromSamples() {
 
         List<TestResultItem> testList = new ArrayList<>();
+        List<Analysis> analysisList  = new ArrayList<>();
 
-        for (Sample sample : samples) {
-            currSample = sample;
-            List<SampleItem> sampleItems = getSampleItemsForSample(sample);
-
-            for (SampleItem item : sampleItems) {
-                List<Analysis> analysisList = getAnalysisForSampleItem(item);
+                if(!samples.isEmpty())
+                analysisList = getAnalysisFromSample(samples) ;
 
                 for (Analysis analysis : analysisList) {
-
+                    currSample = getSampleFromAnalysis(analysis);
                     List<TestResultItem> selectedItemList = getTestResultItemFromAnalysis(analysis, NO_PATIENT_NAME, NO_PATIENT_INFO, NO_ST_NUMBER);
 
                     for (TestResultItem selectedItem : selectedItemList) {
                         testList.add(selectedItem);
                     }
                 }
-            }
-        }
 
         reverseSortByAccessionAndSequence(testList);
         setSampleGroupingNumbers(testList);
@@ -770,14 +785,6 @@ public class ResultsLoadUtility {
         return resultLimitDAO.getAllResultLimitsForTest(test);
     }
 
-    private List<SampleItem> getSampleItemsForSample(Sample sample) {
-        SampleItemDAO sampleItemDAO = DAOImplFactory.getInstance().getSampleItemDAOImpl();
-        return sampleItemDAO.getSampleItemsBySampleId(sample.getId());
-    }
-
-    private List<Analysis> getAnalysisForSampleItem(SampleItem item) {
-        return analysisDAO.getAnalysesBySampleItemsExcludingByStatusIds(item, excludedAnalysisStatus);
-    }
 
     private TestResultItem createTestResultItem(ResultLimit resultLimit, Analysis analysis, Test test, ResultInventory testKit, List<Note> notes,
                                                 String sequenceNumber, Result result, String accessionNumber, String patientName, String patientInfo, String techSignature,

@@ -364,7 +364,7 @@ public class AnalysisDAOImpl extends BaseDAOImpl implements AnalysisDAO {
 			throws LIMSRuntimeException {
 		List list = new Vector();
 		try {
-			String sql = "from Analysis a where a.test.testSection.id = :testSectionId and a.statusId IN (:statusIdList)";
+			String sql = "select from Analysis a where a.test.testSection.id = :testSectionId and a.statusId IN (:statusIdList)";
 
 			if (sortedByDateAndAccession) {
 				sql += " order by a.sampleItem.sample.receivedTimestamp  asc, a.sampleItem.sample.accessionNumber";
@@ -454,6 +454,36 @@ public class AnalysisDAOImpl extends BaseDAOImpl implements AnalysisDAO {
 		}
 
 		return analysisList;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Analysis> getAnalysisBySampleIds(List<Integer> sampleIds,Set<Integer> excludedAnalysisStatus) throws LIMSRuntimeException {
+		List<Analysis> analysis = null;
+		try {
+
+			String sql = "from Analysis a where a.sampleItem.sample.id  in (:sampleIds)";
+
+			if(!excludedAnalysisStatus.isEmpty()) {
+				sql += " and a.statusId NOT IN (:excludedAnalysisStatus)";
+			}
+			sql += " ORDER BY a.sampleItem.sortOrder";
+
+			Query query = HibernateUtil.getSession().createQuery(sql);
+			if(!excludedAnalysisStatus.isEmpty()) {
+				query.setParameterList("excludedAnalysisStatus", excludedAnalysisStatus);
+			}
+			query.setParameterList("sampleIds", sampleIds);
+
+			analysis = query.list();
+			HibernateUtil.getSession().flush();
+			HibernateUtil.getSession().clear();
+
+			return analysis;
+
+		} catch (Exception e) {
+			LogEvent.logError("ResultDAOImpl", "getResultByAnalysis()", e.toString());
+			throw new LIMSRuntimeException("Error in Result getResultByAnalysis()", e);
+		}
 	}
 
 	@SuppressWarnings("unchecked")

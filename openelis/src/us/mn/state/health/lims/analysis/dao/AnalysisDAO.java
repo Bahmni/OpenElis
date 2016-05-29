@@ -176,4 +176,7 @@ public interface AnalysisDAO extends BaseDAO {
     public List<Analysis> getAllAnalysisByAccessionNumberAndStatus(String accessionNumber, List<StatusOfSampleUtil.AnalysisStatus> analysisStatuses);
 
     List<Analysis> getAllAnalysisByStatus(List<StatusOfSampleUtil.AnalysisStatus> analysisStatuses);
+
+	public List<Analysis> getAnalysisBySampleIds(List<Integer> sampleIds,Set<Integer> excludedAnalysisStatus) throws LIMSRuntimeException;
+
 }
