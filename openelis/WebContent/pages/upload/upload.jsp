@@ -48,20 +48,29 @@ basePath = path + "/";
 <script type="text/javascript" src="<%=basePath%>scripts/slickgrid/slick.autotooltips.js"></script>
 
 <div>
-    <h1>Uploaded file</h1>
+    <h1><bean:message key="result.uploadedFile"/></h1>
     <div id="upload">
         <form method="POST" action="/openelis/DoUpload.do" enctype="multipart/form-data">
             <table>
                 <tr>
-                <td><button type="button" id="refresh">Refresh</button></td>
+                <td><button type="button" id="refresh"><bean:message key="upload.refresh"/></button></td>
                 <td><input type="file" name="file" value="test_results_Upload_Template.csv"></td>
-                <td><span><input type="radio" name="importType" value="patient" checked="checked"> Patient</span></td>
-                <td><span><input type="radio" name="importType" value="sample"> Sample</span> </td>
-                <td><input type="submit" value="Upload">  </td>
+                <td><span><input type="radio" name="importType" value="patient" checked="checked"><bean:message key="upload.patient"/></span></td>
+                <td><span><input type="radio" name="importType" value="sample"><bean:message key="upload.sample"/></span> </td>
+                <td><input type="submit" value='<bean:message key="upload.upload"/>'>  </td>
             </table>
         </form>
     </div>
 
+    <span id = "uploadDetail"
+        fileName = <bean:message key="dashboard.uploadedFile.fileName"/>
+        type = <bean:message key="dashboard.uploadedFile.type"/>
+        dateOfUpload = <bean:message key="dashboard.uploadedFile.dateOfUpload"/>
+        status = <bean:message key="dashboard.uploadedFile.status"/>
+        stage = <bean:message key="dashboard.uploadedFile.stage"/>
+        download = <bean:message key="dashboard.uploadedFile.download"/>
+        >
+    </span>
     <div id="importStatusGrid" style="width:1000px">
     </div>
 
@@ -75,6 +84,7 @@ basePath = path + "/";
     </div>
 </div>
 
+
 <style>
     .bar {
         height: 18px;
@@ -86,9 +96,9 @@ basePath = path + "/";
     var gridForInImportStatus;
 
     var columns = [
-        {id: "originalFileName", name: "Name of the File", field: "originalFileName", sortable: true, width: 200},
-        {id: "type", name: "Type", field: "type", sortable: true, width: 100},
-        {id: "startTime", name: "Date of Upload", field: "startTime", sortable: true, width: 200,
+        {id: "originalFileName", name: jQuery("#uploadDetail").attr("fileName"), field: "originalFileName", sortable: true, width: 200},
+        {id: "type", name:jQuery("#uploadDetail").attr("type"), field: "type", sortable: true, width: 100},
+        {id: "startTime", name:jQuery("#uploadDetail").attr("dateOfUpload"), field: "startTime", sortable: true, width: 200,
             formatter: function ( row, cell, value, columnDef, dataContext ) {
                 function padWithZeroes(aField) {
                     if (aField < 10)
@@ -104,9 +114,9 @@ basePath = path + "/";
                 return "";
             }
         },
-        {id: "status", name: "Status", field: "status", sortable: true, width: 300},
-        {id: "stage", name: "Stage", field: "stageName", sortable: true, width: 100},
-        {id: "errorFileName", name: "Download", field: "errorFileName", sortable: true, width: 100,
+        {id: "status", name: jQuery("#uploadDetail").attr("status"), field: "status", sortable: true, width: 300},
+        {id: "stage", name: jQuery("#uploadDetail").attr("stage"), field: "stageName", sortable: true, width: 100},
+        {id: "errorFileName", name: jQuery("#uploadDetail").attr("download"), field: "errorFileName", sortable: true, width: 100,
             formatter: function ( row, cell, value, columnDef, dataContext ) {
                 if (value) {
                     return '<a href="' + value + '">ErrorFile</a>';
