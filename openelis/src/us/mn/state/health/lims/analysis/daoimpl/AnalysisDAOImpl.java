@@ -364,7 +364,7 @@ public class AnalysisDAOImpl extends BaseDAOImpl implements AnalysisDAO {
 			throws LIMSRuntimeException {
 		List list = new Vector();
 		try {
-			String sql = "select from Analysis a where a.test.testSection.id = :testSectionId and a.statusId IN (:statusIdList)";
+			String sql = "from Analysis a where a.test.testSection.id = :testSectionId and a.statusId IN (:statusIdList)";
 
 			if (sortedByDateAndAccession) {
 				sql += " order by a.sampleItem.sample.receivedTimestamp  asc, a.sampleItem.sample.accessionNumber";
