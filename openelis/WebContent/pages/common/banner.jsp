@@ -146,6 +146,12 @@ function displayHelp(){
 %>
 
 <% if( languageSwitch && "loginForm".equals((String)request.getAttribute(IActionConstants.FORM_NAME)) ){ %>
-  <div id="language-chooser"><a href="#" onclick="setLanguage('fr-FR')">Français</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" onclick="setLanguage('en_US')">English</a></div>
+  <div id="language-chooser"> <bean:message key="banner.message.selectLanguage"/>
+    <select onchange="setLanguage(this.options[this.selectedIndex].value)">
+        <option selected></option>
+        <option value="en_US">English</option>
+        <option value="fr-FR">Français</option>
+    </select>
+  </div>
 <% } %>
 
