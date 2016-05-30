@@ -160,7 +160,6 @@ $jq(document).ready( function() {
 				if(checked  && !disabled) {
 					markUpdated(index);
 					handleReferralCheckChange(this);
-					handleReferralReasonAndInstituteChange(index);
 				}
 			}
 	);
