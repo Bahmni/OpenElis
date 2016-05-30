@@ -149,8 +149,8 @@ function displayHelp(){
   <div id="language-chooser"> <bean:message key="banner.message.selectLanguage"/>
     <select onchange="setLanguage(this.options[this.selectedIndex].value)">
         <option selected></option>
-        <option value="en_US">English</option>
-        <option value="fr-FR">Français</option>
+        <option value="en_US"><bean:message bundle="setOfLanguagesBundle" key="en_US"/></option>
+        <option value="fr-FR"><bean:message bundle="setOfLanguagesBundle" key="fr-FR"/></option>
     </select>
   </div>
 <% } %>
