@@ -29,13 +29,10 @@
 
 <script language="JavaScript1.2">
 function /*void*/ setLanguage( language ){
-
 	//this weirdness is because we want the language to which we are changing, not the one we are in
-	if( language == 'en_US'){
-	    update = confirm("Changing the language will affect all logged in users ");
-	} else if( language == 'fr-FR' ){
-		update = confirm( "Modification de la langue affectera tous les utilisateurs enregistrés");
-	}
+    var languageMessage = "data-message-"+language;
+
+	update = confirm(jQuery("#updateMessage").attr(languageMessage));
 	
 	if( update ){
 		var form = window.document.forms[0];
@@ -153,5 +150,9 @@ function displayHelp(){
         <option value="fr-FR"><bean:message bundle="setOfLanguagesBundle" key="fr-FR"/></option>
     </select>
   </div>
+  <span id = "updateMessage"
+    data-message-fr-FR = '<bean:message bundle="setOfLanguagesBundle" key="languageConfirmation.message.french"/>'
+    data-message-en_US = '<bean:message bundle="setOfLanguagesBundle" key="languageConfirmation.message.english"/>'
+    ></span>
 <% } %>
 

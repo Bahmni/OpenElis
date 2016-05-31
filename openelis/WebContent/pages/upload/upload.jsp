@@ -63,12 +63,12 @@ basePath = path + "/";
     </div>
 
     <span id = "uploadDetail"
-        fileName = <bean:message key="dashboard.uploadedFile.fileName"/>
-        type = <bean:message key="dashboard.uploadedFile.type"/>
-        dateOfUpload = <bean:message key="dashboard.uploadedFile.dateOfUpload"/>
-        status = <bean:message key="dashboard.uploadedFile.status"/>
-        stage = <bean:message key="dashboard.uploadedFile.stage"/>
-        download = <bean:message key="dashboard.uploadedFile.download"/>
+        data-fileName = '<bean:message key="dashboard.uploadedFile.fileName"/>'
+        data-type = '<bean:message key="dashboard.uploadedFile.type"/>'
+        data-dateOfUpload = '<bean:message key="dashboard.uploadedFile.dateOfUpload"/>'
+        data-status = '<bean:message key="dashboard.uploadedFile.status"/>'
+        data-stage = '<bean:message key="dashboard.uploadedFile.stage"/>'
+        data-download = '<bean:message key="dashboard.uploadedFile.download"/>'
         >
     </span>
     <div id="importStatusGrid" style="width:1000px">
@@ -96,9 +96,10 @@ basePath = path + "/";
     var gridForInImportStatus;
 
     var columns = [
-        {id: "originalFileName", name: jQuery("#uploadDetail").attr("fileName"), field: "originalFileName", sortable: true, width: 200},
-        {id: "type", name:jQuery("#uploadDetail").attr("type"), field: "type", sortable: true, width: 100},
-        {id: "startTime", name:jQuery("#uploadDetail").attr("dateOfUpload"), field: "startTime", sortable: true, width: 200,
+        {id: "originalFileName", name: jQuery("#uploadDetail").attr("data-
+        fileName"), field: "originalFileName", sortable: true, width: 200},
+        {id: "type", name:jQuery("#uploadDetail").attr("data-type"), field: "type", sortable: true, width: 100},
+        {id: "startTime", name:jQuery("#uploadDetail").attr("data-dateOfUpload"), field: "startTime", sortable: true, width: 200,
             formatter: function ( row, cell, value, columnDef, dataContext ) {
                 function padWithZeroes(aField) {
                     if (aField < 10)
@@ -114,9 +115,9 @@ basePath = path + "/";
                 return "";
             }
         },
-        {id: "status", name: jQuery("#uploadDetail").attr("status"), field: "status", sortable: true, width: 300},
-        {id: "stage", name: jQuery("#uploadDetail").attr("stage"), field: "stageName", sortable: true, width: 100},
-        {id: "errorFileName", name: jQuery("#uploadDetail").attr("download"), field: "errorFileName", sortable: true, width: 100,
+        {id: "status", name: jQuery("#uploadDetail").attr("data-status"), field: "status", sortable: true, width: 300},
+        {id: "stage", name: jQuery("#uploadDetail").attr("data-stage"), field: "stageName", sortable: true, width: 100},
+        {id: "errorFileName", name: jQuery("#uploadDetail").attr("data-download"), field: "errorFileName", sortable: true, width: 100,
             formatter: function ( row, cell, value, columnDef, dataContext ) {
                 if (value) {
                     return '<a href="' + value + '">ErrorFile</a>';

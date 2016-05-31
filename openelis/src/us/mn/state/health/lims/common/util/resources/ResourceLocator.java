@@ -32,9 +32,7 @@ public class ResourceLocator {
 	private static ResourceLocator me; // Holder for Singleton
 
 	// Holds the ApplicationResources.properties information
-    private MessageResources messageResources = null;
-
-    private MessageResources languageResources = null;
+    private MessageResources messageResources;
 
 	// Name of file that contains resource mappings. This class loads this into
 	// the propertyFilePairs object
@@ -88,8 +86,6 @@ public class ResourceLocator {
 
 		// Initialize the message resources object
 		initializeMessageResources();
-        // Initialize the Language resources object
-        initializeLanguageResources();
 	}
 
 	/**
@@ -156,20 +152,6 @@ public class ResourceLocator {
 
 		messageResources = factoryObject.createResources(config.getParameter());
 		messageResources.setReturnNull(config.getNull());
-	}
-
-	private void initializeLanguageResources(){
-        MessageResourcesConfig config = new MessageResourcesConfig();
-
-        config.setParameter(propertyFilePairs
-                .getProperty("LanguageResources.classpath"));
-        String factory = config.getFactory();
-        MessageResourcesFactory.setFactoryClass(factory);
-        MessageResourcesFactory factoryObject = MessageResourcesFactory
-                .createFactory();
-
-        languageResources = factoryObject.createResources(config.getParameter());
-        languageResources.setReturnNull(config.getNull());
 	}
 
 	/**
