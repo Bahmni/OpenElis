@@ -35,8 +35,9 @@ function order(div, orderArray, generateLink, getColumns, alwaysValidate) {
 }
 
 function generateLinkForPrint(order){
-    var print = jQuery("#translatedColumnNames").attr("data-link-print");
-    return "<a target='_blank' href='ReportPrint.do?type=patient&report=patientHaitiClinical&accessionDirect="+ order.accessionNumber +"&patientNumberDirect=" + order.stNumber + "'>"+print+"</a>";
+    var printMessage = jQuery("#translatedColumnNames").attr("data-link-print");
+    var printIcon = '<img id="actionIcon" src="images/print.svg" title="'+ printMessage +'">';
+    return "<a id='print' target='_blank' href='ReportPrint.do?type=patient&report=patientHaitiClinical&accessionDirect="+ order.accessionNumber +"&patientNumberDirect=" + order.stNumber + "'>"+printIcon+"</a>";
 }
 
 
@@ -45,12 +46,15 @@ function generateAllLinksForOrder(order, alwaysValidate){
         var linkSample = jQuery("#translatedColumnNames").attr("data-link-collectSample");
         return  "<a href='SamplePatientEntry.do?id="+ order.orderId +"&patientId=" + order.stNumber + "'>"+linkSample+"</a>";
     }
-    var result = jQuery("#translatedColumnNames").attr("data-link-result");
-    var enterResultLink = "<a href='AccessionResults.do?accessionNumber=" + order.accessionNumber + "&referer=LabDashboard"+"'>"+result+"</a>";
+    var resultMessage = jQuery("#translatedColumnNames").attr("data-link-result");
+    var resultIcon = '<img id="actionIcon" src="images/result.svg" title="'+resultMessage+'">';
+    var enterResultLink = "<a id='result' href='AccessionResults.do?accessionNumber=" + order.accessionNumber + "&referer=LabDashboard"+"'>"+resultIcon+"</a>";
+
     if(alwaysValidate){
         //TODO: &type= is required in the url because of a bug I can't find the source of. The bug causes people without
-        var validate = jQuery("#translatedColumnNames").attr("data-link-validate");
-        var validationLink = "<a href='ResultValidationForAccessionNumber.do?accessionNumber=" + order.accessionNumber + "&patientId=" + order.stNumber + "&referer=LabDashboard&type=&test='>"+validate+"</a>";
+        var validateMessage = jQuery("#translatedColumnNames").attr("data-link-validate");
+        var validateIcon = '<img id="actionIcon" src="images/validate.svg" title="'+validateMessage+'">';
+        var validationLink = "<a id='validate' href='ResultValidationForAccessionNumber.do?accessionNumber=" + order.accessionNumber + "&patientId=" + order.stNumber + "&referer=LabDashboard&type=&test='>"+validateIcon+"</a>";
         return enterResultLink + " | " + validationLink + " | " + generateLinkForPrint(order);
     }
     return enterResultLink + " | " + generateLinkForPrint(order);
