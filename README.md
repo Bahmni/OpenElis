@@ -31,3 +31,4 @@ Technical improvements
 ======================
 - Added ant buld
 - Shortcircuited all calls to Session.clear
+- Added Transifex config file
