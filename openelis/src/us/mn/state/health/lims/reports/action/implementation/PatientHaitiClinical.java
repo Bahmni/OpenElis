@@ -27,6 +27,7 @@ import us.mn.state.health.lims.result.valueholder.Result;
 import us.mn.state.health.lims.sample.util.AccessionNumberUtil;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus;
+import us.mn.state.health.lims.common.util.DateUtil;
 
 import java.util.*;
 
@@ -98,7 +99,15 @@ public class PatientHaitiClinical extends HaitiPatientReport implements IReportC
 		Collections.sort(reportItems, new Comparator<HaitiClinicalPatientData>() {
 			@Override
 			public int compare(HaitiClinicalPatientData o1, HaitiClinicalPatientData o2) {
-				
+
+				Date orderDate1 = DateUtil.convertStringDateToSqlDate(o1.getOrderDate());
+				Date orderDate2 = DateUtil.convertStringDateToSqlDate(o2.getOrderDate());
+				int dateSort = orderDate1.compareTo(orderDate2);
+
+				if (dateSort != 0) {
+					return dateSort;
+				}
+
 				String o1AccessionNumber = AccessionNumberUtil.getAccessionNumberFromSampleItemAccessionNumber( o1.getAccessionNumber() );
 				String o2AccessionNumber = AccessionNumberUtil.getAccessionNumberFromSampleItemAccessionNumber( o2.getAccessionNumber() );
 				int accessionSort = o1AccessionNumber.compareTo(o2AccessionNumber);
