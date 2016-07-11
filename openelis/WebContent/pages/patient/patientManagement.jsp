@@ -623,8 +623,12 @@ function  /*void*/ setPatientInfo(nationalID, ST_ID, subjectNumber, lastName, fi
 		patientType, insurance, occupation, patientUpdated, personUpdated, motherInitial, commune, addressDept, educationId, nationalId, nationalOther,
 		maritialStatusId, healthRegionId, healthDistrictId, primaryRelative ) {
 
+	clearDynamicAddresses();
 	clearErrors();
 
+	if(firstName == undefined && lastName == undefined){
+		jQuery("#PatientDetail").hide();
+	}
 	if ( supportNationalID) { $("nationalID").value = nationalID == undefined ? "" : nationalID; }
 	if(supportSTNumber){ $("ST_ID").value = ST_ID == undefined ? "" : ST_ID; }
 	if(supportSubjectNumber){ $("subjectNumberID").value = subjectNumber == undefined ? "" : subjectNumber; }

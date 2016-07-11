@@ -60,7 +60,7 @@
 
 <!-- <html:button property="showHide" value="-" onclick="showHideSection(this, 'orderDisplay');" styleId="orderDisplayButton"/>
  -->
- <h2><%= StringUtil.getContextualMessageForKey("sample.entry.order.label") %>
+ <h2 id="orderDisplay-title"><%= StringUtil.getContextualMessageForKey("sample.entry.order.label") %>
 <span class="requiredlabel">*</span></h2>
 
 <div id="orderDisplay" style="display:block;" >

@@ -117,6 +117,9 @@ function processSearchSuccess(xhr)
 	{
 		$("searchResultsDiv").hide();
 		$("noPatientFound").show();
+		$('samplesDisplay').hide();
+		$('orderDisplay').hide();
+		$('orderDisplay-title').hide();
 		selectPatient( null );
 	}
 }
