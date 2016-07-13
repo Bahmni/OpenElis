@@ -115,13 +115,18 @@ function processSearchSuccess(xhr)
 		}
 	}else
 	{
-		$("searchResultsDiv").hide();
-		$("noPatientFound").show();
-		$('samplesDisplay').hide();
-		$('orderDisplay').hide();
-		$('orderDisplay-title').hide();
+		hideIfExists("searchResultsDiv");
+		hideIfExists('PatientDetail');
+		showIfExists('noPatientFound');
 		selectPatient( null );
 	}
+}
+
+function hideIfExists(id){
+	$(id)&&$(id).hide();
+}
+function showIfExists(id){
+	$(id)&&$(id).show();
 }
 
 function processSearchFailure(xhr)
