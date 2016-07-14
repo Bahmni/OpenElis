@@ -1587,4 +1587,28 @@
         </update>
     </changeSet>
 
+    <changeSet id="20160714-2017-1" author="Jaswanth,Padma" context="bahmni">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists columnName="tags" tableName="event_records_queue"/>
+            </not>
+        </preConditions>
+        <comment>Creating column tags for queue table. Each event can be tagged with multiple tags; as comma separated strings</comment>
+        <addColumn tableName="event_records_queue">
+            <column name="tags" type="varchar(255)"></column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20160714-2017-2" author="Jaswanth,Padma" context="bahmni">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists columnName="tags" tableName="event_records"/>
+            </not>
+        </preConditions>
+        <comment>Creating column tags for event_records table. Each event can be tagged with multiple tags; as comma separated strings</comment>
+        <addColumn tableName="event_records">
+            <column name="tags" type="varchar(255)"></column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
