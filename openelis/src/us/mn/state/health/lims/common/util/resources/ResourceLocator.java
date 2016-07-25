@@ -15,14 +15,14 @@
 */
 package us.mn.state.health.lims.common.util.resources;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
 import org.apache.struts.config.MessageResourcesConfig;
 import org.apache.struts.util.MessageResources;
 import org.apache.struts.util.MessageResourcesFactory;
 import us.mn.state.health.lims.common.log.LogEvent;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 /**
  * Diane Benz Oct 29, 2005
@@ -32,12 +32,12 @@ public class ResourceLocator {
 	private static ResourceLocator me; // Holder for Singleton
 
 	// Holds the ApplicationResources.properties information
-	private MessageResources messageResources = null;
+    private MessageResources messageResources;
 
 	// Name of file that contains resource mappings. This class loads this into
 	// the propertyFilePairs object
 	private final String RESOURCE_PROPERTIES = "Resources.properties";
-	
+
 	public static final String AJAX_PROPERTIES = "AjaxResources.properties";
 	
 	public static final String REPORTS_PROPERTIES = "Reports.properties";
@@ -59,7 +59,7 @@ public class ResourceLocator {
 		 */
 		InputStream propertyStream = this.getClass().getResourceAsStream(
 				RESOURCE_PROPERTIES);
-		if (propertyStream == null) {
+        if (propertyStream == null) {
 			// Property file not found, throw exception
 			throw new RuntimeException("Resources Property file "
 					+ RESOURCE_PROPERTIES + " was not found.");
@@ -78,7 +78,7 @@ public class ResourceLocator {
 					propertyStream.close();
 					propertyStream = null;
 				} catch (Exception e) {
-                    //bugzilla 2154  
+                    //bugzilla 2154
 			        LogEvent.logError("ResourceLocator","ResourceLocator()",e.toString());
 				}
 			}
@@ -162,6 +162,12 @@ public class ResourceLocator {
 	public MessageResources getMessageResources() {
 		return messageResources;
 	}
+
+    /**
+     * Returns the languageResources.
+     *
+     * @return LanguageResources
+     */
 
 	/**
 	 * Returns the path for a resource filename.

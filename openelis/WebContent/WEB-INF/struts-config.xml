@@ -4953,7 +4953,8 @@
 
 <!-- ======================================== Message Resources Definitions -->
 
-    <message-resources parameter="MessageResources"/>        
+    <message-resources parameter="MessageResources"/>
+    <message-resources parameter="SetOfSupportedLanguages" key="setOfLanguagesBundle"/>
     
 <!-- =============================================== Plug Ins Configuration -->
 

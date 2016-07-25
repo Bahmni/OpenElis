@@ -29,13 +29,10 @@
 
 <script language="JavaScript1.2">
 function /*void*/ setLanguage( language ){
-
 	//this weirdness is because we want the language to which we are changing, not the one we are in
-	if( language == 'en_US'){
-	    update = confirm("Changing the language will affect all logged in users ");
-	} else if( language == 'fr-FR' ){
-		update = confirm( "Modification de la langue affectera tous les utilisateurs enregistrés");
-	}
+    var languageMessage = "data-message-"+language;
+
+	update = confirm(jQuery("#updateMessage").attr(languageMessage));
 	
 	if( update ){
 		var form = window.document.forms[0];
@@ -146,6 +143,18 @@ function displayHelp(){
 %>
 
 <% if( languageSwitch && "loginForm".equals((String)request.getAttribute(IActionConstants.FORM_NAME)) ){ %>
-  <div id="language-chooser"><a href="#" onclick="setLanguage('fr-FR')">Français</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" onclick="setLanguage('en_US')">English</a></div>
+  <div id="language-chooser"> <bean:message key="banner.message.selectLanguage"/>
+    <select onchange="setLanguage(this.options[this.selectedIndex].value)">
+        <option selected></option>
+        <option value="en_US"><bean:message bundle="setOfLanguagesBundle" key="en_US"/></option>
+        <option value="fr-FR"><bean:message bundle="setOfLanguagesBundle" key="fr-FR"/></option>
+        <option value="es-ES"><bean:message bundle="setOfLanguagesBundle" key="es-ES"/></option>
+    </select>
+  </div>
+  <span id = "updateMessage"
+    data-message-en_US = '<bean:message bundle="setOfLanguagesBundle" key="languageConfirmation.message.english"/>'
+    data-message-fr-FR = '<bean:message bundle="setOfLanguagesBundle" key="languageConfirmation.message.french"/>'
+    data-message-es-ES = '<bean:message bundle="setOfLanguagesBundle" key="languageConfirmation.message.spanish"/>'
+    ></span>
 <% } %>
 
