@@ -41,6 +41,8 @@ import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.samplehuman.dao.SampleHumanDAO;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
+import us.mn.state.health.lims.siteinformation.dao.SiteInformationDAO;
+import us.mn.state.health.lims.siteinformation.valueholder.SiteInformation;
 import us.mn.state.health.lims.systemuser.dao.SystemUserDAO;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
 
@@ -74,6 +76,8 @@ public class AccessionServiceTest {
     private PatientIdentityDAO patientIdentityDAO;
     @Mock
     private PatientIdentityTypeDAO patientIdentityTypeDAO;
+    @Mock
+    private SiteInformationDAO siteInformationDAO;
 
 
     private Sample sample;
@@ -90,20 +94,25 @@ public class AccessionServiceTest {
 
     @Test
     public void shouldReturnAccessionDetails() {
-        AccessionService accessionService = new TestableAccessionService(sampleDao, sampleHumanDAO, externalReferenceDao, noteDao, dictionaryDao, patientIdentityDAO, patientIdentityTypeDAO);
+        AccessionService accessionService = new TestableAccessionService(sampleDao, sampleHumanDAO, externalReferenceDao, noteDao, dictionaryDao, patientIdentityDAO, patientIdentityTypeDAO, siteInformationDAO);
         when(sampleDao.getSamplesByEncounterUuid(sample.getUUID())).thenReturn(Arrays.asList(sample));
         when(sampleDao.getSampleByAccessionNumber(anyString())).thenReturn(sample);
         when(sampleHumanDAO.getPatientForSample(sample)).thenReturn(patient);
         when(externalReferenceDao.getDataByItemId(anyString(), anyString())).thenReturn(new ExternalReference(456789, "Ex Id", "type"));
         when(patientIdentityTypeDAO.getNamedIdentityType("ST")).thenReturn(patienIdentityType);
         when(noteDao.getNoteByRefIAndRefTableAndSubject(anyString(),anyString(),anyString())).thenReturn(Collections.EMPTY_LIST);
+        SiteInformation labLocation = new SiteInformation();
+        labLocation.setValue("locationUuid");
+        when(siteInformationDAO.getSiteInformationByName("labLocation")).thenReturn(labLocation);
+
         AccessionDetail accessionDetail = accessionService.getAccessionDetailFor(sample.getUUID());
         assertNotNull(accessionDetail);
+        assertEquals(accessionDetail.getLabLocationUuid(), "locationUuid");
     }
 
     @Test
     public void shouldReturnMergedAccessionDetailsForTwoSamples() {
-        AccessionService accessionService = new TestableAccessionService(sampleDao, sampleHumanDAO, externalReferenceDao, noteDao, dictionaryDao, patientIdentityDAO, patientIdentityTypeDAO);
+        AccessionService accessionService = new TestableAccessionService(sampleDao, sampleHumanDAO, externalReferenceDao, noteDao, dictionaryDao, patientIdentityDAO, patientIdentityTypeDAO, siteInformationDAO);
         Sample sample2 = DBHelper.createSample("ijkl");
         sample2.setUUID(sample.getUUID());
         SampleItem sampleItem = DBHelper.createSampleItem(sample2);
@@ -120,6 +129,9 @@ public class AccessionServiceTest {
         when(sampleDao.getSamplesByEncounterUuid(sample.getUUID())).thenReturn(Arrays.asList(sample,sample2));
         when(sampleDao.getSampleByAccessionNumber(sample.getAccessionNumber())).thenReturn(sample);
         when(sampleDao.getSampleByAccessionNumber(sample2.getAccessionNumber())).thenReturn(sample2);
+        SiteInformation labLocation = new SiteInformation();
+        labLocation.setValue("locationUuid");
+        when(siteInformationDAO.getSiteInformationByName("labLocation")).thenReturn(labLocation);
         when(sampleHumanDAO.getPatientForSample(sample)).thenReturn(patient);
         when(sampleHumanDAO.getPatientForSample(sample2)).thenReturn(patient);
 
@@ -132,7 +144,7 @@ public class AccessionServiceTest {
 
     @Test
     public void shouldGetAccessionDetailsForUuid() {
-        AccessionService accessionService = new TestableAccessionService(sampleDao, sampleHumanDAO, externalReferenceDao, noteDao, dictionaryDao, patientIdentityDAO, patientIdentityTypeDAO);
+        AccessionService accessionService = new TestableAccessionService(sampleDao, sampleHumanDAO, externalReferenceDao, noteDao, dictionaryDao, patientIdentityDAO, patientIdentityTypeDAO, siteInformationDAO);
         ExternalReference externalReferences = new ExternalReference(98743123, "ExternalId", "Type");
         Note oldNote = new Note();
         oldNote.setText("note 1");
@@ -146,6 +158,9 @@ public class AccessionServiceTest {
         when(externalReferenceDao.getDataByItemId(analysis.getPanel().getId(), "Panel")).thenReturn(externalReferences);
         when(noteDao.getNoteByRefIAndRefTableAndSubject(anyString(), anyString(), anyString())).thenReturn(Arrays.asList(latestNote, oldNote));
         when(patientIdentityTypeDAO.getNamedIdentityType("ST")).thenReturn(patienIdentityType);
+        SiteInformation labLocation = new SiteInformation();
+        labLocation.setValue("locationUuid");
+        when(siteInformationDAO.getSiteInformationByName("labLocation")).thenReturn(labLocation);
 
         AccessionDetail accessionDetail = accessionService.getAccessionDetailFor(sample.getUUID());
 
@@ -160,7 +175,7 @@ public class AccessionServiceTest {
 
     @Test
     public void shouldSetTheResultUuidIfCodedAnswer() {
-        AccessionService accessionService = new TestableAccessionService(sampleDao, sampleHumanDAO, externalReferenceDao, noteDao, dictionaryDao, patientIdentityDAO, patientIdentityTypeDAO);
+        AccessionService accessionService = new TestableAccessionService(sampleDao, sampleHumanDAO, externalReferenceDao, noteDao, dictionaryDao, patientIdentityDAO, patientIdentityTypeDAO, siteInformationDAO);
         TestDetail testDetail = new TestDetail();
         Result result = new Result();
         result.setValue("result");
@@ -171,6 +186,10 @@ public class AccessionServiceTest {
         dictionary.setDictEntry("dictEntry");
         when(dictionaryDao.getDataForId(result.getValue())).thenReturn(dictionary);
         when(externalReferenceDao.getDataByItemId("dictId", "CodedAns")).thenReturn(new ExternalReference(1, "resultUuid", "ctype"));
+        SiteInformation labLocation = new SiteInformation();
+        labLocation.setValue("locationUuid");
+        when(siteInformationDAO.getSiteInformationByName("labLocation")).thenReturn(labLocation);
+
         accessionService.setResultValue(testDetail, result);
 
         assertEquals("resultUuid", testDetail.getResultUuid());
@@ -180,7 +199,7 @@ public class AccessionServiceTest {
 
     @Test
     public void shouldNotSetTheResultUuidIfNotCodedAnswer() {
-        AccessionService accessionService = new TestableAccessionService(sampleDao, sampleHumanDAO, externalReferenceDao, noteDao, dictionaryDao, patientIdentityDAO, patientIdentityTypeDAO);
+        AccessionService accessionService = new TestableAccessionService(sampleDao, sampleHumanDAO, externalReferenceDao, noteDao, dictionaryDao, patientIdentityDAO, patientIdentityTypeDAO, siteInformationDAO);
         TestDetail testDetail = new TestDetail();
         Result result = new Result();
         result.setValue("result");
@@ -191,6 +210,10 @@ public class AccessionServiceTest {
         dictionary.setDictEntry("dictEntry");
         when(dictionaryDao.getDataForId(result.getValue())).thenReturn(dictionary);
         when(externalReferenceDao.getDataByItemId("dictId", "CodedAns")).thenReturn(null);
+        SiteInformation labLocation = new SiteInformation();
+        labLocation.setValue("locationUuid");
+        when(siteInformationDAO.getSiteInformationByName("labLocation")).thenReturn(labLocation);
+
         accessionService.setResultValue(testDetail, result);
 
         assertNull(testDetail.getResultUuid());
@@ -200,11 +223,14 @@ public class AccessionServiceTest {
 
     @Test
     public void shouldSetResultValueForNumeric() {
-        AccessionService accessionService = new TestableAccessionService(sampleDao, sampleHumanDAO, externalReferenceDao, noteDao, dictionaryDao, patientIdentityDAO, patientIdentityTypeDAO);
+        AccessionService accessionService = new TestableAccessionService(sampleDao, sampleHumanDAO, externalReferenceDao, noteDao, dictionaryDao, patientIdentityDAO, patientIdentityTypeDAO, siteInformationDAO);
         TestDetail testDetail = new TestDetail();
         Result result = new Result();
         result.setValue("10");
         result.setResultType("N");
+        SiteInformation labLocation = new SiteInformation();
+        labLocation.setValue("locationUuid");
+        when(siteInformationDAO.getSiteInformationByName("labLocation")).thenReturn(labLocation);
 
         accessionService.setResultValue(testDetail, result);
 
@@ -216,8 +242,8 @@ public class AccessionServiceTest {
 
         public TestableAccessionService(SampleDAO sampleDao, SampleHumanDAO sampleHumanDAO,
                                         ExternalReferenceDao externalReferenceDao, NoteDAO noteDao, DictionaryDAO dictionaryDao,
-                                        PatientIdentityDAO patientIdentityDAO, PatientIdentityTypeDAO patientIdentityTypeDAO) {
-            super(sampleDao, sampleHumanDAO, externalReferenceDao, noteDao, dictionaryDao, patientIdentityDAO, patientIdentityTypeDAO);
+                                        PatientIdentityDAO patientIdentityDAO, PatientIdentityTypeDAO patientIdentityTypeDAO, SiteInformationDAO siteInformationDAO) {
+            super(sampleDao, sampleHumanDAO, externalReferenceDao, noteDao, dictionaryDao, patientIdentityDAO, patientIdentityTypeDAO, siteInformationDAO);
         }
 
         @Override
