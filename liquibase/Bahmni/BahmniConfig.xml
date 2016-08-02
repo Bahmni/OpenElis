@@ -1587,4 +1587,17 @@
         </update>
     </changeSet>
 
+    <changeSet id="060720161209" context="bahmni" author="Hanisha">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                select count(*) from site_information where name = 'labLocation'
+            </sqlCheck>
+        </preConditions>
+        <comment>Adding the visit location for lab(Used in sync)</comment>
+        <sql >
+            insert into site_information (id, name, description, value, domain_id) values
+            (nextVal( 'site_information_seq' ), 'labLocation', 'Visit location for lab used for syncing lab results', null, (select id from site_information_domain where name = 'siteIdentity'))
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>
