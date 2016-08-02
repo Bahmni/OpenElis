@@ -28,9 +28,18 @@ public class AccessionDetail {
     private String patientIdentifier;
     private String patientFirstName;
     private String patientLastName;
+    private String labLocationUuid;
     private Timestamp dateTime;
     private List<AccessionNote> accessionNotes;
     private List<TestDetail> testDetails;
+
+    public String getLabLocationUuid() {
+        return labLocationUuid;
+    }
+
+    public void setLabLocationUuid(String labLocationUuid) {
+        this.labLocationUuid = labLocationUuid;
+    }
 
     public List<AccessionNote> getAccessionNotes() {
         return accessionNotes;

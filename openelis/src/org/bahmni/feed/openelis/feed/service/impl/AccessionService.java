@@ -46,6 +46,8 @@ import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.unitofmeasure.valueholder.UnitOfMeasure;
+import us.mn.state.health.lims.siteinformation.dao.SiteInformationDAO;
+import us.mn.state.health.lims.siteinformation.valueholder.SiteInformation;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -62,9 +64,10 @@ public class AccessionService {
     private PatientIdentityDAO patientIdentityDAO;
     private PatientIdentityTypeDAO patientIdentityTypeDAO;
     private ResultsValidationUtility resultsValidationUtility;
+    private SiteInformationDAO siteInformationDAO;
 
     public AccessionService(SampleDAO sampleDao, SampleHumanDAO sampleHumanDAO, ExternalReferenceDao externalReferenceDao,
-                            NoteDAO noteDao, DictionaryDAO dictionaryDAO, PatientIdentityDAO patientIdentityDAO, PatientIdentityTypeDAO patientIdentityTypeDAO) {
+                            NoteDAO noteDao, DictionaryDAO dictionaryDAO, PatientIdentityDAO patientIdentityDAO, PatientIdentityTypeDAO patientIdentityTypeDAO,SiteInformationDAO siteInformationDAO) {
 
         this.sampleDao = sampleDao;
         this.sampleHumanDAO = sampleHumanDAO;
@@ -75,6 +78,7 @@ public class AccessionService {
         this.patientIdentityTypeDAO = patientIdentityTypeDAO;
         this.finalizedStatusIds = new String[]{getFinalizedStatus(), getFinalizedROStatus()};
         this.resultsValidationUtility = new ResultsValidationUtility();
+        this.siteInformationDAO = siteInformationDAO;
     }
 
     public AccessionDetail getAccessionDetailFor(String sampleUuid) {
@@ -85,6 +89,9 @@ public class AccessionService {
         Patient patient = sampleHumanDAO.getPatientForSample(samples.get(0));
         List<AccessionDetail> accessionDetails = mapToAccessionDetail(samples, patient);
         AccessionDetail accessionDetail = mergeAccessionDetailsForEncounter(accessionDetails);
+        SiteInformation labLocation = siteInformationDAO.getSiteInformationByName("labLocation");
+        if(labLocation != null)
+            accessionDetail.setLabLocationUuid(labLocation.getValue());
 
         return accessionDetail;
     }

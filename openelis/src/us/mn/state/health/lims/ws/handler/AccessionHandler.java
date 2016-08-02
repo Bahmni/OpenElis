@@ -24,6 +24,8 @@ import us.mn.state.health.lims.patientidentity.daoimpl.PatientIdentityDAOImpl;
 import us.mn.state.health.lims.patientidentitytype.daoimpl.PatientIdentityTypeDAOImpl;
 import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
 import us.mn.state.health.lims.samplehuman.daoimpl.SampleHumanDAOImpl;
+import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
+
 
 public class AccessionHandler implements Handler<AccessionDetail>{
     private static final String ACCESSION = "accession";
@@ -36,7 +38,8 @@ public class AccessionHandler implements Handler<AccessionDetail>{
                 new NoteDAOImpl(),
                 new DictionaryDAOImpl(),
                 new PatientIdentityDAOImpl(),
-                new PatientIdentityTypeDAOImpl()
+                new PatientIdentityTypeDAOImpl(),
+                new SiteInformationDAOImpl()
         ));
     }
 
