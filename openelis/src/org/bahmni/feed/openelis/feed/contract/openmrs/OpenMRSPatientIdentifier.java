@@ -21,6 +21,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OpenMRSPatientIdentifier {
     private String identifier;
+    private boolean preferred;
 
     public OpenMRSPatientIdentifier() {
     }
@@ -35,5 +36,13 @@ public class OpenMRSPatientIdentifier {
 
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
+    }
+
+    public boolean isPreferred() {
+        return preferred;
+    }
+
+    public void setPreferred(boolean preferred) {
+        this.preferred = preferred;
     }
 }

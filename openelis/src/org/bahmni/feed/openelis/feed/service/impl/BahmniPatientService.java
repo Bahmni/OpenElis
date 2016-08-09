@@ -90,12 +90,22 @@ public class BahmniPatientService {
 
     public void createOrUpdate(OpenMRSPatient openMRSPatient) {
         String sysUserId = auditingService.getSysUserId();
-        List<PatientIdentity> patientIdentities = patientIdentityDAO.getPatientIdentitiesByValueAndType(openMRSPatient.getIdentifiers().get(0).getIdentifier(), primaryIdentityType().getId());
+        OpenMRSPatientIdentifier preferredIdentifier = getPreferredIdentifier(openMRSPatient);
+        List<PatientIdentity> patientIdentities = patientIdentityDAO.getPatientIdentitiesByValueAndType(preferredIdentifier.getIdentifier(), primaryIdentityType().getId());
         if (patientIdentities.isEmpty()) {
             create(openMRSPatient, sysUserId);
         } else {
             update(patientDAO.getPatientById(patientIdentities.get(0).getPatientId()), openMRSPatient, sysUserId);
         }
+    }
+
+    private OpenMRSPatientIdentifier getPreferredIdentifier(OpenMRSPatient patient) {
+        for (OpenMRSPatientIdentifier identifier : patient.getIdentifiers()) {
+            if (identifier.isPreferred()){
+                return identifier;
+            }
+        }
+        throw new LIMSRuntimeException(String.format("Preferred or Primary identifier is not available for the patient: %s", patient.getPerson().getPreferredName().getGivenName()));
     }
 
     private void update(Patient patient, OpenMRSPatient openMRSPatient, String sysUserId) {
@@ -181,7 +191,7 @@ public class BahmniPatientService {
         patientDAO.insertData(patient);
 
         PatientIdentityTypes patientIdentityTypes = new PatientIdentityTypes(patientIdentityTypeDAO.getAllPatientIdenityTypes());
-        addPatientIdentity(patient, patientIdentityTypes, REGISTRATION_KEY_NAME, openMRSPatient.getIdentifiers().get(0).getIdentifier(), sysUserId);
+        addPatientIdentity(patient, patientIdentityTypes, REGISTRATION_KEY_NAME, getPreferredIdentifier(openMRSPatient).getIdentifier(), sysUserId);
 
         String primaryRelative = getAttributeValue(openMRSPerson, OpenMRSPersonAttributeType.PRIMARY_RELATIVE);
         if (primaryRelative != null) {
