@@ -1623,4 +1623,10 @@
             (nextVal( 'site_information_seq' ), 'labLocation', 'Visit location for lab used for syncing lab results', '', (select id from site_information_domain where name = 'siteIdentity'))
         </sql>
     </changeSet>
+    <changeSet id="20160809" context="bahmni" author="Bindu,Gurpreet">
+        <comment> Update allowLanguageChange to true to enable Internationalization in Login page </comment>
+        <sql> 
+            Update site_information SET value = 'true' where name = 'allowLanguageChange'
+        </sql>    
+    </changeSet>  
 </databaseChangeLog>
