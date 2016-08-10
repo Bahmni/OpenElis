@@ -30,6 +30,11 @@ public class OpenMRSPatientIdentifier {
         this.identifier = identifier;
     }
 
+    public OpenMRSPatientIdentifier(String identifier, boolean preferred) {
+        this.identifier = identifier;
+        this.preferred = preferred;
+    }
+
     public String getIdentifier() {
         return identifier;
     }

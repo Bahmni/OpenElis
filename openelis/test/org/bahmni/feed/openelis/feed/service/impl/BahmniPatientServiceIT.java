@@ -77,7 +77,7 @@ public class BahmniPatientServiceIT extends IT {
         OpenMRSPersonAttribute attribute2 = new OpenMRSPersonAttribute(createPersonAttributeTypeValue("value2"), new OpenMRSPersonAttributeType(OpenMRSPersonAttributeType.OCCUPATION), "dispaly");
         OpenMRSPersonAttribute attribute3 = new OpenMRSPersonAttribute(createPersonAttributeTypeValue("2"), new OpenMRSPersonAttributeType(OpenMRSPersonAttributeType.HEALTH_CENTER), "dispaly");
         OpenMRSPatient openMRSPatient = new OpenMRSPatient(person.addAttribute(attribute1).addAttribute(attribute2).addAttribute(attribute3));
-        openMRSPatient.addIdentifier(new OpenMRSPatientIdentifier(patientIdentifier));
+        openMRSPatient.addIdentifier(new OpenMRSPatientIdentifier(patientIdentifier, true));
         //openMRSPatient.getIdentifiers().get(0).getIdentifier()
         bahmniPatientService.createOrUpdate(openMRSPatient);
         HibernateUtil.getSession().flush();
@@ -101,7 +101,7 @@ public class BahmniPatientServiceIT extends IT {
         OpenMRSPersonAttribute attribute2 = new OpenMRSPersonAttribute(createPersonAttributeTypeValue("value2"), new OpenMRSPersonAttributeType(OpenMRSPersonAttributeType.OCCUPATION), "dispaly");
         OpenMRSPersonAttribute attribute3 = new OpenMRSPersonAttribute(createPersonAttributeTypeValue("2"), new OpenMRSPersonAttributeType(OpenMRSPersonAttributeType.HEALTH_CENTER), "dispaly");
         OpenMRSPatient openMRSPatient = new OpenMRSPatient(person.addAttribute(attribute1).addAttribute(attribute2).addAttribute(attribute3));
-        openMRSPatient.addIdentifier(new OpenMRSPatientIdentifier("BAM1"));
+        openMRSPatient.addIdentifier(new OpenMRSPatientIdentifier("BAM1", true));
 
         bahmniPatientService.createOrUpdate(openMRSPatient);
         HibernateUtil.getSession().flush();
