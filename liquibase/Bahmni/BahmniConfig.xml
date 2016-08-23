@@ -1623,4 +1623,9 @@
             (nextVal( 'site_information_seq' ), 'labLocation', 'Visit location for lab used for syncing lab results', '', (select id from site_information_domain where name = 'siteIdentity'))
         </sql>
     </changeSet>
+
+    <changeSet id="230820161641" context="bahmni" author="Jaswanth,Kaustav">
+        <dropColumn columnName="health_center_id" schemaName="clinlims" tableName="patient"/>
+        <dropTable tableName="health_center" schemaName="clinlims"/>
+    </changeSet>
 </databaseChangeLog>

@@ -35,9 +35,6 @@ import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.gender.dao.GenderDAO;
 import us.mn.state.health.lims.gender.daoimpl.GenderDAOImpl;
 import us.mn.state.health.lims.gender.valueholder.Gender;
-import us.mn.state.health.lims.healthcenter.dao.HealthCenterDAO;
-import us.mn.state.health.lims.healthcenter.daoimpl.HealthCenterDAOImpl;
-import us.mn.state.health.lims.healthcenter.valueholder.HealthCenter;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
 import us.mn.state.health.lims.patient.dao.PatientDAO;
@@ -69,7 +66,6 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
     private PatientDAO patientDAO;
     private PatientIdentityDAO patientIdentityDAO;
     private PatientIdentityTypeDAO patientIdentityTypeDAO;
-    private HealthCenterDAO healthCenterDAO;
     private GenderDAO genderDao;
 
     private static String sysUserId;
@@ -77,21 +73,20 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
     private static AddressParts addressParts;
 
     private static Logger logger = Logger.getLogger(PatientPersister.class);
-    private List<HealthCenter> allHealthCenters;
     private List<Gender> allGenders;
     private String contextPath;
 
     public PatientPersister(String contextPath) {
         this(new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl()), new PersonDAOImpl(),
                 new PersonAddressDAOImpl(), new PatientDAOImpl(), new PatientIdentityDAOImpl(),
-                new PatientIdentityTypeDAOImpl(), new HealthCenterDAOImpl(), new GenderDAOImpl());
+                new PatientIdentityTypeDAOImpl(), new GenderDAOImpl());
 
         this.contextPath = contextPath;
     }
 
     public PatientPersister(AuditingService auditingService, PersonDAO personDAO, PersonAddressDAO personAddressDAO,
                             PatientDAO patientDAO, PatientIdentityDAO patientIdentityDAO,
-                            PatientIdentityTypeDAO patientIdentityTypeDAO, HealthCenterDAO healthCenterDAO,
+                            PatientIdentityTypeDAO patientIdentityTypeDAO,
                             GenderDAO genderDao) {
         this.auditingService = auditingService;
         this.personDAO = personDAO;
@@ -99,7 +94,6 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
         this.patientDAO = patientDAO;
         this.patientIdentityDAO = patientIdentityDAO;
         this.patientIdentityTypeDAO = patientIdentityTypeDAO;
-        this.healthCenterDAO = healthCenterDAO;
         this.genderDao = genderDao;
     }
 
@@ -119,7 +113,7 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
             patientDAO.insertData(newPatient);
 
             patientIdentityDAO.insertData(getPatientIdentity(newPatient, BahmniPatientService.REGISTRATION_KEY_NAME,
-                    csvPatient.healthCenter + csvPatient.registrationNumber));
+                    csvPatient.registrationNumber));
             patientIdentityDAO.insertData(getPatientIdentity(newPatient, BahmniPatientService.PRIMARY_RELATIVE_KEY_NAME,
                     csvPatient.fatherOrHusbandsName));
             patientIdentityDAO.insertData(getPatientIdentity(newPatient, BahmniPatientService.OCCUPATION_KEY_NAME,
@@ -145,11 +139,9 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
 
         String registrationNumberFormat = getStNumberFormat();
         registrationNumberFormat = registrationNumberFormat.substring(1, registrationNumberFormat.length()-1);
-        String fullRegistrationNumber = csvPatient.healthCenter + csvPatient.registrationNumber;
+        String fullRegistrationNumber = csvPatient.registrationNumber;
         StringBuilder errorMessage = new StringBuilder();
 
-        if (isEmpty(csvPatient.healthCenter))
-            errorMessage.append("Health Center is mandatory.\n");
         if (isEmpty(csvPatient.registrationNumber))
             errorMessage.append("Registration Number is mandatory.\n");
         if (isEmpty(csvPatient.firstName))
@@ -186,10 +178,6 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
             errorMessage.append("Gender is invalid. Valid values are : ").append(getValidGenders()).append("\n");
         }
 
-        if (!isValidHealthCentre(csvPatient.healthCenter)) {
-            errorMessage.append("Health Centre is invalid. Valid values are : ").append(getValidHealthCentres()).append("\n");
-        }
-
         if (isEmpty(errorMessage.toString()))
             return new RowResult<>(csvPatient);
 
@@ -216,30 +204,10 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
 
     }
 
-    private String getValidHealthCentres() {
-        StringBuilder allHealthCentresAsString = new StringBuilder();
-        List<HealthCenter> allHealthCentres = getAllHealthCentres();
-        for (HealthCenter healthCentre : allHealthCentres) {
-            allHealthCentresAsString.append(healthCentre.getName()).append(". ");
-        }
-        return allHealthCentresAsString.toString();
-
-    }
-
     private boolean isValidGender(String patientGender) {
         List<Gender> allGenders = getAllGenders();
         for (Gender aGender : allGenders) {
             if (aGender.matches(patientGender)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isValidHealthCentre(String healthCenter) {
-        List<HealthCenter> allHealthCentres = getAllHealthCentres();
-        for (HealthCenter aHealthCentre : allHealthCentres) {
-            if (aHealthCentre.matches(healthCenter)) {
                 return true;
             }
         }
@@ -280,7 +248,6 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
         patient.setGender(csvPatient.gender);
         patient.setSysUserId(getSysUserId());
         patient.setUuid(UUID.randomUUID().toString());
-        patient.setHealthCenter(healthCenterDAO.getByName(csvPatient.healthCenter));
 
         if (csvPatient.dob != null && csvPatient.dob.trim().length() > 0) {
             patient.setBirthDate(new Timestamp(getSimpleDateFormat().parse(csvPatient.dob).getTime()));
@@ -300,13 +267,6 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
         person.setMiddleName(csvPatient.middleName);
         person.setSysUserId(getSysUserId());
         return person;
-    }
-
-    private List<HealthCenter> getAllHealthCentres() {
-        if (allHealthCenters == null)
-            allHealthCenters = healthCenterDAO.getAll();
-
-        return allHealthCenters;
     }
 
     private List<Gender> getAllGenders() {

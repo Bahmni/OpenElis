@@ -67,7 +67,6 @@ public class PatientManagmentInfo implements Serializable {
 	private String healthDistrict;
 	private String otherNationality;
     private AddressParts addressParts;
-    private String healthCenterName;
     private String primaryRelative;
 	private static List<IdValuePair> genders;
 	private static List<Dictionary> addressDepartments;
@@ -354,14 +353,6 @@ public class PatientManagmentInfo implements Serializable {
 
     public void setAddressParts(AddressParts addressParts) {
         this.addressParts = addressParts;
-    }
-
-    public String getHealthCenterName() {
-        return healthCenterName;
-    }
-
-    public void setHealthCenterName(String healthCenterName) {
-        this.healthCenterName = healthCenterName;
     }
 
     public String getPrimaryRelative() {

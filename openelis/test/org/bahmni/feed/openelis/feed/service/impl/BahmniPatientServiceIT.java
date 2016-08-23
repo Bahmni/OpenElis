@@ -34,8 +34,6 @@ import us.mn.state.health.lims.address.daoimpl.AddressPartDAOImpl;
 import us.mn.state.health.lims.address.daoimpl.PersonAddressDAOImpl;
 import us.mn.state.health.lims.address.valueholder.AddressParts;
 import us.mn.state.health.lims.address.valueholder.PersonAddresses;
-import us.mn.state.health.lims.healthcenter.daoimpl.HealthCenterDAOImpl;
-import us.mn.state.health.lims.healthcenter.valueholder.HealthCenter;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
 import us.mn.state.health.lims.patient.daoimpl.PatientDAOImpl;
@@ -57,7 +55,6 @@ public class BahmniPatientServiceIT extends IT {
     private PatientDAOImpl patientDAO;
     private PersonAddressDAOImpl personAddressDAO;
     private AddressPartDAOImpl addressPartDAO;
-    private HealthCenterDAOImpl healthCenterDAO;
 
     @Before
     public void setUp(){
@@ -65,7 +62,7 @@ public class BahmniPatientServiceIT extends IT {
         patientDAO = new PatientDAOImpl();
         personAddressDAO = new PersonAddressDAOImpl();
         addressPartDAO = new AddressPartDAOImpl();
-        bahmniPatientService = new BahmniPatientService(patientDAO, new PersonDAOImpl(), new PatientIdentityDAOImpl(), personAddressDAO, addressPartDAO, new PatientIdentityTypeDAOImpl(), auditingService, new HealthCenterDAOImpl());
+        bahmniPatientService = new BahmniPatientService(patientDAO, new PersonDAOImpl(), new PatientIdentityDAOImpl(), personAddressDAO, addressPartDAO, new PatientIdentityTypeDAOImpl(), auditingService);
     }
 
     @Test
@@ -75,8 +72,7 @@ public class BahmniPatientServiceIT extends IT {
         OpenMRSPerson person = new OpenMRSPerson(new OpenMRSName("random", "middleName", "lastName1"), UUID.randomUUID().toString(), "F", new LocalDate(2001, 11, 26).toDate(), false, address);
         OpenMRSPersonAttribute attribute1 = new OpenMRSPersonAttribute(createPersonAttributeTypeValue("value1"), new OpenMRSPersonAttributeType(OpenMRSPersonAttributeType.PRIMARY_RELATIVE), "dispaly");
         OpenMRSPersonAttribute attribute2 = new OpenMRSPersonAttribute(createPersonAttributeTypeValue("value2"), new OpenMRSPersonAttributeType(OpenMRSPersonAttributeType.OCCUPATION), "dispaly");
-        OpenMRSPersonAttribute attribute3 = new OpenMRSPersonAttribute(createPersonAttributeTypeValue("2"), new OpenMRSPersonAttributeType(OpenMRSPersonAttributeType.HEALTH_CENTER), "dispaly");
-        OpenMRSPatient openMRSPatient = new OpenMRSPatient(person.addAttribute(attribute1).addAttribute(attribute2).addAttribute(attribute3));
+        OpenMRSPatient openMRSPatient = new OpenMRSPatient(person.addAttribute(attribute1).addAttribute(attribute2));
         openMRSPatient.addIdentifier(new OpenMRSPatientIdentifier(patientIdentifier, true));
         //openMRSPatient.getIdentifiers().get(0).getIdentifier()
         bahmniPatientService.createOrUpdate(openMRSPatient);
@@ -99,8 +95,7 @@ public class BahmniPatientServiceIT extends IT {
         OpenMRSPerson person = new OpenMRSPerson(new OpenMRSName("random", "middleName", "lastName1"), patient.getUuid(), "F", new LocalDate(2001, 11, 26).toDate(), false, openMRSPersonAddress);
         OpenMRSPersonAttribute attribute1 = new OpenMRSPersonAttribute(createPersonAttributeTypeValue("value1"), new OpenMRSPersonAttributeType(OpenMRSPersonAttributeType.PRIMARY_RELATIVE), "dispaly");
         OpenMRSPersonAttribute attribute2 = new OpenMRSPersonAttribute(createPersonAttributeTypeValue("value2"), new OpenMRSPersonAttributeType(OpenMRSPersonAttributeType.OCCUPATION), "dispaly");
-        OpenMRSPersonAttribute attribute3 = new OpenMRSPersonAttribute(createPersonAttributeTypeValue("2"), new OpenMRSPersonAttributeType(OpenMRSPersonAttributeType.HEALTH_CENTER), "dispaly");
-        OpenMRSPatient openMRSPatient = new OpenMRSPatient(person.addAttribute(attribute1).addAttribute(attribute2).addAttribute(attribute3));
+        OpenMRSPatient openMRSPatient = new OpenMRSPatient(person.addAttribute(attribute1).addAttribute(attribute2));
         openMRSPatient.addIdentifier(new OpenMRSPatientIdentifier("BAM1", true));
 
         bahmniPatientService.createOrUpdate(openMRSPatient);

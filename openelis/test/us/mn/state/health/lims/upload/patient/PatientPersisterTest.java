@@ -24,8 +24,6 @@ import org.junit.Test;
 import us.mn.state.health.lims.address.dao.PersonAddressDAO;
 import us.mn.state.health.lims.gender.dao.GenderDAO;
 import us.mn.state.health.lims.gender.valueholder.Gender;
-import us.mn.state.health.lims.healthcenter.dao.HealthCenterDAO;
-import us.mn.state.health.lims.healthcenter.valueholder.HealthCenter;
 import us.mn.state.health.lims.patient.dao.PatientDAO;
 import us.mn.state.health.lims.patientidentity.dao.PatientIdentityDAO;
 import us.mn.state.health.lims.patientidentitytype.dao.PatientIdentityTypeDAO;
@@ -48,12 +46,7 @@ public class PatientPersisterTest {
         validGender.setGenderType(VALID_GENDER_TYPE);
         when(genderDao.getAllGenders()).thenReturn(Arrays.asList(validGender));
 
-        HealthCenterDAO healthCenterDAO = mock(HealthCenterDAO.class);
-        HealthCenter validHealthCenter = new HealthCenter();
-        validHealthCenter.setName(VALID_HEALTH_CENTRE);
-        when(healthCenterDAO.getAll()).thenReturn(Arrays.asList(validHealthCenter));
-
-        patientPersister = new TestablePatientPersister(null, null, null, null, null, null, healthCenterDAO, genderDao);
+        patientPersister = new TestablePatientPersister(null, null, null, null, null, null, genderDao);
     }
 
     @Test
@@ -66,7 +59,6 @@ public class PatientPersisterTest {
         csvPatient.lastName = "lastName";
         csvPatient.registrationNumber = "12345";
         csvPatient.gender = VALID_GENDER_TYPE;
-        csvPatient.healthCenter = VALID_HEALTH_CENTRE;
 
         RowResult<CSVPatient> rowResultForValidPatient = patientPersister.validate(csvPatient);
 
@@ -97,31 +89,10 @@ public class PatientPersisterTest {
         csvPatient.firstName = "firstName";
         csvPatient.registrationNumber = "12345";
         csvPatient.gender = VALID_GENDER_TYPE;
-        csvPatient.healthCenter = "InVALID_HEALTH_CENTRE";
 
         RowResult<CSVPatient> rowResultForValidPatient = patientPersister.validate(csvPatient);
 
         Assert.assertFalse("Gender is invalid", rowResultForValidPatient.isSuccessful());
-    }
-
-    @Test
-    public void valid_healthcenter_for_validation() {
-        CSVPatient csvPatient = new CSVPatient();
-        csvPatient.age = "85";
-        csvPatient.cityVillage = "ganiyari";
-        csvPatient.district = "ganiyari";
-        csvPatient.firstName = "firstName";
-        csvPatient.registrationNumber = "12345";
-        csvPatient.gender = VALID_GENDER_TYPE;
-        csvPatient.healthCenter = "InVALID_HEALTH_CENTRE";
-
-        RowResult<CSVPatient> rowResultForValidPatient = patientPersister.validate(csvPatient);
-
-        Assert.assertFalse("HealthCenter is invalid", rowResultForValidPatient.isSuccessful());
-
-        String[] rowWithErrorColumn = rowResultForValidPatient.getRowWithErrorColumn();
-        String errorMessage = rowWithErrorColumn[rowWithErrorColumn.length - 1];
-        Assert.assertTrue("Health Center is invalid", errorMessage.contains("Health Centre is invalid. Valid values are"));
     }
 
     @Test
@@ -133,7 +104,6 @@ public class PatientPersisterTest {
         csvPatient.firstName = "firstName";
         csvPatient.registrationNumber = "12345";
         csvPatient.gender = VALID_GENDER_TYPE;
-        csvPatient.healthCenter = VALID_HEALTH_CENTRE;
 
         RowResult<CSVPatient> rowResultForValidPatient = patientPersister.validate(csvPatient);
 
@@ -153,7 +123,6 @@ public class PatientPersisterTest {
         csvPatient.firstName = "firstName";
         csvPatient.registrationNumber = "abcd";
         csvPatient.gender = VALID_GENDER_TYPE;
-        csvPatient.healthCenter = VALID_HEALTH_CENTRE;
 
         RowResult<CSVPatient> rowResultForValidPatient = patientPersister.validate(csvPatient);
 
@@ -172,7 +141,6 @@ public class PatientPersisterTest {
 
         String[] rowWithErrorColumn = rowResultForValidPatient.getRowWithErrorColumn();
         String errorMessage = rowWithErrorColumn[rowWithErrorColumn.length - 1];
-        Assert.assertTrue("Mandatory fields need to be populated", errorMessage.contains("Health Center is mandatory"));
         Assert.assertTrue("Mandatory fields need to be populated", errorMessage.contains("Registration Number is mandatory."));
         Assert.assertTrue("Mandatory fields need to be populated", errorMessage.contains("First Name is mandatory"));
         Assert.assertTrue("Mandatory fields need to be populated", errorMessage.contains("Last Name is mandatory"));
@@ -190,7 +158,6 @@ public class PatientPersisterTest {
         csvPatient.firstName = "firstName";
         csvPatient.registrationNumber = "12345";
         csvPatient.gender = VALID_GENDER_TYPE;
-        csvPatient.healthCenter = VALID_HEALTH_CENTRE;
         patientPersister.setStNumberFormat("/([a-zA-Z]*)(\\d+\\/\\d+)/");
 
         RowResult<CSVPatient> rowResultForValidPatient = patientPersister.validate(csvPatient);
@@ -212,7 +179,6 @@ public class PatientPersisterTest {
         csvPatient.lastName = "lastName";
         csvPatient.registrationNumber = "12345";
         csvPatient.gender = VALID_GENDER_TYPE;
-        csvPatient.healthCenter = VALID_HEALTH_CENTRE;
 
         RowResult<CSVPatient> rowResultForValidPatient = patientPersister.validate(csvPatient);
 
@@ -230,8 +196,8 @@ public class PatientPersisterTest {
     public class TestablePatientPersister extends PatientPersister{
         private String stNumberFormat = "/([a-zA-Z]*)(\\d+)/";
 
-        public TestablePatientPersister(AuditingService auditingService, PersonDAO personDAO,PersonAddressDAO personAddressDAO, PatientDAO patientDAO,PatientIdentityDAO patientIdentityDAO, PatientIdentityTypeDAO patientIdentityTypeDAO,HealthCenterDAO healthCenterDAO, GenderDAO genderDao) {
-            super(auditingService, personDAO, personAddressDAO, patientDAO, patientIdentityDAO, patientIdentityTypeDAO, healthCenterDAO, genderDao);
+        public TestablePatientPersister(AuditingService auditingService, PersonDAO personDAO,PersonAddressDAO personAddressDAO, PatientDAO patientDAO,PatientIdentityDAO patientIdentityDAO, PatientIdentityTypeDAO patientIdentityTypeDAO, GenderDAO genderDao) {
+            super(auditingService, personDAO, personAddressDAO, patientDAO, patientIdentityDAO, patientIdentityTypeDAO, genderDao);
         }
 
         @Override

@@ -30,9 +30,6 @@ import us.mn.state.health.lims.address.valueholder.PersonAddress;
 import us.mn.state.health.lims.address.valueholder.PersonAddresses;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.util.DateUtil;
-import us.mn.state.health.lims.healthcenter.dao.HealthCenterDAO;
-import us.mn.state.health.lims.healthcenter.daoimpl.HealthCenterDAOImpl;
-import us.mn.state.health.lims.healthcenter.valueholder.HealthCenter;
 import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
 import us.mn.state.health.lims.patient.dao.PatientDAO;
 import us.mn.state.health.lims.patient.daoimpl.PatientDAOImpl;
@@ -62,7 +59,6 @@ public class BahmniPatientService {
     private AddressPartDAO addressPartDAO;
     private PatientIdentityTypeDAO patientIdentityTypeDAO;
     private AuditingService auditingService;
-    private HealthCenterDAO healthCenterDAO;
 
     public static final String PRIMARY_RELATIVE_KEY_NAME = "PRIMARYRELATIVE";
     public static final String OCCUPATION_KEY_NAME = "OCCUPATION";
@@ -71,13 +67,13 @@ public class BahmniPatientService {
     public BahmniPatientService() {
         this(new PatientDAOImpl(), new PersonDAOImpl(), new PatientIdentityDAOImpl(),
                 new PersonAddressDAOImpl(), new AddressPartDAOImpl(), new PatientIdentityTypeDAOImpl(),
-                new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl()), new HealthCenterDAOImpl());
+                new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl()));
     }
 
 
     public BahmniPatientService(PatientDAO patientDAO, PersonDAO personDAO, PatientIdentityDAO patientIdentityDAO,
                                 PersonAddressDAO personAddressDAO, AddressPartDAO addressPartDAO, PatientIdentityTypeDAO patientIdentityTypeDAO,
-                                AuditingService auditingService, HealthCenterDAO healthCenterDAO) {
+                                AuditingService auditingService) {
         this.patientDAO = patientDAO;
         this.personDAO = personDAO;
         this.patientIdentityDAO = patientIdentityDAO;
@@ -85,7 +81,6 @@ public class BahmniPatientService {
         this.addressPartDAO = addressPartDAO;
         this.patientIdentityTypeDAO = patientIdentityTypeDAO;
         this.auditingService = auditingService;
-        this.healthCenterDAO = healthCenterDAO;
     }
 
     public void createOrUpdate(OpenMRSPatient openMRSPatient) {
@@ -127,7 +122,6 @@ public class BahmniPatientService {
         }
 
         populatePatient(sysUserId, openMRSPerson, patient);
-        patient.setHealthCenter(findHealthCenterForPatient(openMRSPatient));
 
         PatientIdentityTypes patientIdentityTypes = new PatientIdentityTypes(patientIdentityTypeDAO.getAllPatientIdenityTypes());
         PatientIdentities patientIdentities = new PatientIdentities(patientIdentityDAO.getPatientIdentitiesForPatient(patient.getId()));
@@ -187,7 +181,6 @@ public class BahmniPatientService {
         Patient patient = new Patient();
         patient.setPerson(person);
         populatePatient(sysUserId, openMRSPerson, patient);
-        patient.setHealthCenter(findHealthCenterForPatient(openMRSPatient));
         patientDAO.insertData(patient);
 
         PatientIdentityTypes patientIdentityTypes = new PatientIdentityTypes(patientIdentityTypeDAO.getAllPatientIdenityTypes());
@@ -215,12 +208,6 @@ public class BahmniPatientService {
         patient.setUuid(openMRSPerson.getUuid());
     }
 
-    private HealthCenter findHealthCenterForPatient(OpenMRSPatient openMRSPatient) {
-        String identifier = openMRSPatient.getIdentifiers().get(0).getIdentifier();
-        String healthCenterName = identifier.substring(0, 3);
-        return healthCenterByName(healthCenterName);
-    }
-
     private OpenMRSPerson populatePerson(OpenMRSPatient openMRSPatient, String sysUserId, Person person) {
         OpenMRSPerson openMRSPerson = openMRSPatient.getPerson();
         person.setFirstName(openMRSPerson.getPreferredName().getGivenName());
@@ -229,25 +216,6 @@ public class BahmniPatientService {
         person.setSysUserId(sysUserId);
         return openMRSPerson;
     }
-
-    private HealthCenter healthCenterById(String healthCenterId) {
-        if (isNullOrEmpty(healthCenterId)) return null;
-        HealthCenter healthCenter = healthCenterDAO.get(healthCenterId);
-        if (healthCenter != null) return healthCenter;
-        throw new LIMSRuntimeException(String.format("HealthCenter %s is not configured in OpenELIS", healthCenterId));
-    }
-
-    private HealthCenter healthCenterByName(String healthCenterName) {
-        if (isNullOrEmpty(healthCenterName)) return null;
-        HealthCenter healthCenter = healthCenterDAO.getByName(healthCenterName.toUpperCase());
-        if (healthCenter != null) return healthCenter;
-        throw new LIMSRuntimeException(String.format("HealthCenter %s is not configured in OpenELIS", healthCenterName));
-    }
-
-    private boolean isNullOrEmpty(String healthCenterString) {
-        return healthCenterString == null || healthCenterString.isEmpty();
-    }
-
 
     public CompletePatientDetails getPatientByUUID(String uuid){
         Patient patient = patientDAO.getPatientByUUID(uuid);

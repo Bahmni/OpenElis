@@ -34,8 +34,6 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
-import static us.mn.state.health.lims.common.services.PatientService.getHealthPrefixedList;
-
 /*
  */
 public class ReferralDAOImpl extends BaseDAOImpl implements ReferralDAO {
@@ -126,12 +124,12 @@ public class ReferralDAOImpl extends BaseDAOImpl implements ReferralDAO {
                 " where r.analysis.sampleItem.sample.id = sh.sampleId and r.analysis.test.id = t.id and r.analysis.sampleItem.id = si.id and si.sample.id = s.id" +
                 " and r.analysis.statusId in (" + StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.ReferedOut) + "," + StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.BiologistRejectedRO) + ")" +
                 " and sh.patientId = pi.patientId and pi.identityTypeId = "+ PatientIdentityTypeMap.getInstance().getIDForType("ST") +
-                " and pi.identityData in ( :patientSTNumber )" +
+                " and pi.identityData = :patientSTNumber " +
                 " and r.canceled = 'false' " +
                 " order by date(r.requestDate) desc, s.accessionNumber DESC , t.sortOrder ASC";
         try {
             Query query = HibernateUtil.getSession().createQuery(sql);
-            query.setParameterList("patientSTNumber", getHealthPrefixedList(patientSTNumber));
+            query.setString("patientSTNumber", patientSTNumber);
             List<Referral> referrals = query.list();
             closeSession();
             return referrals;

@@ -58,7 +58,7 @@ public class SamplePersisterServiceTest {
         final String sampleSource = "source";
         List<CSVTestResult> testResults = Arrays.asList(new CSVTestResult("test1", "someValueForValue1"), new CSVTestResult("test2", "someValueForTest2"));
         String accessionNumber = "123";
-        CSVSample csvSample = new CSVSample("gan", "patientRegistrationNumber", accessionNumber, sampleDate, sampleSource, testResults);
+        CSVSample csvSample = new CSVSample("patientRegistrationNumber", accessionNumber, sampleDate, sampleSource, testResults);
 
         when(sampleSourceDAO.getAll()).thenReturn(Arrays.<SampleSource>asList(new SampleSource() {{
             this.setName(sampleSource);
@@ -85,7 +85,7 @@ public class SamplePersisterServiceTest {
         final String sampleSource = "source";
         List<CSVTestResult> testResults = Arrays.asList(new CSVTestResult("test1", "someValueForValue1"), new CSVTestResult("test2", "someValueForTest2"));
         String accessionNumber = "123";
-        CSVSample csvSample = new CSVSample("gan", "patientRegistrationNumber", accessionNumber, sampleDate, sampleSource, testResults);
+        CSVSample csvSample = new CSVSample("patientRegistrationNumber", accessionNumber, sampleDate, sampleSource, testResults);
 
         when(sampleDAO.getSampleByAccessionNumber(accessionNumber)).thenReturn(new Sample());
         when(sampleSourceDAO.getAll()).thenReturn(Arrays.<SampleSource>asList(new SampleSource() {{

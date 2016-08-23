@@ -28,7 +28,6 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import static us.mn.state.health.lims.common.services.PatientService.getHealthPrefixedList;
 
 
 public class SearchResultsDAOImp implements SearchResultsDAO {
@@ -80,7 +79,7 @@ public class SearchResultsDAOImp implements SearchResultsDAO {
 				query.setString(EXTERNAL_ID_PARAM, nationalID.toLowerCase());
 			}
 			if (querySTNumber) {
-				query.setParameterList(ST_NUMBER_PARAM, getAllInLowerCase(getHealthPrefixedList(STNumber)));
+				query.setString(ST_NUMBER_PARAM, STNumber.toLowerCase());
 			}
 			if (querySubjectNumber) {
 				query.setString(SUBJECT_NUMBER_PARAM, subjectNumber);
@@ -108,14 +107,6 @@ public class SearchResultsDAOImp implements SearchResultsDAO {
 		}
 
 		return results;
-	}
-
-	private List<String> getAllInLowerCase(List<String> healthPrefixedList) {
-		List<String> patientIdsInLowerCase = new ArrayList<>();
-		for (String healthPrefixedItem : healthPrefixedList) {
-			patientIdsInLowerCase.add(healthPrefixedItem.toLowerCase());
-		}
-		return patientIdsInLowerCase;
 	}
 
 	/**
@@ -190,7 +181,7 @@ public class SearchResultsDAOImp implements SearchResultsDAO {
 		}
 
 		if (STNumber) {
-            queryBuilder.append(" lower(pi.identity_data) in ( :" + ST_NUMBER_PARAM + " ) or ");
+            queryBuilder.append(" lower(pi.identity_data) = :" + ST_NUMBER_PARAM + " or ");
 		}
 
 		if (subjectNumber) {

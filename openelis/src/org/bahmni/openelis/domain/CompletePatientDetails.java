@@ -20,7 +20,6 @@ import org.bahmni.feed.openelis.utils.JsonDateSerializer;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import us.mn.state.health.lims.address.valueholder.AddressPart;
 import us.mn.state.health.lims.address.valueholder.PersonAddress;
-import us.mn.state.health.lims.healthcenter.valueholder.HealthCenter;
 import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.patientidentity.valueholder.PatientIdentity;
 import us.mn.state.health.lims.person.valueholder.Person;
@@ -92,11 +91,6 @@ public class CompletePatientDetails {
 
     public String getStateProvince() {
         return partValueFor("level6");
-    }
-
-    public String getHealthCenter(){
-        HealthCenter healthCenter = patient.getHealthCenter();
-        return healthCenter == null? null : healthCenter.getName();
     }
 
     public List<Attribute> getAttributes() {

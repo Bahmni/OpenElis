@@ -40,8 +40,6 @@ import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.exception.LIMSValidationException;
 import us.mn.state.health.lims.common.formfields.FormFields;
 import us.mn.state.health.lims.common.util.validator.ActionError;
-import us.mn.state.health.lims.healthcenter.dao.HealthCenterDAO;
-import us.mn.state.health.lims.healthcenter.daoimpl.HealthCenterDAOImpl;
 import us.mn.state.health.lims.patient.action.bean.AddressPartForm;
 import us.mn.state.health.lims.patient.action.bean.AddressParts;
 import us.mn.state.health.lims.patient.action.bean.PatientManagmentInfo;
@@ -78,7 +76,6 @@ public class PatientManagementUpdateAction extends BaseAction implements IPatien
     private static PatientIdentityDAO identityDAO = new PatientIdentityDAOImpl();
     private static PatientDAO patientDAO = new PatientDAOImpl();
     private static PersonAddressDAO personAddressDAO = new PersonAddressDAOImpl();
-    private static HealthCenterDAO healthCenterDAO = new HealthCenterDAOImpl();
 
     protected PatientUpdateStatus patientUpdateStatus = PatientUpdateStatus.NO_ACTION;
 
@@ -286,7 +283,6 @@ public class PatientManagementUpdateAction extends BaseAction implements IPatien
             personDAO.updateData(person);
         }
 
-        patient.setHealthCenter(healthCenterDAO.getByName(patientInfo.getHealthCenterName()));
         patient.setPerson(person);
         String uuid = UUID.randomUUID().toString();
         if (patientUpdateStatus == PatientUpdateStatus.ADD) {

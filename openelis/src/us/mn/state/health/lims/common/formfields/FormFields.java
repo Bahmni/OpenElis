@@ -100,7 +100,6 @@ public class FormFields {
 		QA_DOCUMENT_NUMBER,
         DynamicAddress,
         FirstNameFirst,
-        HealthCenter,
         AllowEditOrRemoveTests,
         UseSampleSource,
         SupportPrimaryRelative

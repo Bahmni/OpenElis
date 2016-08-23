@@ -20,9 +20,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.bahmni.csv.EntityPersister;
 import org.bahmni.csv.RowResult;
 import us.mn.state.health.lims.common.util.ConfigurationProperties;
-import us.mn.state.health.lims.healthcenter.dao.HealthCenterDAO;
-import us.mn.state.health.lims.healthcenter.daoimpl.HealthCenterDAOImpl;
-import us.mn.state.health.lims.healthcenter.valueholder.HealthCenter;
 import us.mn.state.health.lims.samplesource.dao.SampleSourceDAO;
 import us.mn.state.health.lims.samplesource.daoimpl.SampleSourceDAOImpl;
 import us.mn.state.health.lims.samplesource.valueholder.SampleSource;
@@ -37,9 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestResultPersister implements EntityPersister<CSVSample> {
-    private HealthCenterDAO healthCenterDAO;
     private TestResultPersisterService testResultPersisterService;
-    private List<String> healthCenterCodes;
 
     private List<String> testNames;
     private SampleSourceDAO sampleSourceDAO;
@@ -47,11 +42,10 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
     private TestDAO testDAO;
 
     public TestResultPersister(String contextPath) {
-        this(new HealthCenterDAOImpl(), new SampleSourceDAOImpl(), new TestDAOImpl(), new TestResultPersisterService(contextPath));
+        this(new SampleSourceDAOImpl(), new TestDAOImpl(), new TestResultPersisterService(contextPath));
     }
 
-    public TestResultPersister(HealthCenterDAO healthCenterDAO, SampleSourceDAO sampleSourceDAO, TestDAO testDAO, TestResultPersisterService testResultPersisterService) {
-        this.healthCenterDAO = healthCenterDAO;
+    public TestResultPersister(SampleSourceDAO sampleSourceDAO, TestDAO testDAO, TestResultPersisterService testResultPersisterService) {
         this.sampleSourceDAO = sampleSourceDAO;
         this.testDAO = testDAO;
         this.testResultPersisterService = testResultPersisterService;
@@ -67,12 +61,8 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
     public RowResult<CSVSample> validate(CSVSample csvSample) {
         String registrationNumberFormat = getStNumberFormat();
         registrationNumberFormat = registrationNumberFormat.substring(1, registrationNumberFormat.length()-1);
-        String fullRegistrationNumber = csvSample.healthCenter + csvSample.patientRegistrationNumber;
+        String fullRegistrationNumber = csvSample.patientRegistrationNumber;
         StringBuilder errorMessage = new StringBuilder();
-
-        if (isEmpty(csvSample.healthCenter) || !getHealthCenterCodes().contains(csvSample.healthCenter)) {
-            errorMessage.append("Invalid Subcenter code.\n");
-        }
 
         if (isEmpty(csvSample.patientRegistrationNumber))
             errorMessage.append("Registration Number is mandatory.\n");
@@ -137,18 +127,6 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
 
     private boolean isEmpty(String value) {
         return value == null || value.trim().length() == 0;
-    }
-
-    private List<String> getHealthCenterCodes() {
-        if (healthCenterCodes != null && !healthCenterCodes.isEmpty()) {
-            return healthCenterCodes;
-        }
-        healthCenterCodes = new ArrayList<>();
-        List<HealthCenter> healthCenters = healthCenterDAO.getAll();
-        for (HealthCenter healthCenter : healthCenters) {
-            healthCenterCodes.add(healthCenter.getName());
-        }
-        return healthCenterCodes;
     }
 
     public List<String> getTestNames() {

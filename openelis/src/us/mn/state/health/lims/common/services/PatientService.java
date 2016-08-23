@@ -29,7 +29,6 @@ import us.mn.state.health.lims.address.valueholder.AddressPart;
 import us.mn.state.health.lims.address.valueholder.PersonAddress;
 import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
 import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
-import us.mn.state.health.lims.healthcenter.daoimpl.HealthCenterDAOImpl;
 import us.mn.state.health.lims.patient.daoimpl.PatientDAOImpl;
 import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.patientidentity.dao.PatientIdentityDAO;
@@ -103,21 +102,6 @@ public class PatientService {
 			return "";
 		}
 	}
-
-
-    /**
-     * Need to do this for matching/searching an ID against all HEALTHCentre prefixes.
-     */
-    public static List<String> getHealthPrefixedList(String stNumber) {
-        HealthCenterDAOImpl healthCenterDAO = new HealthCenterDAOImpl();
-        List<String> allHealthCenterNames = healthCenterDAO.getAllHealthCenterNames();
-        List<String> hcPrefixedSTList = new ArrayList<>();
-        hcPrefixedSTList.add(stNumber);//Add current one to list
-        for (String healthCenterName : allHealthCenterNames) {
-            hcPrefixedSTList.add(healthCenterName+stNumber);
-        }
-        return hcPrefixedSTList;
-    }
 
 	public String getFirstName(){
 		return patient.getPerson().getFirstName();

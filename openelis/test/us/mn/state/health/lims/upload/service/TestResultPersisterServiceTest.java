@@ -87,7 +87,6 @@ public class TestResultPersisterServiceTest {
         sample.setUUID(UUID.randomUUID().toString());
         String patientRegistrationNumber = "patientRegistrationNumber";
         String patientId = "patientId";
-        String healthCenter = "gan";
         SampleHuman sampleHuman = new SampleHuman();
         sampleHuman.setPatientId(patientId);
         Patient patient = new Patient();
@@ -104,8 +103,7 @@ public class TestResultPersisterServiceTest {
         Analysis analysis1 = new Analysis();
         Analysis analysis2 = new Analysis();
         Analysis analysis3 = new Analysis();
-        CSVSample csvSample = new CSVSample(healthCenter, patientRegistrationNumber, accessionNumber, sampleDate, sampleSource, testResults);
-        patientRegistrationNumber = healthCenter + patientRegistrationNumber;
+        CSVSample csvSample = new CSVSample(patientRegistrationNumber, accessionNumber, sampleDate, sampleSource, testResults);
 
         String sysUserId = "123";
         when(auditingService.getSysUserId()).thenReturn(sysUserId);

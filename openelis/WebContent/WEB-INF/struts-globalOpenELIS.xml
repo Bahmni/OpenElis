@@ -141,8 +141,6 @@
             <form-property name="subjectNumber" type="java.lang.String" initial=""/>
             <form-property name="siteSubjectNumber" type="java.lang.String" initial=""/>
             <form-property name="labNo" type="java.lang.String" initial=""/>
-            <form-property name="centerName" type="java.lang.String" initial=""/>
-            <form-property name="centerCode" type="java.lang.Integer" initial=""/>
             <form-property name="firstName" type="java.lang.String" initial=""/>
             <form-property name="lastName" type="java.lang.String" initial=""/>
             <form-property name="gender" type="java.lang.String" initial=""/>
@@ -670,15 +668,6 @@
             <form-property name="accessionNumber" type="java.lang.String" initial=""/>
         </form-bean>
 
-
-        <form-bean name="HealthCenterForm" type="us.mn.state.health.lims.common.action.BaseActionForm">
-            <form-property name="healthCenters" type="java.util.Collection"/>
-            <form-property name="name" type="java.lang.String" initial=""/>
-            <form-property name="description" type="java.lang.String" initial=""/>
-            <form-property name="active" type="boolean" initial=""/>
-            <form-property name="healthCenterSelect" type="java.util.List"/>
-        </form-bean>
-
         <form-bean name="LabDashboardForm" type="us.mn.state.health.lims.common.action.BaseActionForm">
             <form-property name="todayOrderList" type="java.lang.String"/>
             <form-property name="todaySampleNotCollectedList" type="java.lang.String"/>
@@ -690,9 +679,6 @@
             <form-property name="importType" type="java.lang.String"/>
             <form-property name="file" type="org.apache.struts.upload.FormFile"/>
         </form-bean>
-        <form-bean name="HealthCenterListForm" type="us.mn.state.health.lims.common.action.BaseActionForm">
-        </form-bean>
-
     </form-beans>
 
 
@@ -1561,35 +1547,6 @@
         <action path="/AuditTrailReport" name="AuditTrailViewForm"
                 type="us.mn.state.health.lims.audittrail.action.AuditTrailViewAction">
             <forward name="success" path="auditTrailViewDefinition"/>
-        </action>
-
-
-        <action path="/HealthCenterList" type="us.mn.state.health.lims.healthcenter.action.HealthCenterListAction" name="HealthCenterForm">
-        </action>
-
-        <action path="/HealthCenterMenu" name="HealthCenterForm"
-                type="us.mn.state.health.lims.healthcenter.action.HealthCenterMenuAction">
-            <forward name="success" path="healthCenterMaster"/>
-        </action>
-
-        <action path="/HealthCenterDeactivate" name="HealthCenterForm"
-                type="us.mn.state.health.lims.healthcenter.action.HealthCenterDeactivateAction">
-            <forward name="list" path="/HealthCenterMenu.do" redirect="true"/>
-            <forward name="success" path="healthCenterMaster"/>
-        </action>
-
-        <action path="/AddHealthCenter" name="HealthCenterForm"
-                type="us.mn.state.health.lims.healthcenter.action.HealthCenterCreateAction">
-            <forward name="list" path="/HealthCenterMenu.do" redirect="true"/>
-            <forward name="success" path="healthCenterMaster"/>
-            <forward name="fail" path="healthCenterMaster"/>
-        </action>
-
-        <action path="/EditHealthCenter" name="HealthCenterForm"
-                type="us.mn.state.health.lims.healthcenter.action.HealthCenterUpdateAction">
-            <forward name="list" path="/HealthCenterMenu.do" redirect="true"/>
-            <forward name="success" path="healthCenterMaster"/>
-            <forward name="fail" path="healthCenterMaster"/>
         </action>
 
         <action path="/LabDashboard" name="LabDashboardForm"

@@ -22,7 +22,6 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 public class OpenMRSPersonAttributeType {
     public static final String PRIMARY_RELATIVE = "primaryRelative";
     public static final String OCCUPATION = "occupation";
-    public static final String HEALTH_CENTER = "Health Center";
     private String display;
 
     public OpenMRSPersonAttributeType() {

@@ -23,8 +23,6 @@ import org.bahmni.csv.CSVRepeatingHeaders;
 import java.util.List;
 
 public class CSVSample extends CSVEntity {
-    @CSVHeader(name = "Health Centre")
-    public String healthCenter;
     @CSVHeader(name = "Registration No")
     public String patientRegistrationNumber;
     @CSVHeader(name = "Accession Number")
@@ -38,8 +36,7 @@ public class CSVSample extends CSVEntity {
 
     public CSVSample() { }
 
-    public CSVSample(String healthCenter, String patientRegistrationNumber, String accessionNumber, String sampleDate, String sampleSource, List<CSVTestResult> testResults) {
-        this.healthCenter = healthCenter;
+    public CSVSample(String patientRegistrationNumber, String accessionNumber, String sampleDate, String sampleSource, List<CSVTestResult> testResults) {
         this.patientRegistrationNumber = patientRegistrationNumber;
         this.accessionNumber = accessionNumber;
         this.sampleDate = sampleDate;

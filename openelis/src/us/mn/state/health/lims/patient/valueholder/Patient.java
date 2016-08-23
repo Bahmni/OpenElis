@@ -20,7 +20,6 @@ import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.common.valueholder.BaseObject;
 import us.mn.state.health.lims.common.valueholder.ValueHolder;
 import us.mn.state.health.lims.common.valueholder.ValueHolderInterface;
-import us.mn.state.health.lims.healthcenter.valueholder.HealthCenter;
 import us.mn.state.health.lims.patientidentity.valueholder.PatientIdentity;
 import us.mn.state.health.lims.person.valueholder.Person;
 
@@ -78,8 +77,6 @@ public class Patient extends BaseObject {
 	private String selectedPersonId;
 	
 	private String chartNumber;
-
-    private HealthCenter healthCenter;
 
     private String uuid;
 
@@ -284,14 +281,6 @@ public class Patient extends BaseObject {
 	public String getSelectedPersonId() {
 		return this.selectedPersonId;
 	}
-
-    public HealthCenter getHealthCenter() {
-        return healthCenter;
-    }
-
-    public void setHealthCenter(HealthCenter healthCenter) {
-        this.healthCenter = healthCenter;
-    }
 
     public void setUuid(String uuid) {
         this.uuid = uuid;

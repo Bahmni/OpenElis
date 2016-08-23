@@ -45,8 +45,6 @@
 
 %>
 <%
-    boolean allHealthCenter = true;
-    request.setAttribute("allHealthCenter",allHealthCenter);
 	String path = request.getContextPath();
 	basePath = path + "/";
 	useSTNumber =  FormFields.getInstance().useField(FormFields.Field.StNumber);
@@ -541,10 +539,6 @@ function  /*void*/ savePage()
 	loadSamples(); //in addSample tile
     window.onbeforeunload = null; // Added to flag that formWarning alert isn't needed.
     var form = window.document.forms[0];
-    if(supportHealthCenters && supportSTNumber) {
-        var val = concatenateSTNumberAndHealthCenter();
-        form.elements.namedItem("patientProperties.STnumber").value = val;
-    }
 	if(sampleId != "null"){
 		var accessionNumber = $("labNo").value
 		var rows = $jq('#samplesAddedTable tr');

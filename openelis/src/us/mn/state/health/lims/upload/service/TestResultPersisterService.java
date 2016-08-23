@@ -87,7 +87,7 @@ public class TestResultPersisterService {
             sysUserId = getSysUserId();
             Sample sample = samplePersisterService.save(csvSample, sysUserId);
             SampleHuman sampleHuman = sampleHumanPersisterService.save(sample.getId(),
-                    csvSample.healthCenter + csvSample.patientRegistrationNumber, sysUserId);
+                    csvSample.patientRegistrationNumber, sysUserId);
             Patient patient = patientDAO.getPatientById(sampleHuman.getPatientId());
 
             boolean hasFailed = false;

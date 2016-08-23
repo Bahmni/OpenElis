@@ -26,7 +26,6 @@ import us.mn.state.health.lims.address.valueholder.AddressPart;
 import us.mn.state.health.lims.address.valueholder.AddressParts;
 import us.mn.state.health.lims.address.valueholder.PersonAddress;
 import us.mn.state.health.lims.address.valueholder.PersonAddresses;
-import us.mn.state.health.lims.healthcenter.valueholder.HealthCenter;
 import us.mn.state.health.lims.patient.dao.PatientDAO;
 import us.mn.state.health.lims.patient.valueholder.Patient;
 import us.mn.state.health.lims.patientidentity.dao.PatientIdentityDAO;
@@ -67,7 +66,6 @@ public class BahmniPatientServiceTest {
         Person person = new Person();
         person.setId("321");
         patient.setPerson(person);
-        patient.setHealthCenter(new HealthCenter("HEALTHCENTER", "DESCRIPTION"));
         PatientIdentity patientIdentity = new PatientIdentity();
         patientIdentity.setId("321");
         patientIdentity.setIdentityData("SOMEID");
@@ -80,9 +78,8 @@ public class BahmniPatientServiceTest {
         when(addressDAO.getAll()).thenReturn(new ArrayList<AddressPart>());
         when(patientIdentityTypeDAO.get("ID")).thenReturn(new PatientIdentityType());
         BahmniPatientService bahmniPatientService = new BahmniPatientService(patientDAO, null, patientIdentityDAO,
-                personAddressDAO, addressDAO, patientIdentityTypeDAO, null, null);
+                personAddressDAO, addressDAO, patientIdentityTypeDAO, null);
         CompletePatientDetails result = bahmniPatientService.getPatientByUUID("uuid");
-        assertEquals(patient.getHealthCenter().getName(), result.getHealthCenter());
         assertEquals(patientIdentity.getIdentityData(), result.getPatientIdentifier());
         assertEquals(patient.getUuid(), result.getPatientUUID());
     }

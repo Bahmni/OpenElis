@@ -72,9 +72,6 @@
         <property name="birthDateForDisplay" type="java.lang.String">
             <column name="entered_birth_date" length="10" />
         </property>
-        <many-to-one name="healthCenter" class="us.mn.state.health.lims.healthcenter.valueholder.HealthCenter" fetch="select" lazy="false">
-            <column name="health_center_id" precision="10" scale="0"/>
-        </many-to-one>
         <property name="uuid" type="java.lang.String" access="field">
             <column name="uuid"/>
         </property>
