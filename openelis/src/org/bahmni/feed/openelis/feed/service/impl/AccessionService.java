@@ -227,12 +227,16 @@ public class AccessionService {
 
     private void setExternalIds(Analysis analysis, TestDetail tr) {
         ExternalReference externalReferenceForTest = externalReferenceDao.getDataByItemId(analysis.getTest().getId(), "Test");
-        tr.setTestUuid(externalReferenceForTest.getExternalId());
+        if(externalReferenceForTest != null) {
+            tr.setTestUuid(externalReferenceForTest.getExternalId());
+        }
 
         Panel panel = analysis.getPanel();
         if (panel != null) {
             ExternalReference externalReferenceForPanel = externalReferenceDao.getDataByItemId(panel.getId(), "Panel");
-            tr.setPanelUuid(externalReferenceForPanel.getExternalId());
+            if(externalReferenceForPanel != null) {
+                tr.setPanelUuid(externalReferenceForPanel.getExternalId());
+            }
         }
     }
 
