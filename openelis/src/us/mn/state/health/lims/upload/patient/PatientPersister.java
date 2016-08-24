@@ -139,7 +139,6 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
 
         String registrationNumberFormat = getStNumberFormat();
         registrationNumberFormat = registrationNumberFormat.substring(1, registrationNumberFormat.length()-1);
-        String fullRegistrationNumber = csvPatient.registrationNumber;
         StringBuilder errorMessage = new StringBuilder();
 
         if (isEmpty(csvPatient.registrationNumber))
@@ -154,7 +153,7 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
             errorMessage.append("Village is mandatory.\n");
         if (areBothEmpty(csvPatient.age, csvPatient.dob))
             errorMessage.append("Either Age or DOB is mandatory.\n");
-        if(!fullRegistrationNumber.matches(registrationNumberFormat))
+        if(csvPatient.registrationNumber == null || !csvPatient.registrationNumber.matches(registrationNumberFormat))
             errorMessage.append("PatientID does not conform to the allowed format.\n");
         try {
             if (!isEmpty(csvPatient.dob)) {
