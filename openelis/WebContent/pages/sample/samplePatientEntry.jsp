@@ -539,6 +539,9 @@ function  /*void*/ savePage()
 	loadSamples(); //in addSample tile
     window.onbeforeunload = null; // Added to flag that formWarning alert isn't needed.
     var form = window.document.forms[0];
+	if (supportSTNumber) {
+		form.elements.namedItem("patientProperties.STnumber").value = $('ST_ID').value;
+	}
 	if(sampleId != "null"){
 		var accessionNumber = $("labNo").value
 		var rows = $jq('#samplesAddedTable tr');
