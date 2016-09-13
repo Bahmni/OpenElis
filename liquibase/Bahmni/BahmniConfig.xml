@@ -1628,4 +1628,10 @@
         <dropColumn columnName="health_center_id" schemaName="clinlims" tableName="patient"/>
         <dropTable tableName="health_center" schemaName="clinlims"/>
     </changeSet>
+    <changeSet id="20160809" context="bahmni" author="Bindu,Gurpreet">
+        <comment> Update allowLanguageChange to true to enable Internationalization in Login page </comment>
+        <sql>
+            Update site_information SET value = 'true' where name = 'allowLanguageChange'
+        </sql>
+    </changeSet>
 </databaseChangeLog>

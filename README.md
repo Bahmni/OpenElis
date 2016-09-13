@@ -14,11 +14,9 @@ forked from OpenElis_v3.1_r2013_02_21 branch in svn
 Transifex Configuration
 ===========================
 Transifex is a web based translation platform where one can do the translations and can be pulled into the codebase.
-[Link](http://docs.transifex.com/client/setup/) to setup the Transifex Client 
+[Link](http://docs.transifex.com/client/config/#transifexrc) to setup the Transifex Client 
 
-* `tx init` Creates Transifex Config file
-* `tx set --auto-remote  https://www.transifex.com/projects/p/bahmni/resource/openelis/` Retrieves the configuration of openelis into config file.
-* `tx pull` downloads the property files
+* `tx pull -a` downloads the property files
 
 For more information please refer this [link](https://bahmni.atlassian.net/wiki/display/BAH/Translating+Bahmni) 
 
