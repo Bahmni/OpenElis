@@ -17,6 +17,13 @@
 */
 package us.mn.state.health.lims.common.util;
 
+import org.apache.commons.validator.GenericValidator;
+import us.mn.state.health.lims.common.log.LogEvent;
+import us.mn.state.health.lims.common.util.ConfigurationProperties.Property;
+import us.mn.state.health.lims.siteinformation.dao.SiteInformationDAO;
+import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
+import us.mn.state.health.lims.siteinformation.valueholder.SiteInformation;
+
 import java.io.InputStream;
 import java.sql.Date;
 import java.text.DateFormat;
@@ -24,11 +31,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
-
-import org.apache.commons.validator.GenericValidator;
-
-import us.mn.state.health.lims.common.log.LogEvent;
-import us.mn.state.health.lims.common.util.ConfigurationProperties.Property;
 
 /**
  * This class represents the configuration properties of the application
@@ -130,8 +132,11 @@ public class SystemConfiguration {
 		return locale == null ? Locale.US : locale;
 	}
 
-	public void setDefaultLocale( String locale ){
-		ConfigurationProperties.getInstance().setPropertyValue(Property.defaultLangLocale, locale);
+	public void setDefaultLocale(String locale) {
+		SiteInformationDAO siteInformationDao = new SiteInformationDAOImpl();
+		SiteInformation siteInformation = siteInformationDao.getSiteInformationByName("default language locale");
+		siteInformation.setValue(locale);
+		ConfigurationProperties.forceReload();
 	}
 	
 	public String getDefaultEncoding() {
