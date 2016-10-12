@@ -17,7 +17,6 @@
 package us.mn.state.health.lims.feed;
 
 import org.apache.log4j.Logger;
-import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -28,13 +27,13 @@ import org.ict4h.atomfeed.server.repository.jdbc.ChunkingEntriesJdbcImpl;
 import org.ict4h.atomfeed.server.service.EventFeedServiceImpl;
 import org.ict4h.atomfeed.server.service.helper.EventFeedServiceHelper;
 import org.ict4h.atomfeed.server.service.helper.ResourceHelper;
-import us.mn.state.health.lims.hibernate.HibernateUtil;
+import us.mn.state.health.lims.ws.WebServiceAction;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class AtomFeedAction extends Action {
+public class AtomFeedAction extends WebServiceAction {
 
     private AtomFeedHibernateTransactionManager transactionManager;
     private EventFeedServiceImpl eventFeedService;
@@ -52,7 +51,7 @@ public class AtomFeedAction extends Action {
     }
 
     @Override
-    public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         String responseData;
         String requestUrl = request.getRequestURL().toString();
         AtomFeedUrlParser feedUrlParser = new AtomFeedUrlParser(requestUrl);

@@ -1649,4 +1649,18 @@
             Update site_information SET value = 'true' where name = 'allowLanguageChange'
         </sql>
     </changeSet>
+    <changeSet id="add-atomfeed-user" author="Jaswanth">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                select count(*) from login_user where login_name = 'atomfeed'
+            </sqlCheck>
+        </preConditions>
+        <comment>Add user for accessing atomfeed</comment>
+        <sql>
+            insert into login_user values(nextval('login_user_seq'), 'atomfeed', 'SyPE4ibAjS4D3vOsEyjisw==',
+            '2036-05-02', 'N', 'N', 'Y', 120);
+            insert into system_user values(nextval('system_user_seq'), NULL, 'atomfeed', 'atomfeed', 'atomfeed', NULL,
+            'Y', 'N', NOW());
+        </sql>
+    </changeSet>
 </databaseChangeLog>

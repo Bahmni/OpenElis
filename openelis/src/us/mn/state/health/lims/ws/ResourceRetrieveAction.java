@@ -17,7 +17,6 @@
 package us.mn.state.health.lims.ws;
 
 import org.apache.log4j.Logger;
-import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -29,7 +28,7 @@ import us.mn.state.health.lims.ws.handler.WebServicesInput;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class ResourceRetrieveAction extends Action {
+public class ResourceRetrieveAction extends WebServiceAction {
 
     private final String APPLICATION_JSON = "application/json";
     private Handlers handlers;
@@ -44,11 +43,12 @@ public class ResourceRetrieveAction extends Action {
     }
 
     @Override
-    public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request,
+                                          HttpServletResponse response) throws Exception {
         WebServicesInput input = new WebServicesInput(urlOf(request));
         Handler handler = handlers.getHandler(input.getResourceName());
 
-        if (anyAreNull(handler, input.getResourceName(), input.getResourceUuid())){
+        if (anyAreNull(handler, input.getResourceName(), input.getResourceUuid())) {
             logger.error("Could not retrieve handler for url " + urlOf(request));
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return null;

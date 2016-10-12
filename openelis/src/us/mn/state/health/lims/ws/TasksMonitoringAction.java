@@ -16,8 +16,6 @@
 
 package us.mn.state.health.lims.ws;
 
-import org.apache.log4j.Logger;
-import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -31,16 +29,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class TasksMonitoringAction extends Action {
+public class TasksMonitoringAction extends WebServiceAction {
 
     private final String APPLICATION_JSON = "application/json";
-    private final Logger logger = Logger.getLogger(this.getClass());
 
     public TasksMonitoringAction() {
     }
 
     @Override
-    public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         List<CronScheduler> schedulers = new CronSchedulerDAOImpl().getAllCronSchedules();
 
         List<TasksMonitoringResponse> tasks = new ArrayList<>();
