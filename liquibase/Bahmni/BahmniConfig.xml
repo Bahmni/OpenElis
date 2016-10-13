@@ -1649,7 +1649,7 @@
             Update site_information SET value = 'true' where name = 'allowLanguageChange'
         </sql>
     </changeSet>
-    <changeSet id="add-atomfeed-user" author="Jaswanth">
+    <changeSet id="add-atomfeed-user" context="bahmni" author="Jaswanth">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">
                 select count(*) from login_user where login_name = 'atomfeed'
