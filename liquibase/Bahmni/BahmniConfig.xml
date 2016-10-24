@@ -1674,4 +1674,17 @@
             update login_user set password_expired_dt = '2036-05-02' where login_name = 'admin'
         </sql>
     </changeSet>
+    <changeSet id="assign-module-to-atomfeed-user" context="bahmni" author="Jaswanth">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                select count(*) from login_user where login_name = 'atomfeed';
+            </sqlCheck>
+        </preConditions>
+        <comment>Assign LabDashboard module to atomfeed user</comment>
+        <sql>
+            update login_user set is_admin = 'N' where login_name = 'atomfeed';
+            insert into system_user_role values((select id from system_user where login_name = 'atomfeed'),(select id
+            from system_role where name = 'LabDashboard'));
+        </sql>
+    </changeSet>
 </databaseChangeLog>
