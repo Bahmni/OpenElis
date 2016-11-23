@@ -16,8 +16,9 @@
 
 package org.bahmni.feed.openelis.feed.mapper;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.ReferenceDataDepartment;
-import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
 
@@ -28,7 +29,7 @@ public class ReferenceDataDepartmentMapper {
         this.objectMapper = objectMapper;
     }
 
-    public ReferenceDataDepartment map(String json) throws IOException {
+    public ReferenceDataDepartment map(String json) throws IOException, JsonMappingException {
         return objectMapper.readValue(json, ReferenceDataDepartment.class);
     }
 }

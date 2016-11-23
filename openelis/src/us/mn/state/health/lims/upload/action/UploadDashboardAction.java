@@ -16,6 +16,7 @@
 
 package us.mn.state.health.lims.upload.action;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts.action.ActionForm;
@@ -24,7 +25,6 @@ import org.apache.struts.action.ActionMapping;
 import org.bahmni.feed.openelis.ObjectMapperRepository;
 import org.bahmni.fileimport.ImportStatus;
 import org.bahmni.fileimport.dao.ImportStatusDao;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.joda.time.LocalDate;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.siteinformation.dao.SiteInformationDAO;

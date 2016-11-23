@@ -17,6 +17,7 @@
  */
 package us.mn.state.health.lims.common.action;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts.Globals;
 import org.apache.struts.action.*;
@@ -194,7 +195,7 @@ public abstract class BaseAction extends Action implements IActionConstants {
      * action
      */
     protected abstract ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request,
-                                                   HttpServletResponse response) throws Exception;
+                                                   HttpServletResponse response) throws Exception, JsonMappingException;
 
     /**
      * Must be implemented by subclasses to set the title for the requested

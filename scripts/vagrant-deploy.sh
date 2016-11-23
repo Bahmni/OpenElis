@@ -5,7 +5,7 @@ source $PATH_OF_CURRENT_DIRECTORY/scripts/vagrant/vagrant_functions.sh
 BAHMNI_HOME="$PATH_OF_CURRENT_DIRECTORY/../"
 OPENELIS_HOME="$BAHMNI_HOME/OpenElis"
 
-ant setupDB test dist
+ant dist
 mkdir "$OPENELIS_HOME/openelis/dist/openelis"
 cd "$OPENELIS_HOME/openelis/dist/"
 unzip -q openelis.war -d "./openelis/."

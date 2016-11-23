@@ -16,8 +16,9 @@
  */
 package org.bahmni.feed.openelis.feed.contract.bahmnireferencedata;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import java.util.Collection;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.CodedTestAnswer;
 
 import java.util.Date;

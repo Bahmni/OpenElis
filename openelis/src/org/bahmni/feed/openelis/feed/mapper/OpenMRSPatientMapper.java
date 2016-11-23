@@ -16,8 +16,9 @@
 
 package org.bahmni.feed.openelis.feed.mapper;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPatient;
-import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
 
@@ -28,7 +29,7 @@ public class OpenMRSPatientMapper {
         this.objectMapper = objectMapper;
     }
 
-    public OpenMRSPatient map(String patientJSON) throws IOException {
+    public OpenMRSPatient map(String patientJSON) throws IOException, JsonMappingException {
         return objectMapper.readValue(patientJSON, OpenMRSPatient.class);
     }
 }

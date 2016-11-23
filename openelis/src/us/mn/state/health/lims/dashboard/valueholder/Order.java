@@ -16,8 +16,8 @@
 
 package us.mn.state.health.lims.dashboard.valueholder;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.bahmni.feed.openelis.utils.JsonTimeSerializer;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import java.util.Date;
 

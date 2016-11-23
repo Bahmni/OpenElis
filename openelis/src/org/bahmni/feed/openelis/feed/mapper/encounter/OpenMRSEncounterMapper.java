@@ -16,8 +16,8 @@
 
 package org.bahmni.feed.openelis.feed.mapper.encounter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bahmni.feed.openelis.feed.contract.openmrs.encounter.OpenMRSEncounter;
-import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
 

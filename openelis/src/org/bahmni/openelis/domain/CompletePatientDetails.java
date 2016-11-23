@@ -16,8 +16,8 @@
 
 package org.bahmni.openelis.domain;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.bahmni.feed.openelis.utils.JsonDateSerializer;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 import us.mn.state.health.lims.address.valueholder.AddressPart;
 import us.mn.state.health.lims.address.valueholder.PersonAddress;
 import us.mn.state.health.lims.patient.valueholder.Patient;
