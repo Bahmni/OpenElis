@@ -16,14 +16,14 @@
 
 package org.bahmni.feed.openelis.feed.mapper.encounter;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bahmni.feed.openelis.feed.contract.openmrs.encounter.OpenMRSConcept;
 import org.bahmni.feed.openelis.feed.contract.openmrs.encounter.OpenMRSConceptName;
 import org.bahmni.feed.openelis.feed.contract.openmrs.encounter.OpenMRSEncounter;
 import org.bahmni.feed.openelis.feed.contract.openmrs.encounter.OpenMRSOrder;
 import org.bahmni.feed.openelis.feed.mapper.ObjectMapperForTest;
 import org.bahmni.feed.openelis.feed.mapper.OpenMRSMapperBaseTest;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Test;
 

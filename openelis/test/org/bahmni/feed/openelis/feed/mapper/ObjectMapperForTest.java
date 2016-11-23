@@ -16,7 +16,7 @@
 
 package org.bahmni.feed.openelis.feed.mapper;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Ignore;
 
 @Ignore
