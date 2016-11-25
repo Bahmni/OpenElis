@@ -170,7 +170,7 @@
         </exec>
     </target>
 
-    <target name="test" depends="clean, compile, updateDB, test-only" />
+    <target name="test" depends="clean, compile, updateDB" />
 
     <target name="test-only">
         <mkdir dir="${junit.output.dir}"/>
