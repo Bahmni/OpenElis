@@ -478,11 +478,22 @@ public abstract class HaitiPatientReport extends Report {
 
 
     protected void setPatientName(HaitiClinicalPatientData data) {
-        if (reportPatient != null) {
-            data.setPatientName(reportPatient.getPerson().getFirstName() + " " + reportPatient.getPerson().getLastName());
-            data.setFirstName(reportPatient.getPerson().getFirstName());
-            data.setLastName(reportPatient.getPerson().getLastName());
+        if (reportPatient == null) {
+            return;
         }
+        String firstName = reportPatient.getPerson().getFirstName();
+        String middleName = " ";
+        String lastName = reportPatient.getPerson().getLastName();
+        data.setFirstName(firstName);
+        data.setLastName(lastName);
+        data.setPatientName(firstName + middleName + lastName);
+        if (!"true".equals(ConfigurationProperties.getInstance().getPropertyValue(Property.SHOW_MIDDLENAME_ON_REPORT_PRINT))) {
+            return;
+        }
+        if (reportPatient.getPerson().getMiddleName() != null) {
+            middleName += reportPatient.getPerson().getMiddleName() + " ";
+        }
+        data.setPatientName(firstName + middleName + lastName);
     }
 
     @SuppressWarnings("unchecked")
