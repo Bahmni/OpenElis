@@ -26,7 +26,6 @@ import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
 import us.mn.state.health.lims.samplehuman.daoimpl.SampleHumanDAOImpl;
 import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 
-
 public class AccessionHandler implements Handler<AccessionDetail>{
     private static final String ACCESSION = "accession";
     private AccessionService accessionService;

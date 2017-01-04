@@ -89,9 +89,9 @@ public class AccessionService {
         Patient patient = sampleHumanDAO.getPatientForSample(samples.get(0));
         List<AccessionDetail> accessionDetails = mapToAccessionDetail(samples, patient);
         AccessionDetail accessionDetail = mergeAccessionDetailsForEncounter(accessionDetails);
-        SiteInformation labLocation = siteInformationDAO.getSiteInformationByName("labLocation");
-        if(labLocation != null)
-            accessionDetail.setLabLocationUuid(labLocation.getValue());
+        ExternalReference externalReference = externalReferenceDao.getDataByItemId(samples.get(0).getSampleSource().getId(),"SampleSource");
+        if(externalReference != null)
+            accessionDetail.setLabLocationUuid(externalReference.getExternalId());
 
         return accessionDetail;
     }
