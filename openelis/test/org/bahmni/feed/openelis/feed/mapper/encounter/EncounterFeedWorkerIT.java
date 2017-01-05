@@ -505,6 +505,32 @@ public class EncounterFeedWorkerIT extends IT {
 
     }
 
+    @org.junit.Test
+    public void shouldCreateSampleWithLocationMappedSampleSource() throws Exception {
+        OpenMRSConcept openMRSHaemoglobinConcept = createOpenMRSConcept(haemoglobinTest.getTestName(), haemoglobinTestConceptUUID, false);
+        OpenMRSConcept openMRSDiabeticsConcept = createOpenMRSConcept(diabeticsPanel.getPanelName(), diabeticsPanelConceptUUID, true);
+
+        List<OpenMRSConcept> labTests = Arrays.asList(openMRSHaemoglobinConcept); //test for only blood sample type
+        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, labTests);
+        EncounterFeedWorker encounterFeedWorker = new EncounterFeedWorker(null, null);
+        encounterFeedWorker.process(openMRSEncounter);
+
+        List<Sample> samples = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId());
+        assertEquals(1, samples.size());
+
+        assertEquals("randomLocationName", samples.get(0).getSampleSource().getName());
+
+        List<OpenMRSConcept> newLabTests = Arrays.asList(openMRSDiabeticsConcept);
+        openMRSEncounter = createOpenMRSEncounter(patientUUID, newLabTests);
+        encounterFeedWorker.process(openMRSEncounter);
+
+        samples = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId());
+        assertEquals(2, samples.size());
+
+        assertEquals("randomLocationName", samples.get(1).getSampleSource().getName());
+
+    }
+
     private void setStopDate(OpenMRSOrder openMRSOrder) {
         openMRSOrder.setDateStopped(new Date());
     }
@@ -546,7 +572,7 @@ public class EncounterFeedWorkerIT extends IT {
         List<OpenMRSOrder> openMRSOrders = createOpenMRSOrders(openmrsConcepts, labOrderType);
 
         String encounterUUID = UUID.randomUUID().toString();
-        return new OpenMRSEncounter(encounterUUID, patientUUID, openMRSOrders, Arrays.asList(openMRSProvider));
+        return new OpenMRSEncounter(encounterUUID, patientUUID, "randomLocationUuid", "randomLocationName", openMRSOrders, Arrays.asList(openMRSProvider));
     }
 
     private void addNewOrders(OpenMRSEncounter openMRSEncounter, List<OpenMRSConcept> concepts) {

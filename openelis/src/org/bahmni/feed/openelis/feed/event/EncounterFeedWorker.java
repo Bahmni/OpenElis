@@ -65,6 +65,7 @@ import us.mn.state.health.lims.sampleitem.daoimpl.SampleItemDAOImpl;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
 import us.mn.state.health.lims.samplesource.dao.SampleSourceDAO;
 import us.mn.state.health.lims.samplesource.daoimpl.SampleSourceDAOImpl;
+import us.mn.state.health.lims.samplesource.valueholder.SampleSource;
 import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.test.dao.TestDAO;
@@ -82,7 +83,13 @@ import us.mn.state.health.lims.upload.action.AddSampleService;
 import java.io.IOException;
 import java.net.URI;
 import java.sql.Date;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 //analogous to a controller because it receives the request which is an event in this case
 public class EncounterFeedWorker extends OpenElisEventWorker {
@@ -222,7 +229,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         Date nowAsSqlDate = DateUtil.getNowAsSqlDate();
 
         Patient patient = getPatient(openMRSEncounter.getPatientUuid());
-        Sample sample = getSample(sysUserId, nowAsSqlDate, openMRSEncounter.getEncounterUuid());
+        Sample sample = getSample(sysUserId, nowAsSqlDate, openMRSEncounter);
         SampleHuman sampleHuman = getSampleHuman(sysUserId);
         List<SampleTestOrderCollection> sampleTestOrderCollectionList = getSampleTestCollections(openMRSEncounter, sysUserId, nowAsSqlDate, sample, processState);
 
@@ -450,13 +457,21 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         return testOrders;
     }
 
-    private Sample getSample(String sysUserId, Date nowAsSqlDate, String openMRSEncounterUuid) {
+    private int getLatestDisplayOrder() {
+        List<SampleSource> allSampleSources = sampleSourceDAO.getAll();
+        if(allSampleSources != null && allSampleSources.size() > 0)
+          return allSampleSources.get(allSampleSources.size() - 1).getDisplayOrder() + 1;
+        return 1;
+    }
+
+    private Sample getSample(String sysUserId, Date nowAsSqlDate, OpenMRSEncounter openMRSEncounter) {
         Sample sample = new Sample();
         sample.setSysUserId(sysUserId);
         sample.setAccessionNumber(null);
 
-        // TODO : Mujir - remove this hardcoding??? Read this from the event???
-        sample.setSampleSource(sampleSourceDAO.getByName("OPD"));
+        SampleSource sampleSource = getSampleSource(openMRSEncounter);
+
+        sample.setSampleSource(sampleSource);
 
         // TODO : Mujir - remove this hardcoding???? Read this from the event????
         // TODO: Aarthy - Send encounter Date Time as part of event
@@ -466,9 +481,24 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         sample.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.OrderStatus.Entered));
 
         // Mujir - create an external reference to order id in openelis.. this can go in Sample against the accession number
-        sample.setUUID(openMRSEncounterUuid);
+        sample.setUUID(openMRSEncounter.getEncounterUuid());
 
         return sample;
+    }
+
+    private SampleSource getSampleSource(OpenMRSEncounter openMRSEncounter) {
+        SampleSource sampleSource;
+        ExternalReference externalReference = externalReferenceDao.getData(openMRSEncounter.getLocationUuid(), "SampleSource");
+        if(externalReference != null){
+            sampleSource = sampleSourceDAO.get(String.valueOf(externalReference.getItemId()));
+        }
+        else{
+            sampleSource = new SampleSource(openMRSEncounter.getLocationName(),openMRSEncounter.getLocationName(),getLatestDisplayOrder());
+            sampleSourceDAO.add(sampleSource);
+            ExternalReference externalReferenceForSampleSource=new ExternalReference(Long.valueOf(sampleSource.getId()), openMRSEncounter.getLocationUuid(), "SampleSource");
+            externalReferenceDao.insertData(externalReferenceForSampleSource);
+        }
+        return sampleSource;
     }
 
     private AnalysisBuilder getAnalysisBuilder(FeedProcessState processState) {

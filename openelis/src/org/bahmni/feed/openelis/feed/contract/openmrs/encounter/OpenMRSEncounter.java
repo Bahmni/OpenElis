@@ -26,15 +26,19 @@ import java.util.List;
 public class OpenMRSEncounter {
     private String encounterUuid;
     private String patientUuid;
+    private String locationUuid;
+    private String locationName;
     private List<OpenMRSOrder> orders = new ArrayList<>();
     private List<OpenMRSProvider> providers = new ArrayList<>();
 
     public OpenMRSEncounter() {
     }
 
-    public OpenMRSEncounter(String encounterUuid, String patientUuid, List<OpenMRSOrder> orders, List<OpenMRSProvider> providers) {
+    public OpenMRSEncounter(String encounterUuid, String patientUuid, String locationUuid, String locationName, List<OpenMRSOrder> orders, List<OpenMRSProvider> providers) {
 
         this.encounterUuid = encounterUuid;
+        this.locationUuid = locationUuid;
+        this.locationName = locationName;
         this.orders = orders;
         this.patientUuid = patientUuid;
         this.providers = providers;
@@ -87,5 +91,21 @@ public class OpenMRSEncounter {
 
     public void setProviders(List<OpenMRSProvider> providers) {
         this.providers = providers;
+    }
+
+    public String getLocationUuid() {
+        return locationUuid;
+    }
+
+    public void setLocationUuid(String locationUuid) {
+        this.locationUuid = locationUuid;
+    }
+
+    public String getLocationName() {
+        return locationName;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
     }
 }
