@@ -27,6 +27,7 @@ import org.bahmni.feed.openelis.feed.contract.openmrs.encounter.OpenMRSEncounter
 import org.bahmni.feed.openelis.feed.contract.openmrs.encounter.OpenMRSOrder;
 import org.bahmni.feed.openelis.feed.contract.openmrs.encounter.OpenMRSProvider;
 import org.bahmni.feed.openelis.feed.mapper.encounter.OpenMRSEncounterMapper;
+import org.bahmni.feed.openelis.feed.service.impl.SampleSourceService;
 import org.bahmni.feed.openelis.utils.AuditingService;
 import org.bahmni.webclients.HttpClient;
 import org.ict4h.atomfeed.client.domain.Event;
@@ -110,6 +111,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
     private AnalysisDAO analysisDAO;
     private SampleItemDAO sampleItemDAO;
     private ProviderDAO providerDAO;
+    private SampleSourceService sampleSourceService;
 
     private static long provider_requester_type_id;
     private static String referring_org_type_id;
@@ -120,7 +122,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
                                TypeOfSampleTestDAO typeOfSampleTestDAO, TypeOfSampleDAO typeOfSampleDAO,
                                RequesterTypeDAO requesterTypeDAO, OrganizationTypeDAO organizationTypeDAO,
                                SampleSourceDAO sampleSourceDAO, SampleDAOImpl sampleDAO, PatientDAO patientDAO,
-                               TestDAO testDAO, AnalysisDAO analysisDAO, SampleItemDAOImpl sampleItemDAO, ProviderDAO providerDAO) {
+                               TestDAO testDAO, AnalysisDAO analysisDAO, SampleItemDAOImpl sampleItemDAO, ProviderDAO providerDAO, SampleSourceService sampleSourceService) {
         this.webClient = webClient;
         this.urlPrefix = urlPrefix;
         this.externalReferenceDao = externalReferenceDao;
@@ -137,6 +139,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         this.analysisDAO = analysisDAO;
         this.sampleItemDAO = sampleItemDAO;
         this.providerDAO = providerDAO;
+        this.sampleSourceService = sampleSourceService;
     }
 
     public EncounterFeedWorker(HttpClient authenticatedWebClient, String urlPrefix) {
@@ -144,7 +147,8 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
                 new AuditingService(new LoginDAOImpl(), new SiteInformationDAOImpl()),
                 new PanelItemDAOImpl(), new TypeOfSampleTestDAOImpl(), new TypeOfSampleDAOImpl(),
                 new RequesterTypeDAOImpl(), new OrganizationTypeDAOImpl(), new SampleSourceDAOImpl(),
-                new SampleDAOImpl(), new PatientDAOImpl(), new TestDAOImpl(), new AnalysisDAOImpl(), new SampleItemDAOImpl(), new ProviderDAOImpl());
+                new SampleDAOImpl(), new PatientDAOImpl(), new TestDAOImpl(), new AnalysisDAOImpl(),
+                new SampleItemDAOImpl(), new ProviderDAOImpl(), new SampleSourceService(new SampleSourceDAOImpl(), new ExternalReferenceDaoImpl()));
     }
 
     @Override
@@ -457,19 +461,12 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         return testOrders;
     }
 
-    private int getLatestDisplayOrder() {
-        List<SampleSource> allSampleSources = sampleSourceDAO.getAll();
-        if(allSampleSources != null && allSampleSources.size() > 0)
-          return allSampleSources.get(allSampleSources.size() - 1).getDisplayOrder() + 1;
-        return 1;
-    }
-
     private Sample getSample(String sysUserId, Date nowAsSqlDate, OpenMRSEncounter openMRSEncounter) {
         Sample sample = new Sample();
         sample.setSysUserId(sysUserId);
         sample.setAccessionNumber(null);
 
-        SampleSource sampleSource = getSampleSource(openMRSEncounter);
+        SampleSource sampleSource = sampleSourceService.getSampleSource(openMRSEncounter);
 
         sample.setSampleSource(sampleSource);
 
@@ -484,21 +481,6 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         sample.setUUID(openMRSEncounter.getEncounterUuid());
 
         return sample;
-    }
-
-    private SampleSource getSampleSource(OpenMRSEncounter openMRSEncounter) {
-        SampleSource sampleSource;
-        ExternalReference externalReference = externalReferenceDao.getData(openMRSEncounter.getLocationUuid(), "SampleSource");
-        if(externalReference != null){
-            sampleSource = sampleSourceDAO.get(String.valueOf(externalReference.getItemId()));
-        }
-        else{
-            sampleSource = new SampleSource(openMRSEncounter.getLocationName(),openMRSEncounter.getLocationName(),getLatestDisplayOrder());
-            sampleSourceDAO.add(sampleSource);
-            ExternalReference externalReferenceForSampleSource=new ExternalReference(Long.valueOf(sampleSource.getId()), openMRSEncounter.getLocationUuid(), "SampleSource");
-            externalReferenceDao.insertData(externalReferenceForSampleSource);
-        }
-        return sampleSource;
     }
 
     private AnalysisBuilder getAnalysisBuilder(FeedProcessState processState) {
