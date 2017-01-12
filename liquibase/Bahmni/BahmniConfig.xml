@@ -1687,4 +1687,27 @@
             from system_role where name = 'LabDashboard'));
         </sql>
     </changeSet>
+    <changeSet id="remove-lab-location-config" context="bahmni" author="Padma, Salauddin">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                select count(*) from site_information where name = 'labLocation'
+            </sqlCheck>
+        </preConditions>
+        <comment>Removing the lab location configuration</comment>
+        <sql >
+            delete from site_information where name='labLocation';
+        </sql>
+    </changeSet>
+    <changeSet id="configure-default-sample-source" context="bahmni" author="Padma, Salauddin">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                select count(*) from site_information where name = 'defaultSampleSource'
+            </sqlCheck>
+        </preConditions>
+        <comment>Adding the default Sample source configuration</comment>
+        <sql >
+            insert into site_information (id, name, description, value, domain_id) values
+            (nextVal( 'site_information_seq' ), 'defaultSampleSource', 'Configuration for default sample source value ', '', (select id from site_information_domain where name = 'siteIdentity'))
+        </sql>
+    </changeSet>
 </databaseChangeLog>

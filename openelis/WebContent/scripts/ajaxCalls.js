@@ -42,6 +42,20 @@ function getSampleOrderDetailsFromSampleId(sampleId, success, failure) {
 		});
 }
 
+function getDefaultSampleSource(success) {
+	var failure = defaultFailure;
+
+	new Ajax.Request('ajaxQueryXML', // url
+		{// options
+			method : 'get', // http method
+			parameters : "provider=SiteInformationProvider",
+			// indicator: 'throbbing'
+			asynchronous: false,
+			onSuccess : success,
+			onFailure : failure
+		});
+}
+
 function getSampleTypesAndTestsForSample(sampleId, success, failure) {
 	var request = "&sampleId=" + sampleId;
 	if( !failure ){	failure = defaultFailure;}

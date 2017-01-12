@@ -125,15 +125,23 @@ $jq(function() {
 	if(sampleId != "null") {
 		getSampleOrderDetailsFromSampleId(sampleId, processSampleOrderDetailsSuccess, processSampleOrderDetailsFailure);
 	}
+	else{
+		getDefaultSampleSource(processDefaultSampleSourceSuccess)
+	}
 
 });
 
+function processDefaultSampleSourceSuccess(xhr) {
+	var defaultSampleSource = xhr.responseXML.getElementsByTagName("defaultSampleSourceID");
+	$jq("#sampleSourceID").val(defaultSampleSource[0].innerHTML);
+}
 
 function processSampleOrderDetailsSuccess(xhr){
 	var sampleSource = xhr.responseXML.getElementsByTagName("sampleSource");
 	var sampleRequester = xhr.responseXML.getElementsByTagName("sampleRequester");
 	var sampleReceivedDateForDisplay = xhr.responseXML.getElementsByTagName("sampleReceivedDateForDisplay");
 	$jq("#sampleSourceID").val(sampleSource[0].innerHTML);
+	$jq("#sampleSourceID").attr("disabled", "disabled");
 	$jq("#receivedDateForDisplay").val(sampleReceivedDateForDisplay[0].innerHTML);
 	if(sampleRequester.length > 0)
 	{
