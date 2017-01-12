@@ -54,7 +54,7 @@ public class SiteInformationProvider extends BaseQueryProvider {
 
     private void createReturnXML(SiteInformation siteInformation, StringBuilder xml) {
         SampleSourceDAO sampleSourceDAO = new SampleSourceDAOImpl();
-        SampleSource sampleSource = sampleSourceDAO.getByName(siteInformation.getValue());
+        SampleSource sampleSource = sampleSourceDAO.getByName(siteInformation.getValue(), true);
         if(sampleSource != null){
             XMLUtil.appendKeyValue("defaultSampleSource", siteInformation.getValue(), xml);
             XMLUtil.appendKeyValue("defaultSampleSourceID", sampleSource.getId(), xml);

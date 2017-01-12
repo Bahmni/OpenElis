@@ -23,7 +23,7 @@ import java.util.List;
 public interface SampleSourceDAO {
 
     public List<SampleSource> getAll();
-    public SampleSource getByName(String name);
+    public SampleSource getByName(String name, boolean caseInsensitiveComparision);
     public SampleSource get(String id);
     public void add(SampleSource sampleSource);
     public void update(SampleSource sampleSource);

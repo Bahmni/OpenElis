@@ -16,7 +16,8 @@
 
 package us.mn.state.health.lims.samplesource.daoimpl;
 
-import org.hibernate.Query;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
@@ -43,14 +44,16 @@ public class SampleSourceDAOImpl implements SampleSourceDAO{
     }
 
     @Override
-    public SampleSource getByName(String name) {
+    public SampleSource getByName(String name, boolean caseInsensitiveComparision) {
         SampleSource sampleSource = null;
         try {
-            String sql = "from SampleSource where name = :param";
-            Query query = HibernateUtil.getSession().createQuery(sql);
-            query.setParameter("param", name);
-
-            List<SampleSource> list = query.list();
+            Criteria criteria = HibernateUtil.getSession().createCriteria(SampleSource.class);
+            if (caseInsensitiveComparision) {
+                criteria.add(Restrictions.eq("name", name).ignoreCase());
+            } else {
+                criteria.add(Restrictions.eq("name", name));
+            }
+            List<SampleSource> list = criteria.list();
             if ((list != null) && !list.isEmpty()) {
                 sampleSource = list.get(0);
             }
@@ -80,7 +83,7 @@ public class SampleSourceDAOImpl implements SampleSourceDAO{
 
     @Override
     public void update(SampleSource sampleSource) {
-        SampleSource sampleSourceInDB = getByName(sampleSource.getName());
+        SampleSource sampleSourceInDB = getByName(sampleSource.getName(), false);
         if(sampleSourceInDB != null){
             sampleSource.setId(sampleSourceInDB.getId());
             HibernateUtil.getSession().merge(sampleSource);
