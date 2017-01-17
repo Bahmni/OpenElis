@@ -1,11 +1,12 @@
 package org.bahmni.feed.openelis.feed.service.impl;
 
-import java.util.List;
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import org.bahmni.feed.openelis.feed.contract.openmrs.encounter.OpenMRSEncounter;
 import us.mn.state.health.lims.samplesource.dao.SampleSourceDAO;
 import us.mn.state.health.lims.samplesource.valueholder.SampleSource;
+
+import java.util.List;
 
 public class SampleSourceService {
 
@@ -29,6 +30,10 @@ public class SampleSourceService {
         ExternalReference externalReference = externalReferenceDao.getData(openMRSEncounter.getLocationUuid(), "SampleSource");
         if(externalReference != null){
             sampleSource = sampleSourceDAO.get(String.valueOf(externalReference.getItemId()));
+        } else if (sampleSourceDAO.getByName(openMRSEncounter.getLocationName(), true)  != null) {
+            sampleSource = sampleSourceDAO.getByName(openMRSEncounter.getLocationName(), true);
+            ExternalReference externalReferenceForSampleSource = new ExternalReference(Long.valueOf(sampleSource.getId()), openMRSEncounter.getLocationUuid(), "SampleSource");
+            externalReferenceDao.insertData(externalReferenceForSampleSource);
         }
         else{
             sampleSource = new SampleSource(openMRSEncounter.getLocationName(), openMRSEncounter.getLocationName(), getLatestDisplayOrder());
