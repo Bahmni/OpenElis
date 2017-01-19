@@ -1710,4 +1710,10 @@
             (nextVal( 'site_information_seq' ), 'defaultSampleSource', 'Configuration for default sample source value ', '', (select id from site_information_domain where name = 'siteIdentity'))
         </sql>
     </changeSet>
+    <changeSet id="change-sample-source-name-length" context="bahmni" author="Salauddin">
+        <comment>change sample source name to accept 50 characters</comment>
+        <sql>
+            ALTER TABLE sample_source ALTER COLUMN name TYPE character varying(50);
+        </sql>
+    </changeSet>
 </databaseChangeLog>
