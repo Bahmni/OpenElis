@@ -99,7 +99,7 @@ public class SamplePatientEntryAction extends BaseSampleEntryAction {
 		PropertyUtils.setProperty(dynaForm, "testSectionList", DisplayListService.getList(ListType.TEST_SECTION));
 		PropertyUtils.setProperty(dynaForm, "labNo", "");
 		PropertyUtils.setProperty(dynaForm, "sampleEntryFieldsetOrder", Arrays.asList(fieldsetOrder));
-        PropertyUtils.setProperty(dynaForm, "sampleSourceList", sampleSourceDAO.getAll());
+        PropertyUtils.setProperty(dynaForm, "sampleSourceList", sampleSourceDAO.getAllActive());
         PropertyUtils.setProperty(dynaForm, "providerList", providerDAO.getAllActiveProviders());
 
 		addProjectList(dynaForm);

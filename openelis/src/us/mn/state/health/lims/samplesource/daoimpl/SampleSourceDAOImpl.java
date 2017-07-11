@@ -43,6 +43,22 @@ public class SampleSourceDAOImpl implements SampleSourceDAO{
         return list;
     }
 
+    public List<SampleSource> getAllActive() {
+        List<SampleSource> list;
+        try {
+            String sql = "from SampleSource where active = true order by display_order asc";
+            org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
+            list = query.list();
+            flushAndClear();
+        } catch(Exception e) {
+            LogEvent.logErrorStack("SampleSourceDAOImpl", "getAllActive()", e);
+            throw new LIMSRuntimeException("Error in SampleSource getAllActive()", e);
+        }
+        return list;
+    }
+
+
+
     @Override
     public SampleSource getByName(String name, boolean caseInsensitiveComparision) {
         SampleSource sampleSource = null;

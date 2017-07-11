@@ -48,4 +48,26 @@ public class SampleSourceDAOImplTest extends IT {
         }
     }
 
+    @Test
+    public void shouldReturnOnlyActiveSampleSources() throws Exception {
+        //Depends on the reference data that is already in the database
+
+
+        assertTrue(sampleSourceDAO.getAll().size() == 5);
+
+        SampleSource inactiveSampleSource = new SampleSource();
+        inactiveSampleSource.setName("Inactive Sample Source");
+        inactiveSampleSource.setActive(false);
+        sampleSourceDAO.add(inactiveSampleSource);
+
+        assertTrue(sampleSourceDAO.getAll().size() == 6);
+        assertTrue(sampleSourceDAO.getAllActive().size() == 5);
+
+        List<SampleSource> allSampleSources = sampleSourceDAO.getAllActive();
+
+        for(int i = 0; i < allSampleSources.size() - 1; i++) {
+            assertTrue(allSampleSources.get(i).isActive());
+        }
+    }
+
 }
