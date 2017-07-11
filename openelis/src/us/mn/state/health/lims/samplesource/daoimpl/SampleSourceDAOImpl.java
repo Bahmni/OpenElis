@@ -51,8 +51,8 @@ public class SampleSourceDAOImpl implements SampleSourceDAO{
             list = query.list();
             flushAndClear();
         } catch(Exception e) {
-            LogEvent.logErrorStack("SampleSourceDAOImpl", "getAll()", e);
-            throw new LIMSRuntimeException("Error in SampleSource getAll()", e);
+            LogEvent.logErrorStack("SampleSourceDAOImpl", "getAllActive()", e);
+            throw new LIMSRuntimeException("Error in SampleSource getAllActive()", e);
         }
         return list;
     }
