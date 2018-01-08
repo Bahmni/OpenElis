@@ -41,6 +41,7 @@ import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.samplehuman.dao.SampleHumanDAO;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
+import us.mn.state.health.lims.samplesource.valueholder.SampleSource;
 import us.mn.state.health.lims.siteinformation.dao.SiteInformationDAO;
 import us.mn.state.health.lims.siteinformation.valueholder.SiteInformation;
 import us.mn.state.health.lims.systemuser.dao.SystemUserDAO;
@@ -87,9 +88,12 @@ public class AccessionServiceTest {
     @Before
     public void setUp() {
         initMocks(this);
+        SampleSource sampleSource = new SampleSource();
+        sampleSource.setId("12");
         sample = DBHelper.createEntireSampleTreeWithResults();
         patient = DBHelper.createPatient();
         patienIdentityType = new PatientIdentityType();
+        sample.setSampleSource(sampleSource);
     }
 
     @Test
@@ -101,13 +105,10 @@ public class AccessionServiceTest {
         when(externalReferenceDao.getDataByItemId(anyString(), anyString())).thenReturn(new ExternalReference(456789, "Ex Id", "type"));
         when(patientIdentityTypeDAO.getNamedIdentityType("ST")).thenReturn(patienIdentityType);
         when(noteDao.getNoteByRefIAndRefTableAndSubject(anyString(),anyString(),anyString())).thenReturn(Collections.EMPTY_LIST);
-        SiteInformation labLocation = new SiteInformation();
-        labLocation.setValue("locationUuid");
-        when(siteInformationDAO.getSiteInformationByName("labLocation")).thenReturn(labLocation);
 
         AccessionDetail accessionDetail = accessionService.getAccessionDetailFor(sample.getUUID());
         assertNotNull(accessionDetail);
-        assertEquals(accessionDetail.getLabLocationUuid(), "locationUuid");
+        assertEquals(accessionDetail.getLabLocationUuid(), "Ex Id");
     }
 
     @Test
@@ -129,9 +130,7 @@ public class AccessionServiceTest {
         when(sampleDao.getSamplesByEncounterUuid(sample.getUUID())).thenReturn(Arrays.asList(sample,sample2));
         when(sampleDao.getSampleByAccessionNumber(sample.getAccessionNumber())).thenReturn(sample);
         when(sampleDao.getSampleByAccessionNumber(sample2.getAccessionNumber())).thenReturn(sample2);
-        SiteInformation labLocation = new SiteInformation();
-        labLocation.setValue("locationUuid");
-        when(siteInformationDAO.getSiteInformationByName("labLocation")).thenReturn(labLocation);
+        
         when(sampleHumanDAO.getPatientForSample(sample)).thenReturn(patient);
         when(sampleHumanDAO.getPatientForSample(sample2)).thenReturn(patient);
 
@@ -158,9 +157,7 @@ public class AccessionServiceTest {
         when(externalReferenceDao.getDataByItemId(analysis.getPanel().getId(), "Panel")).thenReturn(externalReferences);
         when(noteDao.getNoteByRefIAndRefTableAndSubject(anyString(), anyString(), anyString())).thenReturn(Arrays.asList(latestNote, oldNote));
         when(patientIdentityTypeDAO.getNamedIdentityType("ST")).thenReturn(patienIdentityType);
-        SiteInformation labLocation = new SiteInformation();
-        labLocation.setValue("locationUuid");
-        when(siteInformationDAO.getSiteInformationByName("labLocation")).thenReturn(labLocation);
+        
 
         AccessionDetail accessionDetail = accessionService.getAccessionDetailFor(sample.getUUID());
 
@@ -186,9 +183,7 @@ public class AccessionServiceTest {
         dictionary.setDictEntry("dictEntry");
         when(dictionaryDao.getDataForId(result.getValue())).thenReturn(dictionary);
         when(externalReferenceDao.getDataByItemId("dictId", "CodedAns")).thenReturn(new ExternalReference(1, "resultUuid", "ctype"));
-        SiteInformation labLocation = new SiteInformation();
-        labLocation.setValue("locationUuid");
-        when(siteInformationDAO.getSiteInformationByName("labLocation")).thenReturn(labLocation);
+        
 
         accessionService.setResultValue(testDetail, result);
 
@@ -210,9 +205,7 @@ public class AccessionServiceTest {
         dictionary.setDictEntry("dictEntry");
         when(dictionaryDao.getDataForId(result.getValue())).thenReturn(dictionary);
         when(externalReferenceDao.getDataByItemId("dictId", "CodedAns")).thenReturn(null);
-        SiteInformation labLocation = new SiteInformation();
-        labLocation.setValue("locationUuid");
-        when(siteInformationDAO.getSiteInformationByName("labLocation")).thenReturn(labLocation);
+        
 
         accessionService.setResultValue(testDetail, result);
 
@@ -228,9 +221,7 @@ public class AccessionServiceTest {
         Result result = new Result();
         result.setValue("10");
         result.setResultType("N");
-        SiteInformation labLocation = new SiteInformation();
-        labLocation.setValue("locationUuid");
-        when(siteInformationDAO.getSiteInformationByName("labLocation")).thenReturn(labLocation);
+        
 
         accessionService.setResultValue(testDetail, result);
 
