@@ -104,6 +104,7 @@ basePath = path + "/";
         data-patientID = '<bean:message key="dashboard.sample.column.patientID"/>'
         data-patientName = '<bean:message key="dashboard.sample.column.patientName"/>'
         data-source = '<bean:message key="dashboard.sample.column.source"/>'
+        data-sectionNames = '<bean:message key="dashboard.sample.column.sectionNames"/>'
         data-total = '<bean:message key="dashboard.sample.column.total"/>'
         data-notes = '<bean:message key="dashboard.sample.column.notes"/>'
         data-action = '<bean:message key="dashboard.sample.column.action"/>'

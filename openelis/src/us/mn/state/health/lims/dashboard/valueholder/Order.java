@@ -38,12 +38,13 @@ public class Order {
     private boolean isCompleted;
     private Date enteredDate;
     private String comments;
+    private String sectionNames;
 
     public Order() {
     }
 
     public Order(String accessionNumber, String uuid, String orderId, String stNumber, String firstName, String middleName, String lastName, String source, boolean isCompleted, boolean isPrinted,
-                 int pendingTestCount, int pendingValidationCount, int totalTestCount, Date collectionDate,Date enteredDate, String comments) {
+                 int pendingTestCount, int pendingValidationCount, int totalTestCount, Date collectionDate, Date enteredDate, String comments, String sectionNames) {
         this.accessionNumber = accessionNumber;
         this.uuid = uuid;
         this.orderId = orderId;
@@ -60,6 +61,7 @@ public class Order {
         this.collectionDate = collectionDate;
         this.enteredDate = enteredDate;
         this.comments = comments;
+        this.sectionNames = sectionNames;
     }
 
     public String getAccessionNumber() {
@@ -219,5 +221,13 @@ public class Order {
         result = 31 * result + (isPrinted ? 1 : 0);
         result = 31 * result + (isCompleted ? 1 : 0);
         return result;
+    }
+
+    public String getSectionNames() {
+        return sectionNames;
+    }
+
+    public void setSectionNames(String sectionNames) {
+        this.sectionNames = sectionNames;
     }
 }
