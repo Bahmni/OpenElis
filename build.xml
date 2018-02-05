@@ -83,9 +83,7 @@
         <copy todir="${target}">
             <fileset dir="${src}" includes="**/*.properties"/>
         </copy>
-        <copy tofile="${dist}/LICENSE">
-            <fileset dir="${src}" file="LICENSE"/>
-        </copy>
+        <copy file="LICENSE" todir="${dist}"/>
         <propertyMerge
                 inputpropertyfile="${target}/MessageResources.properties"
                 mergepropertyfile="${target}/BahmniMessageResources.properties"
