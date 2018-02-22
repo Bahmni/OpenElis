@@ -459,11 +459,13 @@ public class LoginDAOImpl extends BaseDAOImpl implements LoginDAO {
 		Crypto crypto = new Crypto();
 
 		try {
+			String newPassword=login.getPassword();
 			login.setPassword(crypto.getEncrypt(login.getPassword()));
 			
 			AuditTrailDAO auditDAO = new AuditTrailDAOImpl();
 			auditDAO.saveHistory(login, readLoginUser(login.getId()), login.getSysUserId(), IActionConstants.AUDIT_TRAIL_UPDATE, "LOGIN_USER");
-			
+
+			login.setPassword(crypto.getEncrypt(newPassword));
 			HibernateUtil.getSession().merge(login);
 			HibernateUtil.getSession().flush();
 			HibernateUtil.getSession().clear();
