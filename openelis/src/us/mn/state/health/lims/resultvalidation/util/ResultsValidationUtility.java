@@ -747,6 +747,9 @@ public class ResultsValidationUtility {
 
 	public List<AnalysisItem> testResultListToAnalysisItemList(List<ResultValidationItem> testResultList) {
 		List<AnalysisItem> analysisResultList = new ArrayList<AnalysisItem>();
+
+		reverseSortByAccessionAndSequence(testResultList);
+
 		for (ResultValidationItem tResultItem : testResultList) {
 			String uploadedFilePath = null;
             Result result = resultDAO.getResultById(tResultItem.getResultId());
@@ -758,6 +761,16 @@ public class ResultsValidationUtility {
 		}
 
 		return analysisResultList;
+	}
+
+	private static void reverseSortByAccessionAndSequence(List<ResultValidationItem> testResultList) {
+		Collections.sort(testResultList, new Comparator<ResultValidationItem>(){
+			@Override
+			public int compare(ResultValidationItem o1, ResultValidationItem o2) {
+				return Integer.parseInt(o1.getSequenceNumber()) - Integer.parseInt(o2.getSequenceNumber());
+			}
+		});
+		Collections.reverse(testResultList);
 	}
 
 	private RecordStatus getSampleRecordStatus(Sample sample) {
