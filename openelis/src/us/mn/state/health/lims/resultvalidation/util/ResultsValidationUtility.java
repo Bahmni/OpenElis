@@ -766,11 +766,25 @@ public class ResultsValidationUtility {
 	private static void reverseSortByAccessionAndSequence(List<ResultValidationItem> testResultList) {
 		Collections.sort(testResultList, new Comparator<ResultValidationItem>(){
 			@Override
-			public int compare(ResultValidationItem o1, ResultValidationItem o2) {
-				return Integer.parseInt(o1.getSequenceNumber()) - Integer.parseInt(o2.getSequenceNumber());
+			public int compare(ResultValidationItem a, ResultValidationItem b) {
+				int accessionSort = b.getSequenceAccessionNumber().compareTo(a.getSequenceAccessionNumber());
+
+				if (accessionSort == 0) {
+					if (!GenericValidator.isBlankOrNull(a.getTestSortNumber()) && !GenericValidator.isBlankOrNull(b.getTestSortNumber())) {
+						try {
+							return Integer.parseInt(a.getTestSortNumber()) - Integer.parseInt(b.getTestSortNumber());
+						} catch (NumberFormatException e) {
+							return a.getTestName().compareTo(b.getTestName());
+						}
+
+					} else {
+						return a.getTestName().compareTo(b.getTestName());
+					}
+				}
+
+				return accessionSort;
 			}
 		});
-		Collections.reverse(testResultList);
 	}
 
 	private RecordStatus getSampleRecordStatus(Sample sample) {
