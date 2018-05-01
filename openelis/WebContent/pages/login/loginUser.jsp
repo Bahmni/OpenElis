@@ -53,7 +53,7 @@ function validateForm(form) {
 							<bean:message key="login.password"/>:<span class="requiredlabel">*</span>
 						</td>	
 						<td>
-							<html:text name="<%=formName%>" property="password" size="20" maxlength="80"/>
+							<html:password name="<%=formName%>" property="password" size="20" maxlength="80"/>
 						</td>
         </tr>
         <tr>						

@@ -21,9 +21,6 @@
 	   	  <bean:message key="login.login.name"/>
 	   </th>
 	   <th>
-	   	  <bean:message key="login.password"/>
-	   </th>
-	   <th>
 	   	  <bean:message key="login.password.expired.date"/>
 	   </th>
 	   <th>
@@ -50,9 +47,6 @@
    	   </td>	  
 	   <td class="textcontent">
 	   	  <bean:write name="login" property="loginName"/>
-	   </td>
-	   <td class="textcontent">
-	   	  <bean:write name="login" property="password"/>
 	   </td>
 	   <td class="textcontent">
 	   	  <bean:write name="login" property="passwordExpiredDateForDisplay"/>
