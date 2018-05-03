@@ -691,16 +691,6 @@
 
         <action path="/Cancel" forward="homePageDefinition"/>
         <action path="/Dashboard" forward="homePageDefinition"/>
-
-        <action path="/DatabaseCleaning" forward="databaseCleaningDefinition"/>
-
-        <action path="/DatabaseCleaningRequest"
-                name="databaseCleaningForm"
-                type="us.mn.state.health.lims.common.util.DeletePatientTestDataAction"
-                validate="false">
-            <forward name="success" path="masterListsPageDefinition"/>
-        </action>
-
         <action path="/SamplePatientEntry" name="samplePatientEntryForm"
                 type="us.mn.state.health.lims.sample.action.SamplePatientEntryAction"
                 validate="false"
