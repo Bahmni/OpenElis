@@ -153,9 +153,6 @@ basePath = path + "/";
 </div>
 
 <script type="text/javascript">
-
-    var columnFilters = {};
-
     var options = {
         enableColumnReorder: false,
         autoHeight:true,
@@ -202,22 +199,22 @@ basePath = path + "/";
        showStats(todayStats)
 
         var todaySamplesToCollectObject = new order("#todaySamplesToCollectListContainer-slick-grid", todaySampleNotCollectedList, generateAllLinksForOrder, getColumnsForSampleNotCollected, false);
-        var dataViewForTodaySamplesToCollect = new Slick.Data.DataView({ inlineFilters: true });
+        var dataViewForTodaySamplesToCollect = new Slick.Data.DataView();
         var gridForTodaySamplesToCollect = new Slick.Grid(todaySamplesToCollectObject.div, dataViewForTodaySamplesToCollect, todaySamplesToCollectObject.columns,options);
         createGrid(gridForTodaySamplesToCollect, dataViewForTodaySamplesToCollect, todaySamplesToCollectObject, onRowSelection);
 
         var backlogSamplesToCollectObject = new order("#backlogSamplesToCollectListContainer-slick-grid", backlogSampleNotCollectedList, generateAllLinksForOrder, getColumnsForSampleNotCollected, false);
-        var dataViewForBacklogSamplesToCollect = new Slick.Data.DataView({ inlineFilters: true });
+        var dataViewForBacklogSamplesToCollect = new Slick.Data.DataView();
         var gridForBacklogSamplesToCollect = new Slick.Grid(backlogSamplesToCollectObject.div, dataViewForBacklogSamplesToCollect, backlogSamplesToCollectObject.columns,options);
         createGrid(gridForBacklogSamplesToCollect, dataViewForBacklogSamplesToCollect, backlogSamplesToCollectObject, onRowSelection);
 
         var todayOrdersObject = new order("#todaySamplesCollectedListContainer-slick-grid", todayOrderList, generateAllLinksForOrder, getColumnsForTodayOrder, <%= alwaysValidate%>);
-        var dataViewForTodayTab = new Slick.Data.DataView({ inlineFilters: true });
+        var dataViewForTodayTab = new Slick.Data.DataView();
         var gridForTodayOrder = new Slick.Grid(todayOrdersObject.div, dataViewForTodayTab, todayOrdersObject.columns,options);
         createGrid(gridForTodayOrder, dataViewForTodayTab, todayOrdersObject, onRowSelection);
 
         var backlogOrdersObject = new order("#backlogSamplesCollectedListContainer-slick-grid", backlogOrderList, generateAllLinksForOrder, getColumnsForBacklogOrder, <%= alwaysValidate%>);
-        var dataViewForBacklogTab = new Slick.Data.DataView({ inlineFilters: true });
+        var dataViewForBacklogTab = new Slick.Data.DataView();
         var gridForBacklogOrder = new Slick.Grid(backlogOrdersObject.div, dataViewForBacklogTab, backlogOrdersObject.columns,options);
         createGrid(gridForBacklogOrder, dataViewForBacklogTab, backlogOrdersObject, onRowSelection);
 

@@ -1,7 +1,5 @@
-var currentGrid;
 function createGrid(grid, dataView, orderObject, onRowSelection) {
-        currentGrid = grid;
-
+        var columnFilters = {};
         grid.setSelectionModel(new Slick.CellSelectionModel());
         grid.setSelectionModel(new Slick.RowSelectionModel());
         grid.registerPlugin(new Slick.CellExternalCopyManager());
@@ -56,24 +54,26 @@ function createGrid(grid, dataView, orderObject, onRowSelection) {
 
         dataView.beginUpdate();
         dataView.setItems(orderObject.orderList());
-        dataView.setFilter(filter);
+        dataView.setFilter(getFilterFor(grid, columnFilters));
         dataView.endUpdate();
 
         jQuery.each(orderObject.indexesOfNonSearchableColumns(), function(id, index){
-            jQuery(".slick-headerrow-column.l" + index).find("input").hide();
+            jQuery(orderObject.div + " .slick-headerrow-column.l" + index).find("input").hide();
         });
     }
 
-function filter(item) {
-    for (var columnId in columnFilters) {
-      if (columnId !== undefined && columnFilters[columnId] !== "") {
-        var c = currentGrid.getColumns()[currentGrid.getColumnIndex(columnId)];
-        if (item[c.field]== null || item[c.field].toLowerCase().indexOf(columnFilters[columnId].toLowerCase()) == -1 ) {
-          return false;
+function getFilterFor(grid, columnFilters) {
+    return function filter (item) {
+        for (var columnId in columnFilters) {
+            if (columnId !== undefined && columnFilters[columnId] !== "") {
+                var c = grid.getColumns()[grid.getColumnIndex(columnId)];
+                if (item[c.field] == null || item[c.field].toLowerCase().indexOf(columnFilters[columnId].toLowerCase()) == -1) {
+                    return false;
+                }
+            }
         }
-      }
+        return true;
     }
-    return true;
 }
 
 function sort(field, isAsc, grid){
