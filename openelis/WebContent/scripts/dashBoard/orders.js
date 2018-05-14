@@ -128,7 +128,7 @@ function getColumnsForSampleNotCollected() {
             {id:"source", name:jQuery("#translatedColumnNames").attr("data-source"), field:"source", sortable:false, index:2, editor:Slick.Editors.Text, minWidth:160},
             {id:"sectionNames", name:jQuery("#translatedColumnNames").attr("data-sectionNames"), field:"sectionNames", searchable:true, sortable:true, index:3, editor:Slick.Editors.Text, minWidth:160},
             {id:"totalTestCount", name:jQuery("#translatedColumnNames").attr("data-total"), field:"totalTestCount", sortable:true, editor:Slick.Editors.Text, index:4, searchable:false, minWidth:70},
-            {id:"notes", name:jQuery("#translatedColumnNames").attr("data-notes"), field:"comments", sortable:true, index:5, editor:Slick.Editors.Text, minWidth:620},
+            {id:"notes", name:jQuery("#translatedColumnNames").attr("data-notes"), field:"comments", sortable:true, index:5, editor:Slick.Editors.Text, minWidth:465},
             {id:"link", name:jQuery("#translatedColumnNames").attr("data-action"), field:"link", cssClass:"cell-title", formatter:formatter, index:6, editor:Slick.Editors.Text, searchable:false, minWidth:180}
         ];
 }
