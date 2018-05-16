@@ -130,7 +130,7 @@ public class AccessionServiceTest {
         when(sampleDao.getSamplesByEncounterUuid(sample.getUUID())).thenReturn(Arrays.asList(sample,sample2));
         when(sampleDao.getSampleByAccessionNumber(sample.getAccessionNumber())).thenReturn(sample);
         when(sampleDao.getSampleByAccessionNumber(sample2.getAccessionNumber())).thenReturn(sample2);
-        
+
         when(sampleHumanDAO.getPatientForSample(sample)).thenReturn(patient);
         when(sampleHumanDAO.getPatientForSample(sample2)).thenReturn(patient);
 
@@ -157,7 +157,7 @@ public class AccessionServiceTest {
         when(externalReferenceDao.getDataByItemId(analysis.getPanel().getId(), "Panel")).thenReturn(externalReferences);
         when(noteDao.getNoteByRefIAndRefTableAndSubject(anyString(), anyString(), anyString())).thenReturn(Arrays.asList(latestNote, oldNote));
         when(patientIdentityTypeDAO.getNamedIdentityType("ST")).thenReturn(patienIdentityType);
-        
+
 
         AccessionDetail accessionDetail = accessionService.getAccessionDetailFor(sample.getUUID());
 
