@@ -92,6 +92,7 @@ public class DefaultConfigurationProperties extends ConfigurationProperties {
 		setDBPropertyMappingAndDefault(Property.RESULTS_PAGE_SIZE, "resultsPageSize", "10");
 		setDBPropertyMappingAndDefault(Property.RESULTS_VALIDATION_PAGE_SIZE, "resultsValidationPageSize", "10");
         setDBPropertyMappingAndDefault(Property.ST_NUMBER_FORMAT, "stNumberFormat", "/([a-zA-Z].{2})(.*)/");
+        setDBPropertyMappingAndDefault(Property.SHOW_MIDDLENAME_ON_REPORT_PRINT, "showMiddleNameOnReportPrint", "false");
 	}
 
 	private void setDBPropertyMappingAndDefault(Property property, String dbName, String defaultValue) {

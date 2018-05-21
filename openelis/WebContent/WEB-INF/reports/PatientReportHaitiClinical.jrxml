@@ -49,6 +49,7 @@
 	<field name="uom" class="java.lang.String"/>
 	<field name="note" class="java.lang.String"/>
 	<field name="age" class="java.lang.String"/>
+	<field name="patientName" class="java.lang.String"/>
 	<field name="firstName" class="java.lang.String"/>
 	<field name="lastName" class="java.lang.String"/>
 	<field name="testSection" class="java.lang.String"/>
@@ -125,7 +126,7 @@
 						<rightPen lineWidth="0.5"/>
 					</box>
 					<textElement verticalAlignment="Middle"/>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{firstName} + " " + $F{lastName}]]></textFieldExpression>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{patientName}]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement mode="Opaque" x="320" y="66" width="50" height="14" backcolor="#CCCCCC"/>
