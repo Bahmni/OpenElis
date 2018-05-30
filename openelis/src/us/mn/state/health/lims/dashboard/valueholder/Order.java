@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.bahmni.feed.openelis.utils.JsonTimeSerializer;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class Order {
     private String accessionNumber;
@@ -39,12 +40,14 @@ public class Order {
     private Date enteredDate;
     private String comments;
     private String sectionNames;
+    private String sampleType;
+    private String priority;
 
     public Order() {
     }
 
     public Order(String accessionNumber, String uuid, String orderId, String stNumber, String firstName, String middleName, String lastName, String source, boolean isCompleted, boolean isPrinted,
-                 int pendingTestCount, int pendingValidationCount, int totalTestCount, Date collectionDate, Date enteredDate, String comments, String sectionNames) {
+                 int pendingTestCount, int pendingValidationCount, int totalTestCount, Date collectionDate, Date enteredDate, String comments, String sectionNames, String sampleType, String priority) {
         this.accessionNumber = accessionNumber;
         this.uuid = uuid;
         this.orderId = orderId;
@@ -62,6 +65,8 @@ public class Order {
         this.enteredDate = enteredDate;
         this.comments = comments;
         this.sectionNames = sectionNames;
+        this.sampleType = sampleType;
+        this.priority = priority;
     }
 
     public String getAccessionNumber() {
@@ -182,45 +187,33 @@ public class Order {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Order order = (Order) o;
-
-        if (isCompleted != order.isCompleted) return false;
-        if (isPrinted != order.isPrinted) return false;
-        if (pendingTestCount != order.pendingTestCount) return false;
-        if (pendingValidationCount != order.pendingValidationCount) return false;
-        if (totalTestCount != order.totalTestCount) return false;
-        if (accessionNumber != null ? !accessionNumber.equals(order.accessionNumber) : order.accessionNumber != null)
-            return false;
-        if (collectionDate != null ? !collectionDate.equals(order.collectionDate) : order.collectionDate != null)
-            return false;
-        if (enteredDate != null ? !enteredDate.equals(order.enteredDate) : order.enteredDate != null)
-            return false;
-        if (firstName != null ? !firstName.equals(order.firstName) : order.firstName != null) return false;
-        if (lastName != null ? !lastName.equals(order.lastName) : order.lastName != null) return false;
-        if (middleName != null ? !middleName.equals(order.middleName) : order.middleName != null) return false;
-        if (source != null ? !source.equals(order.source) : order.source != null) return false;
-        if (stNumber != null ? !stNumber.equals(order.stNumber) : order.stNumber != null) return false;
-
-        return true;
+        return pendingTestCount == order.pendingTestCount &&
+                pendingValidationCount == order.pendingValidationCount &&
+                totalTestCount == order.totalTestCount &&
+                isPrinted == order.isPrinted &&
+                isCompleted == order.isCompleted &&
+                Objects.equals(accessionNumber, order.accessionNumber) &&
+                Objects.equals(uuid, order.uuid) &&
+                Objects.equals(orderId, order.orderId) &&
+                Objects.equals(stNumber, order.stNumber) &&
+                Objects.equals(firstName, order.firstName) &&
+                Objects.equals(middleName, order.middleName) &&
+                Objects.equals(lastName, order.lastName) &&
+                Objects.equals(source, order.source) &&
+                Objects.equals(collectionDate, order.collectionDate) &&
+                Objects.equals(enteredDate, order.enteredDate) &&
+                Objects.equals(comments, order.comments) &&
+                Objects.equals(sectionNames, order.sectionNames) &&
+                Objects.equals(sampleType, order.sampleType) &&
+                Objects.equals(priority, order.priority);
     }
 
     @Override
     public int hashCode() {
-        int result = accessionNumber != null ? accessionNumber.hashCode() : 0;
-        result = 31 * result + (stNumber != null ? stNumber.hashCode() : 0);
-        result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
-        result = 31 * result + (middleName != null ? middleName.hashCode() : 0);
-        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
-        result = 31 * result + (source != null ? source.hashCode() : 0);
-        result = 31 * result + pendingTestCount;
-        result = 31 * result + pendingValidationCount;
-        result = 31 * result + totalTestCount;
-        result = 31 * result + (collectionDate != null ? collectionDate.hashCode() : 0);
-        result = 31 * result + (enteredDate != null ? enteredDate.hashCode() : 0);
-        result = 31 * result + (isPrinted ? 1 : 0);
-        result = 31 * result + (isCompleted ? 1 : 0);
-        return result;
+        return Objects.hash(accessionNumber, uuid, orderId, stNumber, firstName, middleName, lastName, source,
+                pendingTestCount, pendingValidationCount, totalTestCount, collectionDate, isPrinted, isCompleted,
+                enteredDate, comments, sectionNames, sampleType, priority);
     }
 
     public String getSectionNames() {
@@ -229,5 +222,21 @@ public class Order {
 
     public void setSectionNames(String sectionNames) {
         this.sectionNames = sectionNames;
+    }
+
+    public String getSampleType() {
+        return sampleType;
+    }
+
+    public void setSampleType(String sampleType) {
+        this.sampleType = sampleType;
+    }
+
+    public String getPriority() {
+        return priority;
+    }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
     }
 }

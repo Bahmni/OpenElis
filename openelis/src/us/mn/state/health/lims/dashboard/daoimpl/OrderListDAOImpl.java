@@ -172,6 +172,8 @@ public class OrderListDAOImpl implements OrderListDAO {
     private Order createOrder(ResultSet accessionResultSet, boolean completed) throws SQLException {
         String comments = getUniqueComments(accessionResultSet);
         String sectionNames = getUniqueSectionNames(accessionResultSet);
+        String priority = getPriority(accessionResultSet);
+
         return new Order(accessionResultSet.getString("accession_number"),
                             accessionResultSet.getString("uuid"),
                             accessionResultSet.getString("id"),
@@ -188,8 +190,23 @@ public class OrderListDAOImpl implements OrderListDAO {
                             accessionResultSet.getDate("collection_date"),
                             accessionResultSet.getDate("entered_date"),
                             comments,
-                            sectionNames
+                            sectionNames,
+                            accessionResultSet.getString("sample_type"),
+                            priority
         );
+    }
+
+    private String getPriority(ResultSet accessionResultSet) throws SQLException {
+        String priority = accessionResultSet.getString("priority");
+        String visitType = accessionResultSet.getString("visit_type");
+
+        if(StringUtils.isEmpty(priority) || StringUtils.isEmpty(visitType)) {
+            return "";
+        }
+        else if (priority.equals("1")) {
+            return visitType + "-Prioritaire";
+        }
+        return visitType;
     }
 
     private String getUniqueSectionNames(ResultSet accessionResultSet) throws SQLException {
@@ -261,9 +278,12 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "person.last_name AS last_name, \n" +
                 "patient_identity.identity_data AS st_number, \n" +
                 "sample_source.name AS sample_source, \n" +
+                "sample.priority AS priority,\n" +
+                "sample.visit_type AS visit_type, \n" +
+                "type_of_sample.description AS sample_type, \n" +
                 "SUM(CASE WHEN  analysis.status_id IN (" + getPendingAnalysisStatus() + ") THEN 1 ELSE 0 END) as pending_tests_count,\n" +
                 "SUM(CASE WHEN  analysis.status_id IN ("+ getPendingValidationAnalysisStatus() + ") THEN 1 ELSE 0 END) as pending_validation_count,\n" +
-                "string_agg(analysis.comment, '" + COMMENT_SEPARATOR + "') AS analysis_comments,\n" +
+                "string_agg(nullif(analysis.comment, ''), '" + COMMENT_SEPARATOR + "') AS analysis_comments,\n" +
                 "COUNT(test.id) AS total_test_count,\n" +
                 "CASE WHEN document_track.report_generation_time is null THEN false ELSE true END as is_printed\n" +
                 "FROM Sample AS sample\n" +
@@ -274,13 +294,14 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "INNER JOIN patient_identity ON patient_identity.patient_id = patient.id \n" +
                 "INNER JOIN patient_identity_type ON patient_identity.identity_type_id = patient_identity_type.id AND patient_identity_type.identity_type='ST' \n" +
                 "INNER JOIN sample_item ON sample_item.samp_id = sample.id \n" +
+                "INNER JOIN type_of_sample on sample_item.typeosamp_id = type_of_sample.id \n" +
                 "INNER JOIN analysis ON analysis.sampitem_id = sample_item.id and analysis.status_id not in (" +  analysesReferredOrInFinalStatus() + ") and analysis.lastupdated < ?\n" +
                 "INNER JOIN test ON test.id = analysis.test_id\n" +
                 "INNER JOIN test_section ON test.test_section_id = test_section.id \n"+
                 "LEFT OUTER JOIN document_track as document_track ON sample.id = document_track.row_id AND document_track.name = 'patientHaitiClinical' and document_track.parent_id is null\n" +
                 "WHERE "+condition+"\n" +
-                "GROUP BY sample.accession_number, sample.uuid,sample.id, sample.collection_date, person.first_name, person.middle_name, person.last_name, sample_source.name, patient_identity.identity_data, document_track.report_generation_time\n" +
-                "ORDER BY "+ OrderBy +" DESC\n" +
+                "GROUP BY sample.accession_number, sample.uuid,sample.id, sample.collection_date, person.first_name,sample.lastupdated, person.middle_name, person.last_name, sample_source.name, patient_identity.identity_data, document_track.report_generation_time, type_of_sample.description\n" +
+                "ORDER BY "+ OrderBy +"\n" +
                 "LIMIT 1000;";
     }
 
@@ -297,9 +318,12 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "person.last_name AS last_name, \n" +
                 "patient_identity.identity_data AS st_number, \n" +
                 "sample_source.name AS sample_source, \n" +
+                "sample.priority AS priority,\n" +
+                "sample.visit_type AS visit_type, \n" +
+                "type_of_sample.description AS sample_type, \n" +
                 "SUM(CASE WHEN  analysis.status_id IN (" + getPendingAnalysisStatus() + ") THEN 1 ELSE 0 END) as pending_tests_count,\n" +
                 "SUM(CASE WHEN  analysis.status_id IN ("+ getPendingValidationAnalysisStatus() + ") THEN 1 ELSE 0 END) as pending_validation_count,\n" +
-                "string_agg(analysis.comment, '" + COMMENT_SEPARATOR + "') AS analysis_comments,\n" +
+                "string_agg(nullif(analysis.comment, ''), '" + COMMENT_SEPARATOR + "') AS analysis_comments,\n" +
                 "COUNT(test.id) AS total_test_count,\n" +
                 "CASE WHEN COUNT(analysis.id) = SUM(CASE WHEN  analysis.status_id IN (" +getCompletedStatus()+ ") THEN 1 ELSE 0 END) THEN true ELSE false END as is_completed,\n" +
                 "CASE WHEN document_track.report_generation_time is null THEN false ELSE true END as is_printed\n" +
@@ -320,12 +344,13 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "INNER JOIN patient_identity ON patient_identity.patient_id = patient.id \n" +
                 "INNER JOIN patient_identity_type ON patient_identity.identity_type_id = patient_identity_type.id AND patient_identity_type.identity_type='ST' \n" +
                 "INNER JOIN sample_item ON sample_item.samp_id = sample.id \n" +
+                "INNER JOIN type_of_sample on sample_item.typeosamp_id = type_of_sample.id \n" +
                 "INNER JOIN analysis ON analysis.sampitem_id = sample_item.id \n" +
                 "INNER JOIN test ON test.id = analysis.test_id\n" +
                 "INNER JOIN test_section ON test.test_section_id = test_section.id \n"+
                 "LEFT OUTER JOIN document_track as document_track ON sample.id = document_track.row_id AND document_track.name = 'patientHaitiClinical' and document_track.parent_id is null \n" +
                 "WHERE "+condition+"\n" +
-                "GROUP BY sample.accession_number, sample.uuid,sample.id, sample.collection_date, sample.lastupdated, person.first_name, person.middle_name, person.last_name, sample_source.name, patient_identity.identity_data, document_track.report_generation_time \n" +
+                "GROUP BY sample.accession_number, sample.uuid,sample.id, sample.collection_date, sample.lastupdated, person.first_name, person.middle_name, person.last_name, sample_source.name, patient_identity.identity_data, document_track.report_generation_time, type_of_sample.description \n" +
                 "ORDER BY "+ OrderBy +" DESC\n" +
                 "LIMIT 1000;";
     }

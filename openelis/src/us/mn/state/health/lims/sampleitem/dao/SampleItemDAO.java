@@ -15,13 +15,13 @@
 */
 package us.mn.state.health.lims.sampleitem.dao;
 
-import java.util.List;
-import java.util.Set;
-
 import us.mn.state.health.lims.common.dao.BaseDAO;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
 import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSample;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author diane benz
@@ -60,5 +60,7 @@ public interface SampleItemDAO extends BaseDAO {
 	public List<SampleItem> getSampleItemsBySampleIdAndStatus(String id, Set<Integer> includedStatusList) throws LIMSRuntimeException;
 
 	public SampleItem getData(String sampleItemId) throws LIMSRuntimeException;
+
+	public boolean isTypeOfSampleAndSampleExists(String sampleId, List<Integer> typeOfSampleId);
 
 }

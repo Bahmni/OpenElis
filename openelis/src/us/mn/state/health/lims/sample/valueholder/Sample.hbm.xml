@@ -18,6 +18,9 @@
         <property name="packageId" type="us.mn.state.health.lims.hibernate.resources.usertype.LIMSStringNumberUserType">
             <column name="PACKAGE_ID" precision="10" scale="0" />
         </property>
+        <property name="priority" type="us.mn.state.health.lims.hibernate.resources.usertype.LIMSStringNumberUserType">
+            <column name="priority" precision="1" scale="0" />
+        </property>
         <property name="domain" type="java.lang.String">
             <column name="DOMAIN" length="1" />
         </property>
@@ -68,6 +71,9 @@
         </many-to-one>
         <property name="uuid" type="java.lang.String" access="field">
             <column name="uuid"/>
+        </property>
+        <property name="visitType" type="java.lang.String">
+            <column name="visit_type" precision="255" unique="true" />
         </property>
         <set name="sampleItems" inverse="true">
             <key column="samp_id"/>

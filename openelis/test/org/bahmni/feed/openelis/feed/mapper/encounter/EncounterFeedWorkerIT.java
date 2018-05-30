@@ -20,7 +20,11 @@ import org.apache.commons.io.IOUtils;
 import org.bahmni.feed.openelis.IT;
 import org.bahmni.feed.openelis.ObjectMapperRepository;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
-import org.bahmni.feed.openelis.feed.contract.openmrs.encounter.*;
+import org.bahmni.feed.openelis.feed.contract.openmrs.encounter.OpenMRSConcept;
+import org.bahmni.feed.openelis.feed.contract.openmrs.encounter.OpenMRSConceptName;
+import org.bahmni.feed.openelis.feed.contract.openmrs.encounter.OpenMRSEncounter;
+import org.bahmni.feed.openelis.feed.contract.openmrs.encounter.OpenMRSOrder;
+import org.bahmni.feed.openelis.feed.contract.openmrs.encounter.OpenMRSProvider;
 import org.bahmni.feed.openelis.feed.event.EncounterFeedWorker;
 import org.junit.Assert;
 import org.junit.Before;
@@ -47,10 +51,25 @@ import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSample;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.UUID;
 
-import static org.bahmni.openelis.builder.TestSetup.*;
-import static org.junit.Assert.*;
+import static org.bahmni.openelis.builder.TestSetup.createExternalReference;
+import static org.bahmni.openelis.builder.TestSetup.createPanel;
+import static org.bahmni.openelis.builder.TestSetup.createPanelItem;
+import static org.bahmni.openelis.builder.TestSetup.createPatient;
+import static org.bahmni.openelis.builder.TestSetup.createProvider;
+import static org.bahmni.openelis.builder.TestSetup.createTest;
+import static org.bahmni.openelis.builder.TestSetup.createTypeOfSample;
+import static org.bahmni.openelis.builder.TestSetup.createTypeOfSampleTest;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class EncounterFeedWorkerIT extends IT {
@@ -177,8 +196,12 @@ public class EncounterFeedWorkerIT extends IT {
         EncounterFeedWorker encounterFeedWorker = new EncounterFeedWorker(null, null);
         encounterFeedWorker.process(openMRSEncounter);
 
-        Sample sample = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId()).get(0);
-        List<SampleItem> sampleItems = new SampleItemDAOImpl().getSampleItemsBySampleId(sample.getId());
+        List<Sample> samples = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId());
+        assertEquals(2, samples.size());
+
+        List<SampleItem> sampleItems = new SampleItemDAOImpl().getSampleItemsBySampleId(samples.get(0).getId());
+        sampleItems.addAll(new SampleItemDAOImpl().getSampleItemsBySampleId(samples.get(1).getId()));
+
         assertEquals(2, sampleItems.size());
 
         SampleItem sampleItemForBlood = getSampleItemForSampleType(bloodSample, sampleItems);
@@ -244,7 +267,38 @@ public class EncounterFeedWorkerIT extends IT {
     }
 
     @org.junit.Test
-    public void shouldUpdateEncounterWhenNewOrderIsAdded() {
+    public void shouldUpdateEncounterWhenNewOrderOfSameSampleTypeIsAdded() {
+        OpenMRSConcept openMRSAneamiaConcept = createOpenMRSConcept(anaemiaPanel.getPanelName(), anaemiaPanelConceptUUID, true);
+        //this test shouldnt be added to sample Item blood as this test is included in anaemia panel
+        OpenMRSConcept openMRSHaemoglobinConcept = createOpenMRSConcept(haemoglobinTest.getTestName(), haemoglobinTestConceptUUID, false);
+        OpenMRSConcept openMRSDiabeticsConcept = createOpenMRSConcept(diabeticsPanel.getPanelName(), diabeticsPanelConceptUUID, true);
+        OpenMRSConcept openMRSLoneConcept = createOpenMRSConcept(loneTest.getTestName(), loneTestConceptUUID, false);
+
+        List<OpenMRSConcept> labTests = Arrays.asList(openMRSHaemoglobinConcept); //test for only blood sample type
+        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, labTests);
+        EncounterFeedWorker encounterFeedWorker = new EncounterFeedWorker(null, null);
+        encounterFeedWorker.process(openMRSEncounter);
+
+        assertEquals(1, new SampleHumanDAOImpl().getSamplesForPatient(patient.getId()).size());
+
+        addNewOrders(openMRSEncounter, Arrays.asList(openMRSAneamiaConcept));  // tests for blood sample type
+        encounterFeedWorker.process(openMRSEncounter);
+
+        List<Sample> samples = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId());
+        assertEquals(1, samples.size());
+        List<SampleItem> sampleItems = new SampleItemDAOImpl().getSampleItemsBySampleId(samples.get(0).getId());
+
+        assertEquals(1, sampleItems.size());
+
+        SampleItem sampleItemForBlood = getSampleItemForSampleType(bloodSample, sampleItems);
+        List<Analysis> analysisListForBlood = new AnalysisDAOImpl().getAnalysesBySampleItem(sampleItemForBlood);
+        assertEquals(2, analysisListForBlood.size());
+        assertTrue(containsTestInAnalysis(analysisListForBlood, haemoglobinTest));
+        assertTrue(containsTestInAnalysis(analysisListForBlood, bloodSmearTest));
+    }
+
+    @org.junit.Test
+    public void shouldCreateNewSampleRowAndUpdateEncounterWhenNewOrderOfDifferentSampleTypeIsAdded() {
         OpenMRSConcept openMRSAneamiaConcept = createOpenMRSConcept(anaemiaPanel.getPanelName(), anaemiaPanelConceptUUID, true);
         //this test shouldnt be added to sample Item blood as this test is included in anaemia panel
         OpenMRSConcept openMRSHaemoglobinConcept = createOpenMRSConcept(haemoglobinTest.getTestName(), haemoglobinTestConceptUUID, false);
@@ -261,10 +315,12 @@ public class EncounterFeedWorkerIT extends IT {
         addNewOrders(openMRSEncounter, Arrays.asList(openMRSLoneConcept, openMRSAneamiaConcept, openMRSDiabeticsConcept));  // tests for blood and urine sample type
         encounterFeedWorker.process(openMRSEncounter);
 
-        assertEquals(1, new SampleHumanDAOImpl().getSamplesForPatient(patient.getId()).size());
-        Sample sample = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId()).get(0);
-        List<SampleItem> sampleItems = new SampleItemDAOImpl().getSampleItemsBySampleId(sample.getId());
-        assertEquals(2,sampleItems.size());
+        List<Sample> samples = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId());
+        assertEquals(2, samples.size());
+        List<SampleItem> sampleItems = new SampleItemDAOImpl().getSampleItemsBySampleId(samples.get(0).getId());
+        sampleItems.addAll(new SampleItemDAOImpl().getSampleItemsBySampleId(samples.get(1).getId()));
+
+        assertEquals(2, sampleItems.size());
 
         SampleItem sampleItemForBlood = getSampleItemForSampleType(bloodSample, sampleItems);
         List<Analysis> analysisListForBlood = new AnalysisDAOImpl().getAnalysesBySampleItem(sampleItemForBlood);
@@ -291,27 +347,33 @@ public class EncounterFeedWorkerIT extends IT {
         EncounterFeedWorker encounterFeedWorker = new EncounterFeedWorker(null, null);
         encounterFeedWorker.process(openMRSEncounter);
 
-        Sample sample = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId()).get(0);
-        List<SampleItem> sampleItems = new SampleItemDAOImpl().getSampleItemsBySampleId(sample.getId());
+        List<Sample> samples = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId());
+        assertEquals(2, samples.size());
+
+        List<SampleItem> sampleItems = new SampleItemDAOImpl().getSampleItemsBySampleId(samples.get(0).getId());
+        sampleItems.addAll(new SampleItemDAOImpl().getSampleItemsBySampleId(samples.get(1).getId()));
         assertEquals(2, sampleItems.size());
 
         deleteOrders(openMRSEncounter, Arrays.asList(openMRSLoneConcept, openMRSAneamiaConcept, openMRSDiabeticsConcept));  // tests for blood and urine sample type
         encounterFeedWorker.process(openMRSEncounter);
 
-        sample = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId()).get(0);
-        sampleItems = new SampleItemDAOImpl().getSampleItemsBySampleId(sample.getId());
+        samples = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId());
+        sampleItems = new SampleItemDAOImpl().getSampleItemsBySampleId(samples.get(0).getId());
+        sampleItems.addAll(new SampleItemDAOImpl().getSampleItemsBySampleId(samples.get(1).getId()));
         assertEquals(2, sampleItems.size());
 
         String analysisCancelStatus = StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.Canceled);
         HashSet<Integer> cancelledStatusIds = new HashSet<>(Arrays.asList(Integer.parseInt(analysisCancelStatus)));
 
-        List<Analysis> cancelledAnalysis = new AnalysisDAOImpl().getAnalysesBySampleIdAndStatusId(sample.getId(), cancelledStatusIds);
+        List<Analysis> cancelledAnalysis = new AnalysisDAOImpl().getAnalysesBySampleIdAndStatusId(samples.get(0).getId(), cancelledStatusIds);
+        cancelledAnalysis.addAll(new AnalysisDAOImpl().getAnalysesBySampleIdAndStatusId(samples.get(1).getId(), cancelledStatusIds));
         assertEquals(3, cancelledAnalysis.size());
         assertTrue(containsTestInAnalysis(cancelledAnalysis, bloodSmearTest));
         assertTrue(containsTestInAnalysis(cancelledAnalysis, loneTest));
         assertTrue(containsTestInAnalysis(cancelledAnalysis, diabeticsTest));
 
-        List<Analysis> analysisListForBlood = new AnalysisDAOImpl().getAnalysesBySampleIdExcludedByStatusId(sample.getId(), cancelledStatusIds);
+        List<Analysis> analysisListForBlood = new AnalysisDAOImpl().getAnalysesBySampleIdExcludedByStatusId(samples.get(0).getId(), cancelledStatusIds);
+        analysisListForBlood.addAll(new AnalysisDAOImpl().getAnalysesBySampleIdExcludedByStatusId(samples.get(1).getId(), cancelledStatusIds));
         assertEquals(1, analysisListForBlood.size());
         assertTrue(containsTestInAnalysis(analysisListForBlood, haemoglobinTest));
     }
@@ -334,14 +396,17 @@ public class EncounterFeedWorkerIT extends IT {
         deleteOrders(openMRSEncounter, Arrays.asList(openMRSLoneConcept, openMRSAneamiaConcept, openMRSDiabeticsConcept));  // tests for blood and urine sample type
         encounterFeedWorker.process(openMRSEncounter);
 
-        Sample sample = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId()).get(0);
-        List<SampleItem> sampleItems = new SampleItemDAOImpl().getSampleItemsBySampleId(sample.getId());
+        List<Sample> samples = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId());
+        assertEquals(2, samples.size());
+        List<SampleItem> sampleItems = new SampleItemDAOImpl().getSampleItemsBySampleId(samples.get(0).getId());
+        sampleItems.addAll( new SampleItemDAOImpl().getSampleItemsBySampleId(samples.get(1).getId()));
         assertEquals(2, sampleItems.size());
 
         String analysisCancelStatus = StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.Canceled);
         HashSet<Integer> cancelledStatusIds = new HashSet<>(Arrays.asList(Integer.parseInt(analysisCancelStatus)));
 
-        List<Analysis> cancelledAnalysis = new AnalysisDAOImpl().getAnalysesBySampleIdAndStatusId(sample.getId(), cancelledStatusIds);
+        List<Analysis> cancelledAnalysis = new AnalysisDAOImpl().getAnalysesBySampleIdAndStatusId(samples.get(0).getId(), cancelledStatusIds);
+        cancelledAnalysis.addAll(new AnalysisDAOImpl().getAnalysesBySampleIdAndStatusId(samples.get(1).getId(), cancelledStatusIds));
         assertEquals(0, cancelledAnalysis.size()); //Nothing is cancelled.
     }
 
@@ -365,19 +430,24 @@ public class EncounterFeedWorkerIT extends IT {
 
         encounterFeedWorker.process(openMRSEncounter);
 
-        Sample sample = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId()).get(0);
-        List<SampleItem> sampleItems = new SampleItemDAOImpl().getSampleItemsBySampleId(sample.getId());
+        List<Sample> samplesForPatient = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId());
+        List<SampleItem> sampleItems = new SampleItemDAOImpl().getSampleItemsBySampleId(samplesForPatient.get(0).getId());
+        sampleItems.addAll(new SampleItemDAOImpl().getSampleItemsBySampleId(samplesForPatient.get(1).getId()));
         assertEquals(2,sampleItems.size());
 
         String analysisCancelStatus = StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.Canceled);
         HashSet<Integer> cancelledStatusIds = new HashSet<>(Arrays.asList(Integer.parseInt(analysisCancelStatus)));
 
-        List<Analysis> cancelledAnalysis = new AnalysisDAOImpl().getAnalysesBySampleIdAndStatusId(sample.getId(), cancelledStatusIds);
+        List<Analysis> cancelledAnalysis = new AnalysisDAOImpl().getAnalysesBySampleIdAndStatusId(samplesForPatient.get(0).getId(), cancelledStatusIds);
+        cancelledAnalysis.addAll(new AnalysisDAOImpl().getAnalysesBySampleIdAndStatusId(samplesForPatient.get(1).getId(), cancelledStatusIds));
         assertEquals(0, cancelledAnalysis.size());
 
-        sample = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId()).get(1);
-        sampleItems = new SampleItemDAOImpl().getSampleItemsBySampleId(sample.getId());
-        assertEquals(1, sampleItems.size());
+        List<Sample> samples = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId());
+
+        List<SampleItem> sampleItemList = new SampleItemDAOImpl().getSampleItemsBySampleId(samples.get(0).getId());
+        sampleItemList.addAll(new SampleItemDAOImpl().getSampleItemsBySampleId(samples.get(1).getId()));
+        sampleItemList.addAll(new SampleItemDAOImpl().getSampleItemsBySampleId(samples.get(2).getId()));
+        assertEquals(2, sampleItems.size());
         SampleItem sampleItemForUrine = getSampleItemForSampleType(urineSample, sampleItems);
         assertNotNull(sampleItemForUrine);
 
@@ -531,6 +601,106 @@ public class EncounterFeedWorkerIT extends IT {
 
     }
 
+    @org.junit.Test
+    public void shouldGetVisitTypeFromOrderComments() {
+        OpenMRSConcept openMRSHaemoglobinConcept = createOpenMRSConcept(haemoglobinTest.getTestName(), haemoglobinTestConceptUUID, false);
+
+        String labOrderType = createLabOrderType();
+        List<OpenMRSOrder> mrsOrders = createOpenMRSOrders(Arrays.asList(openMRSHaemoglobinConcept), labOrderType);
+
+        mrsOrders.get(0).setCommentToFulfiller("[[ OPD ]] Sample Comment");
+
+
+        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, new ArrayList<OpenMRSConcept>());
+        openMRSEncounter.setOrders(mrsOrders);
+
+        EncounterFeedWorker encounterFeedWorker = new EncounterFeedWorker(null, null);
+        encounterFeedWorker.process(openMRSEncounter);
+
+        List<Sample> samplesForPatient = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId());
+        assertEquals(1, samplesForPatient.size());
+
+        assertEquals("OPD", samplesForPatient.get(0).getVisitType());
+
+        SampleItemDAOImpl sampleItemDAO = new SampleItemDAOImpl();
+        List<SampleItem> sampleItems = sampleItemDAO.getSampleItemsBySampleId(samplesForPatient.get(0).getId());
+
+        assertEquals(1, sampleItems.size());
+        ArrayList<String> comments = new ArrayList<>();
+
+        List<Analysis> analysisList = new AnalysisDAOImpl().getAnalysesBySampleId(samplesForPatient.get(0).getId());
+
+       assertEquals("Sample Comment", analysisList.get(0).getComment());
+    }
+
+    @org.junit.Test
+    public void shouldAddPriorityToTheSampleFromOrdersUrgency() {
+        OpenMRSConcept openMRSHaemoglobinConcept = createOpenMRSConcept(haemoglobinTest.getTestName(), haemoglobinTestConceptUUID, false);
+
+        String labOrderType = createLabOrderType();
+        List<OpenMRSOrder> mrsOrders = createOpenMRSOrders(Arrays.asList(openMRSHaemoglobinConcept), labOrderType);
+
+        mrsOrders.get(0).setUrgency("STAT");
+
+
+        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, new ArrayList<OpenMRSConcept>());
+        openMRSEncounter.setOrders(mrsOrders);
+
+        EncounterFeedWorker encounterFeedWorker = new EncounterFeedWorker(null, null);
+        encounterFeedWorker.process(openMRSEncounter);
+
+        List<Sample> samplesForPatient = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId());
+        assertEquals(1, samplesForPatient.size());
+
+        assertEquals("1", samplesForPatient.get(0).getPriority());
+    }
+
+    @org.junit.Test
+    public void shouldCreateDifferentSamplesForDifferentSampleTypeOrders() {
+        OpenMRSConcept openMRSHaemoglobinConcept = createOpenMRSConcept(haemoglobinTest.getTestName(), haemoglobinTestConceptUUID, false);
+        OpenMRSConcept openMRSLoneConcept = createOpenMRSConcept(loneTest.getTestName(), loneTestConceptUUID, false);
+
+        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, Arrays.asList(openMRSHaemoglobinConcept, openMRSLoneConcept));
+
+        EncounterFeedWorker encounterFeedWorker = new EncounterFeedWorker(null, null);
+        encounterFeedWorker.process(openMRSEncounter);
+
+        List<Sample> samplesForPatient = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId());
+        assertEquals(2, samplesForPatient.size());
+    }
+
+    @org.junit.Test
+    public void shouldDeleteEntireOrderIfAllTestsAreDeletedForASampleType() {
+        OpenMRSConcept openMRSAneamiaConcept = createOpenMRSConcept(anaemiaPanel.getPanelName(), anaemiaPanelConceptUUID, true);
+        OpenMRSConcept openMRSHaemoglobinConcept = createOpenMRSConcept(haemoglobinTest.getTestName(), haemoglobinTestConceptUUID, false);
+
+        List<OpenMRSConcept> labTests = Arrays.asList(openMRSHaemoglobinConcept, openMRSAneamiaConcept); //test for only blood sample type
+        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, labTests);
+        EncounterFeedWorker encounterFeedWorker = new EncounterFeedWorker(null, null);
+        encounterFeedWorker.process(openMRSEncounter);
+
+        List<Sample> samples = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId());
+        assertEquals(1, samples.size());
+
+        List<SampleItem> sampleItems = new SampleItemDAOImpl().getSampleItemsBySampleId(samples.get(0).getId());
+        assertEquals(1, sampleItems.size());
+
+        deleteOrders(openMRSEncounter, Arrays.asList(openMRSAneamiaConcept, openMRSHaemoglobinConcept));  // tests for blood and urine sample type
+        encounterFeedWorker.process(openMRSEncounter);
+
+        samples = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId());
+        sampleItems = new SampleItemDAOImpl().getSampleItemsBySampleId(samples.get(0).getId());
+        assertEquals(1, sampleItems.size());
+
+        String analysisCancelStatus = StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.AnalysisStatus.Canceled);
+        HashSet<Integer> cancelledStatusIds = new HashSet<>(Arrays.asList(Integer.parseInt(analysisCancelStatus)));
+
+        List<Analysis> cancelledAnalysis = new AnalysisDAOImpl().getAnalysesBySampleIdAndStatusId(samples.get(0).getId(), cancelledStatusIds);
+        assertEquals(2, cancelledAnalysis.size());
+        assertTrue(containsTestInAnalysis(cancelledAnalysis, bloodSmearTest));
+        assertTrue(containsTestInAnalysis(cancelledAnalysis, haemoglobinTest));
+    }
+
     private void setStopDate(OpenMRSOrder openMRSOrder) {
         openMRSOrder.setDateStopped(new Date());
     }
@@ -540,11 +710,13 @@ public class EncounterFeedWorkerIT extends IT {
         List<Sample> samples = new SampleHumanDAOImpl().getSamplesForPatient(patientId);
 
         SampleDAO sampleDAO = new SampleDAOImpl();
-        Sample sample = samples.get(0);
-        sample.setAccessionNumber(AccessionNumberUtil.getNextAccessionNumber(""));
-        sample.setStatus(status);
-        sample.setStatusId(status);
-        sampleDAO.updateData(sample);
+        for (Sample sample : samples) {
+            sample.setAccessionNumber(AccessionNumberUtil.getNextAccessionNumber(""));
+            sample.setStatus(status);
+            sample.setStatusId(status);
+            sampleDAO.updateData(sample);
+        }
+
     }
 
     private Boolean containsTestInAnalysis(List<Analysis> analysisList, Test test) {
@@ -618,8 +790,7 @@ public class EncounterFeedWorkerIT extends IT {
 
     private OpenMRSConcept createOpenMRSConcept(String conceptName, String conceptUUID, Boolean isSet) {
         OpenMRSConceptName anaemiaConceptName = new OpenMRSConceptName(conceptName);
-        OpenMRSConcept openMRSConcept = new OpenMRSConcept(conceptUUID, anaemiaConceptName, isSet);
-        return openMRSConcept;
+        return new OpenMRSConcept(conceptUUID, anaemiaConceptName, isSet);
     }
 
 }

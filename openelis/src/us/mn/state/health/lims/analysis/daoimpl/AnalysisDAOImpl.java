@@ -18,6 +18,7 @@
 package us.mn.state.health.lims.analysis.daoimpl;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.GenericValidator;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -41,7 +42,6 @@ import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.test.valueholder.Test;
 
-import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.*;
@@ -457,11 +457,13 @@ public class AnalysisDAOImpl extends BaseDAOImpl implements AnalysisDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Analysis> getAnalysisBySampleIds(List<Integer> sampleIds,Set<Integer> excludedAnalysisStatus) throws LIMSRuntimeException {
+	public List<Analysis> getAnalysisBySampleIds(List<Integer> sampleIds, Set<Integer> excludedAnalysisStatus, String sampleType) throws LIMSRuntimeException {
 		List<Analysis> analysis = null;
 		try {
-
 			String sql = "from Analysis a where a.sampleItem.sample.id  in (:sampleIds)";
+
+			if(StringUtils.isNotEmpty(sampleType))
+				sql += " and a.sampleItem.typeOfSample.localAbbreviation= :sampleType";
 
 			if(!excludedAnalysisStatus.isEmpty()) {
 				sql += " and a.statusId NOT IN (:excludedAnalysisStatus)";
@@ -473,6 +475,9 @@ public class AnalysisDAOImpl extends BaseDAOImpl implements AnalysisDAO {
 				query.setParameterList("excludedAnalysisStatus", excludedAnalysisStatus);
 			}
 			query.setParameterList("sampleIds", sampleIds);
+
+			if(StringUtils.isNotEmpty(sampleType))
+				query.setParameter("sampleType", sampleType);
 
 			analysis = query.list();
 			HibernateUtil.getSession().flush();
@@ -1395,22 +1400,28 @@ public class AnalysisDAOImpl extends BaseDAOImpl implements AnalysisDAO {
 		return null;
 	}
 
-    @Override
-    public List<Analysis> getAllAnalysisByAccessionNumberAndStatus(String accessionNumber, List<StatusOfSampleUtil.AnalysisStatus> analysisStatuses) {
-        if (GenericValidator.isBlankOrNull(accessionNumber) || analysisStatuses == null || analysisStatuses.isEmpty()) {
-            return new ArrayList<>();
-        }
-        String sql = "From Analysis a where a.sampleItem.sample.accessionNumber = :accessionNumber and a.statusId IN (:statusIdList)";
-        try {
-            Query query = HibernateUtil.getSession().createQuery(sql);
-            query.setString("accessionNumber", accessionNumber);
-            query.setParameterList("statusIdList", getStatusIds(analysisStatuses));
-            return query.list();
-        } catch (HibernateException e) {
-            handleException(e, "getAllAnalysisByAccessionNumberAndStatus");
-        }
-        return null;
-    }
+	@Override
+	public List<Analysis> getAllAnalysisByAccessionNumberAndStatusAndSampleType(String accessionNumber, List<StatusOfSampleUtil.AnalysisStatus> analysisStatuses, String sampleType) {
+		if (GenericValidator.isBlankOrNull(accessionNumber) || analysisStatuses == null || analysisStatuses.isEmpty()) {
+			return new ArrayList<>();
+		}
+		String sql = "From Analysis a where a.sampleItem.sample.accessionNumber = :accessionNumber and a.statusId IN (:statusIdList)";
+
+		if (StringUtils.isNotEmpty(sampleType))
+			sql += " and a.sampleItem.typeOfSample.localAbbreviation= :sampleType";
+
+		try {
+			Query query = HibernateUtil.getSession().createQuery(sql);
+			query.setString("accessionNumber", accessionNumber);
+			query.setParameterList("statusIdList", getStatusIds(analysisStatuses));
+			if(StringUtils.isNotEmpty(sampleType))
+				query.setParameter("sampleType", sampleType);
+			return query.list();
+		} catch (HibernateException e) {
+			handleException(e, "getAllAnalysisByAccessionNumberAndStatusAndSampleType");
+		}
+		return null;
+	}
 
     @Override
     public List<Analysis> getAllAnalysisByStatus(List<StatusOfSampleUtil.AnalysisStatus> analysisStatuses) {
