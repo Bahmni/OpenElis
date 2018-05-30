@@ -443,7 +443,6 @@ public class OrderListDAOImplIT extends IT {
         sample.setReceivedTimestamp(DateUtil.convertStringDateToTimestamp("01/01/2001 00:00"));
         sample.setSampleSource(sampleSources.get(0));
         sample.setSysUserId("1");
-        sample.setVisitType("OPD");
         sample.setLastupdated(new Timestamp(date.getTime()));
         new SampleDAOImpl().insertDataWithAccessionNumber(sample);
         return sample;

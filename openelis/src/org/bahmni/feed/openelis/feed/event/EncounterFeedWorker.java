@@ -180,7 +180,6 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
 
         List<OpenMRSOrder> labOrders = openMRSEncounter.getLabOrders();
         HashMap<String, List<OpenMRSOrder>> ordersBySampleType = groupOrdersBySampleType(labOrders);
-        setVisitTypeForOrders(labOrders);
         String encounterUuid = openMRSEncounter.getEncounterUuid();
 
         for (String sampleType : ordersBySampleType.keySet()) {
@@ -320,19 +319,8 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         // Mujir - create an external reference to order id in openelis.. this can go in Sample against the accession number
         sample.setUUID(openMRSEncounter.getEncounterUuid());
         sample.setPriority(getPriority(orders));
-        sample.setVisitType(getVisitType(orders));
 
         return sample;
-    }
-
-    private void setVisitTypeForOrders(List<OpenMRSOrder> labOrders) {
-        for (OpenMRSOrder labOrder : labOrders) {
-            String commentToFulfiller = labOrder.getCommentToFulfiller();
-            String visitType = StringUtils.substringBetween(commentToFulfiller, "[[ ", " ]]");
-            String comment = commentToFulfiller == null ? null : commentToFulfiller.replaceFirst("\\[\\[.*\\]\\]\\s*", "");
-            labOrder.setVisitType(StringUtils.isEmpty(visitType) ? null : visitType);
-            labOrder.setCommentToFulfiller(comment);
-        }
     }
 
     private String getPriority(List<OpenMRSOrder> orders) {
@@ -342,15 +330,6 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
             }
         }
         return "0";
-    }
-
-    private String getVisitType(List<OpenMRSOrder> orders) {
-        for (OpenMRSOrder order : orders) {
-            if (StringUtils.isNotEmpty(order.getVisitType())) {
-                return order.getVisitType();
-            }
-        }
-        return "";
     }
 
     private void updateSamplePriority(Sample sample, List<OpenMRSOrder> orders) {

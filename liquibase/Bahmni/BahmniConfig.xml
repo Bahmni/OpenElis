@@ -1716,19 +1716,4 @@
             ALTER TABLE sample_source ALTER COLUMN name TYPE character varying(50);
         </sql>
     </changeSet>
-
-    <changeSet context="bahmni" author="Mahitha, Suman" id="280520181511">
-        <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="0">
-                SELECT count(column_name)
-                FROM information_schema.columns
-                WHERE table_schema = 'clinlims'
-                AND table_name   = 'sample' AND column_name='visit_type';
-            </sqlCheck>
-        </preConditions>
-        <comment>Add visit_type column to sample table</comment>
-        <addColumn schemaName="clinlims" tableName="sample">
-            <column name="visit_type" type="varchar(255)"/>
-        </addColumn>
-    </changeSet>
 </databaseChangeLog>

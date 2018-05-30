@@ -602,38 +602,6 @@ public class EncounterFeedWorkerIT extends IT {
     }
 
     @org.junit.Test
-    public void shouldGetVisitTypeFromOrderComments() {
-        OpenMRSConcept openMRSHaemoglobinConcept = createOpenMRSConcept(haemoglobinTest.getTestName(), haemoglobinTestConceptUUID, false);
-
-        String labOrderType = createLabOrderType();
-        List<OpenMRSOrder> mrsOrders = createOpenMRSOrders(Arrays.asList(openMRSHaemoglobinConcept), labOrderType);
-
-        mrsOrders.get(0).setCommentToFulfiller("[[ OPD ]] Sample Comment");
-
-
-        OpenMRSEncounter openMRSEncounter = createOpenMRSEncounter(patientUUID, new ArrayList<OpenMRSConcept>());
-        openMRSEncounter.setOrders(mrsOrders);
-
-        EncounterFeedWorker encounterFeedWorker = new EncounterFeedWorker(null, null);
-        encounterFeedWorker.process(openMRSEncounter);
-
-        List<Sample> samplesForPatient = new SampleHumanDAOImpl().getSamplesForPatient(patient.getId());
-        assertEquals(1, samplesForPatient.size());
-
-        assertEquals("OPD", samplesForPatient.get(0).getVisitType());
-
-        SampleItemDAOImpl sampleItemDAO = new SampleItemDAOImpl();
-        List<SampleItem> sampleItems = sampleItemDAO.getSampleItemsBySampleId(samplesForPatient.get(0).getId());
-
-        assertEquals(1, sampleItems.size());
-        ArrayList<String> comments = new ArrayList<>();
-
-        List<Analysis> analysisList = new AnalysisDAOImpl().getAnalysesBySampleId(samplesForPatient.get(0).getId());
-
-       assertEquals("Sample Comment", analysisList.get(0).getComment());
-    }
-
-    @org.junit.Test
     public void shouldAddPriorityToTheSampleFromOrdersUrgency() {
         OpenMRSConcept openMRSHaemoglobinConcept = createOpenMRSConcept(haemoglobinTest.getTestName(), haemoglobinTestConceptUUID, false);
 

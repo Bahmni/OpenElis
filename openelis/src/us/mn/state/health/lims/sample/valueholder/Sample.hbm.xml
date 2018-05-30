@@ -72,9 +72,6 @@
         <property name="uuid" type="java.lang.String" access="field">
             <column name="uuid"/>
         </property>
-        <property name="visitType" type="java.lang.String">
-            <column name="visit_type" precision="255" unique="true" />
-        </property>
         <set name="sampleItems" inverse="true">
             <key column="samp_id"/>
             <one-to-many class="us.mn.state.health.lims.sampleitem.valueholder.SampleItem"/>

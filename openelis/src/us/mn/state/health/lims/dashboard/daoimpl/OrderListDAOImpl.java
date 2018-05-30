@@ -51,6 +51,8 @@ public class OrderListDAOImpl implements OrderListDAO {
     private Logger logger = LogManager.getLogger(OrderListDAOImpl.class);
 
     private static String COMMENT_SEPARATOR = "<~~>";
+    private static String LOW = "Low";
+    private static String HIGH = "High";
 
     public OrderListDAOImpl() {
     }
@@ -198,15 +200,12 @@ public class OrderListDAOImpl implements OrderListDAO {
 
     private String getPriority(ResultSet accessionResultSet) throws SQLException {
         String priority = accessionResultSet.getString("priority");
-        String visitType = accessionResultSet.getString("visit_type");
 
-        if(StringUtils.isEmpty(priority) || StringUtils.isEmpty(visitType)) {
+        if(StringUtils.isEmpty(priority)) {
             return "";
         }
-        else if (priority.equals("1")) {
-            return visitType + "-Prioritaire";
-        }
-        return visitType;
+
+        return priority.equals("1") ? HIGH : LOW;
     }
 
     private String getUniqueSectionNames(ResultSet accessionResultSet) throws SQLException {
@@ -279,7 +278,6 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "patient_identity.identity_data AS st_number, \n" +
                 "sample_source.name AS sample_source, \n" +
                 "sample.priority AS priority,\n" +
-                "sample.visit_type AS visit_type, \n" +
                 "type_of_sample.description AS sample_type, \n" +
                 "SUM(CASE WHEN  analysis.status_id IN (" + getPendingAnalysisStatus() + ") THEN 1 ELSE 0 END) as pending_tests_count,\n" +
                 "SUM(CASE WHEN  analysis.status_id IN ("+ getPendingValidationAnalysisStatus() + ") THEN 1 ELSE 0 END) as pending_validation_count,\n" +
@@ -319,7 +317,6 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "patient_identity.identity_data AS st_number, \n" +
                 "sample_source.name AS sample_source, \n" +
                 "sample.priority AS priority,\n" +
-                "sample.visit_type AS visit_type, \n" +
                 "type_of_sample.description AS sample_type, \n" +
                 "SUM(CASE WHEN  analysis.status_id IN (" + getPendingAnalysisStatus() + ") THEN 1 ELSE 0 END) as pending_tests_count,\n" +
                 "SUM(CASE WHEN  analysis.status_id IN ("+ getPendingValidationAnalysisStatus() + ") THEN 1 ELSE 0 END) as pending_validation_count,\n" +
