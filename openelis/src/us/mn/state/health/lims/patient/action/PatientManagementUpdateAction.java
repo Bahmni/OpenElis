@@ -275,6 +275,7 @@ public class PatientManagementUpdateAction extends BaseAction implements IPatien
     }
 
     public void persistPatientData(PatientManagmentInfo patientInfo, String contextPath) throws LIMSRuntimeException {
+
         PersonDAO personDAO = new PersonDAOImpl();
 
         if (patientUpdateStatus == PatientUpdateStatus.ADD) {
@@ -297,6 +298,7 @@ public class PatientManagementUpdateAction extends BaseAction implements IPatien
     }
 
     protected void persistPatientRelatedInformation(PatientManagmentInfo patientInfo, Patient patient) {
+
         persistIndentityTypes(patientInfo);
         if (FormFields.getInstance().useField(FormFields.Field.DynamicAddress)) {
             persistPatientAddressInfo(patientInfo, person);

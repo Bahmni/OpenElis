@@ -113,7 +113,7 @@ public class SampleAction extends BaseAction {
             sample.setReceivedTimestamp(new Timestamp(today.getTime()));
 
 			sample.setEnteredDateForDisplay(dateAsText);
-            sample.setEnteredDate(new java.util.Date());
+            sample.setEnteredDate(new Timestamp(System.currentTimeMillis()));
 
 			// default referredCultureFlag to 'N'
 			sample.setReferredCultureFlag("S");

@@ -650,7 +650,7 @@ public class AnalysisDAOImpl extends BaseDAOImpl implements AnalysisDAO {
 		List list = new Vector();
 		try {
 
-			String sql = "from Analysis a where (a.sampleItem.id, a.test.id, a.revision) IN "
+			String sql = "from Analysis a where (a.sampleItem.id, a.test.id, a.getrevision) IN "
 					+ "(select b.sampleItem.id, b.test.id, max(b.revision) from Analysis b " + "group by b.sampleItem.id, b.test.id) "
 					+ "and a.sampleItem.id = :param " +
 					// bugzilla 2300 exclude canceled tests

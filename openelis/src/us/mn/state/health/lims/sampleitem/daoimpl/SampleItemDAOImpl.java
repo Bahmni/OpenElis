@@ -80,6 +80,7 @@ public class SampleItemDAOImpl extends BaseDAOImpl implements SampleItemDAO {
 	}
 
 	public boolean insertData(SampleItem sampleItem) throws LIMSRuntimeException {
+
 		if( sampleItem == null){
 			return false;
 		}

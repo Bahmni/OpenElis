@@ -285,7 +285,7 @@ public class HaitiConfirmationReport extends HaitiIndicatorReport implements IRe
 	}
 
 	private String getCompleationDate(Analysis analysis) {
-		return DateUtil.convertSqlDateToStringDate(analysis.getCompletedDate());
+		return DateUtil.convertTimestampToStringDate(analysis.getCompletedDate());
 	}
 
 	@Override

@@ -55,6 +55,7 @@ basePath = path + "/";
 <script type="text/javascript" src="<%=basePath%>scripts/dashBoard/orders.js"></script>
 <script type="text/javascript" src="<%=basePath%>scripts/dashBoard/createGrid.js"></script>
 <script type="text/javascript" src="<%=basePath%>scripts/slickgrid/slick.autotooltips.js"></script>
+<script type="text/javascript" src="<%=basePath%>scripts/moment-with-locales.min.js"></script>
 <script type="text/javascript" src="<%=basePath%>scripts/utils.js"></script>
 
   
@@ -103,6 +104,10 @@ basePath = path + "/";
     <span id = "translatedColumnNames"
         data-patientID = '<bean:message key="dashboard.sample.column.patientID"/>'
         data-patientName = '<bean:message key="dashboard.sample.column.patientName"/>'
+        data-sampleCollectionDate = '<bean:message key="dashboard.sample.column.collectionDate"/>'
+        data-orderDate = '<bean:message key="dashboard.sample.column.orderDate"/>'
+        data-receivedDate = '<bean:message key="dashboard.sample.column.orderReceivedDate"/>'
+        data-completedDate = '<bean:message key="dashboard.sample.column.completedDate" />'
         data-source = '<bean:message key="dashboard.sample.column.source"/>'
         data-total = '<bean:message key="dashboard.sample.column.total"/>'
         data-notes = '<bean:message key="dashboard.sample.column.notes"/>'

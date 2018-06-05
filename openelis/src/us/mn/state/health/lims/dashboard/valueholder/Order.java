@@ -19,6 +19,7 @@ package us.mn.state.health.lims.dashboard.valueholder;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.bahmni.feed.openelis.utils.JsonTimeSerializer;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 public class Order {
@@ -38,6 +39,11 @@ public class Order {
     private boolean isCompleted;
     private Date enteredDate;
     private String comments;
+    private Timestamp sampleCollectionDate;
+    private Timestamp orderDate;
+    private Timestamp orderEnteredDate;
+    private Timestamp completedDate;
+
 
     public Order() {
     }
@@ -219,5 +225,38 @@ public class Order {
         result = 31 * result + (isPrinted ? 1 : 0);
         result = 31 * result + (isCompleted ? 1 : 0);
         return result;
+    }
+
+
+    public Timestamp getSampleCollectionDate() {
+        return sampleCollectionDate;
+    }
+
+    public void setSampleCollectionDate(Timestamp sampleCollectionDate) {
+        this.sampleCollectionDate = sampleCollectionDate;
+    }
+
+    public Timestamp getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(Timestamp orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public Timestamp getOrderEnteredDate() {
+        return orderEnteredDate;
+    }
+
+    public void setOrderEnteredDate(Timestamp orderEnteredDate) {
+        this.orderEnteredDate = orderEnteredDate;
+    }
+
+    public Timestamp getCompletedDate() {
+        return completedDate;
+    }
+
+    public void setCompletedDate(Timestamp completedDate) {
+        this.completedDate = completedDate;
     }
 }

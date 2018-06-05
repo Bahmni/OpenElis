@@ -338,8 +338,8 @@ public class NonConformityUpdateWorker {
 		sample.setSysUserId(webData.getCurrentSysUserId());
 		sample.setAccessionNumber(webData.getLabNo());
 		sample.setDomain("H");
-		sample.setEnteredDate(DateUtil.convertStringDateToSqlDate(getCompleteDateTime()));
-		sample.setReceivedDate(DateUtil.convertStringDateToSqlDate(getCompleteDateTime()));
+		sample.setEnteredDate(DateUtil.convertStringDateToTimestamp(getCompleteDateTime()));
+		sample.setReceivedDate(DateUtil.convertStringDateToTimestamp(getCompleteDateTime()));
 		sample.setStatusId(StatusOfSampleUtil.getStatusID(OrderStatus.Entered));
 
 		sampleHuman = new SampleHuman();

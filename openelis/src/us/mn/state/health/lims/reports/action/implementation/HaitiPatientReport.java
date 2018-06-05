@@ -96,6 +96,7 @@ import us.mn.state.health.lims.test.valueholder.Test;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -108,6 +109,8 @@ public abstract class HaitiPatientReport extends Report {
     private static String ADDRESS_COMMUNE_ID;
     protected String currentContactInfo = "";
     protected String currentSiteInfo = "";
+    private final String DATE_FORMAT = "YYYY/MM/dd h:mm a";
+    private final String TIMEZONE_NP = "Asia/Kathmandu";
 
     protected SampleHumanDAO sampleHumanDAO = new SampleHumanDAOImpl();
     protected DictionaryDAO dictionaryDAO = new DictionaryDAOImpl();
@@ -147,7 +150,7 @@ public abstract class HaitiPatientReport extends Report {
     protected Analysis reportAnalysis;
     protected String reportReferralResultValue;
     protected List<HaitiClinicalPatientData> reportItems;
-    protected String compleationDate;
+    protected String completionDate;
     protected SampleService currentSampleService;
 
     protected static String ST_NUMBER_IDENTITY_TYPE_ID = "0";
@@ -298,7 +301,7 @@ public abstract class HaitiPatientReport extends Report {
                                 handledOrders.add(sample.getId());
                                 reportSample = sample;
                                 sampleCompleteMap.put(sample.getAccessionNumber(), Boolean.TRUE);
-                                findCompleationDate();
+                                findCompletionDate();
                                 findPatientFromSample();
                                 findContactInfo();
                                 findPatientInfo();
@@ -311,9 +314,9 @@ public abstract class HaitiPatientReport extends Report {
                         }
             }
 
-    private void findCompleationDate() {
-        Date date = currentSampleService.getCompletedDate();
-        compleationDate = date == null ? null : DateUtil.convertSqlDateToStringDate(date);
+    private void findCompletionDate() {
+        Timestamp date = currentSampleService.getCompletedDate();
+        completionDate = date == null ? null : DateUtil.parseTimestampToStringFormat(DATE_FORMAT, TIMEZONE_NP, date);
     }
 
     private void findPatientInfo() {
@@ -765,7 +768,7 @@ public abstract class HaitiPatientReport extends Report {
 
         data.setContactInfo(currentContactInfo);
         data.setSiteInfo(currentSiteInfo);
-        data.setReceivedDate(reportSample.getReceivedDateForDisplay());
+        data.setReceivedDate(DateUtil.convertTimestampToStringDate(reportSample.getReceivedTimestamp()));
         data.setDob(getPatientDOB());
         data.setAge(createReadableAge(data.getDob()));
         data.setGender(reportPatient.getGender());
@@ -788,14 +791,16 @@ public abstract class HaitiPatientReport extends Report {
             if (reportAnalysis.getPanel() != null) {
                 data.setPanelName(reportAnalysis.getPanel().getPanelName());
             }
-            data.setTestDate(DateUtil.convertSqlDateToStringDate(reportAnalysis.getCompletedDate()));
+            data.setTestDate(DateUtil.parseTimestampToStringFormat(DATE_FORMAT, TIMEZONE_NP, reportAnalysis.getCompletedDate()));
             sortOrder = reportAnalysis.getSampleItem().getSortOrder();
-            data.setOrderFinishDate(compleationDate);
-            data.setOrderDate(DateUtil.convertSqlDateToStringDate(currentSampleService.getOrderedDate()));
+            data.setOrderFinishDate(completionDate);
+            data.setOrderDate(DateUtil.parseTimestampToStringFormat(DATE_FORMAT, TIMEZONE_NP, currentSampleService.getOrderedTimestamp()));
         }
 
         data.setAccessionNumber(reportSample.getAccessionNumber() + "-" + sortOrder);
+        data.setCollectionDate(reportSample.getCollectionDate() != null ? DateUtil.parseTimestampToStringFormat(DATE_FORMAT, TIMEZONE_NP, reportSample.getCollectionDate()) : "");
         data.setLabOrderType(createLabOrderType());
+        data.setReportDate(DateUtil.getCurrentDateWithPatternAndTimezoneAsText(DATE_FORMAT, TIMEZONE_NP));
 
         if (doAnalysis) {
             reportResultAndConclusion(data);

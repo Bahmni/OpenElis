@@ -86,6 +86,7 @@ import us.mn.state.health.lims.upload.action.AddSampleService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Timestamp;
 import java.util.*;
 
 import static org.apache.commons.validator.GenericValidator.isBlankOrNull;
@@ -526,7 +527,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
         sample.setSampleSource(sampleSource);
         sample.setUUID(UUID.randomUUID().toString());
 
-        sample.setEnteredDate(new java.util.Date());
+        sample.setEnteredDate(new Timestamp(System.currentTimeMillis()));
 		if (useReceiveTimestamp) {
 			sample.setReceivedTimestamp(DateUtil.convertStringDateToTimestamp(receivedDate));
 		} else {

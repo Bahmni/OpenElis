@@ -84,6 +84,7 @@ import us.mn.state.health.lims.upload.action.AddSampleService;
 import java.io.IOException;
 import java.net.URI;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -230,7 +231,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
             return;
         }
 
-        Date nowAsSqlDate = DateUtil.getNowAsSqlDate();
+        Timestamp nowAsSqlDate = DateUtil.getNowAsTimestamp();
 
         Patient patient = getPatient(openMRSEncounter.getPatientUuid());
         Sample sample = getSample(sysUserId, nowAsSqlDate, openMRSEncounter);
@@ -261,7 +262,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         //Remove all those tests for which the sample has been collected already.
         filterNewTestsAdded(openMRSEncounter,sysUserId);
 
-        Date nowAsSqlDate = DateUtil.getNowAsSqlDate();
+        Timestamp nowAsSqlDate = DateUtil.getNowAsTimestamp();
 
         List<SampleTestOrderCollection> sampleTestOrderCollectionList = getSampleTestCollections(openMRSEncounter, sysUserId, nowAsSqlDate, sample, processState);
         List<Analysis> existingAnalyses = analysisDAO.getAnalysesBySampleIdExcludedByStatusId(sample.getId(), getCancelledAnalysisStatusIds());
@@ -344,7 +345,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         }
     }
 
-    private void addTestsToExistingSample(Sample sample, String sysUserId, Date nowAsSqlDate, AnalysisBuilder analysisBuilder, TestOrderDiff testOrderDiff) {
+    private void addTestsToExistingSample(Sample sample, String sysUserId, Timestamp nowAsSqlDate, AnalysisBuilder analysisBuilder, TestOrderDiff testOrderDiff) {
         Set includedSampleStatusList = new HashSet<Integer>();
         includedSampleStatusList.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.SampleStatus.Entered)));
 
@@ -386,7 +387,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         return patient;
     }
 
-    private List<SampleTestOrderCollection> getSampleTestCollections(OpenMRSEncounter openMRSEncounter, String sysUserId, Date nowAsSqlDate, Sample sample, FeedProcessState processState) {
+    private List<SampleTestOrderCollection> getSampleTestCollections(OpenMRSEncounter openMRSEncounter, String sysUserId, Timestamp nowAsSqlDate, Sample sample, FeedProcessState processState) {
         List<SampleTestOrderCollection> sampleTestOrderCollectionList = new ArrayList<>();
         SampleItemTestCache sampleItemTestCache = new SampleItemTestCache(typeOfSampleTestDAO, typeOfSampleDAO, sample, sysUserId);
         for (OpenMRSOrder labOrder : openMRSEncounter.getLabOrders()) {
@@ -461,7 +462,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
         return testOrders;
     }
 
-    private Sample getSample(String sysUserId, Date nowAsSqlDate, OpenMRSEncounter openMRSEncounter) {
+    private Sample getSample(String sysUserId, Timestamp nowAsSqlDate, OpenMRSEncounter openMRSEncounter) {
         Sample sample = new Sample();
         sample.setSysUserId(sysUserId);
         sample.setAccessionNumber(null);
@@ -472,7 +473,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
 
         // TODO : Mujir - remove this hardcoding???? Read this from the event????
         // TODO: Aarthy - Send encounter Date Time as part of event
-        sample.setEnteredDate(new java.util.Date());
+        sample.setEnteredDate(openMRSEncounter.getEncounterDateTime());
         sample.setReceivedDate(nowAsSqlDate);
         sample.setDomain(SystemConfiguration.getInstance().getHumanDomain());
         sample.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.OrderStatus.Entered));

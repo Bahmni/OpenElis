@@ -142,7 +142,7 @@ public class SampleUpdateAction extends BaseAction {
 		}
 		sample.setCollectionTimeForDisplay(time);
 
-		Timestamp d = sample.getCollectionDate();
+        Timestamp d = sample.getCollectionDate();
 		if (time.indexOf(":") > 0) {
 			//bugzilla 1857 deprecated stuff
 			Calendar cal = Calendar.getInstance();

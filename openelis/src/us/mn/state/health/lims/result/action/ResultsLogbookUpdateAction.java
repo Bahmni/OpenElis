@@ -48,6 +48,8 @@ import us.mn.state.health.lims.common.util.ConfigurationProperties;
 import us.mn.state.health.lims.common.util.ConfigurationProperties.Property;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.StringUtil;
+import us.mn.state.health.lims.common.util.SystemConfiguration;
+import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 import us.mn.state.health.lims.common.util.validator.ActionError;
 import us.mn.state.health.lims.note.dao.NoteDAO;
 import us.mn.state.health.lims.note.daoimpl.NoteDAOImpl;
@@ -112,14 +114,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class ResultsLogbookUpdateAction extends BaseAction implements IResultSaveService {
 
@@ -624,18 +619,20 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
         String testMethod = testResultItem.getAnalysisMethod();
         analysis.setAnalysisType(testMethod);
         analysis.setStartedDateForDisplay(testDate);
+        Locale locale = SystemConfiguration.getInstance().getDefaultLocale();
+        String pattern = ResourceLocator.getInstance().getMessageResources().getMessage(locale, "timestamp.format.formatKey");
 
         //This needs to be refactored -- part of the logic is in getStatusForTestResult
         if (statusRuleSet.equals(IActionConstants.STATUS_RULES_RETROCI)) {
             if (analysis.getStatusId() != StatusOfSampleUtil.getStatusID(AnalysisStatus.Canceled)) {
-                analysis.setCompletedDate(DateUtil.convertStringDateToSqlDate(testDate));
+                analysis.setCompletedDate(DateUtil.convertStringDateToTimestampWithPattern(testDate, pattern));
                 analysis.setStatusId(StatusOfSampleUtil.getStatusID(AnalysisStatus.TechnicalAcceptance));
             }
         } else if (analysis.getStatusId() == StatusOfSampleUtil.getStatusID(AnalysisStatus.Finalized) ||
                 analysis.getStatusId() == StatusOfSampleUtil.getStatusID(AnalysisStatus.TechnicalAcceptance) ||
                 (analysis.getStatusId() == StatusOfSampleUtil.getStatusID(AnalysisStatus.ReferedOut) && !GenericValidator
                         .isBlankOrNull(testResultItem.getResultValue()))) {
-            analysis.setCompletedDate(DateUtil.convertStringDateToSqlDate(testDate));
+            analysis.setCompletedDate(DateUtil.convertStringDateToTimestampWithPattern(testDate, pattern));
         }
 
         analysis.setSysUserId(currentUserId);

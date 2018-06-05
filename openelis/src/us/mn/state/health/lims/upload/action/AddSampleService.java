@@ -101,6 +101,7 @@ public class AddSampleService {
     private static void persistSampleData(AnalysisBuilder analysisBuilder, Sample sample, String projectId,
                                           List<SampleTestOrderCollection> sampleTestOrderCollectionList,
                                           SampleHuman sampleHuman, String patientId, String providerId, String currentUserId) {
+
         SampleDAO sampleDAO = new SampleDAOImpl();
         SampleHumanDAO sampleHumanDAO = new SampleHumanDAOImpl();
         SampleItemDAO sampleItemDAO = new SampleItemDAOImpl();

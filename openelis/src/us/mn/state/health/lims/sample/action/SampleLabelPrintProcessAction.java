@@ -115,7 +115,7 @@ public class SampleLabelPrintProcessAction extends BaseAction {
         sample.setReceivedTimestamp(new Timestamp(today.getTime()));
 
 		sample.setEnteredDateForDisplay(dateAsText);
-        sample.setEnteredDate(new java.util.Date());
+        sample.setEnteredDate(new Timestamp(System.currentTimeMillis()));
 //		bgm - bugzilla 1586 remove setting collection date here in quick entry.
 		// this will be set in HSE1.
 		//sample.setCollectionDateForDisplay(dateAsText);

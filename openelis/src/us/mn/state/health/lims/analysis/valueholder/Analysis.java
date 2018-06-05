@@ -20,6 +20,7 @@ package us.mn.state.health.lims.analysis.valueholder;
 
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
+import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 import us.mn.state.health.lims.common.valueholder.BaseObject;
 import us.mn.state.health.lims.common.valueholder.ValueHolder;
 import us.mn.state.health.lims.common.valueholder.ValueHolderInterface;
@@ -34,6 +35,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.*;
@@ -52,9 +54,9 @@ public class Analysis extends BaseObject {
     private String testName;
     private String revision;
     private String status;
-    private Date startedDate = null;
+    private Timestamp startedDate = null;
     private String startedDateForDisplay = null;
-    private Date completedDate = null;
+    private Timestamp completedDate = null;
     private Timestamp enteredDate = null;
     private String completedDateForDisplay = null;
     private Date releasedDate = null;
@@ -134,17 +136,14 @@ public class Analysis extends BaseObject {
         this.sampleItem.setValue(sampleItem);
     }
 
-    public Date getCompletedDate() {
+    public Timestamp getCompletedDate() {
         return completedDate;
     }
 
-    public void setCompletedDate(Date completedDate) {
+    public void setCompletedDate(Timestamp completedDate) {
         this.completedDate = completedDate;
-
-        String locale = SystemConfiguration.getInstance().getDefaultLocale()
-                .toString();
-        this.completedDateForDisplay = DateUtil.convertSqlDateToStringDate(
-                completedDate, locale);
+        this.completedDateForDisplay = completedDate != null ? DateUtil.convertTimestampToStringDateAndTime(
+                completedDate) : "";
     }
 
     public String getCompletedDateForDisplay() {
@@ -156,7 +155,7 @@ public class Analysis extends BaseObject {
 
         String locale = SystemConfiguration.getInstance().getDefaultLocale()
                 .toString();
-        this.completedDate = DateUtil.convertStringDateToSqlDate(
+        this.completedDate = DateUtil.convertStringDateToTimestamp(
                 this.completedDateForDisplay, locale);
     }
 
@@ -169,16 +168,16 @@ public class Analysis extends BaseObject {
         this.revision = revision;
     }
 
-    public Date getStartedDate() {
+    public Timestamp getStartedDate() {
         return startedDate;
     }
 
-    public void setStartedDate(Date startedDate) {
+    public void setStartedDate(Timestamp startedDate) {
         this.startedDate = startedDate;
         // also update String date
         String locale = SystemConfiguration.getInstance().getDefaultLocale()
                 .toString();
-        this.startedDateForDisplay = DateUtil.convertSqlDateToStringDate(
+        this.startedDateForDisplay = DateUtil.convertTimestampToStringDate(
                 startedDate, locale);
     }
 
@@ -189,10 +188,10 @@ public class Analysis extends BaseObject {
     public void setStartedDateForDisplay(String startedDateForDisplay) {
         this.startedDateForDisplay = startedDateForDisplay;
         // also update the java.sql.Date
-        String locale = SystemConfiguration.getInstance().getDefaultLocale()
-                .toString();
-        this.startedDate = DateUtil.convertStringDateToSqlDate(
-                this.startedDateForDisplay, locale);
+        Locale locale = SystemConfiguration.getInstance().getDefaultLocale();
+        String pattern = ResourceLocator.getInstance().getMessageResources().getMessage(locale, "timestamp.format.formatKey");
+        this.startedDate = DateUtil.convertStringDateToTimestampWithPattern(
+                this.startedDateForDisplay, pattern);
     }
 
     public String getStatus() {

@@ -215,6 +215,7 @@ public abstract class Accessioner {
 	ActionMessages messages = new ActionMessages();
 
 	protected java.util.Date today;
+	protected Timestamp todayTimestamp;
 	protected String todayAsText;
 	protected String sysUserId;
 	protected ProjectForm projectForm;
@@ -272,6 +273,7 @@ public abstract class Accessioner {
 
 	public Accessioner() {
 		today = new Date();
+		todayTimestamp = new Timestamp(System.currentTimeMillis());
 		todayAsText = DateUtil.formatDateAsText(today);
 	}
 
@@ -679,7 +681,7 @@ public abstract class Accessioner {
 		// and all the administration fields.
 		if (isNewSample()) {
 			sample.setEnteredDateForDisplay(todayAsText);
-			sample.setEnteredDate(today);
+			sample.setEnteredDate(todayTimestamp);
 		}
 		sample.setDomain(SystemConfiguration.getInstance().getHumanDomain());
 	}
@@ -997,7 +999,7 @@ public abstract class Accessioner {
 	}
 
 	private Analysis buildAnalysis(String analysisRevision, SampleItemAnalysisCollection sampleTestCollection, Test test) {
-		java.sql.Date collectionDateTime = DateUtil.convertStringDateToSqlDate(sampleTestCollection.collectionDate);
+		Timestamp collectionDateTime = DateUtil.convertStringDateToTimestamp(sampleTestCollection.collectionDate);
 
 		Analysis analysis = new Analysis();
 		analysis.setTest(test);

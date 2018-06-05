@@ -17,11 +17,14 @@
 package us.mn.state.health.lims.common.services;
 
 import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.List;
 
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
+import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.sample.valueholder.Sample;
 
 
@@ -37,8 +40,8 @@ public class SampleService {
 	 * Gets the date of when the order was completed
 	 * @return The date of when it was completed, null if it was not yet completed
 	 */
-	public Date getCompletedDate(){
-		Date date = null;
+	public Timestamp getCompletedDate(){
+		Timestamp date = null;
 		List<Analysis> analysisList = analysisDAO.getAnalysesBySampleId(sample.getId());
 		
 		for( Analysis analysis : analysisList){
@@ -56,5 +59,9 @@ public class SampleService {
 	
 	public Date getOrderedDate(){
 		return new java.sql.Date(sample.getEnteredDate().getTime());
+	}
+
+	public Timestamp getOrderedTimestamp() {
+		return sample.getEnteredDate();
 	}
 }
