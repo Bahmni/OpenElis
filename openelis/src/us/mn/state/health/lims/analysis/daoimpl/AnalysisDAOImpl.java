@@ -257,7 +257,7 @@ public class AnalysisDAOImpl extends BaseDAOImpl implements AnalysisDAO {
 
 		return getNextRecord(id, "Analysis", Analysis.class);
 
-	}653
+	}
 
 	@SuppressWarnings("rawtypes")
 	public List getPreviousAnalysisRecord(String id) throws LIMSRuntimeException {
