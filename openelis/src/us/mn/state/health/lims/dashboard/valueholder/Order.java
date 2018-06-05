@@ -69,6 +69,27 @@ public class Order {
         this.priority = priority;
     }
 
+    public Order(String accessionNumber, String uuid, String orderId, String stNumber, String firstName, String middleName, String lastName, String source, boolean isCompleted, boolean isPrinted,
+                 int pendingTestCount, int pendingValidationCount, int totalTestCount, Date collectionDate, Date enteredDate, String comments, String sectionNames) {
+        this.accessionNumber = accessionNumber;
+        this.uuid = uuid;
+        this.orderId = orderId;
+        this.stNumber = stNumber;
+        this.firstName = firstName;
+        this.middleName = middleName;
+        this.lastName = lastName;
+        this.source = source;
+        this.isCompleted = isCompleted;
+        this.isPrinted = isPrinted;
+        this.pendingTestCount = pendingTestCount;
+        this.pendingValidationCount = pendingValidationCount;
+        this.totalTestCount = totalTestCount;
+        this.collectionDate = collectionDate;
+        this.enteredDate = enteredDate;
+        this.comments = comments;
+        this.sectionNames = sectionNames;
+    }
+
     public String getAccessionNumber() {
         return accessionNumber;
     }

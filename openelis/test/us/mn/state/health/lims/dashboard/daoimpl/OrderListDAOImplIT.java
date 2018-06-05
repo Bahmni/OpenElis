@@ -72,8 +72,8 @@ public class OrderListDAOImplIT extends IT {
 
     @Before
     public void setUp() throws Exception {
-        blood = getTypeOfSample("Blood", "sampel-uuid_1");
-        urine = getTypeOfSample("Urine", "sampel-uuid_2");
+        blood = getTypeOfSample("BloodTest", "sampel-uuid_1");
+        urine = getTypeOfSample("UrineTest", "sampel-uuid_12");
         accessionNumber1 = "05082013-001";
         accessionNumber2 = "05082013-002";
         accessionNumber3 = "05082013-003";
@@ -138,14 +138,12 @@ public class OrderListDAOImplIT extends IT {
         assertEquals(1, sampleByAccessionNumber1.getPendingValidationCount());
         assertEquals(3, sampleByAccessionNumber1.getTotalTestCount());
         assertEquals("New,user", sampleByAccessionNumber1.getSectionNames());
-        assertEquals("Urine", sampleByAccessionNumber1.getSampleType());
         assertFalse(sampleByAccessionNumber1.getIsCompleted());
 
         assertEquals(0, sampleByAccessionNumber2.getPendingTestCount());
         assertEquals(0, sampleByAccessionNumber2.getPendingValidationCount());
         assertEquals(1, sampleByAccessionNumber2.getTotalTestCount());
         assertEquals("New", sampleByAccessionNumber2.getSectionNames());
-        assertEquals("Blood", sampleByAccessionNumber2.getSampleType());
         assertTrue(sampleByAccessionNumber2.getIsCompleted());
     }
 
