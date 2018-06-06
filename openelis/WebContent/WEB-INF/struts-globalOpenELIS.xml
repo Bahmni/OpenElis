@@ -673,6 +673,7 @@
             <form-property name="todaySampleNotCollectedList" type="java.lang.String"/>
             <form-property name="backlogSampleNotCollectedList" type="java.lang.String"/>
             <form-property name="backlogOrderList" type="java.lang.String"/>
+            <form-property name="isGroupBySample" type="java.lang.Boolean"/>
         </form-bean>
 
         <form-bean name="UploadForm" type="us.mn.state.health.lims.common.action.BaseActionForm">

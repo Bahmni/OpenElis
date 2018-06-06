@@ -127,6 +127,11 @@ public class OrderListDAOImpl implements OrderListDAO {
         return getOrders(sqlForAllSampleNotCollectedPendingBeforeToday);
     }
 
+    @Override
+    public Boolean isGroupBySampleEnabled() {
+        return false;
+    }
+
     private List<Order> getOrders( String sql) {
         List<Order> orderList = new ArrayList<>();
         ResultSet pendingAccessions = null;

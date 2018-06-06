@@ -44,11 +44,13 @@ public class DashboardAction extends BaseAction {
         String escapedTodaySampleNotCollectedListJson = asJson(orderListDAO.getAllSampleNotCollectedToday());
         String escapedBacklogSampleNotCollectedListJson = asJson(orderListDAO.getAllSampleNotCollectedPendingBeforeToday());
         String escapedBacklogOrderListJson = asJson(orderListDAO.getAllPendingBeforeToday());
+        Boolean isGroupBySample = orderListDAO.isGroupBySampleEnabled();
 
         dynaForm.set("todayOrderList", escapedTodayOrderListJson);
         dynaForm.set("todaySampleNotCollectedList", escapedTodaySampleNotCollectedListJson);
         dynaForm.set("backlogSampleNotCollectedList", escapedBacklogSampleNotCollectedListJson);
         dynaForm.set("backlogOrderList", escapedBacklogOrderListJson);
+        dynaForm.set("isGroupBySample", isGroupBySample);
 
         return mapping.findForward("success");
     }

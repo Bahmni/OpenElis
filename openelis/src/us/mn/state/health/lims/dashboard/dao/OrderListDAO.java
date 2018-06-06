@@ -25,4 +25,5 @@ public interface OrderListDAO {
     List<Order> getAllPendingBeforeToday();
     List<Order> getAllSampleNotCollectedToday();
     List<Order> getAllSampleNotCollectedPendingBeforeToday();
+    Boolean isGroupBySampleEnabled();
 }
