@@ -53,8 +53,8 @@ public class OrderListDAOImpl implements OrderListDAO {
     private static String COMMENT_SEPARATOR = "<~~>";
     private OrderListDAOHelper orderListDAOHelper;
 
-    public OrderListDAOImpl() {
-        orderListDAOHelper = new OrderListDAOHelper();
+    public OrderListDAOImpl(Boolean isGroupBySampleEnabled) {
+        orderListDAOHelper = new OrderListDAOHelper(isGroupBySampleEnabled);
     }
 
     @Override
@@ -125,11 +125,6 @@ public class OrderListDAOImpl implements OrderListDAO {
                         "sample.lastupdated", getPendingAnalysisStatus(), getPendingValidationAnalysisStatus(),
                 analysesReferredOrInFinalStatus());
         return getOrders(sqlForAllSampleNotCollectedPendingBeforeToday);
-    }
-
-    @Override
-    public Boolean isGroupBySampleEnabled() {
-        return false;
     }
 
     private List<Order> getOrders( String sql) {

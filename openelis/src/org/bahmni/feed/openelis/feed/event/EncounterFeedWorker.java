@@ -48,6 +48,7 @@ import us.mn.state.health.lims.sampleitem.daoimpl.SampleItemDAOImpl;
 import us.mn.state.health.lims.samplesource.dao.SampleSourceDAO;
 import us.mn.state.health.lims.samplesource.daoimpl.SampleSourceDAOImpl;
 import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
+import us.mn.state.health.lims.siteinformation.valueholder.SiteInformation;
 import us.mn.state.health.lims.test.dao.TestDAO;
 import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 import us.mn.state.health.lims.typeofsample.dao.TypeOfSampleDAO;
@@ -80,7 +81,8 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
 
     private static Logger logger = Logger.getLogger(EncounterFeedWorker.class);
 
-    private static final boolean GROUP_BY_SAMPLE = false;
+    public static final String ACCESSION_STRATEGY = "accessionStrategy";
+    private static final String GROUP_BY_SAMPLE = "groupBySample";
 
     public EncounterFeedWorker(HttpClient webClient, String urlPrefix, ExternalReferenceDao externalReferenceDao,
                                AuditingService auditingService, PanelItemDAO panelItemDAO,
@@ -138,9 +140,11 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
     public void process(OpenMRSEncounter openMRSEncounter) {
         logInfo(openMRSEncounter);
         String sysUserId = auditingService.getSysUserId();
-        EncounterFeedProcessor feedProcessor = null;
+        EncounterFeedProcessor feedProcessor;
+        SiteInformation siteInformation = new SiteInformationDAOImpl().getSiteInformationByName(ACCESSION_STRATEGY);
+        String accessionStrategy = siteInformation != null ? siteInformation.getValue() : "";
 
-        if(GROUP_BY_SAMPLE) {
+        if(GROUP_BY_SAMPLE.equals(accessionStrategy)) {
             feedProcessor = new GroupBySampleTypeFeedProcessor(sampleDAO, externalReferenceDao, panelItemDAO,
                     typeOfSampleTestDAO, typeOfSampleDAO, requesterTypeDAO, organizationTypeDAO, patientDAO, testDAO,
                     analysisDAO, sampleItemDAO, providerDAO, sampleSourceService);

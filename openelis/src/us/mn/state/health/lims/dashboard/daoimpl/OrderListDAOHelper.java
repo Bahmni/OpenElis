@@ -7,14 +7,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class OrderListDAOHelper {
-    public static final boolean GROUP_BY_SAMPLE = true;
     private static String COMMENT_SEPARATOR = "<~~>";
     private static final String LOW = "Low";
     private static final String HIGH = "High";
+    private Boolean isGroupBySample;
+
+    public OrderListDAOHelper(Boolean groupBySampleEnabled) {
+        this.isGroupBySample = groupBySampleEnabled;
+    }
 
     String createSqlForToday(String condition, String orderBy, String pendingAnalysisStatus,
                              String pendingValidationAnalysisStatus, String completedStatus) {
-        if (GROUP_BY_SAMPLE) {
+        if (isGroupBySample) {
             return createSqlStringForTodayOrdersANDGroupBySampleEnabled(condition, orderBy, pendingAnalysisStatus,
                     pendingValidationAnalysisStatus, completedStatus);
         }
@@ -24,7 +28,7 @@ public class OrderListDAOHelper {
 
     String createSqlForPendingBeforeToday(String condition, String orderBy, String pendingAnalysisStatus,
                                           String pendingValidationAnalysisStatus, String analysesReferredOrInFinalStatus) {
-        if (GROUP_BY_SAMPLE) {
+        if (isGroupBySample) {
             return createSqlStringForPendingOrdersANDGroupBySampleEnabled(condition, orderBy, pendingAnalysisStatus,
                     pendingValidationAnalysisStatus, analysesReferredOrInFinalStatus);
         }
@@ -207,7 +211,7 @@ public class OrderListDAOHelper {
     }
 
     Order getOrder(ResultSet accessionResultSet, String comments, String sectionNames, boolean completed) throws SQLException {
-        if (GROUP_BY_SAMPLE) {
+        if (isGroupBySample) {
             return getOrderWithPriority(accessionResultSet, comments, sectionNames, getPriority(accessionResultSet), completed);
         }
         return getOrderWithoutPriority(accessionResultSet, comments, sectionNames, completed);
