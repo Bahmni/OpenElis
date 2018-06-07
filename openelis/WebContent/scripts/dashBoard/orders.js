@@ -48,13 +48,23 @@ function generateAllLinksForOrder(order, alwaysValidate){
     }
     var resultMessage = jQuery("#translatedColumnNames").attr("data-link-result");
     var resultIcon = '<img id="actionIcon" src="images/result.svg" title="'+resultMessage+'">';
-    var enterResultLink = "<a id='result' href='AccessionResults.do?accessionNumber=" + order.accessionNumber + "&sampleType="+order.sampleType +"&referer=LabDashboard"+"'>"+resultIcon+"</a>";
+    var enterResultLink;
+    if(order.sampleType == null) {
+        enterResultLink = "<a id='result' href='AccessionResults.do?accessionNumber=" + order.accessionNumber + "&referer=LabDashboard" + "'>" + resultIcon + "</a>";
+    } else {
+       enterResultLink = "<a id='result' href='AccessionResults.do?accessionNumber=" + order.accessionNumber + "&sampleType=" + order.sampleType + "&referer=LabDashboard" + "'>" + resultIcon + "</a>";
+    }
 
     if(alwaysValidate){
         //TODO: &type= is required in the url because of a bug I can't find the source of. The bug causes people without
         var validateMessage = jQuery("#translatedColumnNames").attr("data-link-validate");
         var validateIcon = '<img id="actionIcon" src="images/validate.svg" title="'+validateMessage+'">';
-        var validationLink = "<a id='validate' href='ResultValidationForAccessionNumber.do?accessionNumber=" + order.accessionNumber + "&patientId=" + order.stNumber + "&sampleType="+order.sampleType  + "&referer=LabDashboard&type=&test='>"+validateIcon+"</a>";
+        var validationLink;
+        if(order.sampleType == null) {
+            validationLink = "<a id='validate' href='ResultValidationForAccessionNumber.do?accessionNumber=" + order.accessionNumber + "&patientId=" + order.stNumber + "&referer=LabDashboard&type=&test='>" + validateIcon + "</a>";
+        } else {
+            validationLink  = "<a id='validate' href='ResultValidationForAccessionNumber.do?accessionNumber=" + order.accessionNumber + "&patientId=" + order.stNumber + "&sampleType=" + order.sampleType + "&referer=LabDashboard&type=&test='>" + validateIcon + "</a>";
+        }
         return enterResultLink + " | " + validationLink + " | " + generateLinkForPrint(order);
     }
     return enterResultLink + " | " + generateLinkForPrint(order);
