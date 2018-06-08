@@ -52,7 +52,8 @@ function generateAllLinksForOrder(order, alwaysValidate){
     if(order.sampleType == null) {
         enterResultLink = "<a id='result' href='AccessionResults.do?accessionNumber=" + order.accessionNumber + "&referer=LabDashboard" + "'>" + resultIcon + "</a>";
     } else {
-       enterResultLink = "<a id='result' href='AccessionResults.do?accessionNumber=" + order.accessionNumber + "&sampleType=" + order.sampleType + "&referer=LabDashboard" + "'>" + resultIcon + "</a>";
+        var sampleType = order.sampleType.replace(/'/g, '%27');
+       enterResultLink = "<a id='result' href='AccessionResults.do?accessionNumber=" + order.accessionNumber + "&sampleType=" + sampleType + "&referer=LabDashboard" + "'>" + resultIcon + "</a>";
     }
 
     if(alwaysValidate){
@@ -63,7 +64,8 @@ function generateAllLinksForOrder(order, alwaysValidate){
         if(order.sampleType == null) {
             validationLink = "<a id='validate' href='ResultValidationForAccessionNumber.do?accessionNumber=" + order.accessionNumber + "&patientId=" + order.stNumber + "&referer=LabDashboard&type=&test='>" + validateIcon + "</a>";
         } else {
-            validationLink  = "<a id='validate' href='ResultValidationForAccessionNumber.do?accessionNumber=" + order.accessionNumber + "&patientId=" + order.stNumber + "&sampleType=" + order.sampleType + "&referer=LabDashboard&type=&test='>" + validateIcon + "</a>";
+            var sampleType = order.sampleType.replace(/'/g, '%27');
+            validationLink  = "<a id='validate' href='ResultValidationForAccessionNumber.do?accessionNumber=" + order.accessionNumber + "&patientId=" + order.stNumber + "&sampleType=" + sampleType + "&referer=LabDashboard&type=&test='>" + validateIcon + "</a>";
         }
         return enterResultLink + " | " + validationLink + " | " + generateLinkForPrint(order);
     }
