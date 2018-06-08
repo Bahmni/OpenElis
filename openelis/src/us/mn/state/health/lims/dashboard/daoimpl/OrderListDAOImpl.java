@@ -308,8 +308,11 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "string_agg(analysis.comment, '" + COMMENT_SEPARATOR + "') AS analysis_comments,\n" +
                 "COUNT(test.id) AS total_test_count,\n" +
                 "CASE WHEN COUNT(analysis.id) = SUM(CASE WHEN  analysis.status_id IN (" +getCompletedStatus()+ ") THEN 1 ELSE 0 END) THEN true ELSE false END as is_completed,\n" +
-                "CASE WHEN document_track.report_generation_time is null THEN false ELSE true END as is_printed,\n" +
-                "analysis.completed_date AS completed_date\n" +
+                "CASE WHEN document_track.report_generation_time is null THEN false ELSE true END as is_printed, \n" +
+                "CASE WHEN COUNT(analysis.id) = SUM(CASE WHEN  analysis.status_id IN (" +getCompletedStatus()+ ") THEN 1 ELSE 0 END) THEN \n" +
+                //Using this to get only one analysis completed date
+                "(select an.completed_date from analysis an where sampitem_id = sample.id limit 1) \n" +
+                "ELSE NULL END AS completed_date \n" +
                 "FROM Sample AS sample\n" +
                 "INNER JOIN (\n" +
                     "SELECT DISTINCT si.samp_id as id\n" +
@@ -331,7 +334,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "INNER JOIN test ON test.id = analysis.test_id\n" +
                 "LEFT OUTER JOIN document_track as document_track ON sample.id = document_track.row_id AND document_track.name = 'patientHaitiClinical' and document_track.parent_id is null \n" +
                 "WHERE "+condition+"\n" +
-                "GROUP BY sample.accession_number, sample.uuid,sample.id, sample.collection_date, sample.entered_date, sample.received_date, sample.lastupdated, person.first_name, person.middle_name, person.last_name, sample_source.name, patient_identity.identity_data, document_track.report_generation_time, analysis.completed_date \n" +
+                "GROUP BY sample.accession_number, sample.uuid,sample.id, sample.collection_date, sample.entered_date, sample.received_date, sample.lastupdated, person.first_name, person.middle_name, person.last_name, sample_source.name, patient_identity.identity_data, document_track.report_generation_time \n" +
                 "ORDER BY "+ OrderBy +" DESC\n" +
                 "LIMIT 1000;";
     }
