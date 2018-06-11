@@ -311,7 +311,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "CASE WHEN document_track.report_generation_time is null THEN false ELSE true END as is_printed, \n" +
                 "CASE WHEN COUNT(analysis.id) = SUM(CASE WHEN  analysis.status_id IN (" +getCompletedStatus()+ ") THEN 1 ELSE 0 END) THEN \n" +
                 //Using this to get only one analysis completed date
-                "(select an.completed_date from analysis an where sampitem_id = sample.id limit 1) \n" +
+                "max(analysis.completed_date) \n" +
                 "ELSE NULL END AS completed_date \n" +
                 "FROM Sample AS sample\n" +
                 "INNER JOIN (\n" +
