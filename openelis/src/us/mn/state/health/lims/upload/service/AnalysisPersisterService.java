@@ -20,6 +20,7 @@ import java.sql.Timestamp;
 import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
+import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
@@ -47,9 +48,7 @@ public class AnalysisPersisterService {
         analysis.setSysUserId(sysUserId);
         analysis.setSampleItem(sampleItem);
         analysis.setTest(test);
-        SimpleDateFormat datetimeFormatter = new SimpleDateFormat("dd-MM-yyyy");
-        Date parsedDate = datetimeFormatter.parse(sampleDate);
-        java.sql.Date analysisDate = new java.sql.Date(parsedDate.getTime());
+        Timestamp analysisDate = DateUtil.convertStringDateToTimestamp(sampleDate);
         analysis.setStartedDate(analysisDate);
         analysis.setCompletedDate(analysisDate);
         analysis.setEnteredDate(new Timestamp(analysisDate.getTime()));

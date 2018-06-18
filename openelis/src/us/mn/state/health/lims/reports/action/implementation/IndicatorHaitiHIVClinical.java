@@ -35,6 +35,7 @@ import us.mn.state.health.lims.analyte.valueholder.Analyte;
 import us.mn.state.health.lims.common.action.BaseActionForm;
 import us.mn.state.health.lims.common.util.ConfigurationProperties;
 import us.mn.state.health.lims.common.util.ConfigurationProperties.Property;
+import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
 import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
@@ -107,7 +108,7 @@ public class IndicatorHaitiHIVClinical extends HaitiIndicatorReport implements I
 		if (dictionary != null) {
 			TEST_HIV_IND_ID = dictionary.getId();
 		}else{
-			dictionary = dictionaryDAO.getDictionaryEntrysByNameAndCategoryDescription("Indeterminé", "Haiti Lab");
+			dictionary = dictionaryDAO.getDictionaryEntrysByNameAndCategoryDescription("Indeterminï¿½", "Haiti Lab");
 			if (dictionary != null) {
 				TEST_HIV_IND_ID = dictionary.getId();
 			}	
@@ -118,7 +119,7 @@ public class IndicatorHaitiHIVClinical extends HaitiIndicatorReport implements I
 			CLINICAL_POSITIVE_ID = dictionary.getId();
 		}
 
-		dictionary = dictionaryDAO.getDictionaryEntrysByNameAndCategoryDescription("Négatif", "CLINICAL GENERAL");
+		dictionary = dictionaryDAO.getDictionaryEntrysByNameAndCategoryDescription("Nï¿½gatif", "CLINICAL GENERAL");
 		if (dictionary != null) {
 			CLINICAL_NEGATIVE_ID = dictionary.getId();
 		}
@@ -195,8 +196,8 @@ public class IndicatorHaitiHIVClinical extends HaitiIndicatorReport implements I
 				testName.equals("CD4 en %") ||
 				testName.equals("CD4  Compte Abs") ||
 				testName.equals("CD4 Compte en %") ||
-				testName.equals("Dénombrement des lymphocytes CD4 (mm3)") ||
-				testName.equals("Dénombrement des lymphocytes  CD4 (%)") ){
+				testName.equals("Dï¿½nombrement des lymphocytes CD4 (mm3)") ||
+				testName.equals("Dï¿½nombrement des lymphocytes  CD4 (%)") ){
 				if( firstResult.getMinNormal() == firstResult.getMaxNormal() ){
 					continue;
 				}
@@ -304,7 +305,7 @@ public class IndicatorHaitiHIVClinical extends HaitiIndicatorReport implements I
 			Patient patient = sampleHumanDAO.getPatientForSample(analysis.getSampleItem().getSample());
 			if (!patientSet.contains(patient.getId())) {
 				patientSet.add(patient.getId());
-				patientTestList.add(new PatientTestDate(patient, analysis.getCompletedDate()));
+				patientTestList.add(new PatientTestDate(patient, DateUtil.convertTimestampToSqlDate(analysis.getCompletedDate())));
 			}
 		}
 		// This is dependent on the outcome of the results

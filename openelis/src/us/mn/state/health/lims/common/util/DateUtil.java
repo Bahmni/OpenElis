@@ -189,7 +189,6 @@ public class DateUtil {
 			}
 		}
 		return returnTimestamp;
-
 	}
 
 	public static Timestamp convertStringDateToTimestampWithPattern(String date, String pattern) throws LIMSRuntimeException {
@@ -238,7 +237,7 @@ public class DateUtil {
 
 	public static String convertSqlDateToStringDate(java.sql.Date date) {
 		String stringLocale = SystemConfiguration.getInstance().getDefaultLocale().toString();
-		return convertSqlDateToStringDate(date, stringLocale);
+		return date != null ? convertSqlDateToStringDate(date, stringLocale) : null;
 	}
 
 	public static String convertSqlDateToStringDate(java.sql.Date date, String stringLocale) throws LIMSRuntimeException {
@@ -486,6 +485,10 @@ public class DateUtil {
 		return formatDateAsText(new Date());
 	}
 
+	public static String getCurrentTimestampAsText() {
+		return  convertTimestampToStringDateAndTime(new Timestamp(System.currentTimeMillis()));
+	}
+
 	public static String getCurrentDateAsText(String pattern) {
 		if (GenericValidator.isBlankOrNull(pattern)) {
 			return null;
@@ -495,6 +498,26 @@ public class DateUtil {
 		SimpleDateFormat format = new SimpleDateFormat(pattern, locale);
 		return format.format(new Date());
 
+	}
+
+	public static String getCurrentDateWithPatternAndTimezoneAsText(String dateFormat, String timezone) {
+		if (GenericValidator.isBlankOrNull(dateFormat) || GenericValidator.isBlankOrNull(timezone)) {
+			return null;
+		}
+		SimpleDateFormat format = new SimpleDateFormat(dateFormat);
+		format.setTimeZone(TimeZone.getTimeZone(timezone));
+		String date =  format.format(new Date());
+		return date;
+	}
+
+	public static String parseTimestampToStringFormat(String dateFormat, String timezone, Timestamp time) {
+		if (GenericValidator.isBlankOrNull(dateFormat) || GenericValidator.isBlankOrNull(timezone) || time == null) {
+			return null;
+		}
+		SimpleDateFormat format = new SimpleDateFormat(dateFormat);
+		format.setTimeZone(TimeZone.getTimeZone(timezone));
+		String date =  format.format(time);
+		return date;
 	}
 
 	public static int getAgeInWeeks(Date startDate, Date endDate) {

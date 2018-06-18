@@ -48,6 +48,30 @@ OpenElis.Utils = {
     getXMLValue: function(response, key){
         var field = response.getElementsByTagName(key).item(0);
         return field != null ? field.firstChild.nodeValue : "";
+    },
+
+    formatDateWithTime: function (datetime) {
+        var dateRepresentation = isNaN(Number(datetime)) ? datetime : Number(datetime);
+        if (!moment(dateRepresentation).isValid()) {
+            return datetime;
+        }
+        return dateRepresentation ? moment(dateRepresentation).format("DD MMM YY h:mm a") : null;
+    },
+
+    formatDateWithoutTime: function (date) {
+        var dateRepresentation = isNaN(Number(date)) ? date : Number(date);
+        if (!moment(dateRepresentation).isValid()) {
+            return date;
+        }
+        return dateRepresentation ? moment(dateRepresentation).format("DD MMM YY") : null;
+    },
+
+    parseTimeFromDateTime: function (datetime) {
+        var dateRepresentation = isNaN(Number(datetime)) ? datetime : Number(datetime);
+        if (!moment(dateRepresentation).isValid()) {
+            return datetime;
+        }
+        return dateRepresentation ? moment(dateRepresentation).format("h:mm a") : null;
     }
 
 }

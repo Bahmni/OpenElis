@@ -22,6 +22,7 @@ import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
 import us.mn.state.health.lims.test.valueholder.Test;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,8 +39,8 @@ public class SampleTestCollection {
         initialSampleConditionIdList = initialConditionList;
     }
 
-    public SampleTestCollection(SampleItem item, List<Test> tests, Date collectionDate) {
+    public SampleTestCollection(SampleItem item, List<Test> tests, Timestamp collectionDate) {
         // TODO : Mujir - is DateUtil.convertSqlDateToStringDate(nowAsSqlDate) ok?
-        this(item, tests, DateUtil.formatDateTimeAsText(collectionDate), new ArrayList<ObservationHistory>());
+        this(item, tests, DateUtil.convertTimestampToStringDate(collectionDate), new ArrayList<ObservationHistory>());
     }
 }

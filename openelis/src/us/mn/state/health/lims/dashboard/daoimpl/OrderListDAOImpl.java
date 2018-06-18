@@ -25,24 +25,15 @@ import us.mn.state.health.lims.dashboard.dao.OrderListDAO;
 import us.mn.state.health.lims.dashboard.valueholder.Order;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
 import static java.lang.Integer.parseInt;
-import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.BiologistRejected;
-import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.Finalized;
-import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.FinalizedRO;
-import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.NotTested;
-import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.ReferedOut;
-import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.ReferredIn;
-import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance;
-import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.TechnicalRejected;
+import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.*;
 import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.getStatusID;
 
 public class OrderListDAOImpl implements OrderListDAO {
@@ -69,7 +60,8 @@ public class OrderListDAOImpl implements OrderListDAO {
             preparedStatement.setTimestamp(2, DateUtil.getTodayAsTimestamp());
             todayAccessions = preparedStatement.executeQuery();
             while (todayAccessions.next()) {
-                orderList.add(createOrder(todayAccessions, todayAccessions.getBoolean("is_completed")));
+                Order order = createOrder(todayAccessions, todayAccessions.getBoolean("is_completed"), todayAccessions.getTimestamp("completed_date"));
+                orderList.add(order);
             }
             return orderList;
         } catch (SQLException e) {
@@ -95,7 +87,7 @@ public class OrderListDAOImpl implements OrderListDAO {
             preparedStatement.setTimestamp(1, DateUtil.getTodayAsTimestamp());
             pendingAccessions = preparedStatement.executeQuery();
             while (pendingAccessions.next()) {
-                Order order = createOrder(pendingAccessions, false);
+                Order order = createOrder(pendingAccessions, false, null);
                 orderList.add(order);
             }
             return orderList;
@@ -121,7 +113,7 @@ public class OrderListDAOImpl implements OrderListDAO {
             preparedStatement.setTimestamp(2, DateUtil.getTodayAsTimestamp());
             sampleNotCollectedToday = preparedStatement.executeQuery();
             while (sampleNotCollectedToday.next()) {
-                Order order = createOrder(sampleNotCollectedToday, false);
+                Order order = createOrder(sampleNotCollectedToday, false, null);
                 orderList.add(order);
             }
             return orderList;
@@ -148,7 +140,7 @@ public class OrderListDAOImpl implements OrderListDAO {
             preparedStatement.setTimestamp(1, DateUtil.getTodayAsTimestamp());
             pendingAccessions = preparedStatement.executeQuery();
             while (pendingAccessions.next()) {
-                Order order = createOrder(pendingAccessions, false);
+                Order order = createOrder(pendingAccessions, false, null);
                 orderList.add(order);
             }
             return orderList;
@@ -158,7 +150,8 @@ public class OrderListDAOImpl implements OrderListDAO {
         } finally {
             closeResultSet(pendingAccessions);
             closePreparedStatement(preparedStatement);
-        }    }
+        }
+    }
 
     private void closePreparedStatement(PreparedStatement preparedStatement) {
         if (preparedStatement != null) {
@@ -185,9 +178,12 @@ public class OrderListDAOImpl implements OrderListDAO {
         return connection.prepareStatement(sqlForAllTestsToday);
     }
 
-    private Order createOrder(ResultSet accessionResultSet, boolean completed) throws SQLException {
+    private Order createOrder(ResultSet accessionResultSet, boolean completed, Timestamp completedDate) throws SQLException {
         String comments = getUniqueComments(accessionResultSet);
-        return new Order(accessionResultSet.getString("accession_number"),
+        Timestamp collectionDate = accessionResultSet.getTimestamp("collection_date");
+        Timestamp orderDate = accessionResultSet.getTimestamp("entered_date");
+        Timestamp orderEnteredDate= accessionResultSet.getTimestamp("received_date");
+        Order order =  new Order(accessionResultSet.getString("accession_number"),
                             accessionResultSet.getString("uuid"),
                             accessionResultSet.getString("id"),
                             accessionResultSet.getString("st_number"),
@@ -200,10 +196,15 @@ public class OrderListDAOImpl implements OrderListDAO {
                             accessionResultSet.getInt("pending_tests_count"),
                             accessionResultSet.getInt("pending_validation_count"),
                             accessionResultSet.getInt("total_test_count"),
-                            accessionResultSet.getDate("collection_date"),
-                            accessionResultSet.getDate("entered_date"),
+                            collectionDate != null ? new Date(collectionDate.getTime()) : null,
+                            orderEnteredDate != null ? new Date(orderEnteredDate.getTime()) : null,
                             comments
         );
+        order.setSampleCollectionDate(collectionDate);
+        order.setOrderDate(orderDate);
+        order.setOrderEnteredDate(orderEnteredDate);
+        order.setCompletedDate(completedDate);
+        return order;
     }
 
     private String getUniqueComments(ResultSet accessionResultSet) throws SQLException {
@@ -261,6 +262,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "sample.id AS id, \n" +
                 "sample.collection_date AS collection_date, \n" +
                 "sample.entered_date AS entered_date, \n" +
+                "sample.received_date AS received_date, \n" +
                 "person.first_name AS first_name, \n" +
                 "person.middle_name AS middle_name, \n" +
                 "person.last_name AS last_name, \n" +
@@ -295,6 +297,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "sample.id AS id, \n" +
                 "sample.collection_date AS collection_date, \n" +
                 "sample.entered_date AS entered_date, \n" +
+                "sample.received_date AS received_date, \n" +
                 "person.first_name AS first_name, \n" +
                 "person.middle_name AS middle_name, \n" +
                 "person.last_name AS last_name, \n" +
@@ -305,7 +308,11 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "string_agg(analysis.comment, '" + COMMENT_SEPARATOR + "') AS analysis_comments,\n" +
                 "COUNT(test.id) AS total_test_count,\n" +
                 "CASE WHEN COUNT(analysis.id) = SUM(CASE WHEN  analysis.status_id IN (" +getCompletedStatus()+ ") THEN 1 ELSE 0 END) THEN true ELSE false END as is_completed,\n" +
-                "CASE WHEN document_track.report_generation_time is null THEN false ELSE true END as is_printed\n" +
+                "CASE WHEN document_track.report_generation_time is null THEN false ELSE true END as is_printed, \n" +
+                "CASE WHEN COUNT(analysis.id) = SUM(CASE WHEN  analysis.status_id IN (" +getCompletedStatus()+ ") THEN 1 ELSE 0 END) THEN \n" +
+                //Using this to get only one analysis completed date
+                "max(analysis.completed_date) \n" +
+                "ELSE NULL END AS completed_date \n" +
                 "FROM Sample AS sample\n" +
                 "INNER JOIN (\n" +
                     "SELECT DISTINCT si.samp_id as id\n" +
@@ -327,7 +334,7 @@ public class OrderListDAOImpl implements OrderListDAO {
                 "INNER JOIN test ON test.id = analysis.test_id\n" +
                 "LEFT OUTER JOIN document_track as document_track ON sample.id = document_track.row_id AND document_track.name = 'patientHaitiClinical' and document_track.parent_id is null \n" +
                 "WHERE "+condition+"\n" +
-                "GROUP BY sample.accession_number, sample.uuid,sample.id, sample.collection_date, sample.lastupdated, person.first_name, person.middle_name, person.last_name, sample_source.name, patient_identity.identity_data, document_track.report_generation_time \n" +
+                "GROUP BY sample.accession_number, sample.uuid,sample.id, sample.collection_date, sample.entered_date, sample.received_date, sample.lastupdated, person.first_name, person.middle_name, person.last_name, sample_source.name, patient_identity.identity_data, document_track.report_generation_time \n" +
                 "ORDER BY "+ OrderBy +" DESC\n" +
                 "LIMIT 1000;";
     }

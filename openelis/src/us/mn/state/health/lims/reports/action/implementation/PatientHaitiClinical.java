@@ -22,6 +22,8 @@ import us.mn.state.health.lims.analysis.dao.AnalysisDAO;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.common.util.StringUtil;
+import us.mn.state.health.lims.common.util.SystemConfiguration;
+import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 import us.mn.state.health.lims.reports.action.implementation.reportBeans.HaitiClinicalPatientData;
 import us.mn.state.health.lims.result.valueholder.Result;
 import us.mn.state.health.lims.sample.util.AccessionNumberUtil;
@@ -100,8 +102,8 @@ public class PatientHaitiClinical extends HaitiPatientReport implements IReportC
 			@Override
 			public int compare(HaitiClinicalPatientData o1, HaitiClinicalPatientData o2) {
 
-				Date orderDate1 = DateUtil.convertStringDateToSqlDate(o1.getOrderDate());
-				Date orderDate2 = DateUtil.convertStringDateToSqlDate(o2.getOrderDate());
+				Date orderDate1 = DateUtil.convertStringDateToTimestampWithPattern(o1.getOrderDate(), "yyyy/MM/dd");
+				Date orderDate2 = DateUtil.convertStringDateToTimestampWithPattern(o2.getOrderDate(), "yyyy/MM/dd");
 				int dateSort = orderDate1.compareTo(orderDate2);
 
 				if (dateSort != 0) {

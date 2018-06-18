@@ -69,6 +69,8 @@ public class HaitiClinicalPatientData {
     private String primaryRelative;
     private String resultType;
     private boolean abnormal;
+    private String collectionDate;
+    private String reportDate;
 
     public String getReferralRefRange() {
         return referralRefRange;
@@ -460,4 +462,20 @@ public class HaitiClinicalPatientData {
     public boolean isAbnormal() {
         return abnormal;
     }
+
+	public String getCollectionDate() {
+		return collectionDate;
+	}
+
+	public void setCollectionDate(String collectionDate) {
+		this.collectionDate = collectionDate;
+	}
+
+	public String getReportDate() {
+		return reportDate;
+	}
+
+	public void setReportDate(String reportDate) {
+		this.reportDate = reportDate;
+	}
 }

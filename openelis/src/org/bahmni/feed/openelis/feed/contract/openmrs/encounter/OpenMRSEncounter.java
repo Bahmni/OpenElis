@@ -19,6 +19,7 @@ package org.bahmni.feed.openelis.feed.contract.openmrs.encounter;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class OpenMRSEncounter {
     private String patientUuid;
     private String locationUuid;
     private String locationName;
+    private Timestamp encounterDateTime;
     private List<OpenMRSOrder> orders = new ArrayList<>();
     private List<OpenMRSProvider> providers = new ArrayList<>();
 
@@ -107,5 +109,13 @@ public class OpenMRSEncounter {
 
     public void setLocationName(String locationName) {
         this.locationName = locationName;
+    }
+
+    public Timestamp getEncounterDateTime() {
+        return encounterDateTime;
+    }
+
+    public void setEncounterDateTime(Timestamp encounterDateTime) {
+        this.encounterDateTime = encounterDateTime;
     }
 }

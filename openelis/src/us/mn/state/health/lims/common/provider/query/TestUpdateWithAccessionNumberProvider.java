@@ -28,6 +28,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.*;
 
 public class TestUpdateWithAccessionNumberProvider extends BaseQueryProvider {
@@ -127,7 +128,7 @@ public class TestUpdateWithAccessionNumberProvider extends BaseQueryProvider {
             Analysis analysis;
             Test test = testDAO.getTestById(newTest);
 
-            analysis = populateAnalysis("0", sampleItem, test, sysUserId, DateUtil.getNowAsSqlDate());
+            analysis = populateAnalysis("0", sampleItem, test, sysUserId, DateUtil.getNowAsTimestamp());
             analysisDAO.insertData(analysis, false);
         }
         return noOfSampleItems;
@@ -153,7 +154,7 @@ public class TestUpdateWithAccessionNumberProvider extends BaseQueryProvider {
             SampleItem sampleItem = getSampleItemByTypeOfSampleIdFromSampleItems(typeOfSampleId, sampleItems);
             Analysis analysis;
             Test test = testDAO.getTestById(newlyAddedTest);
-            analysis = populateAnalysis("0", sampleItem, test, sysUserId, DateUtil.getNowAsSqlDate());
+            analysis = populateAnalysis("0", sampleItem, test, sysUserId, DateUtil.getNowAsTimestamp());
             analysisDAO.insertData(analysis, false);
         }
     }
@@ -193,7 +194,7 @@ public class TestUpdateWithAccessionNumberProvider extends BaseQueryProvider {
         return item;
     }
 
-    private Analysis populateAnalysis(String analysisRevision, SampleItem sampleItem, Test test, String sysUserId, java.sql.Date collectionDate) {
+    private Analysis populateAnalysis(String analysisRevision, SampleItem sampleItem, Test test, String sysUserId, Timestamp collectionDate) {
 
         Analysis analysis = new Analysis();
         analysis.setTest(test);

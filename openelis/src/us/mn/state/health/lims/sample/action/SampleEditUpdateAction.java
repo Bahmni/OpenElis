@@ -537,7 +537,7 @@ public class SampleEditUpdateAction extends BaseAction {
 						analysis.setEnteredDate(DateUtil.getNowAsTimestamp());
 						analysis.setIsReportable(test.getIsReportable());
 						analysis.setAnalysisType("MANUAL");
-						analysis.setStartedDate(DateUtil.getNowAsSqlDate());
+						analysis.setStartedDate(DateUtil.getNowAsTimestamp());
 					}
 
 					analysis.setStatusId(StatusOfSampleUtil.getStatusID(AnalysisStatus.NotTested));

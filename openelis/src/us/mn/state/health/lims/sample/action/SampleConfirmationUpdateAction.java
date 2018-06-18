@@ -257,7 +257,7 @@ public class SampleConfirmationUpdateAction extends BaseSampleEntryAction {
 		sample.setCollectionDateForDisplay(recievedDate); //note there really is no collection date but other code thinks there is
 		sample.setSysUserId(currentUserId);
 		sample.setDomain("H");
-		sample.setEnteredDate(new java.util.Date());
+		sample.setEnteredDate(new Timestamp(System.currentTimeMillis()));
 		sample.setStatusId(StatusOfSampleUtil.getStatusID(OrderStatus.Entered));
 
 		sampleHuman = new SampleHuman();
@@ -362,7 +362,7 @@ public class SampleConfirmationUpdateAction extends BaseSampleEntryAction {
 
 			analysis.setSampleItem(sampleItem);
 			analysis.setRevision("0");
-			analysis.setStartedDate(DateUtil.getNowAsSqlDate());
+			analysis.setStartedDate(DateUtil.getNowAsTimestamp());
 
 			result.setAnalysis(analysis);
 			result.setResultType(resultType);
@@ -396,7 +396,7 @@ public class SampleConfirmationUpdateAction extends BaseSampleEntryAction {
 					analysis.setIsReportable(test.getIsReportable());
 					analysis.setSampleItem(sampleItem);
 					analysis.setRevision("0");
-					analysis.setStartedDate(DateUtil.getNowAsSqlDate());
+					analysis.setStartedDate(DateUtil.getNowAsTimestamp());
 					analysisList.add(analysis);
 				}
 			}

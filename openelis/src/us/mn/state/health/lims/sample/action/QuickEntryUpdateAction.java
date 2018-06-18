@@ -183,7 +183,7 @@ public class QuickEntryUpdateAction extends BatchSampleProcessingBaseAction {
 					Date today = Calendar.getInstance().getTime();
 					String dateAsText = DateUtil.formatDateAsText(today, locale);
 					sample.setEnteredDateForDisplay(dateAsText);
-                    sample.setEnteredDate(new java.util.Date());
+                    sample.setEnteredDate(new Timestamp(System.currentTimeMillis()));
 					
 					//bugzilla 2528
 					String newbornTypeOfSample = SystemConfiguration.getInstance().getNewbornTypeOfSample();

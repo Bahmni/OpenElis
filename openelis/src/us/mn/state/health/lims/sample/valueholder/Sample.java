@@ -43,7 +43,7 @@ public class Sample extends EnumValueItemImpl {
 	private String domain;
 	private String nextItemSequence;
 	private String revision;
-	private java.util.Date enteredDate;
+	private Timestamp enteredDate;
 	private String enteredDateForDisplay;
 	private Timestamp receivedTimestamp;
 	private String receivedDateForDisplay;
@@ -146,11 +146,11 @@ public class Sample extends EnumValueItemImpl {
 	}
 
 
-	public java.util.Date getEnteredDate() {
+	public Timestamp getEnteredDate() {
 		return enteredDate;
 	}
 
-	public void setEnteredDate(java.util.Date enteredDate) {
+	public void setEnteredDate(Timestamp enteredDate) {
 		this.enteredDate = enteredDate;
 		// also update String date
 		this.enteredDateForDisplay = DateUtil.formatDateAsText(enteredDate, SystemConfiguration.getInstance().getDefaultLocale());
@@ -176,9 +176,9 @@ public class Sample extends EnumValueItemImpl {
 		return receivedTimestamp != null ? DateUtil.convertTimestampToSqlDate(receivedTimestamp) : null;
 	}
 
-	public void setReceivedDate(Date receivedDate) {
-		this.receivedDateForDisplay = DateUtil.convertSqlDateToStringDate(receivedDate);
-		this.receivedTimestamp = DateUtil.convertSqlDateToTimestamp(receivedDate);
+	public void setReceivedDate(Timestamp receivedDate) {
+		this.receivedDateForDisplay = DateUtil.convertTimestampToStringDate(receivedDate);
+		this.receivedTimestamp = receivedDate;
 	}
 	
 	public String getReceivedTimeForDisplay() {

@@ -95,7 +95,7 @@ public abstract class PatientEIDReport extends RetroCIPatientReport {
 
 			if (analysis.getCompletedDate() != null) {
 				if (analysis.getCompletedDate().getTime() > maxCompleationTime) {
-					maxCompleationDate = analysis.getCompletedDate();
+					maxCompleationDate = DateUtil.convertTimestampToSqlDate(analysis.getCompletedDate());
 					maxCompleationTime = maxCompleationDate.getTime();
 				}
 

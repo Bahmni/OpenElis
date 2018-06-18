@@ -33,6 +33,7 @@ import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.test.valueholder.Test;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,16 +45,16 @@ public class AnalysisBuilder {
     private Map<String, Panel> panelIdPanelMap;
 
     public Analysis populateAnalysis(String analysisRevision, SampleTestOrderCollection sampleTestCollection, TestOrder testOrder) {
-        Date collectionDateTime = DateUtil.convertStringDateTimeToSqlDate(sampleTestCollection.collectionDate);
+        Timestamp collectionDateTime = DateUtil.convertStringDateToTimestamp(sampleTestCollection.collectionDate);
         return populateAnalysis(analysisRevision, sampleTestCollection.item, testOrder, sampleTestCollection.item.getSysUserId(), collectionDateTime);
     }
 
     public Analysis populateAnalysis(String analysisRevision, SampleTestCollection sampleTestCollection, Test test) {
-        Date collectionDateTime = DateUtil.convertStringDateTimeToSqlDate(sampleTestCollection.collectionDate);
+        Timestamp collectionDateTime = DateUtil.convertStringDateToTimestamp(sampleTestCollection.collectionDate);
         return populateAnalysis(analysisRevision, sampleTestCollection.item, test, sampleTestCollection.item.getSysUserId(), collectionDateTime);
     }
 
-    public Analysis populateAnalysis(String analysisRevision, SampleItem sampleItem, Test test, String sysUserId, Date collectionDate) {
+    public Analysis populateAnalysis(String analysisRevision, SampleItem sampleItem, Test test, String sysUserId, Timestamp collectionDate) {
         Panel panel = getPanelForTest(test);
 
         Analysis analysis = new Analysis();
@@ -70,7 +71,7 @@ public class AnalysisBuilder {
 
         return analysis;
     }
-        public Analysis populateAnalysis(String analysisRevision, SampleItem sampleItem, TestOrder testOrder, String sysUserId, Date collectionDate) {
+        public Analysis populateAnalysis(String analysisRevision, SampleItem sampleItem, TestOrder testOrder, String sysUserId, Timestamp collectionDate) {
         Test test = testOrder.getTest();
             Analysis analysis = populateAnalysis(analysisRevision, sampleItem, test, sysUserId, collectionDate);
             analysis.setComment(testOrder.getComment());

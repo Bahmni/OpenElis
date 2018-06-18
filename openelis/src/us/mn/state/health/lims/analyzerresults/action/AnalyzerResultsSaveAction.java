@@ -82,6 +82,7 @@ import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSampleTest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.*;
 
 public class AnalyzerResultsSaveAction extends BaseAction {
@@ -390,7 +391,7 @@ public class AnalyzerResultsSaveAction extends BaseAction {
 		List<Note> noteList = new ArrayList<Note>();
 
 		// we're not setting the sample status because this doesn't change it.
-		sample.setEnteredDate(new java.util.Date());
+		sample.setEnteredDate(new Timestamp(System.currentTimeMillis()));
 		sample.setSysUserId(sysUserId);
 
 		createAndAddItems_Analysis_Results(groupedAnalyzerResultItems, analysisList, resultList, resultToUserSelectionMap, noteList);
@@ -464,7 +465,7 @@ public class AnalyzerResultsSaveAction extends BaseAction {
 		if (StatusOfSampleUtil.getStatusID(OrderStatus.Entered).equals(sample.getStatusId())) {
 			sample.setStatusId(StatusOfSampleUtil.getStatusID(OrderStatus.Started));
 		}
-		sample.setEnteredDate(new java.util.Date());
+		sample.setEnteredDate(new Timestamp(System.currentTimeMillis()));
 		sample.setSysUserId(sysUserId);
 
 
@@ -499,7 +500,7 @@ public class AnalyzerResultsSaveAction extends BaseAction {
 		if (StatusOfSampleUtil.getStatusID(OrderStatus.Entered).equals(sample.getStatusId())) {
 			sample.setStatusId(StatusOfSampleUtil.getStatusID(OrderStatus.Started));
 		}
-		sample.setEnteredDate(new java.util.Date());
+		sample.setEnteredDate(new Timestamp(System.currentTimeMillis()));
 		sample.setSysUserId(sysUserId);
 
 		SampleItem sampleItem = null;
@@ -605,8 +606,8 @@ public class AnalyzerResultsSaveAction extends BaseAction {
 		sample.setAccessionNumber(groupedAnalyzerResultItems.get(0).getAccessionNumber());
 		sample.setDomain("H");
 		sample.setStatusId(StatusOfSampleUtil.getStatusID(OrderStatus.Started));
-		sample.setEnteredDate(new java.util.Date());
-		sample.setReceivedDate(new Date(new java.util.Date().getTime()));
+		sample.setEnteredDate(new Timestamp(System.currentTimeMillis()));
+		sample.setReceivedDate(new Timestamp(System.currentTimeMillis()));
 		sample.setSysUserId(sysUserId);
 
 		sampleHuman.setPatientId(PatientUtil.getUnknownPatient().getId());

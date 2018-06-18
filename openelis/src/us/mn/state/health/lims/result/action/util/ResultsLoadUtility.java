@@ -856,7 +856,7 @@ public class ResultsLoadUtility {
             }
         }
 
-        String testDate = GenericValidator.isBlankOrNull(analysis.getCompletedDateForDisplay()) ? getCurrentDateAsText()
+        String testDate = GenericValidator.isBlankOrNull(analysis.getCompletedDateForDisplay()) ? DateUtil.getCurrentTimestampAsText()
                 : analysis.getCompletedDateForDisplay();
 
         TestResultItem testItem = new TestResultItem();

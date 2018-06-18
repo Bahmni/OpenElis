@@ -18,6 +18,7 @@
 package us.mn.state.health.lims.common.provider.validation;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -31,69 +32,70 @@ import org.apache.commons.validator.GenericValidator;
 import org.apache.commons.validator.routines.DateValidator;
 
 import us.mn.state.health.lims.common.action.IActionConstants;
+import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.servlet.validation.AjaxServlet;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
+import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 
 public class DateValidationProvider extends BaseValidationProvider {
 
-	public static final String PAST = "past";
-	public static final String FUTURE = "future";
+    public static final String PAST = "past";
+    public static final String FUTURE = "future";
 
-	public DateValidationProvider() {
-		super();
-	}
+    public DateValidationProvider() {
+        super();
+    }
 
-	public DateValidationProvider(AjaxServlet ajaxServlet) {
-		this.ajaxServlet = ajaxServlet;
-	}
+    public DateValidationProvider(AjaxServlet ajaxServlet) {
+        this.ajaxServlet = ajaxServlet;
+    }
 
-	public void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		// get id from request
-		String dateString = (String) request.getParameter("date");
-		String relative = (String) request.getParameter("relativeToNow");
-		String formField = (String) request.getParameter("field");
+        // get id from request
+        String dateString = (String) request.getParameter("date");
+        String relative = (String) request.getParameter("relativeToNow");
+        String formField = (String) request.getParameter("field");
 
-		String result = INVALID;
+        String result = INVALID;
 
-		if (DateUtil.yearSpecified(dateString)) {
-			dateString = DateUtil.adjustAmbiguousDate(dateString);
-			Date date = getDate(dateString);
-			result = validateDate(date, relative);
-		}
-		ajaxServlet.sendData(formField, result, request, response);
-	}
+        if (DateUtil.yearSpecified(dateString)) {
+            dateString = DateUtil.adjustAmbiguousDate(dateString);
+            Date date = getDate(dateString);
+            result = validateDate(date, relative);
+        }
+        ajaxServlet.sendData(formField, result, request, response);
+    }
 
-	public Date getDate(String date) {
-		Locale locale = SystemConfiguration.getInstance().getDateLocale();
-		return DateValidator.getInstance().validate(date, locale);
-	}
+    public Date getDate(String date) {
+        Locale locale = SystemConfiguration.getInstance().getDateLocale();
+        return DateValidator.getInstance().validate(date, locale);
+    }
 
-	public String validateDate(Date date, String relative) {
-		String result = VALID;
+    public Date getDateFromTimestampString(String date) {
+        LogEvent.logDebug("DateValidationProvider","getDate() date->", date);
+        Locale locale = SystemConfiguration.getInstance().getDefaultLocale();
+        String pattern = ResourceLocator.getInstance().getMessageResources().getMessage(locale, "timestamp.format.formatKey");
+        return DateUtil.convertStringDateToTimestampWithPatternNoLocale(date, pattern);
+    }
 
-		if (date == null) {
-			result = INVALID;
-		} else if (!GenericValidator.isBlankOrNull(relative)) {
+    public String validateDate(Date date, String relative) {
+        String result = VALID;
 
-			Calendar calendar = new GregorianCalendar();
-			calendar.set(Calendar.HOUR, 0);
-			calendar.set(Calendar.MINUTE, 0);
-			calendar.set(Calendar.SECOND, 0);
-			calendar.set(Calendar.MILLISECOND, 0);
-			Date today = calendar.getTime();
+        if (date == null) {
+            result = INVALID;
+        } else if (!GenericValidator.isBlankOrNull(relative)) {
+            Date today = new Date();
+            int dateDiff = date.compareTo(today);
 
-			int dateDiff = date.compareTo(today);
-
-			if (relative.equalsIgnoreCase(PAST) && dateDiff > 0) {
-				result = IActionConstants.INVALID_TO_LARGE;
-			} else if (relative.equalsIgnoreCase(FUTURE) && dateDiff < 0) {
-				result = IActionConstants.INVALID_TO_SMALL;
-			}
-		}
-
-		return result;
-	}
+            if (relative.equalsIgnoreCase(PAST) && dateDiff > 0) {
+                result = IActionConstants.INVALID_TO_LARGE;
+            } else if (relative.equalsIgnoreCase(FUTURE) && dateDiff < 0) {
+                result = IActionConstants.INVALID_TO_SMALL;
+            }
+        }
+        return result;
+    }
 
 }

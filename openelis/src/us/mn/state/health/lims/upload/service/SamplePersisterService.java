@@ -59,7 +59,7 @@ public class SamplePersisterService {
             java.util.Date parsedDate = datetimeFormatter.parse(csvSample.sampleDate);
             Timestamp timestamp = new Timestamp(parsedDate.getTime());
             sample.setCollectionDate(timestamp);
-            sample.setEnteredDate(parsedDate);
+            sample.setEnteredDate(timestamp);
             sample.setReceivedTimestamp(timestamp);
             sample.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.OrderStatus.Finished));
             sample.setDomain(SystemConfiguration.getInstance().getHumanDomain());

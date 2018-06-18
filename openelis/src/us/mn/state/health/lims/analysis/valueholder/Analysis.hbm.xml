@@ -36,10 +36,10 @@
         <property name="status" type="us.mn.state.health.lims.hibernate.resources.usertype.LIMSStringNumberUserType">
             <column name="STATUS" length="3" />
         </property>
-        <property name="startedDate" type="java.sql.Date">
+        <property name="startedDate" type="java.sql.Timestamp" optimistic-lock="false">
             <column name="STARTED_DATE" length="7" />
         </property>
-        <property name="completedDate" type="java.sql.Date">
+        <property name="completedDate" type="java.sql.Timestamp" optimistic-lock="false">
             <column name="COMPLETED_DATE" length="7" />
         </property>
         <property name="releasedDate" type="java.sql.Date">

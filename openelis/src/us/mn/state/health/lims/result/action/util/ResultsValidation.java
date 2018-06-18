@@ -92,7 +92,7 @@ public class ResultsValidation {
 	private void validateTestDate(TestResultItem item, List<ActionError> errors) {
 
 		DateValidationProvider dateValidator = new DateValidationProvider();
-		Date date = dateValidator.getDate(item.getTestDate());
+		Date date = dateValidator.getDateFromTimestampString(item.getTestDate());
 
 		if (date == null) {
 			errors.add(new ActionError("errors.date", new StringBuilder(item.getTestDate())));

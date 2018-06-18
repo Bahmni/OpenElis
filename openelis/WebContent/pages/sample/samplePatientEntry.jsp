@@ -143,6 +143,8 @@ function processSampleOrderDetailsSuccess(xhr){
 	$jq("#sampleSourceID").val(sampleSource[0].innerHTML);
 	$jq("#sampleSourceID").attr("disabled", "disabled");
 	$jq("#receivedDateForDisplay").val(sampleReceivedDateForDisplay[0].innerHTML);
+	$jq("#receivedDateForDisplay").attr("disabled", "disabled");
+
 	if(sampleRequester.length > 0)
 	{
 		$jq("#providerId").val(sampleRequester[0].innerHTML);
