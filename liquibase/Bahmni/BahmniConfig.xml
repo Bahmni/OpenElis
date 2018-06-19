@@ -1716,4 +1716,48 @@
             ALTER TABLE sample_source ALTER COLUMN name TYPE character varying(50);
         </sql>
     </changeSet>
+
+    <changeSet context="bahmni" author="dipakthapa" id="dhis-mapper-2018-06-21-12:15">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="dhis2_lab_test" />
+            </not>
+        </preConditions>
+        <comment>
+            Create DHIS Test mapper table
+        </comment>
+        <createTable tableName="dhis2_lab_test" schemaName="clinlims" >
+            <column name="id" type="numeric(10,0)" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="dhis_test_name" type="varchar(255)"/>
+            <column name="ehr_test_name" type="varchar(255)"/>
+            <column name="ehr_test_id" type="numeric(10,0)"/>
+            <addForeignKeyConstraint baseColumnNames="ehr_test_id"
+                                     baseTableName="dhis2_lab_test"
+                                     constraintName="fk_ehr_test"
+                                     onUpdate="RESTRICT"
+                                     referencedColumnNames="id"
+                                     referencedTableName="test"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet context="bahmni" author="dipakthapa" id="test-name-2018-06-21-12:20">
+        <comment>Add procedure to get id for a test</comment>
+        <sql>
+            DROP FUNCTION IF EXISTS get_test_id_from_test_name();
+        </sql>
+        <sqlFile splitStatements="false" path="migration/get_test_id_from_test_name.sql" />
+    </changeSet>
+
+    <changeSet context="bahmni" author="dipakthapa" id="test-name-2018-06-21-13:10">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="">
+                select count(*) from dhis2_lab_test
+            </sqlCheck>
+        </preConditions>
+        <comment>Bulk insertion of mappers</comment>
+        <sqlFile path="migration/dhis_mapper_insertStatements.sql" />
+    </changeSet>
+
 </databaseChangeLog>
