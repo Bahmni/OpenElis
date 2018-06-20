@@ -1730,9 +1730,15 @@
             <column name="id" type="numeric(10,0)" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="dhis_test_name" type="varchar(255)"/>
-            <column name="ehr_test_name" type="varchar(255)"/>
-            <column name="ehr_test_id" type="numeric(10,0)"/>
+            <column name="dhis_test_name" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="ehr_test_name" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="ehr_test_id" type="numeric(10,0)">
+                <constraints nullable="false" />
+            </column>
             <addForeignKeyConstraint baseColumnNames="ehr_test_id"
                                      baseTableName="dhis2_lab_test"
                                      constraintName="fk_ehr_test"
