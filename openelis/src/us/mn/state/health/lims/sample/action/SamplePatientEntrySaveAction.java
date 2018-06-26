@@ -209,21 +209,12 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 		useReferringSiteId = FormFields.getInstance().useField(Field.RequesterSiteList);
 		boolean trackPayments = ConfigurationProperties.getInstance().isPropertyValueEqual(Property.trackPatientPayment, "true");
 
-		System.out.println("\n\n\n\n useReceiveDateForCollectionDate="+useReceiveDateForCollectionDate);
-
-
 		if (useReceiveDateForCollectionDate) {
 			collectionDateFromRecieveDate = receivedDateForDisplay + " "+ DateUtil.getCurrentTime();
 		}
 
-		System.out.println("\n\n\n\n collectionDateFromRecieveDate="+collectionDateFromRecieveDate);
-
-
-
 		String receivedTime = dynaForm.getString("recievedTime");
-		if (!isBlankOrNull(receivedTime)) {
-			receivedDateForDisplay += " " + receivedTime;
-		}
+		receivedDateForDisplay += isBlankOrNull(receivedTime) ? " " + DateUtil.getCurrentTime() :  " " + receivedTime;
 
 		requesterSite = null;
 		if (useReferringSiteId) {
