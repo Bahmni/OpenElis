@@ -189,7 +189,7 @@ public class Analysis extends BaseObject {
         this.startedDateForDisplay = startedDateForDisplay;
         // also update the java.sql.Date
         Locale locale = SystemConfiguration.getInstance().getDefaultLocale();
-        String pattern = ResourceLocator.getInstance().getMessageResources().getMessage(locale, "timestamp.format.formatKey");
+        String pattern = startedDateForDisplay.contains("/") ? ResourceLocator.getInstance().getMessageResources().getMessage(locale, "date.format.formatKey") : ResourceLocator.getInstance().getMessageResources().getMessage(locale, "timestamp.format.formatKey");
         this.startedDate = DateUtil.convertStringDateToTimestampWithPattern(
                 this.startedDateForDisplay, pattern);
     }
@@ -416,6 +416,7 @@ public class Analysis extends BaseObject {
     public void setTestSection(TestSection testSection) {
         this.testSection.setValue(testSection);
     }
+
     public String getTestSectionName() {
         return this.testSectionName;
     }

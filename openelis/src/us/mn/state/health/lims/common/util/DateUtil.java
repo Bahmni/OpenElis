@@ -489,6 +489,13 @@ public class DateUtil {
 		return  convertTimestampToStringDateAndTime(new Timestamp(System.currentTimeMillis()));
 	}
 
+	public static String getCurrentTime(){
+		Locale locale = new Locale(SystemConfiguration.getInstance().getDefaultLocale().toString());
+		String timePattern = ResourceLocator.getInstance().getMessageResources().getMessage(locale, "timeWithSec.format.formatKey");
+		String time =  getCurrentDateAsText(timePattern);
+		return time;
+	}
+
 	public static String getCurrentDateAsText(String pattern) {
 		if (GenericValidator.isBlankOrNull(pattern)) {
 			return null;

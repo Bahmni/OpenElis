@@ -48,25 +48,26 @@
 
 
     <target name="compile" depends="init, java.compile,jasper.compile, compass.compile"
-        description="compile the source ">
+            description="compile the source ">
     </target>
 
     <target name="java.compile"
             description="compile the source ">
         <mkdir dir="${target}"/>
-        <javac srcdir="${src}" destdir="${target}" encoding="iso-8859-1" classpathref="lib" source="1.7" target="1.7" debug="on"/>
+        <javac srcdir="${src}" destdir="${target}" encoding="iso-8859-1" classpathref="lib" source="1.7" target="1.7"
+               debug="on"/>
         <copy todir="${target}">
             <fileset dir="${src}" includes="**/*.xml"/>
             <fileset dir="${src}" includes="**/*.properties"/>
         </copy>
     </target>
 
-    <taskdef name="jrc" classname="net.sf.jasperreports.ant.JRAntCompileTask"> 
+    <taskdef name="jrc" classname="net.sf.jasperreports.ant.JRAntCompileTask">
         <classpath refid="build.lib"/>
     </taskdef>
 
     <target name="jasper.compile" depends="java.compile">
-        <jrc 
+        <jrc
                 srcdir="${web}/WEB-INF/reports"
                 destdir="${web}/WEB-INF/reports"
                 tempdir="${web}/WEB-INF/reports"
@@ -83,9 +84,7 @@
         <copy todir="${target}">
             <fileset dir="${src}" includes="**/*.properties"/>
         </copy>
-        <copy tofile="${dist}/LICENSE">
-            <fileset dir="${src}" file="LICENSE"/>
-        </copy>
+        <copy file="LICENSE" todir="${dist}"/>
         <propertyMerge
                 inputpropertyfile="${target}/MessageResources.properties"
                 mergepropertyfile="${target}/BahmniMessageResources.properties"
@@ -94,18 +93,19 @@
         <war destfile="${dist}/openelis.war">
             <classes dir="${target}"/>
             <fileset dir="${web}"/>
-            <fileset file="${dist}/LICENSE"/>            
+            <fileset file="${dist}/LICENSE"/>
             <lib dir="${dist}/lib"/>
         </war>
     </target>
 
     <target name="migrationScripts">
-        <zip destfile="OpenElis.zip" basedir="../" includes="OpenElis**/**" excludes="**/.idea/**,*.iml,*.git*,**/dist/*,**/target/*,*.svn*,**/out/**,**/openelis/**,**/src/**,**/logs/**,**/junit/*,**/OpenElis.zip" />
+        <zip destfile="OpenElis.zip" basedir="../" includes="OpenElis**/**"
+             excludes="**/.idea/**,*.iml,*.git*,**/dist/*,**/target/*,*.svn*,**/out/**,**/openelis/**,**/src/**,**/logs/**,**/junit/*,**/OpenElis.zip"/>
     </target>
 
     <target name="build" depends="clean, compile, resetDB, test, report, dist"/>
     <target name="devbuild" depends="clean, compile, updateDB, test, report, dist"/>
-    <target name="useHaitiDB" depends="dropDB, initHaitiDB, updateHaitiDB, updateDB" />
+    <target name="useHaitiDB" depends="dropDB, initHaitiDB, updateHaitiDB, updateDB"/>
 
     <target name="initHaitiDB">
         <chmod file="scripts/initDB.sh" perm="a+x"/>
@@ -123,7 +123,7 @@
     <target name="vagrant-deploy" depends="dist">
 
         <condition property="script_extension" value="sh" else="bat">
-            <os family="unix" />
+            <os family="unix"/>
         </condition>
 
         <echo message="Deploying OpenElis.war to Vagrant Tomcat"/>
@@ -170,7 +170,7 @@
         </exec>
     </target>
 
-    <target name="test" depends="clean, compile, updateDB" />
+    <target name="test" depends="clean, compile, updateDB"/>
 
     <target name="test-only">
         <mkdir dir="${junit.output.dir}"/>
