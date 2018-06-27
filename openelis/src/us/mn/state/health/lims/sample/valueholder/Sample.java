@@ -18,6 +18,7 @@ package us.mn.state.health.lims.sample.valueholder;
 import org.apache.commons.validator.GenericValidator;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
+import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 import us.mn.state.health.lims.common.valueholder.EnumValueItemImpl;
 import us.mn.state.health.lims.common.valueholder.ValueHolder;
 import us.mn.state.health.lims.common.valueholder.ValueHolderInterface;
@@ -28,10 +29,7 @@ import us.mn.state.health.lims.systemuser.valueholder.SystemUser;
 
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Sample extends EnumValueItemImpl {
 
@@ -273,7 +271,9 @@ public class Sample extends EnumValueItemImpl {
 
 	public void setCollectionDateForDisplay(String collectionDateForDisplay) {
 		this.collectionDateForDisplay = collectionDateForDisplay;
-		this.collectionDate = DateUtil.convertStringDateToTimestamp(collectionDateForDisplay);
+
+		String pattern=DateUtil.checkStringDateAndReturnPattern(collectionDateForDisplay);
+		this.collectionDate = DateUtil.convertStringDateToTimestampWithPattern(collectionDateForDisplay, pattern);
 	}
 
 	public String getEnteredDateForDisplay() {
@@ -332,8 +332,6 @@ public class Sample extends EnumValueItemImpl {
 				.toString();
 		this.collectionDate = DateUtil.convertStringTimeToTimestamp(
 				this.collectionDate, collectionTimeForDisplay, locale);
-		// System.out.println("I am in setColelctionTimeForDisplay and this is
-		// collecitonTime " + this.collectionDate);
 	}
 
 	public String getCollectionTimeForDisplay() {

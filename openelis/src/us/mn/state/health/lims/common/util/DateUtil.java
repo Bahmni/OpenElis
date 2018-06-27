@@ -686,4 +686,18 @@ public class DateUtil {
         String pattern = ResourceLocator.getInstance().getMessageResources().getMessage(locale, "dateTimeWithSec.format.formatKey");
         return formatStringToTimestamp(enteredDateForDisplay, locale,pattern);
     }
+
+    public static String checkStringDateAndReturnPattern(String date){
+		String localeString = SystemConfiguration.getInstance().getDefaultLocale().toString();
+		Locale locale = new Locale(localeString);
+		String pattern;
+		if(date != null && date.contains("/") && date.contains(":")) {
+			pattern =  ResourceLocator.getInstance().getMessageResources().getMessage(locale, "dateTimeWithSec.format.formatKey");
+		} else if (date != null && date.contains("/")) {
+			pattern = ResourceLocator.getInstance().getMessageResources().getMessage(locale, "date.format.formatKey");
+		} else {
+			pattern = ResourceLocator.getInstance().getMessageResources().getMessage(locale, "timestamp.format.formatKey");
+		}
+		return pattern;
+	}
 }

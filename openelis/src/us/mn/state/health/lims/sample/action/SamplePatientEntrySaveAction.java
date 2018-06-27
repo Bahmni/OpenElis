@@ -532,7 +532,7 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 			sample.setReceivedDateForDisplay(receivedDate);
 
             Locale locale = SystemConfiguration.getInstance().getDefaultLocale();
-            String datePattern = ResourceLocator.getInstance().getMessageResources().getMessage(locale, "date.format.formatKey");
+            String datePattern = ResourceLocator.getInstance().getMessageResources().getMessage(locale, "dateTimeWithSec.format.formatKey");
             sample.setReceivedTimestamp(DateUtil.convertStringDateToTimestampWithPatternNoLocale(receivedDate, datePattern));
 		}
 		if (useReceiveDateForCollectionDate) {

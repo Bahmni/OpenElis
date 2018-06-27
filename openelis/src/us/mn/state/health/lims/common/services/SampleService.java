@@ -31,7 +31,8 @@ import us.mn.state.health.lims.sample.valueholder.Sample;
 public class SampleService {
 	private static final AnalysisDAO analysisDAO = new AnalysisDAOImpl();
 	private Sample sample;
-	
+	private final String DELETED_TEST_STATUS_ID = "15";
+
 	public SampleService( Sample sample){
 		this.sample = sample;
 	}
@@ -43,9 +44,11 @@ public class SampleService {
 	public Timestamp getCompletedDate(){
 		Timestamp date = null;
 		List<Analysis> analysisList = analysisDAO.getAnalysesBySampleId(sample.getId());
-		
+
 		for( Analysis analysis : analysisList){
-			if( analysis.getCompletedDate() == null ){
+			if ( DELETED_TEST_STATUS_ID.equals(analysis.getStatusId() )) {
+				continue;
+			} else if( analysis.getCompletedDate() == null ){
 				return null;
 			}else if(date == null){
 				date = analysis.getCompletedDate();
