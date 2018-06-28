@@ -202,6 +202,14 @@ public class DBHelper {
         return enteredSampleItem;
     }
 
+    public static SampleItem createAndSaveSampleItemWithSampleAndTypeOfSample(Sample sample, TypeOfSample typeOfSample) {
+        SampleItem enteredSampleItem = createSampleItem(sample);
+        enteredSampleItem.setTypeOfSample(typeOfSample);
+        enteredSampleItem.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.SampleStatus.Entered));
+        new SampleItemDAOImpl().insertData(enteredSampleItem);
+        return enteredSampleItem;
+    }
+
     public static SampleItem createSaveAndCloseSample(Sample startedSample) {
         SampleItem enteredSampleItem = createSampleItem(startedSample);
         enteredSampleItem.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.SampleStatus.Entered));
