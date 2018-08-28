@@ -68,7 +68,7 @@ public class TypeOfSampleService {
             createOrUpdateSampleTestAssociation(sample);
             createOrUpdateSamplePanelAssociation(sample);
         } catch (Exception e) {
-            throw new LIMSException(String.format("Error while saving panel - %s", sample.getName()));
+            throw new LIMSException(String.format("Error while saving panel - %s", sample.getName()), e);
         }
     }
 

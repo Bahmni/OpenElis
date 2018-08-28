@@ -143,7 +143,7 @@ public class TestService {
             }
             TypeOfSampleUtil.clearTestCache();
         } catch (Exception e) {
-            throw new LIMSException(String.format("Error while saving test - %s", referenceDataTest.getName()));
+            throw new LIMSException(String.format("Error while saving test - %s", referenceDataTest.getName()), e);
         }
     }
 
