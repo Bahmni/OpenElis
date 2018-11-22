@@ -17,7 +17,6 @@
 package us.mn.state.health.lims.common.util;
 
 import org.apache.commons.validator.GenericValidator;
-import org.joda.time.DateTime;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.common.util.ConfigurationProperties.Property;
@@ -622,6 +621,11 @@ public class DateUtil {
 
     public static Timestamp getNowAsTimestamp() {
 		return new Timestamp(new Date().getTime());
+	}
+
+	public static String getCurrentTimeAsString(){
+		return new SimpleDateFormat(StringUtil.getMessageForKey("timeWithMilliSec.format.formatKey"))
+				.format(DateUtil.getNowAsTimestamp());
 	}
 
 	public static String convertTimestampToStringDateAndTime(Timestamp lastTimestamp) {
