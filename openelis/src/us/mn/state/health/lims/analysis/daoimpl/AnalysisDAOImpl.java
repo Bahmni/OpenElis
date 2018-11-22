@@ -1284,7 +1284,8 @@ public class AnalysisDAOImpl extends BaseDAOImpl implements AnalysisDAO {
         sqlBuilder.append(" join clinlims.person p on pat.person_id = p.id  ");
         sqlBuilder.append(" join clinlims.patient_identity pi on pi.patient_id = pat.id  ");
         sqlBuilder.append(" join clinlims.patient_identity_type pit on pit.id = pi.identity_type_id  ");
-        sqlBuilder.append(" where a.status_id IN (:analysisStatusList) AND t.test_section_id = :testSectionId AND s.status_id IN (:sampleStatusList) AND pit.identity_type ='ST'" );
+        sqlBuilder.append(" where a.status_id IN (:analysisStatusList) AND t.test_section_id = :testSectionId " +
+                          "AND s.accession_number is not null AND s.status_id IN (:sampleStatusList) AND pit.identity_type ='ST'" );
 
 
 
