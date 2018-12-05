@@ -42,8 +42,11 @@ import us.mn.state.health.lims.test.dao.TestSectionDAO;
 import us.mn.state.health.lims.test.daoimpl.TestSectionDAOImpl;
 import us.mn.state.health.lims.test.valueholder.TestSection;
 
+import us.mn.state.health.lims.result.action.util.SortByAccessionNumberAndSequence;
+
 public class WorkplanByTestSectionAction extends BaseWorkplanAction {
 
+	private final boolean SORT_FORWARD = true;
 	private final AnalysisDAO analysisDAO = new AnalysisDAOImpl();
 	private static boolean HAS_NFS_PANEL = false;
 
@@ -83,7 +86,7 @@ public class WorkplanByTestSectionAction extends BaseWorkplanAction {
 			// set workplanTests as empty
 			PropertyUtils.setProperty(dynaForm, "workplanTests", new ArrayList<TestResultItem>());
 		}
-		resultsLoadUtility.sortByAccessionAndSequence(workplanTests);
+		new SortByAccessionNumberAndSequence().sort(workplanTests, SORT_FORWARD);
 		PropertyUtils.setProperty(dynaForm, "workplanType", workplan);
 		PropertyUtils.setProperty(dynaForm, "testName", getTestName(workplan));
 
