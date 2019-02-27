@@ -273,7 +273,7 @@ public class Sample extends EnumValueItemImpl {
 
 	public void setCollectionDateForDisplay(String collectionDateForDisplay) {
 		this.collectionDateForDisplay = collectionDateForDisplay;
-		this.collectionDate = DateUtil.convertStringDateToTruncatedTimestamp(collectionDateForDisplay);
+		//this.collectionDate = DateUtil.convertStringDateToTruncatedTimestamp(collectionDateForDisplay);
 	}
 
 	public String getEnteredDateForDisplay() {

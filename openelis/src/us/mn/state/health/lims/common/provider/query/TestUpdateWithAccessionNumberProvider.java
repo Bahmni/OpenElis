@@ -28,7 +28,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class TestUpdateWithAccessionNumberProvider extends BaseQueryProvider {
     private SampleDAO sampleDao = new SampleDAOImpl();
@@ -46,6 +52,7 @@ public class TestUpdateWithAccessionNumberProvider extends BaseQueryProvider {
         Sample sample = sampleDao.getSampleByID(sampleId);
         sampleDao.updateData(sample);
         sample.setAccessionNumber(accessionNumber);
+        sample.setCollectionDate(DateUtil.getNowAsTimestamp());
         String sysUserId = sample.getSysUserId();
 
         Set includedSampleStatusList = new HashSet<Integer>();

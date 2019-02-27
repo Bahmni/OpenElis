@@ -70,9 +70,7 @@ import us.mn.state.health.lims.resultlimits.valueholder.ResultLimit;
 import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.samplehuman.dao.SampleHumanDAO;
 import us.mn.state.health.lims.samplehuman.daoimpl.SampleHumanDAOImpl;
-import us.mn.state.health.lims.sampleitem.dao.SampleItemDAO;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
-import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.OrderStatus;
@@ -96,7 +94,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
 import java.util.*;
 
-import static us.mn.state.health.lims.common.util.DateUtil.getCurrentDateAsText;
+import us.mn.state.health.lims.common.util.DateUtil;
 
 public class ResultsLoadUtility {
 
@@ -264,11 +262,7 @@ public class ResultsLoadUtility {
             }
         }
 
-        if (forwardSort) {
-            sortByAccessionAndSequence(selectedTestList);
-        } else {
-            reverseSortByAccessionAndSequence(selectedTestList);
-        }
+        new SortByAccessionNumberAndSequence().sort(selectedTestList, forwardSort);
 
         setSampleGroupingNumbers(selectedTestList);
         addUserSelectionReflexes(selectedTestList);
@@ -316,11 +310,7 @@ public class ResultsLoadUtility {
             }
         }
 
-        if (forwardSort) {
-            sortByAccessionAndSequence(selectedTestList);
-        } else {
-            reverseSortByAccessionAndSequence(selectedTestList);
-        }
+        new SortBySampleCollectionDateAndAccessionNumber().sort(selectedTestList, forwardSort);
 
         setSampleGroupingNumbers(selectedTestList);
         addUserSelectionReflexes(selectedTestList);
@@ -352,52 +342,6 @@ public class ResultsLoadUtility {
         }
 
         return nameBuilder.toString();
-    }
-
-    private void reverseSortByAccessionAndSequence(List<? extends ResultItem> selectedTest) {
-        Collections.sort(selectedTest, new Comparator<ResultItem>() {
-            public int compare(ResultItem a, ResultItem b) {
-                int accessionSort = b.getSequenceAccessionNumber().compareTo(a.getSequenceAccessionNumber());
-
-                if (accessionSort == 0) { //only the accession number sorting is reversed
-                    if (!GenericValidator.isBlankOrNull(a.getTestSortOrder()) && !GenericValidator.isBlankOrNull(b.getTestSortOrder())) {
-                        try {
-                            return Integer.parseInt(a.getTestSortOrder()) - Integer.parseInt(b.getTestSortOrder());
-                        } catch (NumberFormatException e) {
-                            return a.getTestName().compareTo(b.getTestName());
-                        }
-
-                    } else {
-                        return a.getTestName().compareTo(b.getTestName());
-                    }
-                }
-
-                return accessionSort;
-            }
-        });
-    }
-
-    public void sortByAccessionAndSequence(List<? extends ResultItem> selectedTest) {
-        Collections.sort(selectedTest, new Comparator<ResultItem>() {
-            public int compare(ResultItem a, ResultItem b) {
-                int accessionSort = a.getSequenceAccessionNumber().compareTo(b.getSequenceAccessionNumber());
-
-                if (accessionSort == 0) {
-                    if (!GenericValidator.isBlankOrNull(a.getTestSortOrder()) && !GenericValidator.isBlankOrNull(b.getTestSortOrder())) {
-                        try {
-                            return Integer.parseInt(a.getTestSortOrder()) - Integer.parseInt(b.getTestSortOrder());
-                        } catch (NumberFormatException e) {
-                            return a.getTestName().compareTo(b.getTestName());
-                        }
-
-                    } else if (!GenericValidator.isBlankOrNull(a.getTestName()) && !GenericValidator.isBlankOrNull(b.getTestName())) {
-                        return a.getTestName().compareTo(b.getTestName());
-                    }
-                }
-
-                return accessionSort;
-            }
-        });
     }
 
     public void setSampleGroupingNumbers(List<? extends ResultItem> selectedTests) {
@@ -560,8 +504,7 @@ public class ResultsLoadUtility {
     private List<TestResultItem> getGroupedTestsForSamples() {
 
         List<TestResultItem> testList = new ArrayList<>();
-
-        TestResultItem[] tests = getSortedTestsFromSamples();
+        TestResultItem[] tests = getSortedTestsFromSamples(!SORT_FORWARD);
 
         String currentAccessionNumber = "";
 
@@ -595,7 +538,7 @@ public class ResultsLoadUtility {
         return null;
     }
 
-    private TestResultItem[] getSortedTestsFromSamples() {
+    private TestResultItem[] getSortedTestsFromSamples(boolean forwardSort) {
 
         List<TestResultItem> testList = new ArrayList<>();
         List<Analysis> analysisList  = new ArrayList<>();
@@ -611,8 +554,7 @@ public class ResultsLoadUtility {
                         testList.add(selectedItem);
                     }
                 }
-
-        reverseSortByAccessionAndSequence(testList);
+        new SortBySampleCollectionDateAndAccessionNumber().sort(testList, forwardSort);
         setSampleGroupingNumbers(testList);
         addUserSelectionReflexes(testList);
 
@@ -791,7 +733,8 @@ public class ResultsLoadUtility {
                                                 String techSignatureId, String supervisorSignatureId, boolean multiSelectionResult,
                                                 String initialSampleConditions, String sampleType, String patientIdentity) {
 
-        String receivedDate = currSample == null ? getCurrentDateAsText() : currSample.getReceivedDateForDisplay();
+        String receivedDate = currSample == null ? DateUtil.getCurrentDateAsText() : currSample.getReceivedDateForDisplay();
+        Timestamp collectionDate = currSample == null ? DateUtil.getNowAsTimestamp() : currSample.getCollectionDate();
         String testMethodName = test.getMethod() != null ? test.getMethod().getMethodName() : null;
         List<TestResult> testResults = getPossibleResultsForTest(test);
 
@@ -856,7 +799,7 @@ public class ResultsLoadUtility {
             }
         }
 
-        String testDate = GenericValidator.isBlankOrNull(analysis.getCompletedDateForDisplay()) ? getCurrentDateAsText()
+        String testDate = GenericValidator.isBlankOrNull(analysis.getCompletedDateForDisplay()) ? DateUtil.getCurrentDateAsText()
                 : analysis.getCompletedDateForDisplay();
 
         TestResultItem testItem = new TestResultItem();
@@ -865,6 +808,7 @@ public class ResultsLoadUtility {
         testItem.setAnalysisId(analysis.getId());
         testItem.setSequenceNumber(sequenceNumber);
         testItem.setReceivedDate(receivedDate);
+        testItem.setCollectionDate(collectionDate);
         testItem.setTestName(displayTestName);
         testItem.setTestId(test.getId());
         testItem.setResultLimitId(resultLimit.getId());

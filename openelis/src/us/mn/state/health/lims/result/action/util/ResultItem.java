@@ -16,8 +16,9 @@
 */
 package us.mn.state.health.lims.result.action.util;
 
+import java.sql.Timestamp;
+
 public interface ResultItem{
-	
 
 	public String getAccessionNumber();
 
@@ -44,4 +45,7 @@ public interface ResultItem{
 	public String getTestSortOrder();
 	
 	public String getTestName();
+
+	public Timestamp getCollectionDate();
+
 }

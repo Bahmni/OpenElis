@@ -18,12 +18,13 @@ package org.bahmni.feed.openelis.feed.mapper;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 
-
+@Ignore
 public abstract class OpenMRSMapperBaseTest {
     protected String deserialize(String fileName) throws IOException {
         InputStream inputStream = this.getClass().getResourceAsStream(fileName);

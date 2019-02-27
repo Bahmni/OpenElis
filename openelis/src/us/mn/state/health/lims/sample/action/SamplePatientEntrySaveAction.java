@@ -18,7 +18,11 @@
 package us.mn.state.health.lims.sample.action;
 
 import org.apache.struts.Globals;
-import org.apache.struts.action.*;
+import org.apache.struts.action.ActionErrors;
+import org.apache.struts.action.ActionForm;
+import org.apache.struts.action.ActionForward;
+import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.ActionMessages;
 import org.bahmni.feed.openelis.feed.contract.SampleTestOrderCollection;
 import org.bahmni.feed.openelis.feed.service.EventPublishers;
 import org.bahmni.feed.openelis.feed.service.impl.OpenElisUrlPublisher;
@@ -86,9 +90,15 @@ import us.mn.state.health.lims.upload.action.AddSampleService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.StringTokenizer;
+import java.util.UUID;
 
 import static org.apache.commons.validator.GenericValidator.isBlankOrNull;
+import static us.mn.state.health.lims.common.util.DateUtil.getCurrentTimeAsString;
 
 public class SamplePatientEntrySaveAction extends BaseAction {
 
@@ -207,15 +217,16 @@ public class SamplePatientEntrySaveAction extends BaseAction {
 
 		useReferringSiteId = FormFields.getInstance().useField(Field.RequesterSiteList);
 		boolean trackPayments = ConfigurationProperties.getInstance().isPropertyValueEqual(Property.trackPatientPayment, "true");
-
+		String currentTimeAsString = getCurrentTimeAsString();
 		if (useReceiveDateForCollectionDate) {
-			collectionDateFromRecieveDate = receivedDateForDisplay + " 00:00:00";
+			collectionDateFromRecieveDate = receivedDateForDisplay + " " + currentTimeAsString;
 		}
 
 		String receivedTime = dynaForm.getString("recievedTime");
-		if (!isBlankOrNull(receivedTime)) {
-			receivedDateForDisplay += " " + receivedTime;
+		if (isBlankOrNull(receivedTime)) {
+			receivedTime = currentTimeAsString;
 		}
+		receivedDateForDisplay += " " + receivedTime;
 
 		requesterSite = null;
 		if (useReferringSiteId) {
@@ -527,17 +538,17 @@ public class SamplePatientEntrySaveAction extends BaseAction {
         sample.setUUID(UUID.randomUUID().toString());
 
         sample.setEnteredDate(new java.util.Date());
+		Locale locale = SystemConfiguration.getInstance().getDefaultLocale();
+		String datePatternWithTimestamp = ResourceLocator.getInstance().getMessageResources().getMessage(locale, "dateTimeWithMilliSec.format.formatKey");
 		if (useReceiveTimestamp) {
-			sample.setReceivedTimestamp(DateUtil.convertStringDateToTimestamp(receivedDate));
+			sample.setReceivedTimestamp(DateUtil.convertStringDateToTimestampWithPattern(receivedDate,datePatternWithTimestamp));
 		} else {
 			sample.setReceivedDateForDisplay(receivedDate);
-
-            Locale locale = SystemConfiguration.getInstance().getDefaultLocale();
-            String datePattern = ResourceLocator.getInstance().getMessageResources().getMessage(locale, "date.format.formatKey");
-            sample.setReceivedTimestamp(DateUtil.convertStringDateToTimestampWithPatternNoLocale(receivedDate, datePattern));
+            sample.setReceivedTimestamp(DateUtil.convertStringDateToTimestampWithPatternNoLocale(receivedDate, datePatternWithTimestamp));
 		}
 		if (useReceiveDateForCollectionDate) {
-			sample.setCollectionDateForDisplay(collectionDateFromRecieveDate);
+			sample.setCollectionDate(DateUtil.convertStringDateToTimestampWithPattern(collectionDateFromRecieveDate,
+					datePatternWithTimestamp));
 		}
 
 		sample.setDomain(SystemConfiguration.getInstance().getHumanDomain());

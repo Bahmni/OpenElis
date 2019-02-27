@@ -26,6 +26,7 @@ import us.mn.state.health.lims.result.valueholder.Result;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.Timestamp;
 
 public class TestResultItem implements ResultItem, Serializable{
 
@@ -62,6 +63,7 @@ public class TestResultItem implements ResultItem, Serializable{
 	/*N.B. test method is the type of test it is (HIV etc).
 	 *  analysisMethod is the way the analysis is done automatic or manual
 	 */
+	private Timestamp collectionDate;
 	private String testMethod;
 	private String analysisMethod;
 	private String testName;
@@ -443,6 +445,13 @@ public class TestResultItem implements ResultItem, Serializable{
 	}
 	public String getReceivedDate() {
 		return receivedDate;
+	}
+
+	public void setCollectionDate(Timestamp collectionDate) {
+		this.collectionDate = collectionDate;
+	}
+	public Timestamp getCollectionDate() {
+		return collectionDate;
 	}
 	public void setReflexStep(int reflexStep) {
 		this.reflexStep = reflexStep;

@@ -20,6 +20,7 @@ package us.mn.state.health.lims.resultvalidation.action.util;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.Timestamp;
 
 import us.mn.state.health.lims.common.util.IdValuePair;
 import us.mn.state.health.lims.result.action.util.ResultItem;
@@ -48,6 +49,7 @@ public class ResultValidationItem implements ResultItem, Serializable{
 	private String sampleSource;
 	private String testDate;
 	private String receivedDate;
+	private Timestamp collectionDate;
 
 	private String analysisMethod;
 	private String testName;
@@ -253,6 +255,9 @@ public class ResultValidationItem implements ResultItem, Serializable{
 	}
 	public String getReceivedDate() {
 		return receivedDate;
+	}
+	public Timestamp getCollectionDate() {
+		return collectionDate;
 	}
 
     public void setResult(Result result) {
