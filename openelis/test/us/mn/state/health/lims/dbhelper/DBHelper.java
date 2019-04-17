@@ -18,6 +18,7 @@
 package us.mn.state.health.lims.dbhelper;
 
 
+import org.apache.commons.lang3.StringUtils;
 import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.common.action.IActionConstants;
@@ -42,6 +43,8 @@ import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.test.valueholder.TestSection;
 import us.mn.state.health.lims.testresult.daoimpl.TestResultDAOImpl;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
+import us.mn.state.health.lims.typeofsample.daoimpl.TypeOfSampleDAOImpl;
+import us.mn.state.health.lims.typeofsample.valueholder.TypeOfSample;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -186,8 +189,22 @@ public class DBHelper {
         return analysis;
     }
 
-    public static SampleItem createAndSaveSampleItem(Sample startedSample) {
+    public static SampleItem createAndSaveSampleItem(Sample startedSample, String typeOfSample) {
+        TypeOfSample sampleType = null;
+        if (StringUtils.isNotEmpty(typeOfSample)) {
+            sampleType = createAndSaveTypeOfSample(typeOfSample);
+        }
+
         SampleItem enteredSampleItem = createSampleItem(startedSample);
+        enteredSampleItem.setTypeOfSample(sampleType);
+        enteredSampleItem.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.SampleStatus.Entered));
+        new SampleItemDAOImpl().insertData(enteredSampleItem);
+        return enteredSampleItem;
+    }
+
+    public static SampleItem createAndSaveSampleItemWithSampleAndTypeOfSample(Sample sample, TypeOfSample typeOfSample) {
+        SampleItem enteredSampleItem = createSampleItem(sample);
+        enteredSampleItem.setTypeOfSample(typeOfSample);
         enteredSampleItem.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.SampleStatus.Entered));
         new SampleItemDAOImpl().insertData(enteredSampleItem);
         return enteredSampleItem;
@@ -201,12 +218,7 @@ public class DBHelper {
     }
 
     public static Sample createAndSaveSample(String accessionNumber) {
-        Sample sample = createSample(accessionNumber);
-        sample.setEnteredDate(DateUtil.convertStringDateToSqlDate("01/01/2001"));
-        sample.setReceivedTimestamp(DateUtil.convertStringDateToTimestamp("01/01/2001 00:00"));
-        sample.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.OrderStatus.Started));
-        new SampleDAOImpl().insertDataWithAccessionNumber(sample);
-        return sample;
+        return insertSample(createSample(accessionNumber));
     }
 
 
@@ -234,5 +246,38 @@ public class DBHelper {
         patient.setUuid(UUID.randomUUID().toString());
 
         return patient;
+    }
+
+    public static TypeOfSample createAndSaveTypeOfSample(String sampleType) {
+        TypeOfSample typeOfSample = new TypeOfSample();
+
+        typeOfSample.setDomain("H");
+        typeOfSample.setSysUserId("1");
+        typeOfSample.setDescription(sampleType);
+        typeOfSample.setLocalAbbreviation(sampleType);
+        typeOfSample.setUuid(UUID.randomUUID().toString());
+
+        new TypeOfSampleDAOImpl().insertData(typeOfSample);
+
+        return typeOfSample;
+    }
+
+    private static Sample insertSample(Sample sample){
+        sample.setEnteredDate(DateUtil.convertStringDateToSqlDate("01/01/2001"));
+        sample.setReceivedTimestamp(DateUtil.convertStringDateToTimestamp("01/01/2001 00:00"));
+        sample.setStatusId(StatusOfSampleUtil.getStatusID(StatusOfSampleUtil.OrderStatus.Started));
+        new SampleDAOImpl().insertDataWithAccessionNumber(sample);
+
+        return sample;
+    }
+
+    public static Sample createSampleWithUuid(String uuid) {
+        Sample sample = createSample(null);
+        sample.setUUID(uuid);
+        return insertSample(sample);
+    }
+
+    public static SampleItem createAndSaveSampleItem(Sample sample) {
+        return createAndSaveSampleItem(sample, null);
     }
 }
