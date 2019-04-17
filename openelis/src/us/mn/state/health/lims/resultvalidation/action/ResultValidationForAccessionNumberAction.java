@@ -38,14 +38,12 @@ public class ResultValidationForAccessionNumberAction extends BaseResultValidati
         ResultsValidationUtility resultsValidationUtility = new ResultsValidationUtility();
         BaseActionForm dynaForm = (BaseActionForm) form;
         String accessionNumber = request.getParameter("accessionNumber");
-        String sampleType = request.getParameter("sampleType");
-
         ResultValidationPaging paging = new ResultValidationPaging();
         // Initialize the form.
         dynaForm.initialize(mapping);
 
         setRequestType(BaseResultValidationAction.VALIDATION_BY_ACCESSION_NUMBER); // this sets the page title/subtitle
-        List<AnalysisItem> resultList = resultsValidationUtility.getResultValidationListByAccessionNumber(getToBeValidatedStatuses(), accessionNumber, sampleType);
+        List<AnalysisItem> resultList = resultsValidationUtility.getResultValidationListByAccessionNumber(getToBeValidatedStatuses(), accessionNumber);
         paging.setDatabaseResults(request, dynaForm, resultList);
         List<Note> accessionNotes = resultsValidationUtility.getAccessionNotes(accessionNumber);
 

@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 
@@ -336,27 +335,6 @@ public class SampleItemDAOImpl extends BaseDAOImpl implements SampleItemDAO {
 		}
 
 		return null;
-	}
-
-	@Override
-	public boolean isTypeOfSampleAndSampleExists(String sampleId, List<Integer> typeOfSampleIds) {
-		if (typeOfSampleIds.size() == 0)
-			return false;
-		try {
-			String sql = "from SampleItem sampleItem where sampleItem.sample.id = :sampleId and sampleItem.typeOfSample in ( :typeOfSampleIds )";
-			Query query = HibernateUtil.getSession().createQuery(sql);
-			query.setInteger("sampleId", Integer.parseInt(sampleId));
-			query.setParameterList("typeOfSampleIds", typeOfSampleIds);
-			@SuppressWarnings("unchecked")
-			List<Boolean> list = query.list();
-			closeSession();
-			return list.size() == 1;
-
-		} catch (HibernateException he) {
-			handleException(he, "isTypeOfSampleAndSampleExists");
-		}
-
-		return false;
 	}
 
 }

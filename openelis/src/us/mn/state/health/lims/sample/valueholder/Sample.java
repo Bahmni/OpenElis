@@ -64,9 +64,8 @@ public class Sample extends EnumValueItemImpl {
 	private ValueHolderInterface systemUser;
     private Set<SampleItem> sampleItems;
     private Patient patient;
-    private String priority;
 
-	private String uuid;
+    private String uuid;
 
 	// testing one-to-many
 	//this is for HSE I  and II - ability to enter up to two projects
@@ -405,12 +404,4 @@ public class Sample extends EnumValueItemImpl {
     public void setPatient(Patient patient) {
         this.patient = patient;
     }
-
-	public String getPriority() {
-		return priority;
-	}
-
-	public void setPriority(String priority) {
-		this.priority = priority;
-	}
 }

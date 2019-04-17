@@ -70,7 +70,9 @@ import us.mn.state.health.lims.resultlimits.valueholder.ResultLimit;
 import us.mn.state.health.lims.sample.valueholder.Sample;
 import us.mn.state.health.lims.samplehuman.dao.SampleHumanDAO;
 import us.mn.state.health.lims.samplehuman.daoimpl.SampleHumanDAOImpl;
+import us.mn.state.health.lims.sampleitem.dao.SampleItemDAO;
 import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
+import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.OrderStatus;
@@ -185,12 +187,12 @@ public class ResultsLoadUtility {
      * N.B. The patient info is used to determine the limits for the results,
      * not for including patient information
      */
-    public List<TestResultItem> getGroupedTestsForSample(Sample sample, String sampleType) {
+    public List<TestResultItem> getGroupedTestsForSample(Sample sample) {
         reflexGroup = 1;
         activeKits = null;
         samples = new ArrayList<>();
         samples.add(sample);
-        return getGroupedTestsForSamples(sampleType);
+        return getGroupedTestsForSamples();
     }
 
     public List<TestResultItem> getGroupedTestsForPatient(Patient patient) {
@@ -201,10 +203,6 @@ public class ResultsLoadUtility {
         samples = sampleHumanDAO.getCollectedSamplesForPatient(patient.getId());
 
         return getGroupedTestsForSamples();
-    }
-
-    private List<TestResultItem> getGroupedTestsForSamples() {
-        return getGroupedTestsForSamples(null);
     }
 
     /*
@@ -429,12 +427,12 @@ public class ResultsLoadUtility {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Analysis> getAnalysisFromSample(List<Sample> samples, String sampleType) {
+    public List<Analysis> getAnalysisFromSample(List<Sample> samples) {
         List<Integer> sampleIds = new ArrayList<>();
         for(Sample sample:samples){
             sampleIds.add(Integer.parseInt(sample.getId()));
         }
-        return analysisDAO.getAnalysisBySampleIds(sampleIds, excludedAnalysisStatus, sampleType);
+        return analysisDAO.getAnalysisBySampleIds(sampleIds,excludedAnalysisStatus);
     }
 
 
@@ -559,11 +557,11 @@ public class ResultsLoadUtility {
         return sampleHumanDAO.getPatientForSample(sampleItem.getSample());
     }
 
-    private List<TestResultItem> getGroupedTestsForSamples(String sampleType) {
+    private List<TestResultItem> getGroupedTestsForSamples() {
 
         List<TestResultItem> testList = new ArrayList<>();
 
-        TestResultItem[] tests = getSortedTestsFromSamples(sampleType);
+        TestResultItem[] tests = getSortedTestsFromSamples();
 
         String currentAccessionNumber = "";
 
@@ -597,13 +595,13 @@ public class ResultsLoadUtility {
         return null;
     }
 
-    private TestResultItem[] getSortedTestsFromSamples(String sampleType) {
+    private TestResultItem[] getSortedTestsFromSamples() {
 
         List<TestResultItem> testList = new ArrayList<>();
         List<Analysis> analysisList  = new ArrayList<>();
 
                 if(!samples.isEmpty())
-                analysisList = getAnalysisFromSample(samples, sampleType) ;
+                analysisList = getAnalysisFromSample(samples) ;
 
                 for (Analysis analysis : analysisList) {
                     currSample = getSampleFromAnalysis(analysis);

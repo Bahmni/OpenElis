@@ -19,12 +19,14 @@ package us.mn.state.health.lims.common.action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import us.mn.state.health.lims.dashboard.dao.OrderListDAO;
+import us.mn.state.health.lims.dashboard.daoimpl.OrderListDAOImpl;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class CommonCancelAction extends BaseAction {
-//    private OrderListDAO orderListDAO = new OrderListDAOImpl();
+    private OrderListDAO orderListDAO = new OrderListDAOImpl();
 
     private String activeTab;
 

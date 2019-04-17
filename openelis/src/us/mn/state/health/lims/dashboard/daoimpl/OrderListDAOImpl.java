@@ -51,18 +51,15 @@ public class OrderListDAOImpl implements OrderListDAO {
     private Logger logger = LogManager.getLogger(OrderListDAOImpl.class);
 
     private static String COMMENT_SEPARATOR = "<~~>";
-    private OrderListDAOHelper orderListDAOHelper;
 
-    public OrderListDAOImpl(Boolean isGroupBySampleEnabled) {
-        orderListDAOHelper = new OrderListDAOHelper(isGroupBySampleEnabled);
+    public OrderListDAOImpl() {
     }
 
     @Override
     public List<Order> getAllToday() {
         List<Order> orderList = new ArrayList<>();
         String condition = "sample.accession_number is not null and analysis.status_id IN (" + getAllNonReferredAnalysisStatus() + ") ";
-        String sqlForAllTestsToday = orderListDAOHelper.createSqlForToday(condition, "sample.accession_number",
-                getPendingAnalysisStatus(), getPendingValidationAnalysisStatus(), getCompletedStatus());
+        String sqlForAllTestsToday = createSqlStringForTodayOrders(condition, "sample.accession_number");
         PreparedStatement preparedStatement = null;
         ResultSet todayAccessions = null;
         try {
@@ -87,15 +84,13 @@ public class OrderListDAOImpl implements OrderListDAO {
     @Override
     public List<Order> getAllPendingBeforeToday() {
         String condition = "sample.accession_number is not null and analysis.status_id IN (" + getAllNonReferredAnalysisStatus() + ")";
-        return getOrders(orderListDAOHelper.createSqlForPendingBeforeToday(condition, "sample.accession_number",
-                getPendingAnalysisStatus(), getPendingValidationAnalysisStatus(), analysesReferredOrInFinalStatus()));
+        return getOrders(createSqlStringForPendingOrders(condition, "sample.accession_number"));
     }
 
     @Override
     public List<Order> getAllSampleNotCollectedToday() {
         List<Order> orderList = new ArrayList<>();
-        String sqlForAllSampleNotCollectedToday = orderListDAOHelper.createSqlForToday("sample.accession_number is null and analysis.status_id IN (" + getAllNonReferredAnalysisStatus() + ")",
-                "sample.lastupdated", getPendingAnalysisStatus(), getPendingValidationAnalysisStatus(), getCompletedStatus());
+        String sqlForAllSampleNotCollectedToday = createSqlStringForTodayOrders("sample.accession_number is null and analysis.status_id IN (" + getAllNonReferredAnalysisStatus() + ")", "sample.lastupdated");
 
         ResultSet sampleNotCollectedToday = null;
         PreparedStatement preparedStatement = null;
@@ -120,10 +115,7 @@ public class OrderListDAOImpl implements OrderListDAO {
 
     @Override
     public List<Order> getAllSampleNotCollectedPendingBeforeToday() {
-        String condition = "sample.accession_number is null and analysis.status_id IN (" + getAllNonReferredAnalysisStatus() + ")";
-        String sqlForAllSampleNotCollectedPendingBeforeToday = orderListDAOHelper.createSqlForPendingBeforeToday(condition,
-                        "sample.lastupdated", getPendingAnalysisStatus(), getPendingValidationAnalysisStatus(),
-                analysesReferredOrInFinalStatus());
+        String sqlForAllSampleNotCollectedPendingBeforeToday = createSqlStringForPendingOrders("sample.accession_number is null and analysis.status_id IN (" + getAllNonReferredAnalysisStatus() + ")", "sample.lastupdated");
         return getOrders(sqlForAllSampleNotCollectedPendingBeforeToday);
     }
 
@@ -180,8 +172,24 @@ public class OrderListDAOImpl implements OrderListDAO {
     private Order createOrder(ResultSet accessionResultSet, boolean completed) throws SQLException {
         String comments = getUniqueComments(accessionResultSet);
         String sectionNames = getUniqueSectionNames(accessionResultSet);
-
-        return orderListDAOHelper.getOrder(accessionResultSet, comments, sectionNames, completed);
+        return new Order(accessionResultSet.getString("accession_number"),
+                            accessionResultSet.getString("uuid"),
+                            accessionResultSet.getString("id"),
+                            accessionResultSet.getString("st_number"),
+                            accessionResultSet.getString("first_name"),
+                            accessionResultSet.getString("middle_name"),
+                            accessionResultSet.getString("last_name"),
+                            accessionResultSet.getString("sample_source"),
+                            completed,
+                            accessionResultSet.getBoolean("is_printed"),
+                            accessionResultSet.getInt("pending_tests_count"),
+                            accessionResultSet.getInt("pending_validation_count"),
+                            accessionResultSet.getInt("total_test_count"),
+                            accessionResultSet.getDate("collection_date"),
+                            accessionResultSet.getDate("entered_date"),
+                            comments,
+                            sectionNames
+        );
     }
 
     private String getUniqueSectionNames(ResultSet accessionResultSet) throws SQLException {
@@ -238,5 +246,87 @@ public class OrderListDAOImpl implements OrderListDAO {
         analysisStatuses.add(parseInt(getStatusID(finalized)));
         analysisStatuses.add(parseInt(getStatusID(finalizedRO)));
         return StringUtils.join(analysisStatuses.iterator(), ',');
+    }
+
+    private String createSqlStringForPendingOrders(String condition, String OrderBy) {
+        return "SELECT \n" +
+                "sample.accession_number AS accession_number, \n" +
+                "string_agg(test_section.name, '" + COMMENT_SEPARATOR + "') AS section_names, \n" +
+                "sample.uuid AS uuid, \n" +
+                "sample.id AS id, \n" +
+                "sample.collection_date AS collection_date, \n" +
+                "sample.entered_date AS entered_date, \n" +
+                "person.first_name AS first_name, \n" +
+                "person.middle_name AS middle_name, \n" +
+                "person.last_name AS last_name, \n" +
+                "patient_identity.identity_data AS st_number, \n" +
+                "sample_source.name AS sample_source, \n" +
+                "SUM(CASE WHEN  analysis.status_id IN (" + getPendingAnalysisStatus() + ") THEN 1 ELSE 0 END) as pending_tests_count,\n" +
+                "SUM(CASE WHEN  analysis.status_id IN ("+ getPendingValidationAnalysisStatus() + ") THEN 1 ELSE 0 END) as pending_validation_count,\n" +
+                "string_agg(analysis.comment, '" + COMMENT_SEPARATOR + "') AS analysis_comments,\n" +
+                "COUNT(test.id) AS total_test_count,\n" +
+                "CASE WHEN document_track.report_generation_time is null THEN false ELSE true END as is_printed\n" +
+                "FROM Sample AS sample\n" +
+                "LEFT OUTER JOIN Sample_Human AS sampleHuman ON sampleHuman.samp_Id = sample.id \n" +
+                "LEFT  JOIN sample_source ON sample_source.id = sample.sample_source_id \n" +
+                "INNER JOIN Patient AS patient ON sampleHuman.patient_id = patient.id \n" +
+                "INNER JOIN Person AS person ON patient.person_id = person.id \n" +
+                "INNER JOIN patient_identity ON patient_identity.patient_id = patient.id \n" +
+                "INNER JOIN patient_identity_type ON patient_identity.identity_type_id = patient_identity_type.id AND patient_identity_type.identity_type='ST' \n" +
+                "INNER JOIN sample_item ON sample_item.samp_id = sample.id \n" +
+                "INNER JOIN analysis ON analysis.sampitem_id = sample_item.id and analysis.status_id not in (" +  analysesReferredOrInFinalStatus() + ") and analysis.lastupdated < ?\n" +
+                "INNER JOIN test ON test.id = analysis.test_id\n" +
+                "INNER JOIN test_section ON test.test_section_id = test_section.id \n"+
+                "LEFT OUTER JOIN document_track as document_track ON sample.id = document_track.row_id AND document_track.name = 'patientHaitiClinical' and document_track.parent_id is null\n" +
+                "WHERE "+condition+"\n" +
+                "GROUP BY sample.accession_number, sample.uuid,sample.id, sample.collection_date, person.first_name, person.middle_name, person.last_name, sample_source.name, patient_identity.identity_data, document_track.report_generation_time\n" +
+                "ORDER BY "+ OrderBy +" DESC\n" +
+                "LIMIT 1000;";
+    }
+
+    private String createSqlStringForTodayOrders(String condition, String OrderBy) {
+        return "SELECT \n" +
+                "sample.accession_number AS accession_number, \n" +
+                "sample.uuid AS uuid, \n" +
+                "string_agg(test_section.name, '" + COMMENT_SEPARATOR + "') AS section_names, \n" +
+                "sample.id AS id, \n" +
+                "sample.collection_date AS collection_date, \n" +
+                "sample.entered_date AS entered_date, \n" +
+                "person.first_name AS first_name, \n" +
+                "person.middle_name AS middle_name, \n" +
+                "person.last_name AS last_name, \n" +
+                "patient_identity.identity_data AS st_number, \n" +
+                "sample_source.name AS sample_source, \n" +
+                "SUM(CASE WHEN  analysis.status_id IN (" + getPendingAnalysisStatus() + ") THEN 1 ELSE 0 END) as pending_tests_count,\n" +
+                "SUM(CASE WHEN  analysis.status_id IN ("+ getPendingValidationAnalysisStatus() + ") THEN 1 ELSE 0 END) as pending_validation_count,\n" +
+                "string_agg(analysis.comment, '" + COMMENT_SEPARATOR + "') AS analysis_comments,\n" +
+                "COUNT(test.id) AS total_test_count,\n" +
+                "CASE WHEN COUNT(analysis.id) = SUM(CASE WHEN  analysis.status_id IN (" +getCompletedStatus()+ ") THEN 1 ELSE 0 END) THEN true ELSE false END as is_completed,\n" +
+                "CASE WHEN document_track.report_generation_time is null THEN false ELSE true END as is_printed\n" +
+                "FROM Sample AS sample\n" +
+                "INNER JOIN (\n" +
+                    "SELECT DISTINCT si.samp_id as id\n" +
+                    "FROM analysis a INNER JOIN sample_item si ON a.sampitem_id = si.id\n" +
+                    "WHERE a.lastupdated >= ?\n" +
+                    "UNION\n" +
+                    "SELECT DISTINCT s.id as id\n" +
+                    "FROM sample s\n" +
+                    "WHERE s.lastupdated >= ?\n" +
+                ") list on list.id = sample.id\n" +
+                "LEFT OUTER JOIN Sample_Human AS sampleHuman ON sampleHuman.samp_Id = sample.id \n" +
+                "LEFT  JOIN sample_source ON sample_source.id = sample.sample_source_id \n" +
+                "INNER JOIN Patient AS patient ON sampleHuman.patient_id = patient.id \n" +
+                "INNER JOIN Person AS person ON patient.person_id = person.id \n" +
+                "INNER JOIN patient_identity ON patient_identity.patient_id = patient.id \n" +
+                "INNER JOIN patient_identity_type ON patient_identity.identity_type_id = patient_identity_type.id AND patient_identity_type.identity_type='ST' \n" +
+                "INNER JOIN sample_item ON sample_item.samp_id = sample.id \n" +
+                "INNER JOIN analysis ON analysis.sampitem_id = sample_item.id \n" +
+                "INNER JOIN test ON test.id = analysis.test_id\n" +
+                "INNER JOIN test_section ON test.test_section_id = test_section.id \n"+
+                "LEFT OUTER JOIN document_track as document_track ON sample.id = document_track.row_id AND document_track.name = 'patientHaitiClinical' and document_track.parent_id is null \n" +
+                "WHERE "+condition+"\n" +
+                "GROUP BY sample.accession_number, sample.uuid,sample.id, sample.collection_date, sample.lastupdated, person.first_name, person.middle_name, person.last_name, sample_source.name, patient_identity.identity_data, document_track.report_generation_time \n" +
+                "ORDER BY "+ OrderBy +" DESC\n" +
+                "LIMIT 1000;";
     }
 }

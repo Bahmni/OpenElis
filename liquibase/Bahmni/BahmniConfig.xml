@@ -1716,16 +1716,4 @@
             ALTER TABLE sample_source ALTER COLUMN name TYPE character varying(50);
         </sql>
     </changeSet>
-    <changeSet id="configure-accession-strategy" context="bahmni" author="Mahitha">
-        <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="0">
-                select count(*) from site_information where name = 'accessionStrategy'
-            </sqlCheck>
-        </preConditions>
-        <comment>Add accession strategy</comment>
-        <sql >
-            insert into site_information (id, name, description, value, value_type, domain_id) values
-            (nextVal( 'site_information_seq' ), 'accessionStrategy', 'Strategy for Accession Generation', '', 'text', (select id from site_information_domain where name = 'siteIdentity'))
-        </sql>
-    </changeSet>
 </databaseChangeLog>

@@ -15,11 +15,11 @@
 */
 package us.mn.state.health.lims.sample.dao;
 
+import java.util.List;
+
 import us.mn.state.health.lims.common.dao.BaseDAO;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.sample.valueholder.Sample;
-
-import java.util.List;
 
 /**
  * @author diane benz
@@ -49,8 +49,6 @@ public interface SampleDAO extends BaseDAO {
 	public void getSampleByAccessionNumber(Sample sample) throws LIMSRuntimeException;
 
 	public Sample getSampleByAccessionNumber(String accessionNumber) throws LIMSRuntimeException;
-
-	public Sample getSampleByAccessionNumberAndType(String accessionNumber, String sampleType) throws LIMSRuntimeException;
 
 	public boolean insertDataWithAccessionNumber(Sample sample) throws LIMSRuntimeException;
 
@@ -89,5 +87,4 @@ public interface SampleDAO extends BaseDAO {
 
 	public Sample getSampleByID(String id) throws LIMSRuntimeException;
 
-	public Sample getSampleByUuidAndSampleTypeIdAndWithoutAccessionNumber(String uuid, String sampleTypeId);
 }
