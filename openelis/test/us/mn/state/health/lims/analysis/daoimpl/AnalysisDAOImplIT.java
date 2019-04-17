@@ -16,7 +16,6 @@
 
 package us.mn.state.health.lims.analysis.daoimpl;
 
-import junit.framework.Assert;
 import org.bahmni.feed.openelis.IT;
 import org.junit.Test;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
@@ -26,7 +25,11 @@ import us.mn.state.health.lims.sampleitem.valueholder.SampleItem;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 public class AnalysisDAOImplIT extends IT {
 
@@ -40,9 +43,27 @@ public class AnalysisDAOImplIT extends IT {
         DBHelper.createAndSaveAnalysis(enteredSampleItem, toBeValidatedAnalysisStatus, "Hematology", null, null);
         DBHelper.createAndSaveAnalysis(enteredSampleItem, toBeValidatedAnalysisStatus, "Hematology", null, null);
 
-        List<Analysis> actualAnalyses = new AnalysisDAOImpl().getAllAnalysisByAccessionNumberAndStatus(accessionNumber, Arrays.asList(toBeValidatedAnalysisStatus));
+        List<Analysis> actualAnalyses = new AnalysisDAOImpl().getAllAnalysisByAccessionNumberAndStatusAndSampleType(accessionNumber, Arrays.asList(toBeValidatedAnalysisStatus), "");
 
-        Assert.assertTrue("analyses should have same accessionNumber", matchesAccessionNumberAndStatus(actualAnalyses, accessionNumber, toBeValidatedAnalysisStatus));
+        assertTrue("analyses should have same accessionNumber", matchesAccessionNumberAndStatus(actualAnalyses, accessionNumber, toBeValidatedAnalysisStatus));
+    }
+
+    @Test
+    public void shouldGetAllAnalysisByAccessionNumberAndStatusAndSampleType_when_sample_type_is_not_empty() {
+        StatusOfSampleUtil.AnalysisStatus toBeValidatedAnalysisStatus = StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance;
+        String accessionNumber = "12345";
+        Sample startedSample = DBHelper.createAndSaveSample(accessionNumber);
+        SampleItem enteredSampleItem = DBHelper.createAndSaveSampleItem(startedSample, "Blood");
+
+        DBHelper.createAndSaveAnalysis(enteredSampleItem, toBeValidatedAnalysisStatus, "Hematology", null, null);
+        DBHelper.createAndSaveAnalysis(enteredSampleItem, toBeValidatedAnalysisStatus, "Hematology", null, null);
+
+        List<Analysis> bloodAnalysis = new AnalysisDAOImpl().getAllAnalysisByAccessionNumberAndStatusAndSampleType(accessionNumber, Arrays.asList(toBeValidatedAnalysisStatus), "Blood");
+
+        assertEquals(2, bloodAnalysis.size());
+        assertTrue("analyses should have same accessionNumber", matchesAccessionNumberAndStatus(bloodAnalysis, accessionNumber, toBeValidatedAnalysisStatus));
+
+        assertTrue(new AnalysisDAOImpl().getAllAnalysisByAccessionNumberAndStatusAndSampleType(accessionNumber, Arrays.asList(toBeValidatedAnalysisStatus), "Urine").isEmpty());
     }
 
     @Test
@@ -54,9 +75,9 @@ public class AnalysisDAOImplIT extends IT {
         SampleItem nonMatchingSampleItem = DBHelper.createAndSaveSampleItem(nonMatchingAccessionNumberSample);
         DBHelper.createAndSaveAnalysis(nonMatchingSampleItem, toBeValidatedAnalysisStatus, "Hematology", null, null);
 
-        List<Analysis> actualAnalyses = new AnalysisDAOImpl().getAllAnalysisByAccessionNumberAndStatus(accessionNumber, Arrays.asList(toBeValidatedAnalysisStatus));
+        List<Analysis> actualAnalyses = new AnalysisDAOImpl().getAllAnalysisByAccessionNumberAndStatusAndSampleType(accessionNumber, Arrays.asList(toBeValidatedAnalysisStatus), "");
 
-        Assert.assertTrue("should not return analysis with non matching accessionNumber", actualAnalyses.isEmpty());
+        assertTrue("should not return analysis with non matching accessionNumber", actualAnalyses.isEmpty());
     }
 
     @Test
@@ -67,10 +88,10 @@ public class AnalysisDAOImplIT extends IT {
         SampleItem nonMatchingSampleItem = DBHelper.createAndSaveSampleItem(nonMatchingAccessionNumberSample);
         DBHelper.createAndSaveAnalysis(nonMatchingSampleItem, nonMatchingStatus, "Hematology", null, null);
 
-        List<Analysis> actualAnalyses = new AnalysisDAOImpl().getAllAnalysisByAccessionNumberAndStatus(accessionNumber,
-                Arrays.asList(StatusOfSampleUtil.AnalysisStatus.BiologistRejected));
+        List<Analysis> actualAnalyses = new AnalysisDAOImpl().getAllAnalysisByAccessionNumberAndStatusAndSampleType(accessionNumber,
+        Arrays.asList(StatusOfSampleUtil.AnalysisStatus.BiologistRejected), "");
 
-        Assert.assertTrue("should not return analysis with non matching analysis status", actualAnalyses.isEmpty());
+        assertTrue("should not return analysis with non matching analysis status", actualAnalyses.isEmpty());
     }
 
     @Test
@@ -87,9 +108,57 @@ public class AnalysisDAOImplIT extends IT {
         List<Analysis> actualAnalyses = new AnalysisDAOImpl().getAllAnalysisByStatus(
                 Arrays.asList(StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance, StatusOfSampleUtil.AnalysisStatus.NotTested));
 
-        Assert.assertTrue("should return analysis with matching analysis status", actualAnalyses.contains(firstMatchingAnalysis));
-        Assert.assertTrue("should return analysis with matching analysis status", actualAnalyses.contains(secondMatchingAnalysis));
-        Assert.assertTrue("should not return analysis with non matching analysis status", !actualAnalyses.contains(nonMatchingAnalysis));
+        assertTrue("should return analysis with matching analysis status", actualAnalyses.contains(firstMatchingAnalysis));
+        assertTrue("should return analysis with matching analysis status", actualAnalyses.contains(secondMatchingAnalysis));
+        assertTrue("should not return analysis with non matching analysis status", !actualAnalyses.contains(nonMatchingAnalysis));
+    }
+
+    @Test
+    public void getAnalysisBySampleIds_shouldGiveAllTheAnalysisForGivenSampleIds() {
+        StatusOfSampleUtil.AnalysisStatus toBeValidatedAnalysisStatus = StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance;
+        String accessionNumber1 = "12345";
+        Sample sample1 = DBHelper.createAndSaveSample(accessionNumber1);
+        SampleItem sampleItem1 = DBHelper.createAndSaveSampleItem(sample1, "Blood");
+
+        String accessionNumber2 = "12346";
+        Sample sample2 = DBHelper.createAndSaveSample(accessionNumber2);
+        SampleItem sampleItem2 = DBHelper.createAndSaveSampleItem(sample2, "Urine");
+
+        DBHelper.createAndSaveAnalysis(sampleItem1, toBeValidatedAnalysisStatus, "Hematology", null, null);
+        DBHelper.createAndSaveAnalysis(sampleItem1, toBeValidatedAnalysisStatus, "Hematology", null, null);
+
+        DBHelper.createAndSaveAnalysis(sampleItem2, toBeValidatedAnalysisStatus, "Hematology", null, null);
+
+        List<Analysis> bloodAnalysis = new AnalysisDAOImpl().getAnalysisBySampleIds(Arrays.asList(Integer.parseInt(sample1.getId()), Integer.parseInt(sample2.getId())), new HashSet<Integer>(), "Blood");
+
+        assertEquals(2, bloodAnalysis.size());
+        assertTrue("analyses should have same accessionNumber", matchesAccessionNumberAndStatus(bloodAnalysis, accessionNumber1, toBeValidatedAnalysisStatus));
+
+    }
+
+    @Test
+    public void getAnalysisBySampleIds_shouldGiveAllTheAnalysisForGivenSampleIdsWhenSampleTypeIsEmpty() {
+        StatusOfSampleUtil.AnalysisStatus toBeValidatedAnalysisStatus = StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance;
+        String accessionNumber1 = "12345";
+        Sample sample1 = DBHelper.createAndSaveSample(accessionNumber1);
+        SampleItem sampleItem1 = DBHelper.createAndSaveSampleItem(sample1, "Blood");
+
+        String accessionNumber2 = "12346";
+        Sample sample2 = DBHelper.createAndSaveSample(accessionNumber2);
+        SampleItem sampleItem2 = DBHelper.createAndSaveSampleItem(sample2, "Urine");
+
+        DBHelper.createAndSaveAnalysis(sampleItem1, toBeValidatedAnalysisStatus, "Hematology", null, null);
+        DBHelper.createAndSaveAnalysis(sampleItem1, toBeValidatedAnalysisStatus, "Hematology", null, null);
+
+        DBHelper.createAndSaveAnalysis(sampleItem2, toBeValidatedAnalysisStatus, "Hematology", null, null);
+
+        List<Analysis> analysisList = new AnalysisDAOImpl().getAnalysisBySampleIds(Arrays.asList(Integer.parseInt(sample1.getId()), Integer.parseInt(sample2.getId())), new HashSet<Integer>(), "");
+
+        assertEquals(3, analysisList.size());
+
+        assertTrue( matchesAccessionNumberAndStatus(analysisList, accessionNumber1, toBeValidatedAnalysisStatus));
+        assertTrue( matchesAccessionNumberAndStatus(analysisList, accessionNumber2, toBeValidatedAnalysisStatus));
+
     }
 
     private boolean matchesAccessionNumberAndStatus(List<Analysis> actualAnalyses, String accessionNumber,

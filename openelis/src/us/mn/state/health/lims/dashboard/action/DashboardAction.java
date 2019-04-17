@@ -25,13 +25,16 @@ import org.bahmni.feed.openelis.ObjectMapperRepository;
 import us.mn.state.health.lims.common.action.BaseAction;
 import us.mn.state.health.lims.dashboard.dao.OrderListDAO;
 import us.mn.state.health.lims.dashboard.daoimpl.OrderListDAOImpl;
+import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
+import us.mn.state.health.lims.siteinformation.valueholder.SiteInformation;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class DashboardAction extends BaseAction {
-    private OrderListDAO orderListDAO = new OrderListDAOImpl();
+    private static final String GROUP_BY_SAMPLE = "groupBySample";
+    public static final String ACCESSION_STRATEGY = "accessionStrategy";
 
     public DashboardAction() {
     }
@@ -39,6 +42,11 @@ public class DashboardAction extends BaseAction {
     @Override
     protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         DynaActionForm dynaForm = (DynaActionForm) form;
+
+        SiteInformation siteInformation = new SiteInformationDAOImpl().getSiteInformationByName(ACCESSION_STRATEGY);
+        String accessionStrategy = siteInformation != null ? siteInformation.getValue() : "";
+        Boolean isGroupBySample = GROUP_BY_SAMPLE.equals(accessionStrategy);
+        OrderListDAO orderListDAO = new OrderListDAOImpl(isGroupBySample);
 
         String escapedTodayOrderListJson = asJson(orderListDAO.getAllToday());
         String escapedTodaySampleNotCollectedListJson = asJson(orderListDAO.getAllSampleNotCollectedToday());
@@ -49,6 +57,7 @@ public class DashboardAction extends BaseAction {
         dynaForm.set("todaySampleNotCollectedList", escapedTodaySampleNotCollectedListJson);
         dynaForm.set("backlogSampleNotCollectedList", escapedBacklogSampleNotCollectedListJson);
         dynaForm.set("backlogOrderList", escapedBacklogOrderListJson);
+        dynaForm.set("isGroupBySample", isGroupBySample);
 
         return mapping.findForward("success");
     }
