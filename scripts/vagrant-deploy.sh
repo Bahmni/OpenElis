@@ -14,7 +14,7 @@ cd "$BAHMNI_HOME/bahmni-vagrant/"
 
 run_in_vagrant -c "sudo service bahmni-lab stop"
 run_in_vagrant -c "sudo rm -rf /opt/bahmni-lab/bahmni-lab/*"
-run_in_vagrant -c "sudo cp -r /ocb/OpenElis/openelis/dist/openelis/* /opt/bahmni-lab/bahmni-lab/."
+run_in_vagrant -c "sudo cp -r /bahmni/OpenElis/openelis/dist/openelis/* /opt/bahmni-lab/bahmni-lab/."
 run_in_vagrant -c "sudo chown -R bahmni:bahmni /opt/bahmni-lab/bahmni-lab/*"
 run_in_vagrant -c "sudo service bahmni-lab start"
 
