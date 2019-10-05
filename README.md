@@ -38,6 +38,6 @@ Functional changes made by us
 
 Technical improvements
 ======================
-- Added ant buld
+- Added ant build
 - Shortcircuited all calls to Session.clear
 
