@@ -18,28 +18,35 @@ package org.bahmni.feed.openelis;
 
 import us.mn.state.health.lims.common.log.LogEvent;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
 
 public class AtomFeedProperties {
-    
+
     private static final String FEED_CONNECT_TIMEOUT = "feed.connectionTimeoutInMilliseconds";
     private static final String FEED_REPLY_TIMEOUT = "feed.replyTimeoutInMilliseconds";
     private static final String FEED_MAX_FAILED_EVENTS = "feed.maxFailedEvents";
     private static final String FAILED_EVENT_MAX_RETRY = "feed.failedEventMaxRetry";
 
     public static final String DEFAULT_PROPERTY_FILENAME = "/atomfeed.properties";
+    public static final String CUSTOM_PROPERTY_FILENAME = System.getProperty("atomfeed.properties.file");
 
     private Properties properties;
 
     private static AtomFeedProperties atomFeedProperties;
-
     private AtomFeedProperties() {
         InputStream propertyStream = null;
         try {
             propertyStream = this.getClass().getResourceAsStream(DEFAULT_PROPERTY_FILENAME);
             properties = new Properties();
             properties.load(propertyStream);
+
+            if ((new File(CUSTOM_PROPERTY_FILENAME)).exists()){
+                FileInputStream customPropertyStream = new FileInputStream(CUSTOM_PROPERTY_FILENAME);
+                properties.load(customPropertyStream);
+            }
 
         } catch (Exception e) {
             LogEvent.logError("AtomFeedProperties", "Constructor", e.toString());
