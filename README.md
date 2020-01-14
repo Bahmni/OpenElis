@@ -5,6 +5,11 @@ OpenElis
 
 forked from OpenElis_v3.1_r2013_02_21 branch in svn
 
+*Requirements to build OpeneLIS*
+* `java` version <= "1.7"
+* `ant` version <= "1.9.1"
+* `ruby` version <= "2.2" and `gem install compass`
+
 *To build OpenElis run*
 * `ant dist`  Creates OpenELIS War
 * `ant setupDB test test-only dist`  Creates clinlims database in postgres, runs tests, and then creates OpenELIS War
