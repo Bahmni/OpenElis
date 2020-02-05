@@ -53,6 +53,8 @@ import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.userrole.dao.UserRoleDAO;
 import us.mn.state.health.lims.userrole.daoimpl.UserRoleDAOImpl;
 
+import us.mn.state.health.lims.typeofteststatus.daoimpl.TypeOfTestStatusDAOImpl;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.InvocationTargetException;
@@ -89,6 +91,9 @@ public class AccessionResultsAction extends BaseAction {
 		PropertyUtils.setProperty(dynaForm, "referralReasons", ReferralUtil.getReferralReasons());
 		PropertyUtils.setProperty(dynaForm, "referralOrganizations", OrganizationUtils.getReferralOrganizations());
 
+		//TYPE_OF_TEST_STATUS 		
+		PropertyUtils.setProperty(dynaForm, "typeofteststatuses", new TypeOfTestStatusDAOImpl().getAllActiveTestStatus());
+		
 
 		ResultsPaging paging = new ResultsPaging();
 		String newPage = request.getParameter("page");

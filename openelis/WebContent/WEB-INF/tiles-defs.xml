@@ -212,6 +212,7 @@
            <put name="rightSystemModule" value="systemModuleMenuDefinition" />
            <put name="rightSystemUserModule" value="systemUserModuleMenuDefinition" />
            <put name="rightSystemUserSection" value="systemUserSectionMenuDefinition" />
+           <put name="righttypeOfTestStatus" value="typeOfTestStatusMenuDefinition" />
          
            
     </definition>
@@ -828,6 +829,13 @@
     <definition name="loginUserDefinition" extends="baseDefinition">
          <put name="body" value="/pages/login/loginUser.jsp" /> 
     </definition>  
+    
+    <definition name="typeOfTestStatusDefinition" extends="baseDefinition">
+         <put name="body" value="/pages/typeofteststatus/typeOfTestStatus.jsp" />
+    </definition>
+    <definition name="typeOfTestStatusMenuDefinition" extends="baseMenuSelectListDefinition">
+       <put name="body" value="/pages/typeofteststatus/typeOfTestStatusMenu.jsp" />
+    </definition>
 
     <!--QA EVENTS FORM ITEMS-->    <!--bugzilla 2501-->
     <definition name="defaultSampleQaEventsEntryDefinition" extends="qaEventsEntryBaseDefinition">

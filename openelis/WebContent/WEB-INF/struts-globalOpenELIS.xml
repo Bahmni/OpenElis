@@ -248,6 +248,7 @@
             <form-property name="logbookType" type="java.lang.String" initial=""/>
             <form-property name="referralReasons" type="java.util.Collection"/>
             <form-property name="referralOrganizations" type="java.util.Collection"/>
+            <form-property name="typeofteststatuses" type="java.util.Collection"/>
         </form-bean>
 
         <form-bean name="AccessionResultsForm" type="us.mn.state.health.lims.common.action.BaseActionForm">
@@ -270,6 +271,7 @@
             <form-property name="logbookType" type="java.lang.String" initial=""/>
             <form-property name="referralReasons" type="java.util.Collection"/>
             <form-property name="referralOrganizations" type="java.util.Collection"/>
+            <form-property name="typeofteststatuses" type="java.util.Collection"/>
         </form-bean>
 
         <form-bean name="StatusResultsForm" type="us.mn.state.health.lims.common.action.BaseActionForm">
@@ -293,6 +295,7 @@
             <form-property name="logbookType" type="java.lang.String" initial=""/>
             <form-property name="referralReasons" type="java.util.Collection"/>
             <form-property name="referralOrganizations" type="java.util.Collection"/>
+            <form-property name="typeofteststatuses" type="java.util.Collection"/>
         </form-bean>
 
         <form-bean name="InventoryForm" type="us.mn.state.health.lims.common.action.BaseActionForm">

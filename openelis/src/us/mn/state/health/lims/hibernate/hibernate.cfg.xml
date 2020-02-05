@@ -295,6 +295,10 @@
 		resource="org/bahmni/feed/openelis/externalreference/valueholder/ExternalReference.hbm.xml" />
     <mapping
             resource="us/mn/state/health/lims/samplesource/valueholder/SampleSource.hbm.xml" />
+    <mapping
+		resource="us/mn/state/health/lims/typeofteststatus/valueholder/TypeOfTestStatus.hbm.xml" />
+	<mapping
+		resource="us/mn/state/health/lims/teststatus/valueholder/TestStatus.hbm.xml" />
 </session-factory>
 
 </hibernate-configuration>
