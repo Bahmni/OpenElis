@@ -465,9 +465,8 @@ function /*void*/ processTestReflexCD4Success(xhr)
 
 				$element.dispatchEvent(new Event('change'));
 			}
-
-			if(!$element.disabled && !disabledFields.contains($element)) {
-				//console.log("disabling Field" + $element);
+			if(!$element.disabled) {
+				//console.log("disabling Field"+ $element);
 				jQuery($element).attr("disabled", "disabled");
 				disabledFields[disabledFieldCount++] = $element;
 			}
