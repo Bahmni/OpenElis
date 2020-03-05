@@ -64,7 +64,7 @@ public class TypeOfTestStatusAction extends BaseAction {
 		dynaForm.initialize(mapping);
 
 		TypeOfTestStatus typeOfTestStatus = new TypeOfTestStatus();
-		System.out.println("I am in typeOfTestStatusAction and this is id " + id);
+
 		if ((id != null) && (!"0".equals(id))) {  
 			typeOfTestStatus.setId(id);
 			TypeOfTestStatusDAO typeOfTestStatusDAO = new TypeOfTestStatusDAOImpl();
@@ -102,7 +102,7 @@ public class TypeOfTestStatusAction extends BaseAction {
 		PropertyUtils.copyProperties(form, typeOfTestStatus);
 		request.setAttribute("allowedStatusTypes", AllowedTestStatusTypes.getAllAllowedTestStatusTypes());
 
-		System.out.println("I am in typeOfTestStatusAction this is forward " + forward);
+
 		return mapping.findForward(forward);
 	}
 

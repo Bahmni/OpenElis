@@ -52,7 +52,6 @@ public class TypeOfTestStatusUpdateAction extends BaseAction {
         request.setAttribute(NEXT_DISABLED, "false");
 
         String id = request.getParameter(ID);
-        System.out.println("Buvaneswari - Checking"+id);
         if (StringUtil.isNullorNill(id) || "0".equals(id)) {
             isNew = true;
         } else {

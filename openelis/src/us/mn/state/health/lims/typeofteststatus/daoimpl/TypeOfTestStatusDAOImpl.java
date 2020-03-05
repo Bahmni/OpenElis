@@ -247,12 +247,10 @@ public class TypeOfTestStatusDAOImpl extends BaseDAOImpl implements TypeOfTestSt
 			throws LIMSRuntimeException {
 		try {
 
-			// not case sensitive hemolysis and Hemolysis are considered
-			// duplicates
-			String sql = "from TypeOfTestStatus t where (trim(lower(t.statusName)) = :param1 or trim(lower(t.description)) = :param2)";
+			String sql = "from TypeOfTestStatus t where trim(lower(t.statusName)) = :param1";
 			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
 			query.setParameter("param1", typeOfTestStatus.getStatusName().toLowerCase().trim());
-			query.setParameter("param2", typeOfTestStatus.getDescription().toLowerCase().trim());
+
 
 			// initialize with 0 (for new records where no id has been generated yet
 			String typeOfTestStatusId = "0";

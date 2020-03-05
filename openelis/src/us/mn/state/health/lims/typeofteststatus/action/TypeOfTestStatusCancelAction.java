@@ -36,7 +36,6 @@ public class TypeOfTestStatusCancelAction extends BaseAction {
 	protected ActionForward performAction(ActionMapping mapping,
 			ActionForm form, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		System.out.println("Buvaneswari - I am inside TypeOfTestStatusCancelAction perform action");
 		DynaActionForm dynaForm = (DynaActionForm) form;
 
 		return mapping.findForward(FWD_CLOSE);

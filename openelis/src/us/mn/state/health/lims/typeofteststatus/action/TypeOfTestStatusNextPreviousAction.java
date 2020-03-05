@@ -56,7 +56,6 @@ public class TypeOfTestStatusNextPreviousAction extends BaseAction {
         String start = (String) request.getParameter("startingRecNo");
         String direction = (String) request.getParameter("direction");
 
-        // System.out.println("This is ID from request " + id);
         TypeOfTestStatus typeOfTestStatus = new TypeOfTestStatus();
 
         typeOfTestStatus.setId(id);
