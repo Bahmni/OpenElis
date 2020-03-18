@@ -31,7 +31,7 @@ public class AtomFeedProperties {
     private static final String FAILED_EVENT_MAX_RETRY = "feed.failedEventMaxRetry";
 
     public static final String DEFAULT_PROPERTY_FILENAME = "/atomfeed.properties";
-    public static final String CUSTOM_PROPERTY_FILENAME = System.getProperty("atomfeed.properties.file");
+    public static final String CUSTOM_PROPERTY_FILENAME = System.getProperty("ATOMFEED_PROPERTIES_FILE");
 
     private Properties properties;
 

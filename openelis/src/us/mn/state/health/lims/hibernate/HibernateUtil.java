@@ -49,7 +49,7 @@ public class HibernateUtil {
     private static final ThreadLocal threadSession = new ThreadLocal();
     private static final ThreadLocal threadInterceptor = new ThreadLocal();
     private static String CONFIG_FILE_LOCATION = "/us/mn/state/health/lims/hibernate/hibernate.cfg.xml";
-    private static String CUSTOM_FILE_PROPERTY = System.getProperty("hibernate.properties.file");
+    private static String CUSTOM_FILE_PROPERTY = System.getProperty("HIBERNATE_PROPERTIES_FILE");
     private static Logger logger = Logger.getLogger(HibernateUtil.class);
 
     private static String configFile = CONFIG_FILE_LOCATION;
