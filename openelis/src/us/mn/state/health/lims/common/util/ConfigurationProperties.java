@@ -83,7 +83,9 @@ public abstract class ConfigurationProperties {
 							 ADDITIONAL_SITE_INFO,
                              RESULTS_VALIDATION_PAGE_SIZE,
                              RESULTS_PAGE_SIZE,
-                             ST_NUMBER_FORMAT};
+                             ST_NUMBER_FORMAT,
+		                     flagForShowingTestStatus
+	};
 
 	
 

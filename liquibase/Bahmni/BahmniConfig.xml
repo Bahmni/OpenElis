@@ -1728,4 +1728,16 @@
             (nextVal( 'site_information_seq' ), 'accessionStrategy', 'Strategy for Accession Generation', '', 'text', (select id from site_information_domain where name = 'siteIdentity'))
         </sql>
     </changeSet>
+    <changeSet id="configure-flagForShowingTestStatus" context="bahmni" author="buvaneswari">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                select count(*) from site_information where name = 'flagForShowingTestStatus'
+            </sqlCheck>
+        </preConditions>
+        <comment>To add a flag to make result status drop down implementation specific</comment>
+        <sql >
+            insert into site_information (id, name, description, value, value_type, domain_id) values
+            (nextVal( 'site_information_seq' ), 'flagForShowingTestStatus', 'This flag needs to be set to true to see the test status drop down', '', 'text', (select id from site_information_domain where name = 'siteIdentity'))
+        </sql>
+    </changeSet>
 </databaseChangeLog>

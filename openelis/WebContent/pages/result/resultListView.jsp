@@ -61,6 +61,7 @@
 	boolean failedValidationMarks = false;
 	boolean noteRequired = false;
 	boolean autofillTechBox = false;
+	boolean flagForShowingTestStatus = false;
 
  %>
 <%
@@ -93,6 +94,9 @@
 	failedValidationMarks = ConfigurationProperties.getInstance().isPropertyValueEqual(Property.failedValidationMarker, "true");
 	noteRequired =  ConfigurationProperties.getInstance().isPropertyValueEqual(Property.notesRequiredForModifyResults, "true");
 	autofillTechBox = ConfigurationProperties.getInstance().isPropertyValueEqual(Property.autoFillTechNameBox, "true");
+	flagForShowingTestStatus = "true".equals(ConfigurationProperties.getInstance().getPropertyValue(Property.flagForShowingTestStatus));
+
+
 %>
 
 <!-- N.B. testReflex.js is dependent on utilities.js so order is important  -->
@@ -708,6 +712,8 @@ function /*void*/ processTestReflexCD4Success(xhr)
             <bean:message key="result.files"/>
         </th>
 	</tr>
+
+
 	<logic:iterate id="optionValue" name='<%=formName%>'
 				   property="typeofteststatuses" type="TypeOfTestStatus">
 		<input type="hidden"
@@ -717,6 +723,8 @@ function /*void*/ processTestReflexCD4Success(xhr)
 	</logic:iterate>
 	<logic:iterate id="testResult" name="<%=formName%>"  property="testResult" indexId="index" type="TestResultItem">
 	<logic:equal name="testResult" property="isGroupSeparator" value="true">
+
+
 	<tr>
 		<td colspan="11"><hr/></td>
 	</tr>
@@ -889,9 +897,9 @@ function /*void*/ processTestReflexCD4Success(xhr)
 		</logic:equal>
 		</td>
 		<!-- result status cell -->
+		<% if( flagForShowingTestStatus ){ %>
 		<td>
-
-			<select
+           <select
 					name="<%="testResult[" + index + "].typeOfTestStatusId"%>"
 					id='<%="testStatusId_" + index%>' class="testStatus"
 					<%=testResult.isReferredOut() ? "disabled=\'true\'" : "" %>
@@ -911,6 +919,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 			</select>
 
 		</td>
+<% } %>
 
 		<!-- result cell -->
 		<td colspan = "4">
