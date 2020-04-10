@@ -713,7 +713,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
         </th>
 	</tr>
 
-
+	<% if( flagForShowingTestStatus ){ %>
 	<logic:iterate id="optionValue" name='<%=formName%>'
 				   property="typeofteststatuses" type="TypeOfTestStatus">
 		<input type="hidden"
@@ -721,6 +721,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 			   name="optionValue"
 			   value="<%=optionValue.getIsResultRequired()%>" indexed="true" />
 	</logic:iterate>
+	<% } %>
 	<logic:iterate id="testResult" name="<%=formName%>"  property="testResult" indexId="index" type="TestResultItem">
 	<logic:equal name="testResult" property="isGroupSeparator" value="true">
 
@@ -794,7 +795,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 			<html:hidden name="testResult" property="referralCanceled" indexed="true" />
 			<html:hidden name="testResult" property="userChoicePending"  styleId='<%="userChoicePendingId_" + index%>' indexed="true"/>
 			<html:hidden name="testResult" property="isReferredOutValueChanged" indexed="true" styleId='<%="isReferredOutValueChanged"%>'/>
-			<input type="hidden"
+		<input type="hidden"
 				   id="<%="tots_" + index%>"
 				   name="totsOriginal"
 				   value="<%=(testResult.getTypeOfTestStatus() != null ? testResult.getTypeOfTestStatus().getId() : 0) %>" indexed="true" />
@@ -926,7 +927,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 			<div id = '<%="resultsSectionDiv_" + index%>'>
 				<table width="100%" border="0" cellspacing="0" id='<%="resultsSectionTable_" + index%>'>
 					<tr id='<%="resultsSection_" + index%>'>
-					
+
 					<td id='<%="cell_" + index %>' class="ruled">
 						<logic:equal name="testResult" property="resultType" value="N">
 						    <input type="text"
@@ -1212,4 +1213,3 @@ function /*void*/ processTestReflexCD4Success(xhr)
 <logic:equal name="testCount"  value="0">
 <h2><bean:message key="result.noTestsFound"/></h2>
 </logic:equal>
-
