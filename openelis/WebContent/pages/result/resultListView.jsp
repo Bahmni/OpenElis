@@ -688,9 +688,11 @@ function /*void*/ processTestReflexCD4Success(xhr)
 			<bean:message key="result.test"/>
 		</th>
 		<th width="16px">&nbsp;</th>
+		<% if( flagForShowingTestStatus ){ %>
 		<th>
 			<bean:message key="test.status"/>
 		</th>
+		<% } %>
 		<th width="165px" style="text-align: left">
 			<bean:message key="result.result"/>
 		</th>
