@@ -68,7 +68,7 @@
 
 	<tr>
 		<td class="label">
-			<bean:message key="typeofteststatus.description"/>:<span class="requiredlabel">*</span>
+			<bean:message key="typeofteststatus.description"/>:
 		</td>
 		<td>
 			<html:text name="<%=formName%>" property="description"/>
