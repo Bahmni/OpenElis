@@ -2775,7 +2775,7 @@
                 <var-value>50</var-value>
             </var> 
         </field>
-        <field property="description" depends="required,maxlength">
+        <field property="description" depends="maxlength">
             <arg0 key="typeofteststatus.description" />
             <arg1 name="maxlength" key="${var:maxlength}" resource="false"/>
             <var>
