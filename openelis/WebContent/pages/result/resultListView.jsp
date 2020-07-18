@@ -1,3 +1,4 @@
+<%@page import="us.mn.state.health.lims.typeoftestresult.valueholder.TypeOfTestResult"%>
 <%@ page language="java"
 	contentType="text/html; charset=utf-8"
 	import="java.util.Date, java.util.List,
@@ -21,7 +22,8 @@
     us.mn.state.health.lims.common.util.Versioning,
 	us.mn.state.health.lims.testreflex.action.util.TestReflexResolver,
 	java.net.URLDecoder,
-    us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl"%>
+    us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl,
+    us.mn.state.health.lims.typeofteststatus.valueholder.TypeOfTestStatus"%>
 
 <%@ taglib uri="/tags/struts-bean" prefix="bean" %>
 <%@ taglib uri="/tags/struts-html" prefix="html" %>
@@ -59,6 +61,7 @@
 	boolean failedValidationMarks = false;
 	boolean noteRequired = false;
 	boolean autofillTechBox = false;
+	boolean flagForShowingTestStatus = false;
 
  %>
 <%
@@ -91,6 +94,9 @@
 	failedValidationMarks = ConfigurationProperties.getInstance().isPropertyValueEqual(Property.failedValidationMarker, "true");
 	noteRequired =  ConfigurationProperties.getInstance().isPropertyValueEqual(Property.notesRequiredForModifyResults, "true");
 	autofillTechBox = ConfigurationProperties.getInstance().isPropertyValueEqual(Property.autoFillTechNameBox, "true");
+	flagForShowingTestStatus = "true".equals(ConfigurationProperties.getInstance().getPropertyValue(Property.flagForShowingTestStatus));
+
+
 %>
 
 <!-- N.B. testReflex.js is dependent on utilities.js so order is important  -->
@@ -161,6 +167,12 @@ $jq(document).ready( function() {
 					markUpdated(index);
 					handleReferralCheckChange(this);
 				}
+			}
+	);
+	$jq("select[class=testStatus]").each(
+			function(){
+				var index = this.id.slice(this.id.length-1,this.id.length);
+				doTestStatusResultChange(index, false);
 			}
 	);
 });
@@ -297,6 +309,9 @@ function /*void*/ handleReferralCheckChange(checkbox){
 		referralOrganization.value = 0;
 		isReferredOutValueChanged.value = true;
 	}
+	var testStatus = $(testResult).down('.testStatus');
+	testStatus.style.background = "#ffffff";
+	testStatus.disabled = isTestReferredOut;
 }
 
 function /*void*/ handleReferralReasonAndInstituteChange(index ){
@@ -371,6 +386,7 @@ function  /*void*/ savePage()
 	var form = window.document.forms[0];
     form.enctype = "multipart/form-data";
 	form.action = '<%=formName%>'.sub('Form','') + "Update.do?referer=" + '<%= referer %>'  + '<%= logbookType == "" ? "" : "&type=" + logbookType  %>';
+	enableTestStatusResultFields();
 	form.submit();
 }
 
@@ -430,7 +446,97 @@ function /*void*/ processTestReflexCD4Success(xhr)
 
 	}
 
-}
+	}
+	var disabledFields = [];
+	var disabledFieldCount = 0;
+	function clearAndTriggerOnchange($element, triggerResOnChange, index) {
+
+		if($element) {
+			//console.log($element.value);
+			var originalValue = $element.value;
+			if(!(originalValue == "" || originalValue == 0 || originalValue==false || originalValue == "on") && triggerResOnChange) {
+				if($element.type=="checkbox") {
+					$element.checked=false;
+				} else if($element.type=="select-one" || $element.type=="select-multiple") {
+					var elementsR = $element.options;
+					for (var i = 0; i < elementsR.length; i++) {
+						elementsR[i].selected = false;
+					}
+					$element.value=0;
+				} else {
+					$element.value='';
+				}
+
+				$element.dispatchEvent(new Event('change'));
+			}
+			if(!$element.disabled) {
+				//console.log("disabling Field"+ $element);
+				jQuery($element).attr("disabled", "disabled");
+				disabledFields[disabledFieldCount++] = $element;
+			}
+		}
+	}
+
+	function clearOutResultSection(index, disabled, triggerResOnChange) {
+		//console.log("Index : " + index + " Disabled " + disabled)
+		if(disabled) {
+			clearAndTriggerOnchange($("results_" + index), triggerResOnChange, index);
+			clearAndTriggerOnchange($("abnormalId_" + index), triggerResOnChange, index);
+			clearAndTriggerOnchange($("referralId_" + index), triggerResOnChange, index);
+			clearAndTriggerOnchange($("referralReasonId_" + index), triggerResOnChange, index);
+			clearAndTriggerOnchange($("referralOrganizationId_" + index), triggerResOnChange, index);
+		} else {
+			//console.log(disabledFields);
+			if(disabledFields.contains($("results_" + index))) {
+				jQuery($("results_" + index)).removeAttr("disabled");
+			}
+			if(disabledFields.contains($("abnormalId_" + index))) {
+				jQuery($("abnormalId_" + index)).removeAttr("disabled");
+			}
+			if(disabledFields.contains($("referralId_" + index))) {
+				jQuery($("referralId_" + index)).removeAttr("disabled");
+			}
+			if(disabledFields.contains($("referralReasonId_" + index))) {
+				jQuery($("referralReasonId_" + index)).removeAttr("disabled");
+			}
+			if(disabledFields.contains($("referralOrganizationId_" + index))) {
+				jQuery($("referralOrganizationId_" + index)).removeAttr("disabled");
+			}
+		}
+	}
+
+	function doTestStatusResultChange(index, triggerResOnChange) {
+		var performClearOut = "N";
+		if($("testStatusId_" + index)) {
+			var totsSelected = $("testStatusId_" + index).value;
+			// If valid type of test status selected and result required is N only then clear out the result section
+			if( totsSelected > 0 && $("tots_" + totsSelected).value == "N") {
+				performClearOut = "Y";
+			}
+			//console.log("performClearOut: " + performClearOut +" ,index: " + index);
+			if(performClearOut == "N") {
+				clearOutResultSection(index, false, triggerResOnChange);
+				$("resultsSection_" + index).className="";
+			} else {
+				clearOutResultSection(index, true, triggerResOnChange);
+				$("resultsSection_" + index).className="resultSectionDisableStyle";
+			}
+
+			if(triggerResOnChange) {
+				showStatusNote(index);
+			}
+
+		}
+
+	}
+
+	function enableTestStatusResultFields() {
+		if(disabledFields && disabledFields != null && disabledFields.length > 0) {
+			for (var i = 0; i < disabledFields.length; i++) {
+				jQuery(disabledFields[i]).removeAttr("disabled");
+			}
+		}
+	}
 
 
 </script>
@@ -582,6 +688,11 @@ function /*void*/ processTestReflexCD4Success(xhr)
 			<bean:message key="result.test"/>
 		</th>
 		<th width="16px">&nbsp;</th>
+		<% if( flagForShowingTestStatus ){ %>
+		<th>
+			<bean:message key="test.status"/>
+		</th>
+		<% } %>
 		<th width="165px" style="text-align: left">
 			<bean:message key="result.result"/>
 		</th>
@@ -603,10 +714,22 @@ function /*void*/ processTestReflexCD4Success(xhr)
             <bean:message key="result.files"/>
         </th>
 	</tr>
+
+	<% if( flagForShowingTestStatus ){ %>
+	<logic:iterate id="optionValue" name='<%=formName%>'
+				   property="typeofteststatuses" type="TypeOfTestStatus">
+		<input type="hidden"
+			   id='<%="tots_" + optionValue.getId()%>'
+			   name="optionValue"
+			   value="<%=optionValue.getIsResultRequired()%>" indexed="true" />
+	</logic:iterate>
+	<% } %>
 	<logic:iterate id="testResult" name="<%=formName%>"  property="testResult" indexId="index" type="TestResultItem">
 	<logic:equal name="testResult" property="isGroupSeparator" value="true">
+
+
 	<tr>
-		<td colspan="10"><hr/></td>
+		<td colspan="11"><hr/></td>
 	</tr>
 	<tr>
 		<th>
@@ -617,7 +740,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 			<%=StringUtil.getContextualMessageForKey("resultsentry.accessionNumber")%><br/>
 			<bean:write name="testResult" property="accessionNumber"/>
 		</th>
-		<th colspan="8" />
+		<th colspan="9" />
 	</tr>
 	</logic:equal>
 	<logic:equal name="testResult" property="isGroupSeparator" value="false">
@@ -633,7 +756,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
    <% if( compactHozSpace ){ %>
    <logic:equal  name="testResult" property="showSampleDetails" value="true">
 		<tr class='<%= rowColor %>Head <%= accessionNumber%>' >
-			<td colspan="10" class='InterstitialHead' >
+			<td colspan="11" class='InterstitialHead' >
                 <%=StringUtil.getContextualMessageForKey("result.sample.id")%> : &nbsp;
 				<b><bean:write name="testResult" property="accessionNumber"/> -
 				<bean:write name="testResult" property="sequenceNumber"/></b>
@@ -674,6 +797,10 @@ function /*void*/ processTestReflexCD4Success(xhr)
 			<html:hidden name="testResult" property="referralCanceled" indexed="true" />
 			<html:hidden name="testResult" property="userChoicePending"  styleId='<%="userChoicePendingId_" + index%>' indexed="true"/>
 			<html:hidden name="testResult" property="isReferredOutValueChanged" indexed="true" styleId='<%="isReferredOutValueChanged"%>'/>
+		<input type="hidden"
+				   id="<%="tots_" + index%>"
+				   name="totsOriginal"
+				   value="<%=(testResult.getTypeOfTestStatus() != null ? testResult.getTypeOfTestStatus().getId() : 0) %>" indexed="true" />
 		    <logic:notEmpty name="testResult" property="thisReflexKey">
 					<input type="hidden" id='<%= testResult.getThisReflexKey() %>' value='<%= index %>' />
 			</logic:notEmpty>
@@ -772,177 +899,211 @@ function /*void*/ processTestReflexCD4Success(xhr)
 			<img src="./images/nonconforming.gif" />
 		</logic:equal>
 		</td>
+		<!-- result status cell -->
+		<% if( flagForShowingTestStatus ){ %>
+		<td>
+           <select
+					name="<%="testResult[" + index + "].typeOfTestStatusId"%>"
+					id='<%="testStatusId_" + index%>' class="testStatus"
+					<%=testResult.isReferredOut() ? "disabled=\'true\'" : "" %>
+					onchange='<%= "markUpdated("+index+");doTestStatusResultChange(" + index + ", true );"  %>'>
+				<option value='0'>
+					<bean:message key="test.status.select" />
+				</option>
+
+				<logic:iterate id="optionValue" name='<%=formName %>'
+							   property="typeofteststatuses" type="TypeOfTestStatus">
+					<option value='<%=optionValue.getId()%>'
+							<%if (testResult.getTypeOfTestStatus() != null && optionValue.getId().equals(testResult.getTypeOfTestStatusId()))
+								out.print("selected='selected'");%>>
+						<%=optionValue.getStatusName()%>
+					</option>
+				</logic:iterate>
+			</select>
+
+		</td>
+<% } %>
+
 		<!-- result cell -->
-		<td id='<%="cell_" + index %>' class="ruled">
-			<logic:equal name="testResult" property="resultType" value="N">
-			    <input type="text"
-			           name='<%="testResult[" + index + "].resultValue" %>'
-			           size="6"
-			           value='<%= testResult.getResultValue() %>'
-			           id='<%= "results_" + index %>'
-                       class="testResultValue"
-			           style='<%="background: " + (testResult.isValid() ? testResult.isNormal() ? "#ffffff" : "#ffffa0" : "#ffa0a0") %>'
-			           title='<%= (testResult.isValid() ? testResult.isNormal() ? "" : StringUtil.getMessageForKey("result.value.abnormal") : StringUtil.getMessageForKey("result.value.invalid")) %>'
-					   <%= testResult.isReadOnly() || testResult.isReferredOut() ? "disabled='disabled'" : ""%>
-					   class='<%= (testResult.isReflexGroup() ? "reflexGroup_" + testResult.getReflexParentGroup()  : "")  +  (testResult.isChildReflex() ? " childReflex_" + testResult.getReflexParentGroup() : "") %> '
-					   onchange='<%="validateResults( this," + index + "," + lowerBound + "," + upperBound + "," + lowerAbnormalBound + "," + upperAbnormalBound + ", \"XXXX\" );" +
+		<td colspan = "4">
+			<div id = '<%="resultsSectionDiv_" + index%>'>
+				<table width="100%" border="0" cellspacing="0" id='<%="resultsSectionTable_" + index%>'>
+					<tr id='<%="resultsSection_" + index%>'>
+
+					<td id='<%="cell_" + index %>' class="ruled">
+						<logic:equal name="testResult" property="resultType" value="N">
+						    <input type="text"
+						           name='<%="testResult[" + index + "].resultValue" %>'
+						           size="6"
+						           value='<%= testResult.getResultValue() %>'
+						           id='<%= "results_" + index %>'
+			                       class="testResultValue"
+						           style='<%="background: " + (testResult.isValid() ? testResult.isNormal() ? "#ffffff" : "#ffffa0" : "#ffa0a0") %>'
+						           title='<%= (testResult.isValid() ? testResult.isNormal() ? "" : StringUtil.getMessageForKey("result.value.abnormal") : StringUtil.getMessageForKey("result.value.invalid")) %>'
+								   <%= testResult.isReadOnly() || testResult.isReferredOut() ? "disabled='disabled'" : ""%>
+								   class='<%= (testResult.isReflexGroup() ? "reflexGroup_" + testResult.getReflexParentGroup()  : "")  +  (testResult.isChildReflex() ? " childReflex_" + testResult.getReflexParentGroup() : "") %> '
+								   onchange='<%="validateResults( this," + index + "," + lowerBound + "," + upperBound + "," + lowerAbnormalBound + "," + upperAbnormalBound + ", \"XXXX\" );" +
 						               "markUpdated(" + index + "); " +
 						                (testResult.isReflexGroup() && !testResult.isChildReflex() ? "updateReflexChild(" + testResult.getReflexParentGroup()  +  " ); " : "") +
 						                ( noteRequired && !"".equals(testResult.getResultValue())  ? "showNote( " + index + ");" : ""  ) +
 						                ( testResult.isDisplayResultAsLog() ? " updateLogValue(this, " + index + ");" : "" ) +
 						                 "; updateAbnormalCheck( isNormalForNumeric(this.value,"+lowerBound+","+upperBound+")," + index + ")" %>'/>
 
-				<bean:write name="testResult" property="unitsOfMeasure"/>
-			</logic:equal><logic:equal name="testResult" property="resultType" value="A">
-				<app:text name="testResult"
-						  indexed="true"
-						  property="resultValue"
-						  size="20"
-						  disabled='<%= testResult.isReadOnly() || testResult.isReferredOut() %>'
-                          style='<%="background: " + (testResult.isValid() ? testResult.isNormal() ? "#ffffff" : "#ffffa0" : "#ffa0a0") %>'
-						  title='<%= (testResult.isValid() ? testResult.isNormal() ? "" : StringUtil.getMessageForKey("result.value.abnormal") : StringUtil.getMessageForKey("result.value.invalid")) %>'
-						  styleId='<%="results_" + index %>'
-                          styleClass="testResultValue"
-						  onchange='<%="markUpdated(" + index + ");"  +
+							<bean:write name="testResult" property="unitsOfMeasure"/>
+						</logic:equal><logic:equal name="testResult" property="resultType" value="A">
+							<app:text name="testResult"
+									  indexed="true"
+									  property="resultValue"
+									  size="20"
+									  disabled='<%= testResult.isReadOnly() || testResult.isReferredOut() %>'
+			                          style='<%="background: " + (testResult.isValid() ? testResult.isNormal() ? "#ffffff" : "#ffffa0" : "#ffa0a0") %>'
+									  title='<%= (testResult.isValid() ? testResult.isNormal() ? "" : StringUtil.getMessageForKey("result.value.abnormal") : StringUtil.getMessageForKey("result.value.invalid")) %>'
+									  styleId='<%="results_" + index %>'
+			                          styleClass="testResultValue"
+									  onchange='<%="markUpdated(" + index + ");"  +
 						               ((noteRequired && !"".equals(testResult.getResultValue()) ) ? "showNote( " + index + ");" : "")%>'/>
-				<bean:write name="testResult" property="unitsOfMeasure"/>
-			</logic:equal><logic:equal name="testResult" property="resultType" value="R">
-				<!-- text results -->
-				<app:textarea name="testResult"
-						  indexed="true"
-						  property="resultValue"
-						  rows="2"
-						  disabled='<%= testResult.isReadOnly() || testResult.isReferredOut() %>'
-						  style='<%="background: " + (testResult.isValid() ? testResult.isNormal() ? "#ffffff" : "#ffffa0" : "#ffa0a0") %>'
-						  title='<%= (testResult.isValid() ? testResult.isNormal() ? "" : StringUtil.getMessageForKey("result.value.abnormal") : StringUtil.getMessageForKey("result.value.invalid")) %>'
-						  styleId='<%="results_" + index %>'
-                          styleClass="testResultValue"
-						  onkeyup='<%="markUpdated(" + index + ");"  +
+							<bean:write name="testResult" property="unitsOfMeasure"/>
+						</logic:equal><logic:equal name="testResult" property="resultType" value="R">
+							<!-- text results -->
+							<app:textarea name="testResult"
+									  indexed="true"
+									  property="resultValue"
+									  rows="2"
+									  disabled='<%= testResult.isReadOnly() || testResult.isReferredOut() %>'
+									  style='<%="background: " + (testResult.isValid() ? testResult.isNormal() ? "#ffffff" : "#ffffa0" : "#ffa0a0") %>'
+									  title='<%= (testResult.isValid() ? testResult.isNormal() ? "" : StringUtil.getMessageForKey("result.value.abnormal") : StringUtil.getMessageForKey("result.value.invalid")) %>'
+									  styleId='<%="results_" + index %>'
+			                          styleClass="testResultValue"
+									  onkeyup='<%="markUpdated(" + index + ");"  +
 						               ((noteRequired && !"".equals(testResult.getResultValue()) ) ? "showNote( " + index + ");" : "")%>'
-						  />
-			</logic:equal>
-			<% if( "D".equals(testResult.getResultType()) || "Q".equals(testResult.getResultType()) ){ %>
-			<!-- dictionary results -->
-			<select name="<%="testResult[" + index + "].resultValue" %>"
-			        onchange="<%= "updateAbnormalCheck(isNormalForDropDown(this.value, ["+ testResult.getAbnormalTestResultMap()+" ]),"+  index+" );" +
+									  />
+						</logic:equal>
+						<% if( "D".equals(testResult.getResultType()) || "Q".equals(testResult.getResultType()) ){ %>
+						<!-- dictionary results -->
+						<select name="<%="testResult[" + index + "].resultValue" %>"
+						        onchange="<%= "updateAbnormalCheck(isNormalForDropDown(this.value, ["+ testResult.getAbnormalTestResultMap()+" ]),"+  index+" );" +
             "markUpdated(" + index + ", " + testResult.isUserChoiceReflex() +  ", \'" + testResult.getSiblingReflexKey() + "\') ; "   +
 						               ((noteRequired && !"".equals(testResult.getResultValue()) )? "showNote( " + index + ");" : "") +
 						               (testResult.getQualifiedDictonaryId() != null ? "showQuanitiy( this, "+ index + ", " + testResult.getQualifiedDictonaryId() + ");" :"") %>"
-			        id='<%="results_" + index%>'
-                    class="testResultValue"
+						        id='<%="results_" + index%>'
+			                    class="testResultValue"
 
-            <%=testResult.isReadOnly() || testResult.isReferredOut() ? "disabled=\'true\'" : "" %> >
-					<option value="0"></option>
-					<logic:iterate id="optionValue" name="testResult" property="dictionaryResults" type="IdValuePair" >
-						<option value='<%=optionValue.getId()%>'  <%if(optionValue.getId().equals(testResult.getResultValue())) out.print("selected"); %>  >
-							<bean:write name="optionValue" property="value"/>
-						</option>
-					</logic:iterate>
-			</select><br/>
-			<input type="text"
-			           name='<%="testResult[" + index + "].qualifiedResultValue" %>'
-			           value='<%= testResult.getQualifiedResultValue() %>'
-			           id='<%= "qualifiedDict_" + index %>'
-			           style = '<%= "display:" + ("".equals(testResult.getQualifiedResultValue()) ? "none" : "inline") %>'
-					   <%= (testResult.isReadOnly() || testResult.isReferredOut()) ? "disabled='disabled'" : ""%> />
-			<% } %><logic:equal name="testResult" property="resultType" value="M">
-			<!-- multiple results -->
-			<select name="<%="testResult[" + index + "].multiSelectResultValues" %>"
-					id='<%="results_" + index%>'
-                    class="testResultValue"
-					multiple="multiple"
-					<%= testResult.isReadOnly() || testResult.isReferredOut()? "disabled=\'disabled\'" : "" %>
-						 title='<%= StringUtil.getMessageForKey("result.multiple_select")%>'
-						 onchange='<%="markUpdated(" + index + ");"  +
+			            <%=testResult.isReadOnly() || testResult.isReferredOut() ? "disabled=\'true\'" : "" %> >
+								<option value="0"></option>
+								<logic:iterate id="optionValue" name="testResult" property="dictionaryResults" type="IdValuePair" >
+									<option value='<%=optionValue.getId()%>'  <%if(optionValue.getId().equals(testResult.getResultValue())) out.print("selected"); %>  >
+										<bean:write name="optionValue" property="value"/>
+									</option>
+								</logic:iterate>
+						</select><br/>
+						<input type="text"
+						           name='<%="testResult[" + index + "].qualifiedResultValue" %>'
+						           value='<%= testResult.getQualifiedResultValue() %>'
+						           id='<%= "qualifiedDict_" + index %>'
+						           style = '<%= "display:" + ("".equals(testResult.getQualifiedResultValue()) ? "none" : "inline") %>'
+								   <%= (testResult.isReadOnly() || testResult.isReferredOut()) ? "disabled='disabled'" : ""%> />
+						<% } %><logic:equal name="testResult" property="resultType" value="M">
+						<!-- multiple results -->
+						<select name="<%="testResult[" + index + "].multiSelectResultValues" %>"
+								id='<%="results_" + index%>'
+			                    class="testResultValue"
+								multiple="multiple"
+								<%= testResult.isReadOnly() || testResult.isReferredOut()? "disabled=\'disabled\'" : "" %>
+									 title='<%= StringUtil.getMessageForKey("result.multiple_select")%>'
+									 onchange='<%="markUpdated(" + index + ");"  +
 						               ((noteRequired && !GenericValidator.isBlankOrNull(testResult.getMultiSelectResultValues())) ? "showNote( " + index + ");" : "") %>' >
-						<logic:iterate id="optionValue" name="testResult" property="dictionaryResults" type="IdValuePair" >
-						<option value='<%=optionValue.getId()%>'
-								<%if(StringUtil.textInCommaSeperatedValues(optionValue.getId(), testResult.getMultiSelectResultValues())) out.print("selected"); %>  >
-							<bean:write name="optionValue" property="value"/>
-						</option>
-					</logic:iterate>
-				</select>
-				<html:hidden name="testResult" property="multiSelectResultValues" indexed="true" styleId='<%="multiresultId_" + index%>' />
-			</logic:equal>
-			<% if( testResult.isDisplayResultAsLog()){ %>
-						<br/><input type='text'
-								    id='<%= "log_" + index %>'
-									disabled='disabled'
-									style="color:black"
-									value='<% try{
+									<logic:iterate id="optionValue" name="testResult" property="dictionaryResults" type="IdValuePair" >
+									<option value='<%=optionValue.getId()%>'
+											<%if(StringUtil.textInCommaSeperatedValues(optionValue.getId(), testResult.getMultiSelectResultValues())) out.print("selected"); %>  >
+										<bean:write name="optionValue" property="value"/>
+									</option>
+								</logic:iterate>
+							</select>
+							<html:hidden name="testResult" property="multiSelectResultValues" indexed="true" styleId='<%="multiresultId_" + index%>' />
+						</logic:equal>
+						<% if( testResult.isDisplayResultAsLog()){ %>
+									<br/><input type='text'
+											    id='<%= "log_" + index %>'
+												disabled='disabled'
+												style="color:black"
+												value='<% try{
 												Double value = Math.log10(Double.parseDouble(testResult.getResultValue()));
 												DecimalFormat twoDForm = new DecimalFormat("##.##");
 												out.print(Double.valueOf(twoDForm.format(value)));
 												}catch(Exception e){
 													out.print("--");} %>'
-									size='6' /> log
+												size='6' /> log
+								<% } %>
+					</td>
+			        <td>
+			            <html:checkbox name='testResult'
+			                           styleClass="testValueAbnormal"
+			                           property="abnormal"
+			                           indexed="true"
+			                           styleId='<%="abnormalId_" + index %>'
+			            onchange='<%="markUpdated(" + index + ");"%>'/>
+			            <html:hidden property='<%="testResult["+index+"].abnormal"%>' value="false" styleId='<%="realAbnormalId_" + index %>'/> <!-- To submit checkbox value when unchecked -->
+			            <script language="JavaScript">
+			                enableOnlyForRemark(<%=index%>,'<%=testResult.getResultType()%>');
+			                initializeAbnormalValue(<%=index%>,'<%=testResult.getResultType()%>');
+			            </script>
+
+			        </td>
+					<% if( ableToRefer ){ %>
+					<td style="white-space: nowrap" class="ruled">
+					<html:hidden name="testResult" property="referralId" indexed='true'/>
+			            <% if ((GenericValidator.isBlankOrNull(testResult.getReferralId()) || testResult.isReferralCanceled()) && (testResult.getResult() == null || testResult.isResultValueBlankOrNull())) {%>
+			            <html:checkbox name="testResult"
+			                           property="referredOut"
+			                           indexed="true"
+			                           styleId='<%="referralId_" + index %>'
+			                           styleClass="referralCheckBox"
+			                           onchange='<%="markUpdated(" + index + "); handleReferralCheckChange(this)" %>'/>
+			            <% } else {%>
+			            <html:checkbox name="testResult"
+			                           property="referredOut"
+			                           styleClass="referralCheckBox"
+			                           indexed="true"
+			                           disabled="true"/>
+			            <% } %>
+						<select name="<%="testResult[" + index + "].referralReasonId" %>"
+						        id='<%="referralReasonId_" + index%>'
+			                    class="referralReason"
+								onchange='<%="markUpdated(" + index + "); handleReferralReasonAndInstituteChange(" + index + ")" %>'
+			                    <%= (testResult.isReferredOut() && ("0".equals(testResult.getReferralReasonId()) || "0".equals(testResult.getReferralOrganizationId()))) ? "" : "disabled='disabled'" %> >
+			                <option value='0' >
+			                    <logic:equal name="testResult" property="referralCanceled" value="true"  >
+			                        <bean:message key="referral.canceled" />
+			                    </logic:equal>
+			                </option>
+						<logic:iterate id="optionValue" name='<%=formName %>' property="referralReasons" type="IdValuePair" >
+								<option value='<%=optionValue.getId()%>'  <%if(optionValue.getId().equals(testResult.getReferralReasonId())) out.print("selected='selected'"); %>  >
+										<bean:write name="optionValue" property="value"/>
+								</option>
+						</logic:iterate>
+						</select>
+					</td>
 					<% } %>
-		</td>
-        <td>
-            <html:checkbox name='testResult'
-                           styleClass="testValueAbnormal"
-                           property="abnormal"
-                           indexed="true"
-                           styleId='<%="abnormalId_" + index %>'
-            onchange='<%="markUpdated(" + index + ");"%>'/>
-            <html:hidden property='<%="testResult["+index+"].abnormal"%>' value="false" styleId='<%="realAbnormalId_" + index %>'/> <!-- To submit checkbox value when unchecked -->
-            <script language="JavaScript">
-                enableOnlyForRemark(<%=index%>,'<%=testResult.getResultType()%>');
-                initializeAbnormalValue(<%=index%>,'<%=testResult.getResultType()%>');
-            </script>
 
-        </td>
-		<% if( ableToRefer ){ %>
-		<td style="white-space: nowrap" class="ruled">
-		<html:hidden name="testResult" property="referralId" indexed='true'/>
-            <% if ((GenericValidator.isBlankOrNull(testResult.getReferralId()) || testResult.isReferralCanceled()) && (testResult.getResult() == null || testResult.isResultValueBlankOrNull())) {%>
-            <html:checkbox name="testResult"
-                           property="referredOut"
-                           indexed="true"
-                           styleId='<%="referralId_" + index %>'
-                           styleClass="referralCheckBox"
-                           onchange='<%="markUpdated(" + index + "); handleReferralCheckChange(this)" %>'/>
-            <% } else {%>
-            <html:checkbox name="testResult"
-                           property="referredOut"
-                           styleClass="referralCheckBox"
-                           indexed="true"
-                           disabled="true"/>
-            <% } %>
-			<select name="<%="testResult[" + index + "].referralReasonId" %>"
-			        id='<%="referralReasonId_" + index%>'
-                    class="referralReason"
-					onchange='<%="markUpdated(" + index + "); handleReferralReasonAndInstituteChange(" + index + ")" %>'
-                    <%= (testResult.isReferredOut() && ("0".equals(testResult.getReferralReasonId()) || "0".equals(testResult.getReferralOrganizationId()))) ? "" : "disabled='disabled'" %> >
-                <option value='0' >
-                    <logic:equal name="testResult" property="referralCanceled" value="true"  >
-                        <bean:message key="referral.canceled" />
-                    </logic:equal>
-                </option>
-			<logic:iterate id="optionValue" name='<%=formName %>' property="referralReasons" type="IdValuePair" >
-					<option value='<%=optionValue.getId()%>'  <%if(optionValue.getId().equals(testResult.getReferralReasonId())) out.print("selected='selected'"); %>  >
-							<bean:write name="optionValue" property="value"/>
-					</option>
-			</logic:iterate>
-			</select>
-		</td>
-		<% } %>
-
-		<td style="white-space: nowrap" class="ruled">
-			<select name="<%="testResult[" + index + "].referralOrganizationId" %>"
-					id='<%="referralOrganizationId_" + index%>'
-					class="referralOrganization"
-					onchange='<%="markUpdated(" + index + "); handleReferralReasonAndInstituteChange(" + index + ")" %>'
-					<%= (testResult.isReferredOut() && ("0".equals(testResult.getReferralReasonId()) || "0".equals(testResult.getReferralOrganizationId()))) ? "" : "disabled='disabled'" %> >
-                    <logic:equal name="testResult" property="referralCanceled" value="true"  >
-                        <bean:message key="referral.canceled" />
-                    </logic:equal>
-				<logic:iterate id="optionValue" name='<%=formName %>' property="referralOrganizations" type="IdValuePair" >
-					<option value='<%=optionValue.getId()%>'  <%if(optionValue.getId().equals(testResult.getReferralOrganizationId())) out.print("selected='selected'"); %>  >
-						<bean:write name="optionValue" property="value"/>
-					</option>
-				</logic:iterate>
-			</select>
+					<td style="white-space: nowrap" class="ruled">
+						<select name="<%="testResult[" + index + "].referralOrganizationId" %>"
+								id='<%="referralOrganizationId_" + index%>'
+								class="referralOrganization"
+								onchange='<%="markUpdated(" + index + "); handleReferralReasonAndInstituteChange(" + index + ")" %>'
+								<%= (testResult.isReferredOut() && ("0".equals(testResult.getReferralReasonId()) || "0".equals(testResult.getReferralOrganizationId()))) ? "" : "disabled='disabled'" %> >
+			                    <logic:equal name="testResult" property="referralCanceled" value="true"  >
+			                        <bean:message key="referral.canceled" />
+			                    </logic:equal>
+							<logic:iterate id="optionValue" name='<%=formName %>' property="referralOrganizations" type="IdValuePair" >
+								<option value='<%=optionValue.getId()%>'  <%if(optionValue.getId().equals(testResult.getReferralOrganizationId())) out.print("selected='selected'"); %>  >
+									<bean:write name="optionValue" property="value"/>
+								</option>
+							</logic:iterate>
+						</select>
+					</td>
+					</tr>
+				</table>
+			</div>
 		</td>
 
 		<td align="left" class="ruled">
@@ -986,7 +1147,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 													<bean:message key="note.note"/>
 													<% } %>
 													:</td>
-		<td colspan="6" align="left" >
+		<td colspan="7" align="left" >
 			<html:textarea styleId='<%="note_" + index %>'
 						   onchange='<%="markUpdated(" + index + ");"%>'
 					   	   name="testResult"
@@ -1054,4 +1215,3 @@ function /*void*/ processTestReflexCD4Success(xhr)
 <logic:equal name="testCount"  value="0">
 <h2><bean:message key="result.noTestsFound"/></h2>
 </logic:equal>
-

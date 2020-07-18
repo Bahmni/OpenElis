@@ -430,6 +430,13 @@
   </html:link>
 </li>
 <%} %>
+<% if(adminFields.useField(Field.TypeOfTestStatusMenu)){ %>
+<li>
+    <html:link action="/TypeOfTestStatusMenu">
+    <bean:message key="typeofteststatus.browse.title" />
+  </html:link>
+</li>
+<% } %>
 
 </ul>
 </table>

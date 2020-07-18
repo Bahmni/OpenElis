@@ -74,7 +74,8 @@ public class AdministrationFormFields {
 		OpenReports,
 		TestUsageAggregatation,
 		ResultReporting,
-		PrintedReportsConfiguration
+		PrintedReportsConfiguration,
+		TypeOfTestStatusMenu
 	}
 
 	private static AdministrationFormFields instance = null;

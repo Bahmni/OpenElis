@@ -787,6 +787,24 @@ showNote(index) {
     $("noteRow_" + index).show();
 }
 
+function /*void*/
+hideNote(index) {
+    $("showHideButton_" + index).src = $("note_" + index).value.blank() ? "./images/note-add.gif" : "./images/note-edit.gif";
+    $("hideShow_" + index).value = "hidden";
+    $("noteRow_" + index).hide();
+}
+
+function /*void*/
+showStatusNote(index) {
+    var originalTOTS = document.getElementById("tots_" + index).value
+    var totsSelected = document.getElementById("testStatusId_" + index).value;
+    if(!((originalTOTS == null || originalTOTS =="") && totsSelected == 0) && originalTOTS != totsSelected) {
+        return showNote(index);
+    } else {
+        return hideNote(index);
+    }
+}
+
 function showQuanitiy(selector, index, dictionaryIds) {
 
     if (dictionaryIds.indexOf($jq("#resultId_" + index + " option:selected").val()) != -1) {
