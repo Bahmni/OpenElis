@@ -66,3 +66,9 @@ a.asmListItemRemove {
 	top: 0;
 	padding: 5px;
 }
+
+.resultSectionDisableStyle {
+	/* the result section result, abnormal, referral, organisation will be disabled*/
+	opacity: 0.5;
+	pointer-events: none;
+}

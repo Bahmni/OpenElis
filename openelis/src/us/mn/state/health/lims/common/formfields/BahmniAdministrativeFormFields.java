@@ -36,6 +36,7 @@ public class BahmniAdministrativeFormFields implements IAdministrationFormFields
         settings.put(AdministrationFormFields.Field.DictionaryMenu,  Boolean.TRUE);
         settings.put(AdministrationFormFields.Field.TestSectionMenu,  Boolean.TRUE);
         settings.put(AdministrationFormFields.Field.SiteInformationMenu,  Boolean.TRUE);
+        settings.put(AdministrationFormFields.Field.TypeOfTestStatusMenu,  Boolean.TRUE);
         return settings;
     }
 }

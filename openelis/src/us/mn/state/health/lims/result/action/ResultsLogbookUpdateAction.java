@@ -97,12 +97,20 @@ import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.OrderStatu
 import us.mn.state.health.lims.systemuser.daoimpl.SystemUserDAOImpl;
 import us.mn.state.health.lims.systemuser.valueholder.SystemUser;
 import us.mn.state.health.lims.test.beanItems.TestResultItem;
+import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
+import us.mn.state.health.lims.test.valueholder.Test;
 import us.mn.state.health.lims.testanalyte.valueholder.TestAnalyte;
 import us.mn.state.health.lims.testreflex.action.util.TestReflexBean;
 import us.mn.state.health.lims.testreflex.action.util.TestReflexUtil;
 import us.mn.state.health.lims.testresult.dao.TestResultDAO;
 import us.mn.state.health.lims.testresult.daoimpl.TestResultDAOImpl;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
+import us.mn.state.health.lims.teststatus.dao.TestStatusDAO;
+import us.mn.state.health.lims.teststatus.daoimpl.TestStatusDAOImpl;
+import us.mn.state.health.lims.teststatus.valueholder.TestStatus;
+import us.mn.state.health.lims.typeofteststatus.dao.TypeOfTestStatusDAO;
+import us.mn.state.health.lims.typeofteststatus.daoimpl.TypeOfTestStatusDAOImpl;
+import us.mn.state.health.lims.typeofteststatus.valueholder.TypeOfTestStatus;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -442,7 +450,13 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
                 item.setReferralReasonId(null);
                 item.setReferralOrganizationId(null);
             }
-            if (item.getIsModified() && (ResultUtil.areResults(item) || ResultUtil.areNotes(item) || item.isReferredOut() || ResultUtil.areFiles(item))) {
+            if (item.getIsModified() && (
+                    ResultUtil.areResults(item) ||
+                            ResultUtil.areNotes(item) ||
+                            item.isReferredOut() ||
+                            ResultUtil.areFiles(item) || item.isTestStatusModified())
+
+            ) {
                 modifiedItems.add(item);
             }
         }
@@ -463,6 +477,28 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
                     updateAndAddAnalysisToModifiedList(testResultItem, testResultItem.getTestDate(), analysis);
                 }
             }
+            TypeOfTestStatus originalTestStatus = testResultItem.getTypeOfTestStatus();
+            String originalTestStatusId = "0";
+            if(originalTestStatus != null ) {
+                originalTestStatusId = originalTestStatus.getId();
+            }
+            if(!originalTestStatusId.equals(testResultItem.getTypeOfTestStatusId())) {
+                updateTestStatus(testResultItem);
+            }
+        }
+    }
+
+    private void updateTestStatus(TestResultItem testResultItem) {
+
+
+        TestStatusDAO testStatusDAO = new TestStatusDAOImpl();
+        TestStatus testStatus = new TestStatus();
+        testStatus.setTestId(testResultItem.getTestId());
+        testStatus.setTestStatusId(testResultItem.getTypeOfTestStatusId());
+        if("0".equals(testResultItem.getTypeOfTestStatusId())) {
+            testStatusDAO.deleteData(testStatus);
+        } else {
+            testStatusDAO.insertOrUpdate(testStatus);
         }
     }
 

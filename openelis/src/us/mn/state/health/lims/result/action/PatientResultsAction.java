@@ -44,6 +44,7 @@ import us.mn.state.health.lims.result.action.util.ResultsLoadUtility;
 import us.mn.state.health.lims.result.action.util.ResultsPaging;
 import us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus;
 import us.mn.state.health.lims.test.beanItems.TestResultItem;
+import us.mn.state.health.lims.typeofteststatus.daoimpl.TypeOfTestStatusDAOImpl;
 
 public class PatientResultsAction extends BaseAction {
 
@@ -62,6 +63,7 @@ public class PatientResultsAction extends BaseAction {
 		PropertyUtils.setProperty(dynaForm, "displayTestKit", Boolean.FALSE);
 		PropertyUtils.setProperty(dynaForm, "referralReasons", ReferralUtil.getReferralReasons());
 		PropertyUtils.setProperty(dynaForm, "referralOrganizations", OrganizationUtils.getReferralOrganizations());
+		PropertyUtils.setProperty(dynaForm, "typeofteststatuses", new TypeOfTestStatusDAOImpl().getAllActiveTestStatus());
 
 		ResultsPaging paging = new ResultsPaging();
 		String newPage = request.getParameter("page");

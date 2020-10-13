@@ -1908,6 +1908,24 @@
     <form-property name="selectedIDs" type="java.lang.String[]"/> 
   </form-bean>
   
+  <!-- TYPE OF TEST STATUS FORM -->
+  <form-bean name="typeOfTestStatusForm" type="us.mn.state.health.lims.common.action.BaseActionForm">
+    <form-property name="id" type="java.lang.String" initial=""/>
+    <form-property name="statusName" type="java.lang.String" initial=""/>
+    <form-property name="description" type="java.lang.String" initial=""/>
+    <form-property name="statusType" type="java.lang.String" initial=""/>
+    <form-property name="isActive" type="java.lang.String" initial=""/>
+    <form-property name="isResultRequired" type="java.lang.String" initial=""/>
+    <form-property name="isApprovalRequired" type="java.lang.String" initial=""/>
+	<form-property name="lastupdated" type="java.sql.Timestamp" initial=""/>
+  </form-bean>
+  <form-bean name="typeOfTestStatusMenuForm" type="us.mn.state.health.lims.common.action.BaseActionForm">
+    <form-property name="menuList" type="java.util.List"/>
+    <form-property name="selectedIDs" type="java.lang.String[]"/>
+  </form-bean>
+
+
+
   <form-bean name="unitOfMeasureForm" type="us.mn.state.health.lims.common.action.BaseActionForm">
     <form-property name="id" type="java.lang.String" initial=""/> 
     <form-property name="unitOfMeasureName" type="java.lang.String" initial=""/> 
@@ -4943,6 +4961,48 @@
           	<forward name="fail" path="newbornSampleFullDefinition"/>
           	<forward name="successQaEventsEntry" path="/ViewQaEventsEntry.do" redirect="true"/> 
        </action>
+
+
+        <!-- TYPE_OF_TEST_STATUS -->
+        <action path="/TypeOfTestStatus" name="typeOfTestStatusForm" type="us.mn.state.health.lims.typeofteststatus.action.TypeOfTestStatusAction" validate="false">
+            <forward name="success" path="typeOfTestStatusDefinition"/>
+            <forward name="fail" path="masterListsPageDefinition"/>
+        </action>
+
+        <action path="/TypeOfTestStatusMenu" name="typeOfTestStatusMenuForm" type="us.mn.state.health.lims.typeofteststatus.action.TypeOfTestStatusMenuAction">
+            <forward name="success" path="masterListsPageDefinition"/>
+            <forward name="fail" path="/MasterListsPage.do"/>
+        </action>
+
+        <action path="/UpdateTypeOfTestStatus" name="typeOfTestStatusForm" type="us.mn.state.health.lims.typeofteststatus.action.TypeOfTestStatusUpdateAction" validate="false">
+            <forward name="success" path="/TypeOfTestStatusMenu.do" redirect="true"/>
+            <forward name="insertSuccess" path="/TypeOfTestStatus.do" redirect="true"/>
+            <forward name="fail" path="typeOfTestStatusDefinition"/>
+        </action>
+
+        <action path="/UpdateNextPreviousTypeOfTestStatus" name="typeOfTestStatusForm" type="us.mn.state.health.lims.typeofteststatus.action.TypeOfTestStatusUpdateAction" validate="false">
+            <forward name="success" path="/NextPreviousTypeOfTestResult.do"/>
+            <forward name="fail" path="typeOfTestStatusDefinition"/>
+        </action>
+
+        <action path="/NextPreviousTypeOfTestStatus" name="typeOfTestStatusForm" type="us.mn.state.health.lims.typeofteststatus.action.TypeOfTestStatusNextPreviousAction" validate="false">
+            <forward name="success" path="/TypeOfTestStatus.do" redirect="true"/>
+            <forward name="fail" path="typeOfTestStatusDefinition"/>
+        </action>
+
+        <action path="/CancelTypeOfTestStatus" name="typeOfTestStatusMenuForm" type="us.mn.state.health.lims.typeofteststatus.action.TypeOfTestStatusCancelAction" validate="false">
+            <forward name="success" path="/TypeOfTestStatusMenu.do"/>
+            <forward name="close" path="/TypeOfTestStatusMenu.do"/>
+            <forward name="fail" path="/TypeOfTestStatus.do"/>
+        </action>
+
+        <action path="/CancelTypeOfTestStatusMenu" name="typeOfTestStatusMenuForm" type="us.mn.state.health.lims.typeofteststatus.action.TypeOfTestStatusMenuCancelAction" validate="false">
+            <forward name="success" path="masterListsPageDefinition"/>
+            <forward name="fail" path="masterListsPageDefinition"/>
+            <forward name="close" path="masterListsPageDefinition"/>
+        </action>
+        <!-- END OF TYPE OF TEST STATUS -->
+
      </action-mappings>
      
 <!-- ============================================= Controller Configuration -->

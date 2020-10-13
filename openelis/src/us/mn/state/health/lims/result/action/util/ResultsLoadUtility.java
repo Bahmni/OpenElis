@@ -88,7 +88,12 @@ import us.mn.state.health.lims.testreflex.valueholder.TestReflex;
 import us.mn.state.health.lims.testresult.dao.TestResultDAO;
 import us.mn.state.health.lims.testresult.daoimpl.TestResultDAOImpl;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
+import us.mn.state.health.lims.teststatus.valueholder.TestStatus;
+import us.mn.state.health.lims.teststatus.dao.TestStatusDAO;
+import us.mn.state.health.lims.teststatus.daoimpl.TestStatusDAOImpl;
 import us.mn.state.health.lims.typeofsample.util.TypeOfSampleUtil;
+import us.mn.state.health.lims.typeofteststatus.daoimpl.TypeOfTestStatusDAOImpl;
+import us.mn.state.health.lims.typeofteststatus.valueholder.TypeOfTestStatus;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
@@ -851,6 +856,10 @@ public class ResultsLoadUtility {
             }
         }
 
+        //Test status
+        TestStatusDAO trsDAO = new TestStatusDAOImpl();
+        TestStatus testStatus = trsDAO.getTestStatusByTestId(test.getId());
+
         String uom = "";
         if (!isCD4Conclusion) {
             if (test != null && test.getUnitOfMeasure() != null) {
@@ -862,6 +871,13 @@ public class ResultsLoadUtility {
                 : analysis.getCompletedDateForDisplay();
 
         TestResultItem testItem = new TestResultItem();
+
+        if(testStatus != null &&  testStatus.getTestStatusId() != null) {
+            TypeOfTestStatus tots = new TypeOfTestStatusDAOImpl().getTypeOfTestStatusById(testStatus.getTestStatusId());
+        	testItem.setTotsResultRequired("Y".equals(tots.getIsResultRequired()) ? true : false);
+        	testItem.setTypeOfTestStatusId(tots.getId());
+            testItem.setTypeOfTestStatus(tots);
+        }
 
         testItem.setAccessionNumber(accessionNumber);
         testItem.setAnalysisId(analysis.getId());

@@ -22,6 +22,7 @@ import org.apache.struts.upload.FormFile;
 import us.mn.state.health.lims.common.util.IdValuePair;
 import us.mn.state.health.lims.result.action.util.ResultItem;
 import us.mn.state.health.lims.result.valueholder.Result;
+import us.mn.state.health.lims.typeofteststatus.valueholder.TypeOfTestStatus;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -52,6 +53,14 @@ public class TestResultItem implements ResultItem, Serializable{
     public boolean isResultValueBlankOrNull() {
         return GenericValidator.isBlankOrNull(getResult().getValue());
     }
+
+	public boolean isTestStatusModified() {
+    	if((typeOfTestStatus == null && typeOfTestStatusId != null) ||
+				(typeOfTestStatus != null && !typeOfTestStatusId.equals(typeOfTestStatus.getId()))) {
+    		return true;
+		}
+    	return false;
+	}
 
     public enum Method{ DNA, MANUAL, AUTO; }
 	public enum ResultDisplayType { TEXT, POS_NEG, POS_NEG_IND, HIV, SYPHILIS; }
@@ -130,6 +139,10 @@ public class TestResultItem implements ResultItem, Serializable{
     private FormFile uploadedFile;
     private String uploadedFileName;
 	private boolean isReferredOutValueChanged = false;
+
+	private boolean totsResultRequired = true;
+	private String typeOfTestStatusId = "";
+	private TypeOfTestStatus typeOfTestStatus = null;
 
     public String getAccessionNumber() {
 		return accessionNumber;
@@ -652,4 +665,28 @@ public class TestResultItem implements ResultItem, Serializable{
         }
         return map.toString();
     }
+
+	public TypeOfTestStatus getTypeOfTestStatus() {
+		return typeOfTestStatus;
+	}
+
+	public void setTypeOfTestStatus(TypeOfTestStatus typeOfTestStatus) {
+		this.typeOfTestStatus = typeOfTestStatus;
+	}
+
+	public boolean isTotsResultRequired() {
+		return totsResultRequired;
+	}
+
+	public void setTotsResultRequired(boolean totsResultRequired) {
+		this.totsResultRequired = totsResultRequired;
+	}
+
+	public String getTypeOfTestStatusId() {
+		return typeOfTestStatusId;
+	}
+
+	public void setTypeOfTestStatusId(String typeOfTestStatusId) {
+		this.typeOfTestStatusId = typeOfTestStatusId;
+	}
 }
