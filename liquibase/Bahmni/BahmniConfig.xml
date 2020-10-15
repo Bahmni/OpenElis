@@ -1728,4 +1728,10 @@
             (nextVal( 'site_information_seq' ), 'accessionStrategy', 'Strategy for Accession Generation', '', 'text', (select id from site_information_domain where name = 'siteIdentity'))
         </sql>
     </changeSet>
+    <changeSet id="add-new-column-for-reference-info" context="bahmni" author="Rupam">
+        <comment>Adds a referenceInfo column to test</comment>
+        <sql>
+            ALTER TABLE test ADD reference_info varchar(400);
+        </sql>
+    </changeSet>
 </databaseChangeLog>

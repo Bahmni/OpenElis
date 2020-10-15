@@ -34,6 +34,7 @@ public class ReferenceDataTest {
     private Integer sortOrder;
     private String resultType;
     private String testUnitOfMeasure;
+    private String referenceInfo;
 
     public Collection<CodedTestAnswer> getCodedTestAnswer() {
         return codedTestAnswer;
@@ -59,6 +60,10 @@ public class ReferenceDataTest {
         this.resultType = resultType;
         this.testUnitOfMeasure = testUnitOfMeasure;
     }
+
+    public String getReferenceInfo() { return referenceInfo; }
+
+    public void setReferenceInfo(String referenceInfo) { this.referenceInfo = referenceInfo; }
 
     public String getId() {
         return id;

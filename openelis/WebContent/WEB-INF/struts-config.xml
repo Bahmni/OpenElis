@@ -1489,6 +1489,7 @@
     <form-property name="id" type="java.lang.String" initial=""/> 
     <form-property name="methodName" type="java.lang.String" initial=""/>
     <form-property name="method" type="us.mn.state.health.lims.method.valueholder.Method"/>
+    <form-property name="referenceInfo" type="java.lang.String" initial=""/>
     <form-property name="labelName" type="java.lang.String" initial=""/>
     <form-property name="label" type="us.mn.state.health.lims.label.valueholder.Label"/>
     <form-property name="testTrailerName" type="java.lang.String" initial=""/>

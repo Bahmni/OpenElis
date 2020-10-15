@@ -44,6 +44,9 @@
         <property name="description" type="java.lang.String">
             <column name="DESCRIPTION" length="60" not-null="true" unique="true" />
         </property>
+        <property name="referenceInfo" type="java.lang.String">
+            <column name="reference_Info" length="240" not-null="true" unique="true" />
+        </property>
         <property name="loinc" type="java.lang.String">
             <column name="LOINC" length="240" />
         </property>

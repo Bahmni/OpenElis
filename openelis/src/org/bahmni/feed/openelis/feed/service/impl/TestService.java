@@ -171,6 +171,7 @@ public class TestService {
         test.setIsActive(referenceDataTest.getIsActive() ? IActionConstants.YES : IActionConstants.NO);
         test.setLastupdated(new Timestamp(new Date().getTime()));
         test.setName(referenceDataTest.getName());
+        test.setReferenceInfo(referenceDataTest.getReferenceInfo());
         test.setSysUserId(sysUserId);
         test.setOrderable(true);
         test.setSortOrder(String.valueOf(referenceDataTest.getSortOrder()));
