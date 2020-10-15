@@ -141,6 +141,17 @@ function getNextSortOrder() {
             </html:select>
         </td>
     </tr>
+	<tr>
+		<td class="label">
+			<bean:message key="test.methodName"/>:</span>
+		</td>
+		<td width="1">
+			<html:select name="<%=formName%>" property="methodName">
+				<html:option value=""/>
+				<html:optionsCollection name="<%=formName%>" property="testMethodList" label="methodName" value="methodName" />
+			</html:select>
+		</td>
+	</tr>
     <tr>
         <td class="label">
             <bean:message key="test.isReferredOut"/>:</span>

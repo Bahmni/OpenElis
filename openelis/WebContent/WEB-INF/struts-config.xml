@@ -1503,6 +1503,7 @@
     <!--form-property name="testReflxId" type="java.lang.String" initial=""/--> 
     <form-property name="unitOfMeasureId" type="java.lang.String" initial=""/>
     <form-property name="unitOfMeasureList" type="java.util.List"/>
+    <form-property name="testMethodList" type="java.util.List"/>
     <form-property name="testName" type="java.lang.String" initial=""/>
     <form-property name="description" type="java.lang.String" initial=""/> 
     <form-property name="loinc" type="java.lang.String" initial=""/> 

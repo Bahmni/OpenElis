@@ -25,6 +25,8 @@ import us.mn.state.health.lims.common.log.LogEvent;
 import us.mn.state.health.lims.label.dao.LabelDAO;
 import us.mn.state.health.lims.label.daoimpl.LabelDAOImpl;
 import us.mn.state.health.lims.label.valueholder.LabelComparator;
+import us.mn.state.health.lims.method.daoimpl.MethodDAOImpl;
+import us.mn.state.health.lims.method.valueholder.Method;
 import us.mn.state.health.lims.scriptlet.dao.ScriptletDAO;
 import us.mn.state.health.lims.scriptlet.daoimpl.ScriptletDAOImpl;
 import us.mn.state.health.lims.test.dao.TestDAO;
@@ -81,6 +83,8 @@ public class TestAction extends BaseAction {
 
         List<UnitOfMeasure> allUnitOfMeasures = (List<UnitOfMeasure>)(new UnitOfMeasureDAOImpl().getAllUnitOfMeasures());
         PropertyUtils.setProperty(form, "unitOfMeasureList", allUnitOfMeasures);
+		List<Method> testMethods = (List<Method>)(new MethodDAOImpl().getAllMethods());
+		PropertyUtils.setProperty(form, "testMethodList", testMethods);
 		Test test = new Test();
 
 		if ((id != null) && (!"0".equals(id))) { // this is an existing
