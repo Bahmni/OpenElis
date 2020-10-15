@@ -37,11 +37,13 @@ public class AccessionNumberValidatorFactory {
 		}else if( accessionFormat.equals("PROGRAMNUM")){
 			return getProgramValidator();
 		}if( accessionFormat.equals("YEARNUM_SIX")){
-			return getYearNumValidator(6, null);
+			return getYearNumValidator(6, null, false);
 		}if( accessionFormat.equals("YEARNUM_DASH_SEVEN")){
-			return getYearNumValidator(7, '-');
+			return getYearNumValidator(7, '-', false);
 		}if( accessionFormat.equals("YEARNUM_SEVEN")){
-			return getYearNumValidator(7, null);
+			return getYearNumValidator(7, null, false);
+		}if( accessionFormat.equals("FULL_YEARNUM_SEVEN")){
+			return getYearNumValidator(7, null, true);
 		}if( accessionFormat.equals("DATENUM")){
 			return getDateNumValidator();
 		}
@@ -60,9 +62,9 @@ public class AccessionNumberValidatorFactory {
 		return validator;
 	}
 
-	private IAccessionNumberValidator getYearNumValidator(int length, Character separator) {
+	private IAccessionNumberValidator getYearNumValidator(int length, Character separator, boolean useFullYear) {
 		if( validator == null){
-			validator = new YearNumAccessionValidator(length, separator);
+			validator = new YearNumAccessionValidator(length, separator, useFullYear);
 		}
 
 		return validator;

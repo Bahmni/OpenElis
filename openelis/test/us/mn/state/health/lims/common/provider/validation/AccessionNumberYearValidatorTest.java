@@ -29,7 +29,7 @@ import us.mn.state.health.lims.common.util.DateUtil;
 
 public class AccessionNumberYearValidatorTest {
 
-	private IAccessionNumberValidator validator = new YearNumAccessionValidator(6, null);
+	private IAccessionNumberValidator validator = new YearNumAccessionValidator(6, null, false);
 	
 	
 	@Test

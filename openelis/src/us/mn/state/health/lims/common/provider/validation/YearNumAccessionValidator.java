@@ -34,16 +34,22 @@ public class YearNumAccessionValidator implements IAccessionNumberValidator {
 	private static final int INCREMENT_START = 2;
 	private static final int YEAR_START = 0;
 	private static final int YEAR_END = 2;
+	private static final int INCREMENT_START_FULL_YEAR = 4;
+	private static final int FULL_YEAR_START = 0;
+	private static final int FULL_YEAR_END = 4;
 	private int acccessionLength = 8;
+	private int acccessionLengthForFullYear = 10;
 	private static final boolean NEED_PROGRAM_CODE = false;
 	private static Set<String> REQUESTED_NUMBERS = new HashSet<String>();
 	private final boolean useSeparator;
+	private final boolean useFullYear; // use complete year like 2020, 2019
 	private final String separator;
 	private final int separatorLength;
 	private String incrementFormat;
 
-	public YearNumAccessionValidator( int length, Character separator){
+	public YearNumAccessionValidator( int length, Character separator,boolean useFullYear){
 		useSeparator = separator != null;
+		this.useFullYear = useFullYear;
 		this.separator = useSeparator ? separator.toString() : "";
 		separatorLength = useSeparator ? 1 : 0;
 		incrementFormat = "%0" + String.valueOf(length) + "d";
@@ -51,6 +57,7 @@ public class YearNumAccessionValidator implements IAccessionNumberValidator {
 		String upper = incrementStartingValue.replace("0", "9").replace("1", "9");
 		upperIncrementValue = Integer.parseInt(upper);	
 		acccessionLength = length + YEAR_END + (useSeparator ? 1 : 0);
+		acccessionLengthForFullYear = length + FULL_YEAR_END + (useSeparator ? 1 : 0);
 	}
 	
 	public boolean needProgramCode() {
@@ -58,22 +65,43 @@ public class YearNumAccessionValidator implements IAccessionNumberValidator {
 	}
 
 	public String createFirstAccessionNumber(String programCode) {
-		return DateUtil.getTwoDigitYear() + separator + incrementStartingValue;
+		if(useFullYear) {
+			return DateUtil.getFourDigitYear() + separator + incrementStartingValue;
+		}else
+		{
+			return DateUtil.getTwoDigitYear() + separator + incrementStartingValue;
+		}
 	}
 
 	public String incrementAccessionNumber(String currentHighAccessionNumber) {
 
-		int increment = Integer.parseInt(currentHighAccessionNumber.substring(INCREMENT_START + separatorLength));
+		int increment;
+		String year;
 		String incrementAsString = incrementStartingValue;
-		String year = DateUtil.getTwoDigitYear();
-
-		if (year.equals(currentHighAccessionNumber.substring(YEAR_START, YEAR_END))) {
-			if (increment < upperIncrementValue) {
-				increment++;
-				incrementAsString = String.format(incrementFormat, increment);
-			} else {
-				throw new IllegalArgumentException("AccessionNumber has no next value");
+		if(useFullYear)
+		{
+			 increment= Integer.parseInt(currentHighAccessionNumber.substring(INCREMENT_START_FULL_YEAR + separatorLength));
+			year = DateUtil.getFourDigitYear();
+			if (year.equals(currentHighAccessionNumber.substring(FULL_YEAR_START, FULL_YEAR_END))) {
+				if (increment < upperIncrementValue) {
+					increment++;
+					incrementAsString = String.format(incrementFormat, increment);
+				} else {
+					throw new IllegalArgumentException("AccessionNumber has no next value");
+				}
 			}
+		} else {
+			increment = Integer.parseInt(currentHighAccessionNumber.substring(INCREMENT_START + separatorLength));
+			year= DateUtil.getTwoDigitYear();
+			if (year.equals(currentHighAccessionNumber.substring(YEAR_START, YEAR_END))) {
+				if (increment < upperIncrementValue) {
+					increment++;
+					incrementAsString = String.format(incrementFormat, increment);
+				} else {
+					throw new IllegalArgumentException("AccessionNumber has no next value");
+				}
+			}
+
 		}
 
 		StringBuilder builder = new StringBuilder(year);
@@ -84,21 +112,42 @@ public class YearNumAccessionValidator implements IAccessionNumberValidator {
 	}
 
 	public ValidationResults validFormat(String accessionNumber, boolean checkDate) {
-		// The rule is 2 digit year code and incremented numbers
-		if (accessionNumber.length() != acccessionLength) {
-			return ValidationResults.LENGTH_FAIL;
-		}
+		if(useFullYear)
+		{
+			// The rule is 4 digit year code and incremented numbers
+			if (accessionNumber.length() != acccessionLengthForFullYear) {
+				return ValidationResults.LENGTH_FAIL;
+			}
 
-		if(checkDate){
-			if( !DateUtil.getTwoDigitYear().equals(accessionNumber.substring(YEAR_START, YEAR_END))){
-				return ValidationResults.YEAR_FAIL;
+			if (checkDate) {
+				if (!DateUtil.getFourDigitYear().equals(accessionNumber.substring(FULL_YEAR_START, FULL_YEAR_END))) {
+					return ValidationResults.YEAR_FAIL;
+				}
+			}
+
+			try {
+				Integer.parseInt(accessionNumber.substring(INCREMENT_START_FULL_YEAR + separatorLength));
+			} catch (NumberFormatException e) {
+				return ValidationResults.FORMAT_FAIL;
 			}
 		}
+		else {
+			// The rule is 2 digit year code and incremented numbers
+			if (accessionNumber.length() != acccessionLength) {
+				return ValidationResults.LENGTH_FAIL;
+			}
 
-		try {
-			Integer.parseInt(accessionNumber.substring(INCREMENT_START + separatorLength));
-		} catch (NumberFormatException e) {
-			return ValidationResults.FORMAT_FAIL;
+			if (checkDate) {
+				if (!DateUtil.getTwoDigitYear().equals(accessionNumber.substring(YEAR_START, YEAR_END))) {
+					return ValidationResults.YEAR_FAIL;
+				}
+			}
+
+			try {
+				Integer.parseInt(accessionNumber.substring(INCREMENT_START + separatorLength));
+			} catch (NumberFormatException e) {
+				return ValidationResults.FORMAT_FAIL;
+			}
 		}
 
 		return ValidationResults.SUCCESS;
