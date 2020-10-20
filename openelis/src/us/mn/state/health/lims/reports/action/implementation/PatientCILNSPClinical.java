@@ -61,6 +61,7 @@ public class PatientCILNSPClinical extends HaitiPatientReport implements IReport
 		analysisStatusIds.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.ReferredIn)));
 		analysisStatusIds.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.TechnicalAcceptance)));
 		analysisStatusIds.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.Canceled)));
+		analysisStatusIds.add(Integer.parseInt(StatusOfSampleUtil.getStatusID(AnalysisStatus.MarkedAsDone)));
 
 	}
 

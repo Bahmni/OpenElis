@@ -30,6 +30,7 @@ import us.mn.state.health.lims.common.action.BaseActionForm;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.util.DateUtil;
+import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.note.dao.NoteDAO;
 import us.mn.state.health.lims.note.daoimpl.NoteDAOImpl;
 import us.mn.state.health.lims.note.util.NoteUtil;
@@ -232,7 +233,13 @@ public class ResultValidationSaveAction extends BaseResultValidationAction {
 				if (!analysisIdList.contains(analysisId)) {
 
 					if (analysisItem.getIsAccepted()) {
-						analysis.finalizeResult();
+						if(StringUtil.isNullorNill(analysisItem.getResult()) && StringUtil.isNullorNill(analysisItem.getUploadedFilePath()) && !analysisItem.isAbnormal())
+						{
+							analysis.getMarkedAsDone();
+						}
+						else {
+							analysis.finalizeResult();
+						}
 						analysis.setReleasedDate(new java.sql.Date(Calendar.getInstance().getTimeInMillis()));
 						analysisIdList.add(analysisId);
 						analysisUpdateList.add(analysis);

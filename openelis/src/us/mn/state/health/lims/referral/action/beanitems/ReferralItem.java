@@ -57,6 +57,7 @@ public class ReferralItem implements IReferralResultTest, Serializable {
     private boolean abnormal;
     private FormFile uploadedFile;
     private String uploadedFileName;
+    private boolean markedAsDone;
 
     public String getReferralId() {
         return referralId;
@@ -281,6 +282,10 @@ public class ReferralItem implements IReferralResultTest, Serializable {
     public void setPatientNumber(String patientNumber) {
         this.patientNumber = patientNumber;
     }
+
+    public boolean isMarkedAsDone() { return markedAsDone; }
+
+    public void setMarkedAsDone(boolean markedAsDone) { this.markedAsDone = markedAsDone; }
 
     @Override
     public boolean isAbnormal() {
