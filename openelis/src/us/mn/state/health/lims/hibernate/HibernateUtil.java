@@ -31,6 +31,7 @@ import org.hibernate.connection.ConnectionProvider;
 import org.hibernate.impl.SessionFactoryImpl;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
+import us.mn.state.health.lims.common.util.StringUtil;
 
 /**
  * Basic Hibernate helper class, handles SessionFactory, Session and Transaction.
@@ -66,12 +67,13 @@ public class HibernateUtil {
             configuration = new Configuration();
             configuration.configure(configFile);
 
-            if ((new File(CUSTOM_FILE_PROPERTY)).exists()){
-                FileInputStream customPropertyStream = new FileInputStream(CUSTOM_FILE_PROPERTY);
-                Properties properties = new Properties();
-                properties.load(customPropertyStream);
-                configuration.addProperties(properties);
-            }
+
+                if (!StringUtil.isNullorNill(CUSTOM_FILE_PROPERTY) && (new File(CUSTOM_FILE_PROPERTY)).exists()) {
+                    FileInputStream customPropertyStream = new FileInputStream(CUSTOM_FILE_PROPERTY);
+                    Properties properties = new Properties();
+                    properties.load(customPropertyStream);
+                    configuration.addProperties(properties);
+                }
 
             //bugzilla 1939 (trim changed data before update/insert)
             //configuration.setInterceptor(new LIMSTrimDataInterceptor());
