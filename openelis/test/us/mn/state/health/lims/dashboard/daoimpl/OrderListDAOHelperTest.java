@@ -26,7 +26,7 @@ public class OrderListDAOHelperTest {
     public void shouldReturnPriorityAndSampleTypeInSelectClauseWhenConfigIsEnabled() {
         OrderListDAOHelper orderListDAOHelper = new OrderListDAOHelper(true);
         String sqlForToday = orderListDAOHelper.createSqlForToday("condition", "orderBy", "analysisStatus",
-                "validationAnalysisStatus", "completed");
+                "validationAnalysisStatus", "referredAnalysisStatus","completed");
 
         assertTrue(sqlForToday.contains("sample.priority AS priority,\n" + "type_of_sample.description AS sample_type, \n"));
     }
@@ -35,7 +35,7 @@ public class OrderListDAOHelperTest {
     public void shouldNotHavePriorityAndSampleTypeInSelectClauseWhenConfigIsNotEnabled() {
         OrderListDAOHelper orderListDAOHelper = new OrderListDAOHelper(false);
         String sqlForToday = orderListDAOHelper.createSqlForToday("condition", "orderBy", "analysisStatus",
-                "validationAnalysisStatus", "completed");
+                "validationAnalysisStatus", "referredAnalysisStatus","completed");
 
         assertFalse(sqlForToday.contains("sample.priority AS priority,\n" + "type_of_sample.description AS sample_type, \n"));
     }

@@ -22,6 +22,7 @@ String path = "";
 String basePath = "";
 String serverNow = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
 Boolean alwaysValidate = ConfigurationProperties.getInstance().isPropertyValueEqual(ConfigurationProperties.Property.ALWAYS_VALIDATE_RESULTS, "true");
+Boolean showReferredTestsCount = ConfigurationProperties.getInstance().isPropertyValueEqual(ConfigurationProperties.Property.SHOW_REFERRED_TESTS_COUNT, "true");
 Boolean showPatientsDetailsInSampleLabelPrint = ConfigurationProperties.getInstance().isPropertyValueEqual(ConfigurationProperties.Property.SHOW_PATIENT_DETAILS_SAMPLE_LABEL_PRINT, "true");
 %>
 
@@ -117,6 +118,7 @@ basePath = path + "/";
         data-accessionNumber = '<bean:message key="dashboard.sample.column.accessionNumber"/>'
         data-pendingTests = '<bean:message key="dashboard.sample.column.pendingTests"/>'
         data-pendingValidation = '<bean:message key="dashboard.sample.column.pendingValidation"/>'
+        data-referredTests = '<bean:message key="dashboard.sample.column.referredTests"/>'
         data-completed = '<bean:message key="dashboard.sample.column.completed"/>'
         data-printed = '<bean:message key="dashboard.sample.column.printed"/>'
         data-link-collectSample = '<bean:message key="dashboard.sample.column.link.collectSample"/>'
@@ -249,12 +251,20 @@ basePath = path + "/";
         var gridForBacklogSamplesToCollect = new Slick.Grid(backlogSamplesToCollectObject.div, dataViewForBacklogSamplesToCollect, backlogSamplesToCollectObject.columns,options);
         createGrid(gridForBacklogSamplesToCollect, dataViewForBacklogSamplesToCollect, backlogSamplesToCollectObject, onRowSelection);
 
-        var todayOrdersObject = new order("#todaySamplesCollectedListContainer-slick-grid", todayOrderList, generateAllLinksForOrder, getColumnsForTodayOrder, <%= alwaysValidate%>, showPriorityColumn);
+        if(<%= showReferredTestsCount%>) { // show referred Test count column in dashboard
+            var todayOrdersObject = new order("#todaySamplesCollectedListContainer-slick-grid", todayOrderList, generateAllLinksForOrder, getColumnsForTodayOrderWithReferredOutTestsCountColumn, <%= alwaysValidate%>, showPriorityColumn);
+        } else {
+            var todayOrdersObject = new order("#todaySamplesCollectedListContainer-slick-grid", todayOrderList, generateAllLinksForOrder, getColumnsForTodayOrder, <%= alwaysValidate%>, showPriorityColumn);
+        }
         var dataViewForTodayTab = new Slick.Data.DataView();
         var gridForTodayOrder = new Slick.Grid(todayOrdersObject.div, dataViewForTodayTab, todayOrdersObject.columns,options);
         createGrid(gridForTodayOrder, dataViewForTodayTab, todayOrdersObject, onRowSelection);
 
-        var backlogOrdersObject = new order("#backlogSamplesCollectedListContainer-slick-grid", backlogOrderList, generateAllLinksForOrder, getColumnsForBacklogOrder, <%= alwaysValidate%>, showPriorityColumn);
+        if(<%= showReferredTestsCount%>) { // show referred Test count column in dashboard
+            var backlogOrdersObject = new order("#backlogSamplesCollectedListContainer-slick-grid", backlogOrderList, generateAllLinksForOrder, getColumnsForBacklogOrderWithReferredOutTestsCountColumn, <%= alwaysValidate%>, showPriorityColumn);
+        }else {
+            var backlogOrdersObject = new order("#backlogSamplesCollectedListContainer-slick-grid", backlogOrderList, generateAllLinksForOrder, getColumnsForBacklogOrder, <%= alwaysValidate%>, showPriorityColumn);
+        }
         var dataViewForBacklogTab = new Slick.Data.DataView();
         var gridForBacklogOrder = new Slick.Grid(backlogOrdersObject.div, dataViewForBacklogTab, backlogOrdersObject.columns,options);
         createGrid(gridForBacklogOrder, dataViewForBacklogTab, backlogOrdersObject, onRowSelection);

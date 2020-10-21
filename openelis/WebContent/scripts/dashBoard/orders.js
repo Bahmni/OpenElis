@@ -208,6 +208,7 @@ function getColumnsForBacklogOrder(showPriorityColumn, alwaysValidate) {
         }
     }
 }
+
 function getColumnsForSampleNotCollected(showPriorityColumn) {
     if(showPriorityColumn) {
         return [
@@ -233,6 +234,151 @@ function getColumnsForSampleNotCollected(showPriorityColumn) {
         ];
     }
 }
+
+
+// here referred Out test count column will be visible in dashboard
+function getColumnsForTodayOrderWithReferredOutTestsCountColumn(showPriorityColumn, alwaysValidate) {
+    if(showPriorityColumn) {
+        if (alwaysValidate) {
+            return [
+                {id:"accessionNumber", name:jQuery("#translatedColumnNames").attr("data-accessionNumber"), field:"accessionNumber", sortable:true, index:0, editor:Slick.Editors.Text, minWidth:160},
+                {id:"stNumber", name:jQuery("#translatedColumnNames").attr("data-patientID"), field:"stNumber", sortable:true, editor:Slick.Editors.Text, index:1, minWidth:120},
+                {id:"name", name:jQuery("#translatedColumnNames").attr("data-patientName"), field:"name", sortable:true, index:2, editor:Slick.Editors.Text, minWidth:140},
+                {id:"sectionNames", name:jQuery("#translatedColumnNames").attr("data-sectionNames"), field:"sectionNames", searchable:true, sortable:true, index:3, editor:Slick.Editors.Text, minWidth:160},
+                {id:"sampleType", name:jQuery("#translatedColumnNames").attr("data-sampleType"), field:"sampleType", searchable:true, sortable:true, index:4, editor:Slick.Editors.Text, minWidth:160},
+                {id:"priority", name:jQuery("#translatedColumnNames").attr("data-priority"), field:"priority", searchable:true, sortable:true, index:5, editor:Slick.Editors.Text, minWidth:160},
+                {id:"pendingTestCount", name:jQuery("#translatedColumnNames").attr("data-pendingTests"), field:"pendingTestCount", sortable:true, editor:Slick.Editors.Text, index:6, searchable:false, minWidth:100},
+                {id:"referredTestCount", name:jQuery("#translatedColumnNames").attr("data-referredTests"), field:"referredTestCount", sortable:true, editor:Slick.Editors.Text, index:7, searchable:false, minWidth:80},
+                {id:"pendingValidationCount", name:jQuery("#translatedColumnNames").attr("data-pendingValidation"), field:"pendingValidationCount", sortable:true, editor:Slick.Editors.Text, index:8, searchable:false, minWidth:140},
+                {id:"totalTestCount", name:jQuery("#translatedColumnNames").attr("data-total"), field:"totalTestCount", sortable:true, editor:Slick.Editors.Text, index:9, searchable:false, minWidth:50},
+                {id:"notes", name:jQuery("#translatedColumnNames").attr("data-notes"), field:"comments", sortable:true, index:10, searchable:false, editor:Slick.Editors.Text, minWidth:170},
+                {id:"isCompleted", name:jQuery("#translatedColumnNames").attr("data-completed"), field:"isCompleted", sortable:true, cssClass:"cell-title", index:11, formatter:Slick.Formatters.YesNo, searchable:false, minWidth:120},
+                {id:"link", name:jQuery("#translatedColumnNames").attr("data-action"), field:"link", cssClass:"cell-title", formatter:formatter, index:12, editor:Slick.Editors.Text, searchable:false, minWidth:180},
+                {id:"isPrinted", name:jQuery("#translatedColumnNames").attr("data-printed"), field:"isPrinted", sortable:true, cssClass:"cell-title", index:13, formatter:Slick.Formatters.Checkmark, searchable:false, minWidth:80},
+            ];
+        }
+        else {
+            return [
+                {id:"accessionNumber", name:jQuery("#translatedColumnNames").attr("data-accessionNumber"), field:"accessionNumber", sortable:true, index:0, editor:Slick.Editors.Text, minWidth:160},
+                {id:"stNumber", name:jQuery("#translatedColumnNames").attr("data-patientID"), field:"stNumber", sortable:true, editor:Slick.Editors.Text, index:1, minWidth:170},
+                {id:"name", name:jQuery("#translatedColumnNames").attr("data-patientName"), field:"name", sortable:true, index:2, editor:Slick.Editors.Text, minWidth:160},
+                {id:"sectionNames", name:jQuery("#translatedColumnNames").attr("data-sectionNames"), field:"sectionNames", searchable:true, sortable:true, index:3, editor:Slick.Editors.Text, minWidth:160},
+                {id:"sampleType", name:jQuery("#translatedColumnNames").attr("data-sampleType"), field:"sampleType", searchable:true, sortable:true, index:4, editor:Slick.Editors.Text, minWidth:160},
+                {id:"priority", name:jQuery("#translatedColumnNames").attr("data-priority"), field:"priority", searchable:true, sortable:true, index:5, editor:Slick.Editors.Text, minWidth:160},
+                {id:"pendingTestCount", name:jQuery("#translatedColumnNames").attr("data-pendingTests"), field:"pendingTestCount", sortable:true, editor:Slick.Editors.Text, index:6, searchable:false, minWidth:100},
+                {id:"referredTestCount", name:jQuery("#translatedColumnNames").attr("data-referredTests"), field:"referredTestCount", sortable:true, editor:Slick.Editors.Text, index:7, searchable:false, minWidth:80},
+                {id:"totalTestCount", name:jQuery("#translatedColumnNames").attr("data-total"), field:"totalTestCount", sortable:true, editor:Slick.Editors.Text, index:8, searchable:false, minWidth:70},
+                {id:"notes", name:jQuery("#translatedColumnNames").attr("data-notes"), field:"comments", sortable:true, index:9, searchable:false, editor:Slick.Editors.Text, minWidth:160},
+                {id:"isCompleted", name:"Completed", field:"isCompleted", sortable:true, cssClass:"cell-title", index:10, formatter:Slick.Formatters.YesNo, searchable:false, minWidth:120},
+                {id:"link", name:jQuery("#translatedColumnNames").attr("data-action"), field:"link", cssClass:"cell-title", formatter:formatter, index:11, editor:Slick.Editors.Text, searchable:false, minWidth:180},
+                {id:"isPrinted", name:jQuery("#translatedColumnNames").attr("data-printed"), field:"isPrinted", sortable:true, cssClass:"cell-title", index:12, formatter:Slick.Formatters.Checkmark, searchable:false, minWidth:80},
+            ];
+        }
+    } else {
+        if (alwaysValidate) {
+            return [
+                {id:"accessionNumber", name:jQuery("#translatedColumnNames").attr("data-accessionNumber"), field:"accessionNumber", sortable:true, index:0, editor:Slick.Editors.Text, minWidth:160},
+                {id:"stNumber", name:jQuery("#translatedColumnNames").attr("data-patientID"), field:"stNumber", sortable:true, editor:Slick.Editors.Text, index:1, minWidth:120},
+                {id:"name", name:jQuery("#translatedColumnNames").attr("data-patientName"), field:"name", sortable:true, index:2, editor:Slick.Editors.Text, minWidth:140},
+                {id:"sectionNames", name:jQuery("#translatedColumnNames").attr("data-sectionNames"), field:"sectionNames", searchable:true, sortable:true, index:3, editor:Slick.Editors.Text, minWidth:160},
+                {id:"pendingTestCount", name:jQuery("#translatedColumnNames").attr("data-pendingTests"), field:"pendingTestCount", sortable:true, editor:Slick.Editors.Text, index:4, searchable:false, minWidth:100},
+                {id:"referredTestCount", name:jQuery("#translatedColumnNames").attr("data-referredTests"), field:"referredTestCount", sortable:true, editor:Slick.Editors.Text, index:5, searchable:false, minWidth:80},
+                {id:"pendingValidationCount", name:jQuery("#translatedColumnNames").attr("data-pendingValidation"), field:"pendingValidationCount", sortable:true, editor:Slick.Editors.Text, index:6, searchable:false, minWidth:140},
+                {id:"totalTestCount", name:jQuery("#translatedColumnNames").attr("data-total"), field:"totalTestCount", sortable:true, editor:Slick.Editors.Text, index:7, searchable:false, minWidth:50},
+                {id:"notes", name:jQuery("#translatedColumnNames").attr("data-notes"), field:"comments", sortable:true, index:8, searchable:false, editor:Slick.Editors.Text, minWidth:170},
+                {id:"isCompleted", name:jQuery("#translatedColumnNames").attr("data-completed"), field:"isCompleted", sortable:true, cssClass:"cell-title", index:9, formatter:Slick.Formatters.YesNo, searchable:false, minWidth:120},
+                {id:"link", name:jQuery("#translatedColumnNames").attr("data-action"), field:"link", cssClass:"cell-title", formatter:formatter, index:10, editor:Slick.Editors.Text, searchable:false, minWidth:180},
+                {id:"isPrinted", name:jQuery("#translatedColumnNames").attr("data-printed"), field:"isPrinted", sortable:true, cssClass:"cell-title", index:11, formatter:Slick.Formatters.Checkmark, searchable:false, minWidth:80},
+            ];
+        }
+        else {
+            return [
+                {id:"accessionNumber", name:jQuery("#translatedColumnNames").attr("data-accessionNumber"), field:"accessionNumber", sortable:true, index:0, editor:Slick.Editors.Text, minWidth:160},
+                {id:"stNumber", name:jQuery("#translatedColumnNames").attr("data-patientID"), field:"stNumber", sortable:true, editor:Slick.Editors.Text, index:1, minWidth:170},
+                {id:"name", name:jQuery("#translatedColumnNames").attr("data-patientName"), field:"name", sortable:true, index:2, editor:Slick.Editors.Text, minWidth:160},
+                {id:"sectionNames", name:jQuery("#translatedColumnNames").attr("data-sectionNames"), field:"sectionNames", searchable:true, sortable:true, index:3, editor:Slick.Editors.Text, minWidth:160},
+                {id:"pendingTestCount", name:jQuery("#translatedColumnNames").attr("data-pendingTests"), field:"pendingTestCount", sortable:true, editor:Slick.Editors.Text, index:4, searchable:false, minWidth:100},
+                {id:"referredTestCount", name:jQuery("#translatedColumnNames").attr("data-referredTests"), field:"referredTestCount", sortable:true, editor:Slick.Editors.Text, index:5, searchable:false, minWidth:80},
+                {id:"totalTestCount", name:jQuery("#translatedColumnNames").attr("data-total"), field:"totalTestCount", sortable:true, editor:Slick.Editors.Text, index:6, searchable:false, minWidth:70},
+                {id:"notes", name:jQuery("#translatedColumnNames").attr("data-notes"), field:"comments", sortable:true, index:7, searchable:false, editor:Slick.Editors.Text, minWidth:160},
+                {id:"isCompleted", name:"Completed", field:"isCompleted", sortable:true, cssClass:"cell-title", index:8, formatter:Slick.Formatters.YesNo, searchable:false, minWidth:120},
+                {id:"link", name:jQuery("#translatedColumnNames").attr("data-action"), field:"link", cssClass:"cell-title", formatter:formatter, index:9, editor:Slick.Editors.Text, searchable:false, minWidth:180},
+                {id:"isPrinted", name:jQuery("#translatedColumnNames").attr("data-printed"), field:"isPrinted", sortable:true, cssClass:"cell-title", index:10, formatter:Slick.Formatters.Checkmark, searchable:false, minWidth:80},
+            ];
+        }
+    }
+}
+
+
+// here referred Out test count column will be visible in dashboard for backlog orders
+function getColumnsForBacklogOrderWithReferredOutTestsCountColumn(showPriorityColumn, alwaysValidate) {
+    if(showPriorityColumn) {
+        if (alwaysValidate) {
+            return [
+                {id:"accessionNumber", name:jQuery("#translatedColumnNames").attr("data-accessionNumber"), field:"accessionNumber", sortable:true, index:0, editor:Slick.Editors.Text, minWidth:160},
+                {id:"stNumber", name:jQuery("#translatedColumnNames").attr("data-patientID"), field:"stNumber", sortable:true, editor:Slick.Editors.Text, index:1, minWidth:120},
+                {id:"name", name:jQuery("#translatedColumnNames").attr("data-patientName"), field:"name", sortable:true, index:2, editor:Slick.Editors.Text, minWidth:140},
+                {id:"sectionNames", name:jQuery("#translatedColumnNames").attr("data-sectionNames"), field:"sectionNames", searchable:true, sortable:true, index:3, editor:Slick.Editors.Text, minWidth:160},
+                {id:"sampleType", name:jQuery("#translatedColumnNames").attr("data-sampleType"), field:"sampleType", searchable:true, sortable:true, index:4, editor:Slick.Editors.Text, minWidth:160},
+                {id:"priority", name:jQuery("#translatedColumnNames").attr("data-priority"), field:"priority", searchable:true, sortable:true, index:5, editor:Slick.Editors.Text, minWidth:160},
+                {id:"pendingTestCount", name:jQuery("#translatedColumnNames").attr("data-pendingTests"), field:"pendingTestCount", sortable:true, editor:Slick.Editors.Text, index:6, searchable:false, minWidth:100},
+                {id:"referredTestCount", name:jQuery("#translatedColumnNames").attr("data-referredTests"), field:"referredTestCount", sortable:true, editor:Slick.Editors.Text, index:7, searchable:false, minWidth:80},
+                {id:"pendingValidationCount", name:jQuery("#translatedColumnNames").attr("data-pendingValidation"), field:"pendingValidationCount", sortable:true, editor:Slick.Editors.Text, index:8, searchable:false, minWidth:140},
+                {id:"totalTestCount", name:jQuery("#translatedColumnNames").attr("data-total"), field:"totalTestCount", sortable:true, editor:Slick.Editors.Text, index:9, searchable:false, minWidth:50},
+                {id:"notes", name:jQuery("#translatedColumnNames").attr("data-notes"), field:"comments", sortable:true, index:10, searchable:false, editor:Slick.Editors.Text, minWidth:290},
+                {id:"link", name:jQuery("#translatedColumnNames").attr("data-action"), field:"link", cssClass:"cell-title", formatter:formatter, index:11, editor:Slick.Editors.Text, searchable:false, minWidth:180},
+                {id:"isPrinted", name:jQuery("#translatedColumnNames").attr("data-printed"), field:"isPrinted", sortable:true, cssClass:"cell-title", index:12, formatter:Slick.Formatters.Checkmark, searchable:false, minWidth:80}
+            ];
+        }
+        else {
+            return [
+                {id:"accessionNumber", name:jQuery("#translatedColumnNames").attr("data-accessionNumber"), field:"accessionNumber", sortable:true, index:0, editor:Slick.Editors.Text, minWidth:160},
+                {id:"stNumber", name:jQuery("#translatedColumnNames").attr("data-patientID"), field:"stNumber", sortable:true, editor:Slick.Editors.Text, index:1, minWidth:160},
+                {id:"name", name:jQuery("#translatedColumnNames").attr("data-patientName"), field:"name", sortable:true, index:2, editor:Slick.Editors.Text, minWidth:160},
+                {id:"sectionNames", name:jQuery("#translatedColumnNames").attr("data-sectionNames"), field:"sectionNames", searchable:true, sortable:true, index:3, editor:Slick.Editors.Text, minWidth:160},
+                {id:"sampleType", name:jQuery("#translatedColumnNames").attr("data-sampleType"), field:"sampleType", searchable:true, sortable:true, index:4, editor:Slick.Editors.Text, minWidth:160},
+                {id:"priority", name:jQuery("#translatedColumnNames").attr("data-priority"), field:"priority", searchable:true, sortable:true, index:5, editor:Slick.Editors.Text, minWidth:160},
+                {id:"pendingTestCount", name:jQuery("#translatedColumnNames").attr("data-pendingTests"), field:"pendingTestCount", sortable:true, editor:Slick.Editors.Text, index:6, searchable:false, minWidth:100},
+                {id:"referredTestCount", name:jQuery("#translatedColumnNames").attr("data-referredTests"), field:"referredTestCount", sortable:true, editor:Slick.Editors.Text, index:7, searchable:false, minWidth:80},
+                {id:"totalTestCount", name:jQuery("#translatedColumnNames").attr("data-total"), field:"totalTestCount", sortable:true, editor:Slick.Editors.Text, index:8, searchable:false, minWidth:70},
+                {id:"notes", name:jQuery("#translatedColumnNames").attr("data-notes"), field:"comments", sortable:true, index:9, searchable:false, editor:Slick.Editors.Text, minWidth:290},
+                {id:"link", name:jQuery("#translatedColumnNames").attr("data-action"), field:"link", cssClass:"cell-title", formatter:formatter, index:10, editor:Slick.Editors.Text, searchable:false, minWidth:180},
+                {id:"isPrinted", name:jQuery("#translatedColumnNames").attr("data-printed"), field:"isPrinted", sortable:true, cssClass:"cell-title", index:11, formatter:Slick.Formatters.Checkmark, searchable:false, minWidth:80}
+            ];
+        }
+    } else {
+        if (alwaysValidate) {
+            return [
+                {id:"accessionNumber", name:jQuery("#translatedColumnNames").attr("data-accessionNumber"), field:"accessionNumber", sortable:true, index:0, editor:Slick.Editors.Text, minWidth:160},
+                {id:"stNumber", name:jQuery("#translatedColumnNames").attr("data-patientID"), field:"stNumber", sortable:true, editor:Slick.Editors.Text, index:1, minWidth:120},
+                {id:"name", name:jQuery("#translatedColumnNames").attr("data-patientName"), field:"name", sortable:true, index:2, editor:Slick.Editors.Text, minWidth:140},
+                {id:"sectionNames", name:jQuery("#translatedColumnNames").attr("data-sectionNames"), field:"sectionNames", searchable:true, sortable:true, index:3, editor:Slick.Editors.Text, minWidth:160},
+                {id:"pendingTestCount", name:jQuery("#translatedColumnNames").attr("data-pendingTests"), field:"pendingTestCount", sortable:true, editor:Slick.Editors.Text, index:4, searchable:false, minWidth:100},
+                {id:"referredTestCount", name:jQuery("#translatedColumnNames").attr("data-referredTests"), field:"referredTestCount", sortable:true, editor:Slick.Editors.Text, index:5, searchable:false, minWidth:80},
+                {id:"pendingValidationCount", name:jQuery("#translatedColumnNames").attr("data-pendingValidation"), field:"pendingValidationCount", sortable:true, editor:Slick.Editors.Text, index:6, searchable:false, minWidth:140},
+                {id:"totalTestCount", name:jQuery("#translatedColumnNames").attr("data-total"), field:"totalTestCount", sortable:true, editor:Slick.Editors.Text, index:7, searchable:false, minWidth:50},
+                {id:"notes", name:jQuery("#translatedColumnNames").attr("data-notes"), field:"comments", sortable:true, index:8, searchable:false, editor:Slick.Editors.Text, minWidth:290},
+                {id:"link", name:jQuery("#translatedColumnNames").attr("data-action"), field:"link", cssClass:"cell-title", formatter:formatter, index:9, editor:Slick.Editors.Text, searchable:false, minWidth:180},
+                {id:"isPrinted", name:jQuery("#translatedColumnNames").attr("data-printed"), field:"isPrinted", sortable:true, cssClass:"cell-title", index:10, formatter:Slick.Formatters.Checkmark, searchable:false, minWidth:80}
+            ];
+        }
+        else {
+            return [
+                {id:"accessionNumber", name:jQuery("#translatedColumnNames").attr("data-accessionNumber"), field:"accessionNumber", sortable:true, index:0, editor:Slick.Editors.Text, minWidth:160},
+                {id:"stNumber", name:jQuery("#translatedColumnNames").attr("data-patientID"), field:"stNumber", sortable:true, editor:Slick.Editors.Text, index:1, minWidth:160},
+                {id:"name", name:jQuery("#translatedColumnNames").attr("data-patientName"), field:"name", sortable:true, index:2, editor:Slick.Editors.Text, minWidth:160},
+                {id:"sectionNames", name:jQuery("#translatedColumnNames").attr("data-sectionNames"), field:"sectionNames", searchable:true, sortable:true, index:3, editor:Slick.Editors.Text, minWidth:160},
+                {id:"pendingTestCount", name:jQuery("#translatedColumnNames").attr("data-pendingTests"), field:"pendingTestCount", sortable:true, editor:Slick.Editors.Text, index:4, searchable:false, minWidth:100},
+                {id:"referredTestCount", name:jQuery("#translatedColumnNames").attr("data-referredTests"), field:"referredTestCount", sortable:true, editor:Slick.Editors.Text, index:6, searchable:false, minWidth:80},
+                {id:"totalTestCount", name:jQuery("#translatedColumnNames").attr("data-total"), field:"totalTestCount", sortable:true, editor:Slick.Editors.Text, index:7, searchable:false, minWidth:70},
+                {id:"notes", name:jQuery("#translatedColumnNames").attr("data-notes"), field:"comments", sortable:true, index:8, searchable:false, editor:Slick.Editors.Text, minWidth:290},
+                {id:"link", name:jQuery("#translatedColumnNames").attr("data-action"), field:"link", cssClass:"cell-title", formatter:formatter, index:9, editor:Slick.Editors.Text, searchable:false, minWidth:180},
+                {id:"isPrinted", name:jQuery("#translatedColumnNames").attr("data-printed"), field:"isPrinted", sortable:true, cssClass:"cell-title", index:10, formatter:Slick.Formatters.Checkmark, searchable:false, minWidth:80}
+            ];
+        }
+    }
+}
+
 
 
 function formatter(row, cell, value, columnDef, dataContext) {
