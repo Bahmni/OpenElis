@@ -62,6 +62,7 @@ public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
 	private static final Object LOCK_OBJECT = new Object();
     private static Map<String, String> ID_NAME_MAP = null;
 	private static Map<String, String> ID_DESCRIPTION_MAP = null;
+	private static Map<String, String> ID_REFERENCE_INFO_MAP = null;
 
 	public boolean insertData(Test test) throws LIMSRuntimeException {
 
@@ -955,6 +956,16 @@ public class TestDAOImpl extends BaseDAOImpl implements TestDAO {
 	public String getDescriptionForTestId(String id) {
         loadMapsSynchronized(ID_DESCRIPTION_MAP);
 		return ID_DESCRIPTION_MAP != null ? ID_DESCRIPTION_MAP.get(id) : id;
+	}
+
+	public String getReferenceInfoForTestId(String id) {
+		loadMapsSynchronized(ID_REFERENCE_INFO_MAP);
+		return ID_REFERENCE_INFO_MAP != null ? ID_REFERENCE_INFO_MAP.get(id) : id;
+	}
+	public String getReferenceInfoForTestName(String name) {
+		Test activeTestByName = getActiveTestByName(name);
+		loadMapsSynchronized(ID_REFERENCE_INFO_MAP);
+		return ID_REFERENCE_INFO_MAP != null ? ID_REFERENCE_INFO_MAP.get(activeTestByName.getId()) : activeTestByName.getId();
 	}
 
     private void loadMapsSynchronized(Object description) {

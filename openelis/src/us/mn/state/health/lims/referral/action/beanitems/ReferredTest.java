@@ -38,7 +38,7 @@ public class ReferredTest implements IReferralResultTest {
     private boolean abnormal;
     private String uploadedFileName;
     private FormFile uploadedFile;
-
+    private boolean markedAsDone;
     public String getReferralId() {
         return referralId;
     }
@@ -78,6 +78,11 @@ public class ReferredTest implements IReferralResultTest {
 	public void setReferredReportDate(String referredReportDate) {
 		this.referredReportDate = referredReportDate == null ? "" : referredReportDate;
 	}
+	@Override
+	public boolean isMarkedAsDone() { return markedAsDone; }
+
+	@Override
+	public void setMarkedAsDone(boolean markedAsDone) { this.markedAsDone = markedAsDone; }
 
 	public void setRemove(boolean remove) {
 		this.remove = remove;

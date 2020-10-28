@@ -86,7 +86,9 @@ public class ReferralResult extends BaseObject {
 
         setResultValues(referralItem, currentUserId, limit, referredResultType);
 
-        getResult().getAnalysis().readyForTechnicalAcceptance();
+        if(referralItem.isMarkedAsDone()) {
+            getResult().getAnalysis().readyForTechnicalAcceptance();
+        }
         getResult().setAbnormal(referralItem.isAbnormal());
     }
 

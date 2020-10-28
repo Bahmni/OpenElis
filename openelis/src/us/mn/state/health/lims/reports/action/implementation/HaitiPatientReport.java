@@ -104,6 +104,7 @@ public abstract class HaitiPatientReport extends Report {
     private static final String RESULT_REFERENCE_TABLE_ID = NoteUtil.getTableReferenceId("RESULT");
     private static final DecimalFormat twoDecimalFormat = new DecimalFormat("#.##");
     protected static final String REFERRAL_STATUS_ID = StatusOfSampleUtil.getStatusID(AnalysisStatus.ReferedOut);
+    protected static final String MARK_AS_DONE = StatusOfSampleUtil.getStatusID(AnalysisStatus.MarkedAsDone);
     private static String ADDRESS_DEPT_ID;
     private static String ADDRESS_COMMUNE_ID;
     protected String currentContactInfo = "";
@@ -493,33 +494,35 @@ public abstract class HaitiPatientReport extends Report {
         data.setTestSection(reportAnalysis.getTestSection().getLocalizedName());
         data.setTestSortOrder(GenericValidator.isBlankOrNull(test.getSortOrder()) ? Integer.MAX_VALUE : Integer.parseInt(test.getSortOrder()));
         data.setSectionSortOrder(test.getTestSection().getSortOrderInt());
+        if(MARK_AS_DONE.equals(reportAnalysis.getStatusId()))
+        {
+            setAppropriateResults(resultList, data);
+            setReferredResult(data, resultList.get(0));
+            setNormalRange(data, test, resultList.get(0));
 
-        if (StatusOfSampleUtil.getStatusID(AnalysisStatus.Canceled).equals(reportAnalysis.getStatusId())) {
-            data.setResult(StringUtil.getMessageForKey("report.test.status.canceled"));
-        } else if (REFERRAL_STATUS_ID.equals(reportAnalysis.getStatusId())) {
-            if (noResults(resultList)) {
+        }else {
+
+            if (StatusOfSampleUtil.getStatusID(AnalysisStatus.Canceled).equals(reportAnalysis.getStatusId())) {
+                data.setResult(StringUtil.getMessageForKey("report.test.status.canceled"));
+            } else if (REFERRAL_STATUS_ID.equals(reportAnalysis.getStatusId())) {
                 setNote(data, resultList);
                 data.setResult(StringUtil.getMessageForKey("report.test.status.referredOut"));
+            } else if (noResults(resultList) || !(StatusOfSampleUtil.getStatusID(AnalysisStatus.Finalized).equals(reportAnalysis.getStatusId()) || StatusOfSampleUtil.getStatusID(AnalysisStatus.FinalizedRO).equals(reportAnalysis.getStatusId()))) {
+                sampleCompleteMap.put(reportSample.getAccessionNumber(), Boolean.FALSE);
+                setNote(data, resultList);
+                data.setResult(StringUtil.getMessageForKey("report.test.status.inProgress"));
             } else {
                 setAppropriateResults(resultList, data);
-                setReferredResult(data, resultList.get(0));
-                setNormalRange(data, test, resultList.get(0));
-            }
-        } else if (noResults(resultList) || !(StatusOfSampleUtil.getStatusID(AnalysisStatus.Finalized).equals(reportAnalysis.getStatusId()) || StatusOfSampleUtil.getStatusID(AnalysisStatus.FinalizedRO).equals(reportAnalysis.getStatusId()))) {
-            sampleCompleteMap.put(reportSample.getAccessionNumber(), Boolean.FALSE);
-            setNote(data, resultList);
-            data.setResult(StringUtil.getMessageForKey("report.test.status.inProgress"));
-        } else {
-            setAppropriateResults(resultList, data);
 
-            Result result = resultList.get(0);
-            setNormalRange(data, test, result);
-            data.setResult(getAugmentedResult(data, result));
-            data.setFinishDate(reportAnalysis.getCompletedDateForDisplay());
-            data.setNote(getResultNote(result));
-            Referral referral = referralDao.getReferralByAnalysisId(reportAnalysis.getId());
-            String imbed = referral == null? null : "R";
-            data.setAlerts(getResultFlag(result, imbed));
+                Result result = resultList.get(0);
+                setNormalRange(data, test, result);
+                data.setResult(getAugmentedResult(data, result));
+                data.setFinishDate(reportAnalysis.getCompletedDateForDisplay());
+                data.setNote(getResultNote(result));
+                Referral referral = referralDao.getReferralByAnalysisId(reportAnalysis.getId());
+                String imbed = referral == null ? null : "R";
+                data.setAlerts(getResultFlag(result, imbed));
+            }
         }
 
         if(resultList.size() > 0){

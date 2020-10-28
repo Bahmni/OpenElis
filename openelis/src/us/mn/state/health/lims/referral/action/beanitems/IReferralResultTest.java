@@ -56,4 +56,6 @@ public interface IReferralResultTest {
     public abstract void setUploadedFileName(String fileName);
     public abstract String getUploadedFileName();
     public abstract FormFile getUploadedFile();
+	public abstract boolean isMarkedAsDone();
+	public abstract void setMarkedAsDone(boolean markAsDone);
 }

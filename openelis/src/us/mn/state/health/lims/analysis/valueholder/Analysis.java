@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Set;
 
 import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.*;
+import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.MarkedAsDone;
 
 public class Analysis extends BaseObject {
 
@@ -542,6 +543,10 @@ public class Analysis extends BaseObject {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public void getMarkedAsDone() {
+        this.setStatusId(StatusOfSampleUtil.getStatusID(MarkedAsDone));
     }
 
 }

@@ -88,6 +88,8 @@ public class DefaultConfigurationProperties extends ConfigurationProperties {
 		setDBPropertyMappingAndDefault(Property.USE_PAGE_NUMBERS_ON_REPORTS, "reportPageNumbers", "true");
 		setDBPropertyMappingAndDefault(Property.QA_SORT_EVENT_LIST, "sortQaEvents", "true");
 		setDBPropertyMappingAndDefault(Property.ALWAYS_VALIDATE_RESULTS, "validate all results", "true");
+		setDBPropertyMappingAndDefault(Property.SHOW_REFERRED_TESTS_COUNT, "showReferredTestsCount", "true");
+		setDBPropertyMappingAndDefault(Property.SHOW_PATIENT_DETAILS_SAMPLE_LABEL_PRINT, "showPatientDetailsSampleLabel", "true");
 		setDBPropertyMappingAndDefault(Property.ADDITIONAL_SITE_INFO, "additional site info", "");
 		setDBPropertyMappingAndDefault(Property.RESULTS_PAGE_SIZE, "resultsPageSize", "10");
 		setDBPropertyMappingAndDefault(Property.RESULTS_VALIDATION_PAGE_SIZE, "resultsValidationPageSize", "10");

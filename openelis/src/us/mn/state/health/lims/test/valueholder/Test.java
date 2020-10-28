@@ -109,6 +109,8 @@ public class Test extends EnumValueItemImpl {
 
 	private  Boolean isReferredOutValueChanged = false;
 
+	private String referenceInfo;
+
 	public Test() {
 		super();
 		this.method = new ValueHolder();
@@ -137,6 +139,13 @@ public class Test extends EnumValueItemImpl {
 	public void setId(String id) {
 		this.id = id;
 		this.key = id;
+	}
+	public String getReferenceInfo() {
+		return referenceInfo;
+	}
+
+	public void setReferenceInfo(String referenceInfo) {
+		this.referenceInfo = referenceInfo;
 	}
 
 	public String getId() {
