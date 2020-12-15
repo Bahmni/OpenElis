@@ -1728,6 +1728,52 @@
             (nextVal( 'site_information_seq' ), 'accessionStrategy', 'Strategy for Accession Generation', '', 'text', (select id from site_information_domain where name = 'siteIdentity'))
         </sql>
     </changeSet>
+
+    <changeSet author="Srivathsala" context="bahmni" id="202001281052">
+        <comment>create a new table to store type of test status</comment>
+        <createSequence sequenceName="type_of_test_status_seq" minValue="1" startValue="1" />
+        <createTable schemaName="clinlims" tableName="type_of_test_status">
+            <column name="id" type="int">
+                <constraints primaryKeyName="pk_type_of_test_status" primaryKey="true" />
+            </column>
+            <column name="status_name" type="varchar(50)">
+                <constraints nullable="false" unique="true" />
+            </column>
+            <column name="description" type="varchar(200)">
+                <constraints nullable="false" unique="true" />
+            </column>
+            <column name="status_type" type="varchar(20)">
+                <constraints nullable="false" />
+            </column>
+            <column name="is_active" type="varchar(1)" defaultValue="Y" />
+            <column name="is_result_required" type="varchar(1)" defaultValue="N" />
+            <column name="is_approval_required" type="varchar(1)" defaultValue="N" />
+            <column name="date_created" type="timestamp" defaultValueDate="CURRENT_TIMESTAMP(6)" />
+            <column name="lastupdated" type="timestamp(6)" />
+        </createTable>
+    </changeSet>
+    <changeSet author="Srivathsala" context="bahmni" id="202001281053">
+        <comment>create a new table to store status for a test</comment>
+        <createSequence sequenceName="test_status_seq" minValue="0" startValue="1" />
+        <createTable schemaName="clinlims" tableName="test_status">
+            <column name="id" type="int">
+                <constraints primaryKeyName="pk_test_status" primaryKey="true" />
+            </column>
+            <column name="test_id" type="int">
+                <constraints nullable="true" unique="true" />
+            </column>
+            <column name="test_status_id" type="int">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="202001281054" context="bahmni" author="Srivathsala">
+        <addForeignKeyConstraint baseColumnNames="test_id" baseTableName="test_status" constraintName="test_fk" onDelete="SET NULL" referencedColumnNames="id" referencedTableName="test" />
+    </changeSet>
+    <changeSet id="202001281055" context="bahmni" author="Srivathsala">
+        <addForeignKeyConstraint baseColumnNames="test_status_id" baseTableName="test_status" constraintName="test_status_fk" onDelete="SET NULL" referencedColumnNames="id" referencedTableName="type_of_test_status" />
+    </changeSet>
+  
     <changeSet id="add-new-column-for-reference-info" context="bahmni" author="Rupam">
         <comment>Adds a referenceInfo column to test</comment>
         <sql>
@@ -1747,3 +1793,4 @@
         </sql>
     </changeSet>
 </databaseChangeLog>
+
