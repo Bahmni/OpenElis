@@ -17,27 +17,27 @@ public class OrderListDAOHelper {
     }
 
     String createSqlForToday(String condition, String orderBy, String pendingAnalysisStatus,
-                             String pendingValidationAnalysisStatus, String completedStatus) {
+                             String pendingValidationAnalysisStatus, String referredAnalysisStatus, String completedStatus) {
         if (isGroupBySample) {
             return createSqlStringForTodayOrdersANDGroupBySampleEnabled(condition, orderBy, pendingAnalysisStatus,
-                    pendingValidationAnalysisStatus, completedStatus);
+                    pendingValidationAnalysisStatus,referredAnalysisStatus, completedStatus);
         }
         return createSqlStringForTodayOrders(condition, orderBy, pendingAnalysisStatus,
-                pendingValidationAnalysisStatus, completedStatus);
+                pendingValidationAnalysisStatus, referredAnalysisStatus,completedStatus);
     }
 
     String createSqlForPendingBeforeToday(String condition, String orderBy, String pendingAnalysisStatus,
-                                          String pendingValidationAnalysisStatus, String analysesReferredOrInFinalStatus) {
+                                          String pendingValidationAnalysisStatus, String referredAnalysisStatus,String analysesReferredOrInFinalStatus) {
         if (isGroupBySample) {
             return createSqlStringForPendingOrdersANDGroupBySampleEnabled(condition, orderBy, pendingAnalysisStatus,
-                    pendingValidationAnalysisStatus, analysesReferredOrInFinalStatus);
+                    pendingValidationAnalysisStatus, referredAnalysisStatus,analysesReferredOrInFinalStatus);
         }
-        return createSqlStringForPendingOrders(condition, orderBy, pendingAnalysisStatus, pendingValidationAnalysisStatus,
+        return createSqlStringForPendingOrders(condition, orderBy, pendingAnalysisStatus, pendingValidationAnalysisStatus,referredAnalysisStatus,
                 analysesReferredOrInFinalStatus);
     }
 
     private String createSqlStringForPendingOrders(String condition, String OrderBy, String pendingAnalysisStatus,
-                                                   String pendingValidationAnalysisStatus, String analysesReferredOrInFinalStatus) {
+                                                   String pendingValidationAnalysisStatus,String referredAnalysisStatus, String analysesReferredOrInFinalStatus) {
         return "SELECT \n" +
                 "sample.accession_number AS accession_number, \n" +
                 "string_agg(test_section.name, '" + COMMENT_SEPARATOR + "') AS section_names, \n" +
@@ -52,6 +52,7 @@ public class OrderListDAOHelper {
                 "sample_source.name AS sample_source, \n" +
                 "SUM(CASE WHEN  analysis.status_id IN (" + pendingAnalysisStatus + ") THEN 1 ELSE 0 END) as pending_tests_count,\n" +
                 "SUM(CASE WHEN  analysis.status_id IN (" + pendingValidationAnalysisStatus + ") THEN 1 ELSE 0 END) as pending_validation_count,\n" +
+                "SUM(CASE WHEN  analysis.status_id IN (" + referredAnalysisStatus + ") THEN 1 ELSE 0 END) as referred_tests_count,\n" +
                 "string_agg(analysis.comment, '" + COMMENT_SEPARATOR + "') AS analysis_comments,\n" +
                 "COUNT(test.id) AS total_test_count,\n" +
                 "CASE WHEN document_track.report_generation_time is null THEN false ELSE true END as is_printed\n" +
@@ -74,7 +75,7 @@ public class OrderListDAOHelper {
     }
 
     private String createSqlStringForTodayOrders(String condition, String OrderBy, String pendingAnalysisStatus,
-                                                 String pendingValidationAnalysisStatus, String completedStatus) {
+                                                 String pendingValidationAnalysisStatus, String referredAnalysisStatus,String completedStatus) {
         return "SELECT \n" +
                 "sample.accession_number AS accession_number, \n" +
                 "sample.uuid AS uuid, \n" +
@@ -89,6 +90,7 @@ public class OrderListDAOHelper {
                 "sample_source.name AS sample_source, \n" +
                 "SUM(CASE WHEN  analysis.status_id IN (" + pendingAnalysisStatus + ") THEN 1 ELSE 0 END) as pending_tests_count,\n" +
                 "SUM(CASE WHEN  analysis.status_id IN (" + pendingValidationAnalysisStatus + ") THEN 1 ELSE 0 END) as pending_validation_count,\n" +
+                "SUM(CASE WHEN  analysis.status_id IN (" + referredAnalysisStatus + ") THEN 1 ELSE 0 END) as referred_tests_count,\n" +
                 "string_agg(analysis.comment, '" + COMMENT_SEPARATOR + "') AS analysis_comments,\n" +
                 "COUNT(test.id) AS total_test_count,\n" +
                 "CASE WHEN COUNT(analysis.id) = SUM(CASE WHEN  analysis.status_id IN (" + completedStatus + ") THEN 1 ELSE 0 END) THEN true ELSE false END as is_completed,\n" +
@@ -121,7 +123,7 @@ public class OrderListDAOHelper {
     }
 
     private String createSqlStringForPendingOrdersANDGroupBySampleEnabled(String condition, String OrderBy, String pendingAnalysisStatus,
-                                                                          String pendingValidationAnalysisStatus, String analysesReferredOrInFinalStatus) {
+                                                                          String pendingValidationAnalysisStatus, String referredAnalysisStatus,String analysesReferredOrInFinalStatus) {
         return "SELECT \n" +
                 "sample.accession_number AS accession_number, \n" +
                 "string_agg(test_section.name, '" + COMMENT_SEPARATOR + "') AS section_names, \n" +
@@ -138,6 +140,7 @@ public class OrderListDAOHelper {
                 "type_of_sample.description AS sample_type, \n" +
                 "SUM(CASE WHEN  analysis.status_id IN (" + pendingAnalysisStatus + ") THEN 1 ELSE 0 END) as pending_tests_count,\n" +
                 "SUM(CASE WHEN  analysis.status_id IN (" + pendingValidationAnalysisStatus + ") THEN 1 ELSE 0 END) as pending_validation_count,\n" +
+                "SUM(CASE WHEN  analysis.status_id IN (" + referredAnalysisStatus + ") THEN 1 ELSE 0 END) as referred_tests_count,\n" +
                 "string_agg(nullif(analysis.comment, ''), '" + COMMENT_SEPARATOR + "') AS analysis_comments,\n" +
                 "COUNT(test.id) AS total_test_count,\n" +
                 "CASE WHEN document_track.report_generation_time is null THEN false ELSE true END as is_printed\n" +
@@ -161,7 +164,7 @@ public class OrderListDAOHelper {
     }
 
     private String createSqlStringForTodayOrdersANDGroupBySampleEnabled(String condition, String OrderBy, String pendingAnalysisStatus,
-                                                                        String pendingValidationAnalysisStatus, String completedStatus) {
+                                                                        String pendingValidationAnalysisStatus, String referredAnalysisStatus,String completedStatus) {
         return "SELECT \n" +
                 "sample.accession_number AS accession_number, \n" +
                 "sample.uuid AS uuid, \n" +
@@ -178,6 +181,7 @@ public class OrderListDAOHelper {
                 "type_of_sample.description AS sample_type, \n" +
                 "SUM(CASE WHEN  analysis.status_id IN (" + pendingAnalysisStatus + ") THEN 1 ELSE 0 END) as pending_tests_count,\n" +
                 "SUM(CASE WHEN  analysis.status_id IN (" + pendingValidationAnalysisStatus + ") THEN 1 ELSE 0 END) as pending_validation_count,\n" +
+                "SUM(CASE WHEN  analysis.status_id IN (" + referredAnalysisStatus + ") THEN 1 ELSE 0 END) as referred_tests_count,\n" +
                 "string_agg(nullif(analysis.comment, ''), '" + COMMENT_SEPARATOR + "') AS analysis_comments,\n" +
                 "COUNT(test.id) AS total_test_count,\n" +
                 "CASE WHEN COUNT(analysis.id) = SUM(CASE WHEN  analysis.status_id IN (" + completedStatus + ") THEN 1 ELSE 0 END) THEN true ELSE false END as is_completed,\n" +
@@ -241,6 +245,7 @@ public class OrderListDAOHelper {
                 accessionResultSet.getBoolean("is_printed"),
                 accessionResultSet.getInt("pending_tests_count"),
                 accessionResultSet.getInt("pending_validation_count"),
+                accessionResultSet.getInt("referred_test_count"),
                 accessionResultSet.getInt("total_test_count"),
                 accessionResultSet.getDate("collection_date"),
                 accessionResultSet.getDate("entered_date"),
@@ -265,6 +270,7 @@ public class OrderListDAOHelper {
                 accessionResultSet.getBoolean("is_printed"),
                 accessionResultSet.getInt("pending_tests_count"),
                 accessionResultSet.getInt("pending_validation_count"),
+                accessionResultSet.getInt("referred_tests_count"),
                 accessionResultSet.getInt("total_test_count"),
                 accessionResultSet.getDate("collection_date"),
                 accessionResultSet.getDate("entered_date"),

@@ -1728,6 +1728,7 @@
             (nextVal( 'site_information_seq' ), 'accessionStrategy', 'Strategy for Accession Generation', '', 'text', (select id from site_information_domain where name = 'siteIdentity'))
         </sql>
     </changeSet>
+
     <changeSet author="Srivathsala" context="bahmni" id="202001281052">
         <comment>create a new table to store type of test status</comment>
         <createSequence sequenceName="type_of_test_status_seq" minValue="1" startValue="1" />
@@ -1772,5 +1773,24 @@
     <changeSet id="202001281055" context="bahmni" author="Srivathsala">
         <addForeignKeyConstraint baseColumnNames="test_status_id" baseTableName="test_status" constraintName="test_status_fk" onDelete="SET NULL" referencedColumnNames="id" referencedTableName="type_of_test_status" />
     </changeSet>
-	
+  
+    <changeSet id="add-new-column-for-reference-info" context="bahmni" author="Rupam">
+        <comment>Adds a referenceInfo column to test</comment>
+        <sql>
+            ALTER TABLE test ADD reference_info varchar(400);
+        </sql>
+    </changeSet>
+    <changeSet id="add-new-status-for-analysis" context="bahmni" author="Rupam">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                select count(*) from status_of_sample where name = 'Marked As Done'
+            </sqlCheck>
+        </preConditions>
+        <comment>adding new status for case when a referred out test was marked as done and without any result entered or file attached gets validated</comment>
+        <sql >
+            insert into status_of_sample(id,name,description,code,status_type,display_key,is_active) values
+            (nextVal( 'status_of_sample_seq' ),'Marked As Done','The result of the referred out test were validated and are final',1,'ANALYSIS','status.test.referred.markAsDone','Y');
+        </sql>
+    </changeSet>
 </databaseChangeLog>
+

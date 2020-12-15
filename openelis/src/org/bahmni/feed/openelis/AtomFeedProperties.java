@@ -17,6 +17,7 @@
 package org.bahmni.feed.openelis;
 
 import us.mn.state.health.lims.common.log.LogEvent;
+import us.mn.state.health.lims.common.util.StringUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,7 +44,7 @@ public class AtomFeedProperties {
             properties = new Properties();
             properties.load(propertyStream);
 
-            if ((new File(CUSTOM_PROPERTY_FILENAME)).exists()){
+            if (!StringUtil.isNullorNill(CUSTOM_PROPERTY_FILENAME) && (new File(CUSTOM_PROPERTY_FILENAME)).exists()){
                 FileInputStream customPropertyStream = new FileInputStream(CUSTOM_PROPERTY_FILENAME);
                 properties.load(customPropertyStream);
             }

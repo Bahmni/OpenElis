@@ -36,14 +36,8 @@ import java.util.HashSet;
 import java.util.List;
 
 import static java.lang.Integer.parseInt;
-import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.BiologistRejected;
-import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.Finalized;
-import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.FinalizedRO;
-import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.NotTested;
-import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.ReferedOut;
-import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.ReferredIn;
-import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.TechnicalAcceptance;
-import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.TechnicalRejected;
+import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.*;
+import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.AnalysisStatus.BiologistRejectedRO;
 import static us.mn.state.health.lims.statusofsample.util.StatusOfSampleUtil.getStatusID;
 
 public class OrderListDAOImpl implements OrderListDAO {
@@ -60,9 +54,9 @@ public class OrderListDAOImpl implements OrderListDAO {
     @Override
     public List<Order> getAllToday() {
         List<Order> orderList = new ArrayList<>();
-        String condition = "sample.accession_number is not null and analysis.status_id IN (" + getAllNonReferredAnalysisStatus() + ") ";
+        String condition = "sample.accession_number is not null and analysis.status_id IN (" + getAllAnalysisStatus() + ") ";
         String sqlForAllTestsToday = orderListDAOHelper.createSqlForToday(condition, "sample.accession_number",
-                getPendingAnalysisStatus(), getPendingValidationAnalysisStatus(), getCompletedStatus());
+                getPendingAnalysisStatus(), getPendingValidationAnalysisStatus(),getReferredAnalysisStatus(), getCompletedStatus());
         PreparedStatement preparedStatement = null;
         ResultSet todayAccessions = null;
         try {
@@ -86,16 +80,16 @@ public class OrderListDAOImpl implements OrderListDAO {
 
     @Override
     public List<Order> getAllPendingBeforeToday() {
-        String condition = "sample.accession_number is not null and analysis.status_id IN (" + getAllNonReferredAnalysisStatus() + ")";
+        String condition = "sample.accession_number is not null and analysis.status_id IN (" + getAllAnalysisStatus() + ")";
         return getOrders(orderListDAOHelper.createSqlForPendingBeforeToday(condition, "sample.accession_number",
-                getPendingAnalysisStatus(), getPendingValidationAnalysisStatus(), analysesReferredOrInFinalStatus()));
+                getPendingAnalysisStatus(), getPendingValidationAnalysisStatus(), getReferredAnalysisStatus(),analysesInFinalStatus()));
     }
 
     @Override
     public List<Order> getAllSampleNotCollectedToday() {
         List<Order> orderList = new ArrayList<>();
         String sqlForAllSampleNotCollectedToday = orderListDAOHelper.createSqlForToday("sample.accession_number is null and analysis.status_id IN (" + getAllNonReferredAnalysisStatus() + ")",
-                "sample.lastupdated", getPendingAnalysisStatus(), getPendingValidationAnalysisStatus(), getCompletedStatus());
+                "sample.lastupdated", getPendingAnalysisStatus(), getPendingValidationAnalysisStatus(),getReferredAnalysisStatus(), getCompletedStatus());
 
         ResultSet sampleNotCollectedToday = null;
         PreparedStatement preparedStatement = null;
@@ -122,8 +116,8 @@ public class OrderListDAOImpl implements OrderListDAO {
     public List<Order> getAllSampleNotCollectedPendingBeforeToday() {
         String condition = "sample.accession_number is null and analysis.status_id IN (" + getAllNonReferredAnalysisStatus() + ")";
         String sqlForAllSampleNotCollectedPendingBeforeToday = orderListDAOHelper.createSqlForPendingBeforeToday(condition,
-                        "sample.lastupdated", getPendingAnalysisStatus(), getPendingValidationAnalysisStatus(),
-                analysesReferredOrInFinalStatus());
+                        "sample.lastupdated", getPendingAnalysisStatus(), getPendingValidationAnalysisStatus(),getReferredAnalysisStatus(),
+                analysesInFinalStatus());
         return getOrders(sqlForAllSampleNotCollectedPendingBeforeToday);
     }
 
@@ -216,6 +210,7 @@ public class OrderListDAOImpl implements OrderListDAO {
     private String getPendingValidationAnalysisStatus() {
         List<Object> inProgressAnalysisStatus = new ArrayList<>();
         inProgressAnalysisStatus.add(parseInt(getStatusID(TechnicalAcceptance)));//16
+        inProgressAnalysisStatus.add(parseInt(getStatusID(TechnicalAcceptanceRO)));
         return StringUtils.join(inProgressAnalysisStatus.iterator(), ',');
     }
 
@@ -226,8 +221,31 @@ public class OrderListDAOImpl implements OrderListDAO {
         return StringUtils.join(inProgressAnalysisStatus.iterator(), ',');
     }
 
-    private String analysesReferredOrInFinalStatus() {
-        return getAnalysisStatus(ReferedOut, getStatusID(ReferedOut), ReferredIn, Finalized, FinalizedRO);
+    private String analysesInFinalStatus() {
+        List<Object> analysisStatuses = new ArrayList<>();
+        analysisStatuses.add(parseInt(getStatusID(FinalizedRO)));
+        analysisStatuses.add(parseInt(getStatusID(Finalized)));
+        analysisStatuses.add(parseInt(getStatusID(ReferredIn)));
+        analysisStatuses.add(parseInt(getStatusID(MarkedAsDone)));
+        return StringUtils.join(analysisStatuses.iterator(), ',');
+    }
+
+    private String getAllAnalysisStatus() {
+        List<Object> analysisStatuses = new ArrayList<>();
+        analysisStatuses.add(parseInt(getStatusID(ReferedOut)));
+        analysisStatuses.add(parseInt(getStatusID(MarkedAsDone)));
+        analysisStatuses.add(parseInt(getStatusID(ReferredIn)));
+        analysisStatuses.add(parseInt(getStatusID(TechnicalAcceptanceRO)));
+        analysisStatuses.add(parseInt(getStatusID(BiologistRejectedRO)));
+        analysisStatuses.add(parseInt(getStatusID(FinalizedRO)));
+        analysisStatuses.add(getAnalysisStatus(BiologistRejected, getStatusID(NotTested), TechnicalAcceptance, TechnicalRejected, Finalized));
+        return StringUtils.join(analysisStatuses.iterator(), ',');
+    }
+    private String getReferredAnalysisStatus() {
+        List<Object> analysisStatuses = new ArrayList<>();
+        analysisStatuses.add(parseInt(getStatusID(ReferedOut)));
+        analysisStatuses.add(parseInt(getStatusID(BiologistRejectedRO)));
+        return StringUtils.join(analysisStatuses.iterator(), ',');
     }
 
     private String getAnalysisStatus(StatusOfSampleUtil.AnalysisStatus referedOut, String statusID, StatusOfSampleUtil.AnalysisStatus referredIn, StatusOfSampleUtil.AnalysisStatus finalized, StatusOfSampleUtil.AnalysisStatus finalizedRO) {

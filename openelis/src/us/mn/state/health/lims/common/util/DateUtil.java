@@ -429,6 +429,12 @@ public class DateUtil {
 
 		return String.format("%02d", year);
 	}
+	public static String getFourDigitYear() {
+
+		int year = new GregorianCalendar().get(Calendar.YEAR);
+
+		return String.format("%02d", year);
+	}
 
 	public static Timestamp convertAmbiguousStringDateToTimestamp(String dateForDisplay) {
 

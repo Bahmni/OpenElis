@@ -33,6 +33,7 @@ public class Order {
     private String source;
     private int pendingTestCount;
     private int pendingValidationCount;
+    private int referredTestCount;
     private int totalTestCount;
     private Date collectionDate;
     private boolean isPrinted;
@@ -47,7 +48,7 @@ public class Order {
     }
 
     public Order(String accessionNumber, String uuid, String orderId, String stNumber, String firstName, String middleName, String lastName, String source, boolean isCompleted, boolean isPrinted,
-                 int pendingTestCount, int pendingValidationCount, int totalTestCount, Date collectionDate, Date enteredDate, String comments, String sectionNames, String sampleType, String priority) {
+                 int pendingTestCount, int pendingValidationCount, int referredTestCount, int totalTestCount, Date collectionDate, Date enteredDate, String comments, String sectionNames, String sampleType, String priority) {
         this.accessionNumber = accessionNumber;
         this.uuid = uuid;
         this.orderId = orderId;
@@ -60,6 +61,7 @@ public class Order {
         this.isPrinted = isPrinted;
         this.pendingTestCount = pendingTestCount;
         this.pendingValidationCount = pendingValidationCount;
+        this.referredTestCount = referredTestCount;
         this.totalTestCount = totalTestCount;
         this.collectionDate = collectionDate;
         this.enteredDate = enteredDate;
@@ -70,7 +72,7 @@ public class Order {
     }
 
     public Order(String accessionNumber, String uuid, String orderId, String stNumber, String firstName, String middleName, String lastName, String source, boolean isCompleted, boolean isPrinted,
-                 int pendingTestCount, int pendingValidationCount, int totalTestCount, Date collectionDate, Date enteredDate, String comments, String sectionNames) {
+                 int pendingTestCount, int pendingValidationCount,int referredTestCount, int totalTestCount, Date collectionDate, Date enteredDate, String comments, String sectionNames) {
         this.accessionNumber = accessionNumber;
         this.uuid = uuid;
         this.orderId = orderId;
@@ -83,6 +85,7 @@ public class Order {
         this.isPrinted = isPrinted;
         this.pendingTestCount = pendingTestCount;
         this.pendingValidationCount = pendingValidationCount;
+        this.referredTestCount = referredTestCount;
         this.totalTestCount = totalTestCount;
         this.collectionDate = collectionDate;
         this.enteredDate = enteredDate;
@@ -124,6 +127,14 @@ public class Order {
 
     public String getSource() {
         return source;
+    }
+
+    public int getReferredTestCount() {
+        return referredTestCount;
+    }
+
+    public void setReferredTestCount(int referredTestCount) {
+        this.referredTestCount = referredTestCount;
     }
 
     public void setSource(String source) {
@@ -211,6 +222,7 @@ public class Order {
         Order order = (Order) o;
         return pendingTestCount == order.pendingTestCount &&
                 pendingValidationCount == order.pendingValidationCount &&
+                referredTestCount==order.referredTestCount &&
                 totalTestCount == order.totalTestCount &&
                 isPrinted == order.isPrinted &&
                 isCompleted == order.isCompleted &&
@@ -233,7 +245,7 @@ public class Order {
     @Override
     public int hashCode() {
         return Objects.hash(accessionNumber, uuid, orderId, stNumber, firstName, middleName, lastName, source,
-                pendingTestCount, pendingValidationCount, totalTestCount, collectionDate, isPrinted, isCompleted,
+                pendingTestCount, pendingValidationCount, referredTestCount, totalTestCount, collectionDate, isPrinted, isCompleted,
                 enteredDate, comments, sectionNames, sampleType, priority);
     }
 

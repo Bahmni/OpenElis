@@ -104,4 +104,7 @@ public interface TestDAO extends BaseDAO {
 	public Test getTestByDescription(String description) throws LIMSRuntimeException;
 
     void deleteById(String testId, String sysUserId);
+
+    public String getReferenceInfoForTestId(String id);
+	public String getReferenceInfoForTestName(String name);
 }

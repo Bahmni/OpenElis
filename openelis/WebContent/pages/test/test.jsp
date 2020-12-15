@@ -122,6 +122,15 @@ function getNextSortOrder() {
 							<html:textarea name="<%=formName%>" property="description" cols="40" rows="2" onkeyup="this.value=this.value.slice(0,60)"/>
 						</td>
 		 </tr>
+
+	    <tr>
+		                <td class="label">
+			                <bean:message key="test.referenceInfo"/>:
+						</td>
+		               <td>
+			               <html:textarea name="<%=formName%>" property="referenceInfo" cols="40" rows="2" />
+		               </td>
+	    </tr>
       <tr>
       	<td class="label">
       		<bean:message key="test.isActive"/>:<span class="requiredlabel">*</span>
@@ -141,6 +150,17 @@ function getNextSortOrder() {
             </html:select>
         </td>
     </tr>
+	<tr>
+		<td class="label">
+			<bean:message key="test.methodName"/>:</span>
+		</td>
+		<td width="1">
+			<html:select name="<%=formName%>" property="methodName">
+				<html:option value=""/>
+				<html:optionsCollection name="<%=formName%>" property="testMethodList" label="methodName" value="methodName" />
+			</html:select>
+		</td>
+	</tr>
     <tr>
         <td class="label">
             <bean:message key="test.isReferredOut"/>:</span>
