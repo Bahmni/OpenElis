@@ -372,9 +372,8 @@ basePath = path + "/";
             parameters: "provider=PatientSearchPopulateProvider&stNumber=" + stNumber,
             onSuccess:  function onLabelSelected(xhr) {
                 var datePattern = '<%=SystemConfiguration.getInstance().getPatternForDateLocale() %>';
-                var collectionDate=collectionDateTime.slice(0,10);
-                var collectionTime=OpenElis.Utils.getTime(collectionDateTime.slice(11,19));
-                collectionDateTime=collectionDate+" "+collectionTime;
+                var collectionDate=collectionDateTime.slice(0,10).split("-");
+                collectionDate=collectionDate[2]+"/"+collectionDate[1]+"/"+collectionDate[0];
                 var showPatientDetails = '<%=showPatientsDetailsInSampleLabelPrint%>';
                 if(showPatientDetails==='true') {
                     showLabelDetails(
@@ -384,7 +383,7 @@ basePath = path + "/";
                         OpenElis.Utils.getXMLValue(xhr.responseXML, 'gender'),
                         OpenElis.Utils.calculateAge(OpenElis.Utils.getXMLValue(xhr.responseXML, 'dob'), datePattern),
                         stNumber,
-                        collectionDateTime
+                        collectionDate
                     );
                 } else {
                     showLabelDetailsWithoutPatientDetails(stNumber,collectionDateTime);

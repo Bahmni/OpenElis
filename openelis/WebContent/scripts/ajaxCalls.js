@@ -133,14 +133,14 @@ function patientSearch(lastName, firstName, middleName, STNumber, subjectNumber,
            );	
 }
 
-function updateTestsWithAccessionNumber(accessionNumber, sampleId, typesAndTests, success, failure) {
+function updateTestsWithAccessionNumber(accessionNumber, sampleId, collectionDate, typesAndTests, success, failure) {
 	if( !failure){failure = defaultFailure;	}
 	new Ajax.Request (
 		'ajaxQueryXML',  //url
 		{//options
 			method: 'get', //http method
 			dataType:'json',
-			parameters: "provider=TestUpdateWithAccessionNumberProvider&accessionNumber=" + accessionNumber + "&typeAndTestIds="+ typesAndTests + "&sampleId="+ sampleId,
+			parameters: "provider=TestUpdateWithAccessionNumberProvider&accessionNumber=" + accessionNumber + "&typeAndTestIds="+ typesAndTests + "&sampleId="+ sampleId + "&collectionDate=" + collectionDate,
 			asynchronous: false,
 			onSuccess:  success,
 			onFailure:  failure

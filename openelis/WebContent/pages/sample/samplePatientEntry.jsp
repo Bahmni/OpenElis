@@ -551,7 +551,8 @@ function  /*void*/ savePage()
 		form.elements.namedItem("patientProperties.STnumber").value = $('ST_ID').value;
 	}
 	if(sampleId != "null"){
-		var accessionNumber = $("labNo").value
+		var accessionNumber = $("labNo").value;
+		var collectionDate = $("receivedDateForDisplay").value;
 		var rows = $jq('#samplesAddedTable tr');
 		var testIdsSelected = new Object();
 		var typeIdsSelected = new Object();
@@ -564,7 +565,7 @@ function  /*void*/ savePage()
 		testsAndTypes.types = typeIdsSelected;
 		var typeAndTestIdsJson = JSON.stringify(testsAndTypes);
 
-		updateTestsWithAccessionNumber(accessionNumber, sampleId, typeAndTestIdsJson, successUpdateAccession, processScanFailure)
+		updateTestsWithAccessionNumber(accessionNumber, sampleId, collectionDate,typeAndTestIdsJson, successUpdateAccession, processScanFailure)
 		form.action = "LabDashboard.do?";
 	}else {
 		form.action = "SamplePatientEntrySave.do";
