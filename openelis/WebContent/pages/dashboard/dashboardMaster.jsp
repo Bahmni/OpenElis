@@ -372,8 +372,12 @@ basePath = path + "/";
             parameters: "provider=PatientSearchPopulateProvider&stNumber=" + stNumber,
             onSuccess:  function onLabelSelected(xhr) {
                 var datePattern = '<%=SystemConfiguration.getInstance().getPatternForDateLocale() %>';
-                var collectionDate=collectionDateTime.slice(0,10).split("-");
-                collectionDate=collectionDate[2]+"/"+collectionDate[1]+"/"+collectionDate[0];
+                if(collectionDateTime!=null) {
+                    var collectionDate = collectionDateTime.slice(0, 10).split("-");
+                    collectionDate = collectionDate[2] + "/" + collectionDate[1] + "/" + collectionDate[0];
+                }else {
+                    collectionDate="";
+                }
                 var showPatientDetails = '<%=showPatientsDetailsInSampleLabelPrint%>';
                 if(showPatientDetails==='true') {
                     showLabelDetails(

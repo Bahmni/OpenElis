@@ -114,7 +114,9 @@ public class ReferralResult extends BaseObject {
         getResult().setSortOrder("0");
         getResult().setMinNormal(limit.getLowNormal());
         getResult().setMaxNormal(limit.getHighNormal());
-        getResult().setUploadedFileName(referredTest.getUploadedFileName());
+        if(StringUtil.isNullorNill(getResult().getUploadedFileName())) {
+            getResult().setUploadedFileName(referredTest.getUploadedFileName());
+        }
         String limitId = limit.getId();
         getResult().setResultLimitId(!StringUtil.isNullorNill(limitId) ? Integer.parseInt(limitId) : null);
 
