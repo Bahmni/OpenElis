@@ -372,9 +372,9 @@ basePath = path + "/";
             parameters: "provider=PatientSearchPopulateProvider&stNumber=" + stNumber,
             onSuccess:  function onLabelSelected(xhr) {
                 var datePattern = '<%=SystemConfiguration.getInstance().getPatternForDateLocale() %>';
+                var locale = '<%=SystemConfiguration.getInstance().getDateLocale() %>';
                 if(collectionDateTime!=null) {
-                    var collectionDate = collectionDateTime.slice(0, 10).split("-");
-                    collectionDate = collectionDate[2] + "/" + collectionDate[1] + "/" + collectionDate[0];
+                    var collectionDate = new Date(collectionDateTime).toLocaleDateString(locale.replace("_","-"));
                 }else {
                     collectionDate="";
                 }
