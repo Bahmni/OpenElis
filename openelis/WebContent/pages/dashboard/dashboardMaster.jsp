@@ -315,8 +315,8 @@ basePath = path + "/";
         });
         jQuery(".label").click(function(event){
             var accessionNumber= event.target.parentElement.getAttribute('accessionNumber');
-            var collectionDateTime=event.target.parentElement.getAttribute('collectionDate');
-            labelSelected(event.target.parentElement.getAttribute('stNumber'), accessionNumber,collectionDateTime, jQuery)
+            var collectionDateStr=event.target.parentElement.getAttribute('collectionDateStr');
+            labelSelected(event.target.parentElement.getAttribute('stNumber'), accessionNumber,collectionDateStr, jQuery)
         });
 
 
@@ -366,18 +366,12 @@ basePath = path + "/";
 
     }
 
-    function labelSelected(stNumber, an,collectionDateTime,jQuery) {
+    function labelSelected(stNumber, an,collectionDateStr,jQuery) {
         new Ajax.Request ('ajaxQueryXML', {
             method: 'get',
             parameters: "provider=PatientSearchPopulateProvider&stNumber=" + stNumber,
             onSuccess:  function onLabelSelected(xhr) {
                 var datePattern = '<%=SystemConfiguration.getInstance().getPatternForDateLocale() %>';
-                var locale = '<%=SystemConfiguration.getInstance().getDateLocale() %>';
-                if(collectionDateTime!=null) {
-                    var collectionDate = new Date(collectionDateTime).toLocaleDateString(locale.replace("_","-"));
-                }else {
-                    collectionDate="";
-                }
                 var showPatientDetails = '<%=showPatientsDetailsInSampleLabelPrint%>';
                 if(showPatientDetails==='true') {
                     showLabelDetails(
@@ -387,11 +381,10 @@ basePath = path + "/";
                         OpenElis.Utils.getXMLValue(xhr.responseXML, 'gender'),
                         OpenElis.Utils.calculateAge(OpenElis.Utils.getXMLValue(xhr.responseXML, 'dob'), datePattern),
                         stNumber,
-                        collectionDate
+                        collectionDateStr
                     );
                 } else {
-                    showLabelDetailsWithoutPatientDetails(stNumber,collectionDateTime);
-
+                    showLabelDetailsWithoutPatientDetails(stNumber,collectionDateStr);
                 }
                 jQuery(".accessionNumber").html(an);
                 jQuery("#barcode").JsBarcode(an,{
