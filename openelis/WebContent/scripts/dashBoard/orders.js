@@ -58,7 +58,7 @@ function generateAllLinksForOrder(order, alwaysValidate){
 
     var labelMessage = jQuery("#translatedColumnNames").attr("data-link-label");
     var labelIcon = '<img style="cursor: pointer" id="actionIcon" src="images/sampleLabelPrint.png" title="'+labelMessage+'">';
-    var sampleLabelLink = "<a class='label' accessionNumber='"+order.accessionNumber+"' stNumber='"+order.stNumber+"' collectionDate='"+order.collectionDate+"'>"+labelIcon+"</a>";
+    var sampleLabelLink = "<a class='label' accessionNumber='"+order.accessionNumber+"' stNumber='"+order.stNumber+"' collectionDate='"+order.collectionDate+"' collectionDateStr='"+order.collectionDateString+"'>"+labelIcon+"</a>";
 
 
     if(alwaysValidate){

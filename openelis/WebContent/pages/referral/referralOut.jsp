@@ -11,11 +11,15 @@
                 java.util.List" %>
     <%@ page import="java.util.Locale" %>
     <%@ page import="org.apache.commons.lang3.StringUtils" %>
+	<%@ page import="us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl" %>
+	<%@ page import="java.net.URLDecoder" %>
 
 
-    <%@ taglib uri="/tags/struts-bean"		prefix="bean" %>
+	<%@ taglib uri="/tags/struts-bean"		prefix="bean" %>
 <%@ taglib uri="/tags/struts-html"		prefix="html" %>
 <%@ taglib uri="/tags/struts-logic"		prefix="logic" %>
+
+<%! private static final String UPLOADED_RESULTS_DIRECTORY = "uploadedResultsDirectory"; %>
 
 <bean:define id="formName"	value='<%=(String) request.getAttribute(IActionConstants.FORM_NAME)%>' />
 <bean:define id="nonNumericTests" name='<%=formName %>' property="nonNumericTests" type="List<NonNumericTests>" />
@@ -593,7 +597,7 @@ var referralPage = {
 	<th width="100px"><bean:message key="referral.markAsDone"/></th>
     <th><bean:message key="referral.report.date"/></th>
     <th><bean:message key="label.button.cancel.referral"/></th>
-	<th width="5%"><bean:message key="result.notes"/></th>  
+	<th width="5%"><bean:message key="result.notes"/></th>
 	<th><bean:message key="result.files"/></th>
 </tr>
   <logic:iterate id="referralItems" name="<%=formName%>"  property="referralItems" indexId="index" type="ReferralItem" >
@@ -744,6 +748,18 @@ var referralPage = {
 
         <td>
             <input type="file" name='<%="referralItems["+index+"].uploadedFile"%>' onchange='<%="markModified(" + index + ");"%>'>
+			<% if(referralItems.getUploadedFileName() != null){ %>
+			<%  String filePath = referralItems.getUploadedFileName();
+				String fileNameWithUUID = filePath.substring(filePath.lastIndexOf("/") + 1);
+				String fileName = fileNameWithUUID.substring(fileNameWithUUID.indexOf("_")+1);
+				fileName = new URLDecoder().decode(fileName, "UTF-8");
+				String uploadedFilesDirectory = new SiteInformationDAOImpl().getSiteInformationByName(UPLOADED_RESULTS_DIRECTORY).getValue();
+			%>
+			<label><%= fileName %> </label>
+			<a href='<%= uploadedFilesDirectory +referralItems.getUploadedFileName()%>' target="_blank">Download</a>
+			<% }%>
+
+		</td>
         </td>
 	</tr>
 	<logic:notEmpty name="referralItems"  property="additionalTests" >
@@ -881,7 +897,7 @@ function /*void*/ makeDirty(){
 		showSuccessMessage(false); //refers to last save
 	}
 	// Adds warning when leaving page if content has been entered into makeDirty form fields
-	function formWarning(){ 
+	function formWarning(){
     return "<bean:message key="banner.menu.dataLossWarning"/>";
 	}
 	window.onbeforeunload = formWarning;

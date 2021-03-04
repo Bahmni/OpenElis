@@ -10,6 +10,7 @@ import us.mn.state.health.lims.analysis.daoimpl.AnalysisDAOImpl;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.StringUtil;
+import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 import us.mn.state.health.lims.sample.dao.SampleDAO;
 import us.mn.state.health.lims.sample.daoimpl.SampleDAOImpl;
 import us.mn.state.health.lims.sample.valueholder.Sample;
@@ -44,6 +45,11 @@ public class TestUpdateWithAccessionNumberProvider extends BaseQueryProvider {
         String sampleId = request.getParameter("sampleId");
 
         Sample sample = sampleDao.getSampleByID(sampleId);
+        String datePattern = ResourceLocator.getInstance().getMessageResources().getMessage( "date.format.formatKey");
+        if(!StringUtil.isNullorNill(datePattern) && !StringUtil.isNullorNill(request.getParameter("collectionDate")))
+        {
+            sample.setCollectionDate(DateUtil.convertStringDateToTimestampWithPatternNoLocale(request.getParameter("collectionDate"), datePattern));
+        }
         sampleDao.updateData(sample);
         sample.setAccessionNumber(accessionNumber);
         String sysUserId = sample.getSysUserId();

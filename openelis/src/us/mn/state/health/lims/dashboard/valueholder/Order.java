@@ -18,7 +18,11 @@ package us.mn.state.health.lims.dashboard.valueholder;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.bahmni.feed.openelis.utils.JsonTimeSerializer;
+import us.mn.state.health.lims.common.util.DateUtil;
+import us.mn.state.health.lims.common.util.SystemConfiguration;
+import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
 
@@ -195,6 +199,14 @@ public class Order {
 
     public void setComments(String comments) {
         this.comments = comments;
+    }
+
+    public String getCollectionDateString()
+    {
+        if(this.collectionDate!=null) {
+            return DateUtil.formatDateAsText(this.collectionDate);
+        }
+        return "";
     }
 
     @JsonSerialize(using = JsonTimeSerializer.class)
