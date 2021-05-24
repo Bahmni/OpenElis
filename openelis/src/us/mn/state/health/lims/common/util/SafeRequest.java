@@ -20,13 +20,13 @@ public class SafeRequest extends HttpServletRequestWrapper {
     public String getParameter(String name) {
         HttpServletRequest request = (HttpServletRequest) this.getRequest();
         String encodedValue = Encode.forHtml(request.getParameter(name));
-        logger.error(String.format("Intercepted action request: %s, name: %s, value= %s", request.getServletPath(), name, encodedValue));
+        logger.debug(String.format("Intercepted action request: %s, name: %s, value= %s", request.getServletPath(), name, encodedValue));
         return encodedValue;
     }
 
     @Override
     public Map<String, String[]> getParameterMap() {
-        logger.error("getParameterMap");
+        logger.debug("getParameterMap");
         Map<String, String[]> newParameterMap = new HashMap<>();
         Map<String, String[]> existingParameterMap = super.getParameterMap();
         for (String key : existingParameterMap.keySet()) {
@@ -37,7 +37,7 @@ public class SafeRequest extends HttpServletRequestWrapper {
 
     @Override
     public String[] getParameterValues(String name) {
-        logger.error("getParameterValues");
+        logger.debug("getParameterValues");
         String[] existingValues = super.getParameterValues(name);
         String[] newValues = new String[existingValues.length];
         for (int i = 0; i < existingValues.length; i++) {

@@ -38,7 +38,7 @@ public class RequestParameterCheckFilter implements Filter {
         request.setCharacterEncoding("UTF8");
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         if (httpServletRequest.getServletPath().endsWith(".do")) {
-            logger.error(String.format("Using safe request: %s", httpServletRequest.getServletPath()));
+            logger.debug(String.format("Using safe request: %s", httpServletRequest.getServletPath()));
             chain.doFilter(new SafeRequest(httpServletRequest), response);
         }
         else
