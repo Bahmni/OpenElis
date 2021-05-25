@@ -219,6 +219,10 @@
         <url-pattern>/logoUpload</url-pattern>
     </servlet-mapping>
 
+    <session-config>
+        <tracking-mode>COOKIE</tracking-mode>
+    </session-config>
+
     <!-- The Usual Welcome File List -->
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
