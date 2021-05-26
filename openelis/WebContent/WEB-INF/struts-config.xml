@@ -4877,11 +4877,15 @@
           <forward name="fail" path="requestFormEntryPageDefinition" /> 
        </action>
                                      
-<!--LOGIN-->       
-       <action path="/LoginPage" name="loginForm" type="us.mn.state.health.lims.login.action.LoginPageAction" validate="false">
-          <forward name="success" path="loginPageDefinition"/>
-          <forward name="fail" path="loginPageDefinition"/> 
-       </action>
+<!--LOGIN-->
+        <action path="/LogoutPage" name="logoutForm" type="us.mn.state.health.lims.login.action.LogoutPageAction" validate="false">
+            <forward name="success" path="/LoginPage.do"/>
+        </action>
+        <action path="/LoginPage" name="loginForm" type="us.mn.state.health.lims.login.action.LoginPageAction" validate="false">
+            <forward name="dashboard" path="/LabDashboard.do"/>
+            <forward name="success" path="loginPageDefinition"/>
+            <forward name="fail" path="loginPageDefinition"/>
+        </action>
        <action path="/ValidateLogin" name="loginValidateForm" type="us.mn.state.health.lims.login.action.LoginValidateAction" validate="false">
           <forward name="success" path="/LabDashboard.do"/>
           <forward name="fail" path="/LoginPage.do"/> 

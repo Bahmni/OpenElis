@@ -3,7 +3,6 @@ package us.mn.state.health.lims.common.util;
 import org.apache.log4j.Logger;
 import org.owasp.encoder.Encode;
 
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import java.util.HashMap;
