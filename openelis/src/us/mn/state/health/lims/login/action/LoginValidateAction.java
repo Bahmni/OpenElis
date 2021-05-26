@@ -62,7 +62,7 @@ public class LoginValidateAction extends LoginBaseAction {
 		String forward = FWD_SUCCESS;
 
 		if (alreadyLoggedIn(request)) return mapping.findForward(forward);
-        else request.getSession().invalidate();
+		else request.getSession().invalidate();
 
 		BaseActionForm dynaForm = (BaseActionForm) form;
 
