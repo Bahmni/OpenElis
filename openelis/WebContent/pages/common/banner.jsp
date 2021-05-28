@@ -33,7 +33,7 @@ function /*void*/ setLanguage( language ){
     var languageMessage = "data-message-"+language;
 
 	update = confirm(jQuery("#updateMessage").attr(languageMessage));
-	
+
 	if( update ){
 		var form = window.document.forms[0];
 		form.action = "LoginPage.do?lang=" + language;
@@ -63,14 +63,14 @@ function displayHelp(){
 
 <div id="header">
   <div id="oe-logo">
-    <img src="images/openelis_logo.png" title="OpenELIS" alt="OpenELIS" />   
+    <img src="images/openelis_logo.png" title="OpenELIS" alt="OpenELIS" />
   </div>
 </div>
 
 <div align="center" style="margin: 20px auto; width: 800px">
 <h2><bean:message key="ellis.openelis" /></h2></div>
 </div>
-  
+
 
 <%
 	} else {  //haiti, if another style is added use a case statement
@@ -108,18 +108,18 @@ function displayHelp(){
 				if (request.getSession().getAttribute(IActionConstants.USER_SESSION_DATA) != null) {
 					usd = (UserSessionData) request.getSession().getAttribute(IActionConstants.USER_SESSION_DATA);
 			%>
-			<div id="user-info"><div><%=usd.getElisUserName()%> - <html:link page="/LoginPage.do" styleId="log-out-link" titleKey="homePage.menu.logOut.toolTip"><bean:message key="homePage.menu.logOut.toolTip"/></html:link></div></div>
+			<div id="user-info"><div><%=usd.getElisUserName()%> - <html:link page="/LogoutPage.do" styleId="log-out-link" titleKey="homePage.menu.logOut.toolTip"><bean:message key="homePage.menu.logOut.toolTip"/></html:link></div></div>
 			<%
 				}
 			%>
   	  		<div id="oe-title" onclick="navigateToHomePage();"><%=StringUtil.getContextualMessageForKey("title.default")%></div>
-  		</div>  
+  		</div>
   		<div id="oe-version" style="display: block">
     		<div id="appVersion">
     		<bean:message key="ellis.version" />:&nbsp;
 		    <%= ConfigurationProperties.getInstance().getPropertyValue(Property.releaseNumber)%> (<%= ConfigurationProperties.getInstance().getPropertyValue(Property.buildNumber) %>)&nbsp;&nbsp;&nbsp;
 	        </div>
-    
+
 		    <% if("true".equals(ConfigurationProperties.getInstance().getPropertyValueLowerCase(Property.TrainingInstallation))){ %>
 		      <div id="training-alert"><span title="<bean:message key="training.note"/>"><bean:message key="training.note"/></span></div>
 		    <% } %>
