@@ -2,21 +2,22 @@
 * The contents of this file are subject to the Mozilla Public License
 * Version 1.1 (the "License"); you may not use this file except in
 * compliance with the License. You may obtain a copy of the License at
-* http://www.mozilla.org/MPL/ 
-* 
+* http://www.mozilla.org/MPL/
+*
 * Software distributed under the License is distributed on an "AS IS"
 * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
 * License for the specific language governing rights and limitations under
 * the License.
-* 
+*
 * The Original Code is OpenELIS code.
-* 
+*
 * Copyright (C) The Minnesota Department of Health.  All Rights Reserved.
 */
 package us.mn.state.health.lims.login.action;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.struts.Globals;
 import org.apache.struts.action.Action;
@@ -51,9 +52,9 @@ public abstract class LoginBaseAction extends Action implements IActionConstants
 
 		String pageTitleKeyParameter = getPageTitleKeyParameter(request, form);
 		String pageSubtitleKeyParameter = getPageSubtitleKeyParameter(request,form);
-	
+
 		request.getSession().setAttribute(Globals.LOCALE_KEY, SystemConfiguration.getInstance().getDefaultLocale());
-		
+
 		if (StringUtil.isNullorNill(pageTitleKeyParameter)) {
 			pageTitle = getMessageForKey(request, pageTitleKey);
 		} else {
@@ -92,7 +93,7 @@ public abstract class LoginBaseAction extends Action implements IActionConstants
 	 * Must be implemented by subclasses to set the title for the requested
 	 * page. The value returned should be a key String from the
 	 * ApplicationResources.properties file.
-	 * 
+	 *
 	 * @return the title key for this page.
 	 */
 	protected abstract String getPageTitleKey();
@@ -101,7 +102,7 @@ public abstract class LoginBaseAction extends Action implements IActionConstants
 	 * Must be implemented by subclasses to set the subtitle for the requested
 	 * page. The value returned should be a key String from the
 	 * ApplicationResources.properties file.
-	 * 
+	 *
 	 * @return the subtitle key this page.
 	 */
 	protected abstract String getPageSubtitleKey();
@@ -110,7 +111,7 @@ public abstract class LoginBaseAction extends Action implements IActionConstants
 	 * This getPageTitleKey method accepts a request and form parameter so that
 	 * a subclass can override the method and conditionally return different
 	 * titles.
-	 * 
+	 *
 	 * @param request
 	 *            the request
 	 * @param form
@@ -130,7 +131,7 @@ public abstract class LoginBaseAction extends Action implements IActionConstants
 	 * This getSubtitleKey method accepts a request and form parameter so that a
 	 * subclass can override the method and conditionally return different
 	 * subtitles.
-	 * 
+	 *
 	 * @param request
 	 *            the request
 	 * @param form
@@ -150,7 +151,7 @@ public abstract class LoginBaseAction extends Action implements IActionConstants
 	/**
 	 * Utility method to simplify the lookup of MessageResource Strings in the
 	 * ApplicationResources.properties file for this application.
-	 * 
+	 *
 	 * @param request
 	 *            the HttpServletRequest
 	 * @param messageKey
@@ -201,4 +202,11 @@ public abstract class LoginBaseAction extends Action implements IActionConstants
 			throw new ClassCastException("Error Casting form into DynaForm");
 		}
 	}
+
+	protected boolean alreadyLoggedIn(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        if (session == null) return false;
+
+        return session.getAttribute(USER_SESSION_DATA) != null;
+    }
 }

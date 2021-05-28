@@ -60,6 +60,10 @@ public class LoginValidateAction extends LoginBaseAction {
 			HttpServletResponse response) throws Exception {
 
 		String forward = FWD_SUCCESS;
+
+		if (alreadyLoggedIn(request)) return mapping.findForward(forward);
+		else request.getSession().invalidate();
+
 		BaseActionForm dynaForm = (BaseActionForm) form;
 
 		// server-side validation (validation.xml)
