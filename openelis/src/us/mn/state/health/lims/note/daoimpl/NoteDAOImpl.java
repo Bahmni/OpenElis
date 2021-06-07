@@ -26,6 +26,7 @@ import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.common.daoimpl.BaseDAOImpl;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.log.LogEvent;
+import us.mn.state.health.lims.common.util.StringUtil;
 import us.mn.state.health.lims.common.util.SystemConfiguration;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.note.dao.NoteDAO;
@@ -77,6 +78,7 @@ public class NoteDAOImpl extends BaseDAOImpl implements NoteDAO {
 
 	public boolean insertData(Note note) throws LIMSRuntimeException {
 		try {
+            note.setText(StringUtil.encode(note.getText()));
 			String id = (String) HibernateUtil.getSession().save(note);
 			note.setId(id);
 
@@ -84,7 +86,7 @@ public class NoteDAOImpl extends BaseDAOImpl implements NoteDAO {
 			String sysUserId = note.getSysUserId();
 			String tableName = "NOTE";
 			auditDAO.saveNewHistory(note,sysUserId,tableName);
-	
+
 			HibernateUtil.getSession().flush();
 			HibernateUtil.getSession().clear();
 
@@ -103,6 +105,7 @@ public class NoteDAOImpl extends BaseDAOImpl implements NoteDAO {
 
 		//add to audit trail
 		try {
+            note.setText(StringUtil.encode(note.getText()));
 			AuditTrailDAO auditDAO = new AuditTrailDAOImpl();
 			String sysUserId = note.getSysUserId();
 			String event = IActionConstants.AUDIT_TRAIL_UPDATE;
@@ -336,7 +339,7 @@ public class NoteDAOImpl extends BaseDAOImpl implements NoteDAO {
 			query.setInteger("refId", Integer.parseInt(refId));
 			query.setInteger("tableId", Integer.parseInt(table_id));
 			query.setString("subject", subject);
-			
+
 			List<Note> noteList = query.list();
 			closeSession();
 			return noteList;
