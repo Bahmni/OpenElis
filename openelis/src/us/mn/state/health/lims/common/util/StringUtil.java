@@ -17,6 +17,7 @@
  */
 package us.mn.state.health.lims.common.util;
 
+import org.owasp.encoder.Encode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -33,7 +34,7 @@ import us.mn.state.health.lims.common.util.resources.ResourceLocator;
 
 /**
  * @author diane benz
- * 
+ *
  *         To change this generated comment edit the template variable
  *         "typecomment": Window>Preferences>Java>Templates. To enable and
  *         disable the creation of type comments go to
@@ -66,7 +67,7 @@ public class StringUtil {
 	/**
 	 * Search for tags in a String with oldValue tags and replace the tag with
 	 * the newValue text.
-	 * 
+	 *
 	 * @param input
 	 * @param oldValue
 	 * @param newValue
@@ -258,7 +259,7 @@ public class StringUtil {
 		}
 	}
 
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static List loadListFromStringOfElements(String str, String textSeparator, boolean validate) throws Exception {
 		List list = new ArrayList();
@@ -330,7 +331,7 @@ public class StringUtil {
 
 		return ResourceLocator.getInstance().getMessageResources().getMessage(new Locale(locale), messageKey, arg0, arg1);
 	}
-	
+
 	public static String getContextualMessageForKey(String messageKey) {
 		if (null == messageKey) {
 			return null;
@@ -402,7 +403,7 @@ public class StringUtil {
 	 * Limit the chars in a string to the simple Java identifiers, A-Z, a-z, $,
 	 * _ etc. code taken from
 	 * http://www.exampledepot.com/egs/java.lang/IsJavaId.html
-	 * 
+	 *
 	 * @see Character#isJavaIdentifierPart(char) etc. for details.
 	 * @param s
 	 *            - some string to test
@@ -443,17 +444,17 @@ public class StringUtil {
 		out.append(QUOTE);
 		return out.toString();
 	}
-	
+
 	/**
 	 * Solves the problem of how to deal with commas within quoted strings for csv.  I couldn't figure out a regex that would cover
 	 * it so we're doing it the hard way.  It will stumble if '~' is embedded in the string.  This will fail on mixed fields such as
-	 * 1,2,"something, else", 4,5 
-	 *  
+	 * 1,2,"something, else", 4,5
+	 *
 	 */
 	public static String[] separateCSVWithEmbededQuotes(String line){
-		
+
 		String[] breakOnQuotes = line.split(QUOTE);
-		
+
 		StringBuffer substitutedString = new StringBuffer();
 		for( String subString : breakOnQuotes){
 			if(subString.startsWith(COMMA)){
@@ -464,20 +465,20 @@ public class StringUtil {
 				substitutedString.append(QUOTE);
 			}
 		}
-		
+
 		return substitutedString.toString().split(TIDDLE);
 	}
-	
+
 	/**
-	 * Similar to separateCSVWithEmbededQuotes(String line) but deals with mixed fields 
+	 * Similar to separateCSVWithEmbededQuotes(String line) but deals with mixed fields
 	 * i.e. 1,2,"something, else", 4,5 , "more of that thing", 8
-	 * 
-	 *  
+	 *
+	 *
 	 */
 	public static String[] separateCSVWithMixedEmbededQuotes(String line){
-		
+
 		String[] breakOnQuotes = line.split(QUOTE);
-		
+
 		StringBuffer substitutedString = new StringBuffer();
 		for( String subString : breakOnQuotes){
 			if(subString.startsWith(COMMA) || subString.endsWith(COMMA)){
@@ -488,7 +489,7 @@ public class StringUtil {
 				substitutedString.append(QUOTE);
 			}
 		}
-		
+
 		return substitutedString.toString().split(TIDDLE);
 	}
 
@@ -496,7 +497,7 @@ public class StringUtil {
 	 * Compare two strings returning the appropriate -1,0,1; but deal with
 	 * possible null strings which will compare the same as "", aka before any
 	 * other string.
-	 * 
+	 *
 	 * @author pahill
 	 * @param left
 	 * @param right
@@ -540,18 +541,18 @@ public class StringUtil {
 
 		return true;
 	}
-	
+
 	public static String strip(String string, String toBeRemoved){
 
 		if( string.contains(toBeRemoved)){
 			String[] subStrings = string.trim().split(toBeRemoved);
-			
+
 			StringBuffer reconsituted = new StringBuffer();
-			
+
 			for( String subString : subStrings){
 				reconsituted.append(subString);
 			}
-			
+
 			return reconsituted.toString();
 		}else{
 			return string;
@@ -561,7 +562,7 @@ public class StringUtil {
 	public static String blankIfNull(String string) {
 		return string == null ? "" : string;
 	}
-	
+
 	public static String ellipsisString( String text, int ellipsisAt){
 		if( text.length() > ellipsisAt){
 			return text.substring(0, ellipsisAt) + "...";
@@ -569,17 +570,28 @@ public class StringUtil {
 			return text;
 		}
 	}
-	
+
 	public static String join(Collection<String> collection, String separator){
 		String constructed = "";
 		if( collection.isEmpty()){
 			return constructed;
 		}
-		
+
 		for (String item : collection) {
 			constructed += item + separator;
 		}
 
 		return constructed.substring(0, constructed.length() - separator.length());
+	}
+
+	public static String encode(String value) {
+		return value != null ? Encode.forHtml(value) : null;
+	}
+
+	public static Object encode(Object o) {
+		if (o instanceof String) {
+			return Encode.forHtml((String) o);
+		}
+		return o;
 	}
 }
