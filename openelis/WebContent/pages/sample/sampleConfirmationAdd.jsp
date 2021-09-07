@@ -795,8 +795,8 @@ function /*string*/ getNote( sampleIndex ){
 								     onchange="getRequestersForOrg();makeDirty();setSaveButton();"
 								     >
 							<option value=""></option>
-							<logic:iterate name="<%=formName %>" property="requestingOrganizationList" id="org" type="us.mn.state.health.lims.common.util.IdValuePair">
-							    <option value="<%=org.getId() %>" ><%= org.getValue() %></option>
+							<logic:iterate name="<%=formName %>" property="requestingOrganizationList" id="orgIdx" type="us.mn.state.health.lims.common.util.IdValuePair">
+							    <option value="<%=orgIdx.getId() %>" ><%= orgIdx.getValue() %></option>
 							</logic:iterate>
 		</html:select>
 		</td>
