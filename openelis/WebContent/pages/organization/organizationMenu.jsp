@@ -77,10 +77,10 @@
 	   <% } %>
 
 	</tr>
-	<logic:iterate id="org" indexId="ctr" name="<%=formName%>" property="menuList" type="us.mn.state.health.lims.organization.valueholder.Organization">
-	<bean:define id="orgID" name="org" property="id"/>
-	<logic:notEmpty name="org" property="organization">
-	 <bean:define id="parentOrgID" name="org" property="organization.id"/>
+	<logic:iterate id="orgIdx" indexId="ctr" name="<%=formName%>" property="menuList" type="us.mn.state.health.lims.organization.valueholder.Organization">
+		<bean:define id="orgID" name="orgIdx" property="id"/>
+	<logic:notEmpty name="orgIdx" property="organization">
+	 <bean:define id="parentOrgID" name="orgIdx" property="organization.id"/>
 	</logic:notEmpty>
 
 	  <tr>
@@ -92,56 +92,56 @@
    	   </td>
 		<% if( useOrgLocalAbbrev ){ %>
 	   <td class="textcontent">
-	   	  <bean:write name="org" property="organizationLocalAbbreviation"/>
+	   	  <bean:write name="orgIdx" property="organizationLocalAbbreviation"/>
 	   </td>
 	   <% } %>
 	   <td class="textcontent">
-	   	  <bean:write name="org" property="organizationName"/>
+	   	  <bean:write name="orgIdx" property="organizationName"/>
 	   </td>
 	   <td class="textcontent">
-	    <logic:notEmpty name="org" property="organization">
-	        <bean:write name="org" property="organization.organizationName"/>
+	    <logic:notEmpty name="orgIdx" property="organization">
+	        <bean:write name="orgIdx" property="organization.organizationName"/>
 	    </logic:notEmpty>
 	      &nbsp;
 	   </td>
 	   <td class="textcontent">
-	      <logic:notEmpty name="org" property="shortName">
-	   	  <bean:write name="org" property="shortName"/>
+	      <logic:notEmpty name="orgIdx" property="shortName">
+	   	  <bean:write name="orgIdx" property="shortName"/>
 	   	  </logic:notEmpty>
-	   	  <logic:empty name="org" property="shortName">
+	   	  <logic:empty name="orgIdx" property="shortName">
 	   	   &nbsp;
 	   	  </logic:empty>
 	   </td>
 	   <td class="textcontent">
-	   	  <bean:write name="org" property="isActive"/>
+	   	  <bean:write name="orgIdx" property="isActive"/>
 	   </td>
 	   <td class="textcontent">
-	   	  <bean:write name="org" property="streetAddress"/>
+	   	  <bean:write name="orgIdx" property="streetAddress"/>
 	   	  &nbsp;
 	   </td>
 	   <td class="textcontent">
-	   	  <bean:write name="org" property="city"/>
+	   	  <bean:write name="orgIdx" property="city"/>
 	   	  &nbsp;
 	   </td>
 	   <% if( useOrgState ){ %>
 	  <td class="textcontent">
-	   	  <bean:write name="org" property="state"/>
+	   	  <bean:write name="orgIdx" property="state"/>
 	   	  &nbsp;
 	   </td>
 	   <% } %>
 	   <% if( useZipCode ){ %>
 	   <td class="textcontent">
-	   	  <bean:write name="org" property="zipCode"/>
+	   	  <bean:write name="orgIdx" property="zipCode"/>
 	   	  &nbsp;
 	   </td>
 	   <% } %>
 	   <td class="textcontent">
-	   	  <bean:write name="org" property="cliaNum"/>
+	   	  <bean:write name="orgIdx" property="cliaNum"/>
 	   	  &nbsp;
 	   </td>
 	   <% if( useMLS ){ %>
 	   <td class="textcontent">
-	     <bean:write name="org" property="mlsLabFlag"/>
+	     <bean:write name="orgIdx" property="mlsLabFlag"/>
 	   	  &nbsp;
 	    </td>
 	   <% } %>
