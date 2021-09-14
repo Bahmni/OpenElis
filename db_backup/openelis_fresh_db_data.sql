@@ -782,8 +782,8 @@ SELECT pg_catalog.setval('label_seq', 3, false);
 --
 
 COPY login_user (id, login_name, password, password_expired_dt, account_locked, account_disabled, is_admin, user_time_out) FROM stdin;
-130	user	FVSAQzka8nEbrZUyGU3iTQ==	2021-02-14	N	N	N	480
-1	admin	n2OrWHXVm/BQsgd1YZJoCA==	2020-04-02	N	N	Y	220
+130	user	FVSAQzka8nEbrZUyGU3iTQ==	2030-12-31	N	N	N	480
+1	admin	n2OrWHXVm/BQsgd1YZJoCA==	2030-12-31	N	N	Y	220
 \.
 
 
