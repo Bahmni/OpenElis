@@ -46,6 +46,8 @@ jobs:
              echo "/tmp/ant/apache-ant-1.9.16/bin" >> $GITHUB_PATH
       - name: Checkout OpenELIS Repo
         uses: actions/checkout@v2
+      - name: Run Tests
+        run: ant setupDB test test-only
       - name: Package
         run: ant dist
       - name: Upload War Artifact
