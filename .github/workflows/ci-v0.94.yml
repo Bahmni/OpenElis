@@ -48,6 +48,8 @@ jobs:
         uses: actions/checkout@v2
       - name: Run Tests
         run: ant setupDB test test-only
+        env:
+          PGPASSWORD: postgres
       - name: Package
         run: ant dist
       - name: Upload War Artifact
