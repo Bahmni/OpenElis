@@ -1,0 +1,40 @@
+name: Continuous Integration-v0.94
+on:
+  push:
+    branches:
+      - master
+  repository_dispatch:
+    types: ["bahmni-package-0.94-trigger"]
+  workflow_dispatch:
+env:
+  BAHMNI_VERSION: 0.94
+jobs:
+  build-package:
+    name: Test and Package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Java 7
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '7'
+      - name: Setup Ruby 2.2
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.2
+      - name: Install Compass
+        run: gem install compass
+      - name: Checkout OpenELIS Repo
+        uses: actions/checkout@v2
+      - name: Package
+        run: ant dist
+      - name: Upload War Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: openelis-war
+          path: openelis/dist/openelis.war
+      - name: Upload DB Zip Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: openelis-db-zip
+          path: OpenElis.zip
