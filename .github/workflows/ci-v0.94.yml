@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 env:
   BAHMNI_VERSION: 0.94
-  BRANCH_NAME: release-0.93
+  BRANCH_NAME: master
 jobs:
   build-package:
     name: Test and Package
