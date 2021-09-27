@@ -24,6 +24,14 @@ jobs:
           ruby-version: 2.3
       - name: Install Compass
         run: gem install compass
+      - name: Install Ant 1.9
+        run: |
+             mkdir /tmp/ant
+             cd /tmp/ant
+             wget https://dlcdn.apache.org//ant/binaries/apache-ant-1.9.16-bin.tar.gz
+             tar -zxf apache-ant-1.9.16-bin.tar.gz
+             echo "ANT_HOME=/tmp/ant/apache-ant-1.9.16" >> $GITHUB_ENV
+             echo "/tmp/ant/apache-ant-1.9.16/bin" >> $GITHUB_PATH
       - name: Checkout OpenELIS Repo
         uses: actions/checkout@v2
       - name: Package
