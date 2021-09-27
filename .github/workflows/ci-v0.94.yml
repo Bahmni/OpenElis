@@ -18,10 +18,10 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '7'
-      - name: Setup Ruby 2.2
+      - name: Setup Ruby 2.3
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.2
+          ruby-version: 2.3
       - name: Install Compass
         run: gem install compass
       - name: Checkout OpenELIS Repo
