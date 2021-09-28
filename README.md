@@ -3,7 +3,7 @@ OpenElis
 
 [![Build Status](https://travis-ci.org/Bhamni/OpenElis.svg?branch=master)](https://travis-ci.org/Bhamni/OpenElis)
 
-![Build v0.94](https://github.com/Bahmni/OpenElis/actions/workflows/ci-v0.94.yml/badge.svg)
+[![Build v0.94](https://github.com/Bahmni/OpenElis/actions/workflows/ci-v0.94.yml/badge.svg)](https://github.com/Bahmni/OpenElis/actions)
 
 forked from OpenElis_v3.1_r2013_02_21 branch in svn
 
