@@ -149,7 +149,7 @@ public class LoginValidateAction extends LoginBaseAction {
 				}
 				
 				errors = new ActionMessages();		
-				ActionError error = new ActionError("login.error.attempt.message",
+				ActionError error = new ActionError("login.error.message",
 													String.valueOf(loginUserFailAttemptCount),
 													String.valueOf(loginUserFailAttemptCountDefault), 
 													SystemConfiguration.getInstance().getLoginUserAccountUnlockMinute(), null);			
