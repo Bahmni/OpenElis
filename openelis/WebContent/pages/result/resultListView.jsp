@@ -1114,7 +1114,7 @@ function /*void*/ processTestReflexCD4Success(xhr)
 			<html:hidden property="hideShowFlag"  styleId='<%="hideShow_" + index %>' value="hidden" />
 		</td>
         <td>
-            <input type="file" name='<%="testResult["+index+"].uploadedFile"%>' onchange='<%="markUpdated(" + index + ");"%>'>
+            <input type="file" id="<%= index %>" name='<%="testResult["+index+"].uploadedFile"%>' accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
             <% if(testResult.getUploadedFileName() != null){ %>
                     <%  String filePath = testResult.getUploadedFileName();
                         String fileNameWithUUID = filePath.substring(filePath.lastIndexOf("/") + 1);
@@ -1215,3 +1215,20 @@ function /*void*/ processTestReflexCD4Success(xhr)
 <logic:equal name="testCount"  value="0">
 <h2><bean:message key="result.noTestsFound"/></h2>
 </logic:equal>
+
+<script>
+( function($) {
+    $(document).ready(function() {
+        $('input[type="file"]').change(function(e){
+            var fileName = e.target.files[0].name;
+            var index = e.target.id;
+            if(fileName.split('.').includes('exe')){
+                e.target.value = '';
+                alert("file type not supported")
+            } else {
+                markUpdated(index);
+            }
+        });
+    });
+} ) ( jQuery );
+</script>
