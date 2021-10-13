@@ -64,7 +64,7 @@ jobs:
           repository: Bahmni/bahmni-package
           ref: ${{ env.BRANCH_NAME }}
           path: bahmni-package
-      - name: Checkout emr-functional-tests
+      - name: Checkout bahmni-scripts
         uses: actions/checkout@v2
         with:
           repository: Bahmni/bahmni-scripts
