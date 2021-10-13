@@ -511,6 +511,8 @@ public class ResultsLogbookUpdateAction extends BaseAction implements IResultSav
         } catch (URISyntaxException e) {
             testResultItem.setUploadedFileName(null);
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
