@@ -4,7 +4,7 @@ on:
     branches:
       - master
   repository_dispatch:
-    types: ["bahmni-package-0.94-trigger","emr-functional-tests-0.94-trigger"]
+    types: ["bahmni-package-0.94-trigger","bahmni-scripts-0.94-trigger"]
   workflow_dispatch:
 env:
   BAHMNI_VERSION: 0.94
@@ -67,9 +67,9 @@ jobs:
       - name: Checkout emr-functional-tests
         uses: actions/checkout@v2
         with:
-          repository: Bahmni/emr-functional-tests
+          repository: Bahmni/bahmni-scripts
           ref: ${{ env.BRANCH_NAME }}
-          path: emr-functional-tests
+          path: bahmni-scripts
       - uses: actions/download-artifact@v2
         with:
           name: openelis-war
