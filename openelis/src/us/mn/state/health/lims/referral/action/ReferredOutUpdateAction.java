@@ -421,6 +421,8 @@ public class ReferredOutUpdateAction extends BaseAction {
             referralItem.setUploadedFileName(encodedFileName);
         } catch (IOException | URISyntaxException e) {
             referralItem.setUploadedFileName(null);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
