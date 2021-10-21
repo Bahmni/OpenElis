@@ -70,6 +70,12 @@ jobs:
           repository: Bahmni/bahmni-scripts
           ref: ${{ env.BRANCH_NAME }}
           path: bahmni-scripts
+      - name: Checkout default-config
+          uses: actions/checkout@v2
+          with:
+            repository: Bahmni/default-config
+            ref: ${{ env.BRANCH_NAME }}
+            path: default-config
       - uses: actions/download-artifact@v2
         with:
           name: openelis-war
