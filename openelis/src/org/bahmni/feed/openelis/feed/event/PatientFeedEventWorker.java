@@ -16,7 +16,8 @@
 
 package org.bahmni.feed.openelis.feed.event;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.bahmni.feed.openelis.ObjectMapperRepository;
 import org.bahmni.feed.openelis.feed.contract.openmrs.OpenMRSPatient;
 import org.bahmni.feed.openelis.feed.mapper.OpenMRSPatientMapper;
@@ -35,7 +36,7 @@ import java.util.Date;
 public class PatientFeedEventWorker extends OpenElisEventWorker {
     private HttpClient webClient;
     private String urlPrefix;
-    private static Logger logger = Logger.getLogger(PatientFeedEventWorker.class);
+    private static Logger logger = LogManager.getLogger(PatientFeedEventWorker.class);
 
     public PatientFeedEventWorker(HttpClient webClient, String urlPrefix) {
         this.webClient = webClient;

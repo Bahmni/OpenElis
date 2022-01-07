@@ -1,7 +1,8 @@
 package org.bahmni.feed.openelis.feed.event;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.feed.contract.bahmnireferencedata.*;
 import org.bahmni.feed.openelis.feed.service.impl.PanelService;
@@ -21,7 +22,7 @@ public class LabFeedEventWorker extends OpenElisEventWorker {
     private final TypeOfSampleService typeOfSampleService;
     private HttpClient webClient;
     private String urlPrefix;
-    private static Logger logger = Logger.getLogger(LabFeedEventWorker.class);
+    private static Logger logger = LogManager.getLogger(LabFeedEventWorker.class);
     private TestSectionService testSectionService;
     private TestService testService;
     private PanelService panelService;

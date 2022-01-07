@@ -17,7 +17,8 @@
 package us.mn.state.health.lims.upload.action;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -49,7 +50,7 @@ public class UploadAction extends BaseAction {
     public static final String UPLOADED_FILES_DIRECTORY = "uploadedFilesDirectory";
     public static final String DURATION_IN_DAYS_FOR_UPLOAD_STATUSES = "durationInDaysForUploadStatuses";
 
-    private static Logger logger = Logger.getLogger(UploadAction.class);
+    private static Logger logger = LogManager.getLogger(UploadAction.class);
 
     @Override
     protected ActionForward performAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {

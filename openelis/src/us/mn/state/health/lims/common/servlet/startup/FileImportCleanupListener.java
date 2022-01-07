@@ -16,14 +16,15 @@
 
 package us.mn.state.health.lims.common.servlet.startup;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.bahmni.fileimport.ImportRegistry;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 public final class FileImportCleanupListener implements ServletContextListener {
-    private static Logger logger = Logger.getLogger(FileImportCleanupListener.class);
+    private static Logger logger = LogManager.getLogger(FileImportCleanupListener.class);
 
     public void contextDestroyed(ServletContextEvent event) {
         try {

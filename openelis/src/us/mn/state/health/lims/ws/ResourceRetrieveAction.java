@@ -16,7 +16,8 @@
 
 package us.mn.state.health.lims.ws;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -32,7 +33,7 @@ public class ResourceRetrieveAction extends WebServiceAction {
 
     private final String APPLICATION_JSON = "application/json";
     private Handlers handlers;
-    private final Logger logger = Logger.getLogger(this.getClass());
+    private final Logger logger = LogManager.getLogger(this.getClass());
 
     public ResourceRetrieveAction() {
         this(new Handlers());
