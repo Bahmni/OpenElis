@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
-    <appender name="file" class="org.apache.log4j.RollingFileAppender">
-        <param name="File" value="${catalina.base}/logs/openelis.log" />
-        <param name="MaxFileSize" value="5000KB" />
-        <param name="MaxBackupIndex" value="10" />
-        <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d %-5p [ELIS][%c{1}] %m%n" />
-        </layout>
-    </appender>
-
-    <root>
-        <priority value="INFO"/>
-        <appender-ref ref="file"/>
-    </root>
-
-</log4j:configuration>
+<Configuration status="INFO">
+<Appenders>
+    <RollingFile name="file"
+                 fileName="${catalina.base}/logs/openelis.log"
+                 filePattern="${catalina.base}/logs/openelis.log.%i">
+        <PatternLayout pattern="%d %-5p [ELIS][%c{1}] %m%n"/>
+        <Policies>
+            <SizeBasedTriggeringPolicy size="5000KB"/>
+        </Policies>
+        <DefaultRolloverStrategy max="10"/>
+    </RollingFile>
+</Appenders>
+<Loggers>
+    <Root level="INFO">
+        <AppenderRef ref="file"/>
+    </Root>
+</Loggers>
+</Configuration>

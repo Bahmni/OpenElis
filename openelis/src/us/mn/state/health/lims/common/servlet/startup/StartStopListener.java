@@ -17,7 +17,6 @@ package us.mn.state.health.lims.common.servlet.startup;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.apache.log4j.xml.DOMConfigurator;
 import org.quartz.SchedulerException;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.scheduler.IndependentThreadStarter;
@@ -52,7 +51,6 @@ public final class StartStopListener implements ServletContextListener {
     }
 
     public void contextInitialized(ServletContextEvent event) {
-        DOMConfigurator.configure(event.getServletContext().getRealPath("/WEB-INF/classes/log4j.xml"));
         logger.info(String.format("Initializing"));
         scheduler = new LateStartScheduler();
         scheduler.checkAndStartScheduler();

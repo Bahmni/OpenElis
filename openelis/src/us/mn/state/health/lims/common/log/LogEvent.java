@@ -17,13 +17,16 @@ package us.mn.state.health.lims.common.log;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.Category;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *  @author		Hung Nguyen
  */
 
 public class LogEvent {
+
+	private static Logger logger = LogManager.getLogger(LogEvent.class);
 	/**
 	 * Write to the log file (type error)
 	 * @param className the class name
@@ -31,7 +34,7 @@ public class LogEvent {
 	 * @param errorMessage the error message
 	 */
 	public static void logError(String className, String methodName, String errorMessage) {
-		getLog().error("Class: " + className + ", Method: " + methodName + ", Error: " + errorMessage);
+		logger.error("Class: {}, Method: {}, Error: {}", className, Method, Error);
 	}
 
 	/**
@@ -42,7 +45,7 @@ public class LogEvent {
 	 */
 	public static void logErrorStack(String className, String methodName, Throwable throwable) {
 		logError(className, methodName, throwable.toString());
-		getLog().error("Class: " + className + ", Method: " + methodName , throwable);
+        logger.error("Class: {}, Method: {}", className, methodName , throwable);
 	}
 	/**
 	 * Write to the log file (type debug)
@@ -51,7 +54,7 @@ public class LogEvent {
 	 * @param debugMessage the debug message
 	 */
 	public static void logDebug(String className, String methodName, String debugMessage) {
-	    getLog().debug("Class: " + className + ", Method: " + methodName + ", Debug: " + debugMessage);
+		logger.error("Class: {}, Method: {}, Debug: {}", className, methodName, debugMessage);
 	}
 
 	/**
@@ -61,7 +64,7 @@ public class LogEvent {
 	 * @param infoMessage the info message
 	 */
 	public static void logInfo(String className, String methodName, String infoMessage) {
-		getLog().info("Class: " + className + ", Method: " + methodName + ", Info: " + infoMessage);
+		logger.error("Class: {}, Method: {}, Info: {}", className, methodName, infoMessage);
 	}
 
 	/**
@@ -71,7 +74,7 @@ public class LogEvent {
 	 * @param warnMessage the warning message
 	 */
 	public static void logWarn(String className, String methodName, String warnMessage) {
-		getLog().warn("Class: " + className + ", Method: " + methodName + ", Warning:" + warnMessage);
+		logger.error("Class: {}, Method: {}, Warning: {}", className, methodName, warnMessage);
 	}
 
 	/**
@@ -81,7 +84,7 @@ public class LogEvent {
 	 * @param warnMessage the fatal message
 	 */
 	public static void logFatal(String className, String methodName, String fatalMessage) {
-		getLog().fatal("Class: " + className + ", Method: " + methodName + ", Fatal:" + fatalMessage);
+		logger.error("Class: {}, Method: {}, Fatal: {}", className, methodName, fatalMessage);
 	}
 
 	public static Log getLog(Class className) {
@@ -89,7 +92,4 @@ public class LogEvent {
 		return log;
 	}
 
-    private static Category getLog() {
-        return Category.getInstance(LogEvent.class);
-    }
 }
