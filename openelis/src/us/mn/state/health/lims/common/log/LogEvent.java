@@ -34,7 +34,7 @@ public class LogEvent {
 	 * @param errorMessage the error message
 	 */
 	public static void logError(String className, String methodName, String errorMessage) {
-		logger.error("Class: {}, Method: {}, Error: {}", className, Method, Error);
+		logger.error("Class: {}, Method: {}, Error: {}", className, methodName, errorMessage);
 	}
 
 	/**
