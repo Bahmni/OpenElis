@@ -54,7 +54,7 @@ public class LogEvent {
 	 * @param debugMessage the debug message
 	 */
 	public static void logDebug(String className, String methodName, String debugMessage) {
-		logger.error("Class: {}, Method: {}, Debug: {}", className, methodName, debugMessage);
+		logger.debug("Class: {}, Method: {}, Debug: {}", className, methodName, debugMessage);
 	}
 
 	/**
@@ -64,7 +64,7 @@ public class LogEvent {
 	 * @param infoMessage the info message
 	 */
 	public static void logInfo(String className, String methodName, String infoMessage) {
-		logger.error("Class: {}, Method: {}, Info: {}", className, methodName, infoMessage);
+		logger.warn("Class: {}, Method: {}, Info: {}", className, methodName, infoMessage);
 	}
 
 	/**
@@ -81,10 +81,10 @@ public class LogEvent {
 	 * Write to the log file (type fatal)
 	 * @param className the class name
 	 * @param methodName the method name
-	 * @param warnMessage the fatal message
+	 * @param fatalMessage the fatal message
 	 */
 	public static void logFatal(String className, String methodName, String fatalMessage) {
-		logger.error("Class: {}, Method: {}, Fatal: {}", className, methodName, fatalMessage);
+		logger.fatal("Class: {}, Method: {}, Fatal: {}", className, methodName, fatalMessage);
 	}
 
 	public static Log getLog(Class className) {
