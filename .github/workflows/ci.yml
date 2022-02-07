@@ -1,10 +1,10 @@
-name: Continuous Integration-v0.94
+name: Continuous Integration
 on:
   push:
     branches:
       - master
   repository_dispatch:
-    types: ["bahmni-package-0.94-trigger","bahmni-scripts-0.94-trigger","default-config-0.94-trigger"]
+    types: ["bahmni-package-trigger","bahmni-scripts-trigger","default-config-trigger"]
   workflow_dispatch:
 env:
   BAHMNI_VERSION: 0.94
