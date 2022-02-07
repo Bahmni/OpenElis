@@ -64,7 +64,7 @@ public class LogEvent {
 	 * @param infoMessage the info message
 	 */
 	public static void logInfo(String className, String methodName, String infoMessage) {
-		logger.warn("Class: {}, Method: {}, Info: {}", className, methodName, infoMessage);
+		logger.info("Class: {}, Method: {}, Info: {}", className, methodName, infoMessage);
 	}
 
 	/**
@@ -74,7 +74,7 @@ public class LogEvent {
 	 * @param warnMessage the warning message
 	 */
 	public static void logWarn(String className, String methodName, String warnMessage) {
-		logger.error("Class: {}, Method: {}, Warning: {}", className, methodName, warnMessage);
+		logger.warn("Class: {}, Method: {}, Warning: {}", className, methodName, warnMessage);
 	}
 
 	/**
