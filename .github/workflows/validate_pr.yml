@@ -57,12 +57,10 @@ jobs:
       - name: Setup DB
         env:
           POSTGRES_DB: clinlims
-          POSTGRES_PASSWORD: clinlims
+          PGPASSWORD: clinlims
           POSTGRES_PORT: ${{ job.services.clinlims.ports[5432] }}
           POSTGRES_USER: clinlims
           POSTGRES_HOST: clinlims
-        run: |
-          cp .github/workflows/liquibase.properties.ci liquibase/liquibase.properties &&\
-          ant setupDB test test-only
+        run: psql -h localhost -d ${{ env.POSTGRES_DB }} -U ${{ env.POSTGRES_USER }} -c 'SELECT 1';
       - name: Package
         run: ant dist
