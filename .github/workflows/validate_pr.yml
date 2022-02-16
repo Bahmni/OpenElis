@@ -19,9 +19,9 @@ jobs:
       clinlims:
         image: postgres:latest
         env:
-          POSTGRES_DB: clinlims
-          POSTGRES_PASSWORD: clinlims
-          POSTGRES_USER: clinlims
+          POSTGRES_DB: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
         ports:
           - 5432:5432
         options: >-
@@ -56,11 +56,7 @@ jobs:
           ref: ${{ env.BRANCH_NAME }}
       - name: Setup DB
         env:
-          POSTGRES_DB: clinlims
-          PGPASSWORD: clinlims
-          POSTGRES_PORT: ${{ job.services.clinlims.ports[5432] }}
-          POSTGRES_USER: clinlims
-          POSTGRES_HOST: clinlims
-        run: psql -h localhost -d ${{ env.POSTGRES_DB }} -U ${{ env.POSTGRES_USER }} -c 'SELECT 1';
+          PGPASSWORD: postgres
+        run: ant setupDB
       - name: Package
         run: ant dist
