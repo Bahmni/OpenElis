@@ -9,14 +9,28 @@ on:
       - master
       - BAH-*
 env:
-  BRANCH_NAME: master
+  BRANCH_NAME: BAH-1273
 jobs:
   build-package:
     name: Test and Package
     runs-on: ubuntu-latest
+
+    services:
+      clinlims:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: clinlims
+          POSTGRES_PASSWORD: clinlims
+          POSTGRES_USER: clinlims
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
-      - name: Verify Postgres
-        run: psql --version
       - name: Setup Java 7
         uses: actions/setup-java@v2
         with:
@@ -41,10 +55,14 @@ jobs:
         with:
           ref: ${{ env.BRANCH_NAME }}
       - name: Setup DB
-        run: ant setupDB
-      - name: Run Test
-        run: ant test
-      - name: Run Test only
-        run: ant test-only
+        env:
+          POSTGRES_DB: clinlims
+          POSTGRES_PASSWORD: clinlims
+          POSTGRES_PORT: ${{ job.services.clinlims.ports[5432] }}
+          POSTGRES_USER: clinlims
+          POSTGRES_HOST: clinlims
+        run: |
+          cp .github/workflows/liquibase.properties.ci liquibase/liquibase.properties &&\
+          ant setupDB test test-only
       - name: Package
         run: ant dist
