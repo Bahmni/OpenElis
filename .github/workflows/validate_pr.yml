@@ -1,0 +1,42 @@
+name: Validate PR
+on:
+  push:
+    branches:
+      - master
+      - BAH-*
+  pull_request:
+    branches:
+      - master
+      - BAH-*
+env:
+  BRANCH_NAME: master
+jobs:
+  build-package:
+    name: Test and Package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Java 7
+        uses: actions/setup-java@v2
+        with:
+          distribution: "zulu"
+          java-version: "7"
+      - name: Setup Ruby 2.3
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.3
+      - name: Install Compass
+        run: gem install compass
+      - name: Install Ant 1.9
+        run: |
+          mkdir /tmp/ant
+          cd /tmp/ant
+          wget https://dlcdn.apache.org//ant/binaries/apache-ant-1.9.16-bin.tar.gz
+          tar -zxf apache-ant-1.9.16-bin.tar.gz
+          echo "ANT_HOME=/tmp/ant/apache-ant-1.9.16" >> $GITHUB_ENV
+          echo "/tmp/ant/apache-ant-1.9.16/bin" >> $GITHUB_PATH
+      - name: Checkout OpenELIS Repo
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+      - name: Package
+        run: ant dist
