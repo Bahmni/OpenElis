@@ -1,10 +1,10 @@
 #liquibase.properties
 driver: org.postgresql.Driver
 classpath: ./lib/postgresql.jar
-url: jdbc:postgresql://localhost:$POSTGRES_PORT/cdielis
-username: $POSTGRES_USER
+url: jdbc:postgresql://localhost:5432/cdielis
+username: clinlims
 #password: n4iatJLtPf7DbJfCmunb
-password: $POSTGRES_PASSWORD
-defaultSchemaName: $POSTGRES_DB
+password: ${PGPASSWORD}
+defaultSchemaName: clinlims
 changeLogFile: ./Bahmni/BahmniConfig.xml
 contexts: ''

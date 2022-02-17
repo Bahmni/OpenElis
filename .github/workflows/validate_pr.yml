@@ -57,6 +57,8 @@ jobs:
       - name: Setup DB
         env:
           PGPASSWORD: postgres
-        run: ant setupDB test test-only
+        run: |
+          cp .github/workflows/liquibase.properties.ci liquibase/liquibase.properties &&\
+          ant setupDB test test-only
       - name: Package
         run: ant dist
