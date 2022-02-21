@@ -1,0 +1,28 @@
+# Note: This file nas been copied and modified from bahmni-playbooks/roles/bahmni-lab/templates
+
+#Server properties
+feed.id.prefix=ff554579-a19f-4bf9-b245-440814b513d9
+feed.title=OpenELIS
+feed.generator.title=OpenELIS
+feed.author=OpenELIS
+
+#Client Properties
+feed.connectionTimeoutInMilliseconds=10000
+feed.replyTimeoutInMilliseconds=20000
+feed.maxFailedEvents=10000
+feed.failedEventMaxRetry=10
+
+#OpenMRS data specific properties
+
+openmrs.auth.uri=http://${OPENMRS_HOST}:${OPENMRS_PORT}/openmrs/ws/rest/v1/session
+openmrs.patient.feed.uri=http://${OPENMRS_HOST}:${OPENMRS_PORT}/openmrs/ws/atomfeed/patient/recent
+openmrs.encounter.feed.uri=http://${OPENMRS_HOST}:${OPENMRS_PORT}/openmrs/ws/atomfeed/encounter/recent
+openmrs.lab.feed.uri=http://${OPENMRS_HOST}:${OPENMRS_PORT}/openmrs/ws/atomfeed/lab/recent
+
+
+openmrs.user=${OPENMRS_ATOMFEED_USER}
+openmrs.password=${OPENMRS_ATOMFEED_PASSWORD}
+openmrs.connectionTimeoutInMilliseconds=10000
+openmrs.replyTimeoutInMilliseconds=20000
+productType.labTest=Test
+productType.panel=Panel

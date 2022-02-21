@@ -2,7 +2,7 @@ name: Continuous Integration
 on:
   push:
     branches:
-      - master
+      - BAH-1414
   repository_dispatch:
     types: ["bahmni-package-trigger","bahmni-scripts-trigger","default-config-trigger"]
   workflow_dispatch:
@@ -54,10 +54,24 @@ jobs:
     needs: build-package
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+      # - name: Download default_config.zip
+      #   run: |
+      #     curl -H "Accept: application/vnd.github.v3+json" \
+      #     https://api.github.com/repos/Bahmni/default-config/actions/artifacts | \
+      #     jq -r '.artifacts[0].archive_download_url' | \
+      #     xargs curl -L -o default_config.zip -H "Authorization: token ${{secrets.BAHMNI_PAT}}" &&\
+      #     unzip -q -o default_config.zip
       - uses: actions/setup-java@v2
         with:
           distribution: 'zulu'
           java-version: '8'
+      - name: Checkout default-config
+        uses: actions/checkout@v2
+        with:
+          repository: Bahmni/default-config
+          ref: ${{ env.BRANCH_NAME }}
+          path: default-config
       - name: Checkout bahmni-package
         uses: actions/checkout@v2
         with:
@@ -70,26 +84,20 @@ jobs:
           repository: Bahmni/bahmni-scripts
           ref: ${{ env.BRANCH_NAME }}
           path: bahmni-scripts
-      - name: Checkout default-config
-        uses: actions/checkout@v2
-        with:
-          repository: Bahmni/default-config
-          ref: ${{ env.BRANCH_NAME }}
-          path: default-config
       - uses: actions/download-artifact@v2
         with:
           name: openelis-war
-          path: bahmni-package/bahmni-lab/resources
+          path: package/resources
       - uses: actions/download-artifact@v2
         with:
           name: openelis-db-zip
-          path: bahmni-package/bahmni-lab/resources
+          path: package/resources
       - name: Build Docker Image
-        run: ./bahmni-package/bahmni-docker/build_scripts/bahmni-lab/docker_build.sh
+        run: ./package/docker/scripts/docker_build.sh
       - name: List Docker Images
         run: docker images
       - name: Push Docker Images
-        run: ./bahmni-package/bahmni-docker/build_scripts/bahmni-lab/docker_publish.sh
+        run: ./package/docker/scripts/docker_publish.sh
         env:
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN}}
