@@ -2,7 +2,9 @@ name: Continuous Integration
 on:
   push:
     branches:
-      - BAH-1414
+      - master
+    paths-ignore:
+      - '**.md'
   repository_dispatch:
     types: ["bahmni-package-trigger","bahmni-scripts-trigger","default-config-trigger"]
   workflow_dispatch:
@@ -55,13 +57,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      # - name: Download default_config.zip
-      #   run: |
-      #     curl -H "Accept: application/vnd.github.v3+json" \
-      #     https://api.github.com/repos/Bahmni/default-config/actions/artifacts | \
-      #     jq -r '.artifacts[0].archive_download_url' | \
-      #     xargs curl -L -o default_config.zip -H "Authorization: token ${{secrets.BAHMNI_PAT}}" &&\
-      #     unzip -q -o default_config.zip
       - uses: actions/setup-java@v2
         with:
           distribution: 'zulu'
