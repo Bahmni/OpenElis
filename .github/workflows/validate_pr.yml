@@ -17,10 +17,10 @@ jobs:
 
     services:
       clinlims:
-        image: postgres:13.6
+        image: postgres:9.4
         env:
           POSTGRES_DB: postgres
-          POSTGRES_PASSWORD: clinlims
+          POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
         ports:
           - 5432:5432
@@ -36,10 +36,10 @@ jobs:
         with:
           distribution: "zulu"
           java-version: "7"
-      - name: Setup Ruby 2.2
+      - name: Setup Ruby 2.3
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.2
+          ruby-version: 2.3
       - name: Install Compass
         run: gem install compass
       - name: Install Ant 1.9
@@ -54,9 +54,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ env.BRANCH_NAME }}
-      - name: Package
-        run: ant dist
       - name: Setup DB
         env:
-          PGPASSWORD: clinlims
+          PGPASSWORD: postgres
         run: ant setupDB test test-only
