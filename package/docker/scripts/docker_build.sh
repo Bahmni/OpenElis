@@ -6,9 +6,7 @@ cp core/build/libs/core-1.0-SNAPSHOT.jar ../package/docker/bahmni-core.jar
 cd ..
 
 # Packaging default config to embed into default image
-# Working directory : default-config
-cd default-config && scripts/package.sh && cd ..
-cp default-config/target/default_config.zip package/resources/
+cp default_config.zip package/resources/
 
 #Fetching Database Backup Data
 gunzip -f -k bahmni-scripts/demo/db-backups/v0.92/openelis_backup.sql.gz

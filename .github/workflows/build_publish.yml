@@ -1,4 +1,4 @@
-name: Continuous Integration
+name: Build and Publish
 on:
   push:
     branches:
@@ -7,16 +7,17 @@ on:
       - '**.md'
   repository_dispatch:
     types: ["bahmni-package-trigger","bahmni-scripts-trigger","default-config-trigger"]
-  workflow_dispatch:
+    
 env:
   BAHMNI_VERSION: 0.94
   BRANCH_NAME: master
 jobs:
-  build-package:
-    name: Test and Package
+  docker-build-publish:
+    name: Build & Publish Docker Image
     runs-on: ubuntu-latest
     steps:
-      - name: Setup Java 7
+      - uses: actions/checkout@v2
+      - name: Setup Java 7 for ant
         uses: actions/setup-java@v2
         with:
           distribution: 'zulu'
@@ -35,58 +36,36 @@ jobs:
              tar -zxf apache-ant-1.9.16-bin.tar.gz
              echo "ANT_HOME=/tmp/ant/apache-ant-1.9.16" >> $GITHUB_ENV
              echo "/tmp/ant/apache-ant-1.9.16/bin" >> $GITHUB_PATH
-      - name: Checkout OpenELIS Repo
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ env.BRANCH_NAME }}
       - name: Package
         run: ant dist
-      - name: Upload War Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: openelis-war
-          path: openelis/dist/openelis.war
-      - name: Upload DB Zip Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: openelis-db-zip
-          path: OpenElis.zip
-  docker-build-publish:
-    name: Build & Publish Docker Image
-    needs: build-package
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-java@v2
+      - name: Copy Artifacts
+        run: |
+              cp openelis/dist/openelis.war package/resources &&\
+              cp OpenElis.zip package/resources
+      - name: Setup Java 8 for bahmni-package/core
+        uses: actions/setup-java@v2
         with:
           distribution: 'zulu'
           java-version: '8'
-      - name: Checkout default-config
-        uses: actions/checkout@v2
-        with:
-          repository: Bahmni/default-config
-          ref: ${{ env.BRANCH_NAME }}
-          path: default-config
-      - name: Checkout bahmni-package
+      - name: Download default_config.zip
+        run: |
+          curl -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/Bahmni/default-config/actions/artifacts | \
+          jq -r '.artifacts[0].archive_download_url' | \
+          xargs curl -L -o default_config.zip -H "Authorization: token ${{secrets.BAHMNI_PAT}}" &&\
+          unzip -q -o default_config.zip 
+      - name: Building bahmni-package/core in build scripts which has embedded Tomcat Server
         uses: actions/checkout@v2
         with:
           repository: Bahmni/bahmni-package
           ref: ${{ env.BRANCH_NAME }}
           path: bahmni-package
-      - name: Checkout bahmni-scripts
+      - name: Fetching Database Backup Data in build scripts
         uses: actions/checkout@v2
         with:
           repository: Bahmni/bahmni-scripts
           ref: ${{ env.BRANCH_NAME }}
           path: bahmni-scripts
-      - uses: actions/download-artifact@v2
-        with:
-          name: openelis-war
-          path: package/resources
-      - uses: actions/download-artifact@v2
-        with:
-          name: openelis-db-zip
-          path: package/resources
       - name: Build Docker Image
         run: ./package/docker/scripts/docker_build.sh
       - name: List Docker Images
