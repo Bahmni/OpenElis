@@ -1,19 +1,26 @@
-name: Build and Publish
+name: Build and Publish OpenELIS
 on:
   push:
     branches:
-      - master
+      - BAH-1414
     paths-ignore:
       - '**.md'
+      - 'package/docker/demodb.Dockerfile'
+      - 'package/docker/db.Dockerfile'
+      - 'package/docker/scripts/configureDB.sh'
+      - 'package/docker/scripts/configureDemoDB.sh'
+      - 'package/docker/scripts/docker_build_openelis_demoDB.sh'
+      - 'package/docker/scripts/docker_publish_openelis_demoDB.sh'
+      - 'package/docker/setupDBUser.sql'
   repository_dispatch:
-    types: ["bahmni-package-trigger","bahmni-scripts-trigger","default-config-trigger"]
+    types: ["bahmni-embedded-tomcat-trigger","default-config-trigger"]
     
 env:
   BAHMNI_VERSION: 0.94
   BRANCH_NAME: master
 jobs:
   docker-build-publish:
-    name: Build & Publish Docker Image
+    name: Build & Publish OpenELIS Docker Image
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -54,12 +61,13 @@ jobs:
           jq -r '.artifacts[0].archive_download_url' | \
           xargs curl -L -o default_config.zip -H "Authorization: token ${{secrets.BAHMNI_PAT}}" &&\
           unzip -q -o default_config.zip 
-      - name: Building bahmni-package/core in build scripts which has embedded Tomcat Server
-        uses: actions/checkout@v2
-        with:
-          repository: Bahmni/bahmni-package
-          ref: ${{ env.BRANCH_NAME }}
-          path: bahmni-package
+      - name: Download bahmni-embedded-tomcat.zip
+        run: |
+          curl -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/Bahmni/bahmni-package/actions/artifacts | \
+          jq -r '.artifacts[0].archive_download_url' | \
+          xargs curl -L -o bahmni-embedded-tomcat.zip -H "Authorization: token ${{secrets.BAHMNI_PAT}}" &&\
+          unzip -q -o bahmni-embedded-tomcat.zip 
       - name: Fetching Database Backup Data in build scripts
         uses: actions/checkout@v2
         with:
@@ -67,11 +75,12 @@ jobs:
           ref: ${{ env.BRANCH_NAME }}
           path: bahmni-scripts
       - name: Build Docker Image
-        run: ./package/docker/scripts/docker_build.sh
+        run: ./package/docker/scripts/docker_build_openelis.sh
       - name: List Docker Images
         run: docker images
       - name: Push Docker Images
-        run: ./package/docker/scripts/docker_publish.sh
+        run: ./package/docker/scripts/docker_publish_openelis.sh
         env:
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN}}
+          
