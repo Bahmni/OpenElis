@@ -2,16 +2,18 @@ name: Build and Publish OpenELIS
 on:
   push:
     branches:
-      - BAH-1414
+      - master
     paths-ignore:
       - '**.md'
       - 'package/docker/demodb.Dockerfile'
       - 'package/docker/db.Dockerfile'
       - 'package/docker/scripts/configureDB.sh'
+      - 'package/docker/scripts/docker_build.sh'
       - 'package/docker/scripts/configureDemoDB.sh'
       - 'package/docker/scripts/docker_build_openelis_demoDB.sh'
       - 'package/docker/scripts/docker_publish_openelis_demoDB.sh'
       - 'package/docker/setupDBUser.sql'
+
   repository_dispatch:
     types: ["bahmni-embedded-tomcat-trigger","default-config-trigger"]
     
@@ -83,4 +85,3 @@ jobs:
         env:
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN}}
-          

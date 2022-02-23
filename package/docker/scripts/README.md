@@ -2,7 +2,7 @@
 
 This directory contains build and publish scripts which is used in [Github Actions](https://github.com/Bahmni/OpenElis/actions) .
 
-Running the build script builds three images:
+Running docker_build.sh builds three images:
 1. bahmni/openelis
 2. bahmni/openelis-db:fresh
 3. bahmni/openelis-db:demo
