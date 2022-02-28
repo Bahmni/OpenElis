@@ -42,33 +42,19 @@ jobs:
           echo "/tmp/ant/apache-ant-1.9.16/bin" >> $GITHUB_PATH
       - name: Package
         run: ant dist
-      - name: Copy Artifacts
-        run: |
-          cp openelis/dist/openelis.war package/resources &&\
-          cp OpenElis.zip package/resources
-      - name: Setup Java 8 for bahmni-package/core
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'zulu'
-          java-version: '8'
       - name: Download default_config.zip
-        run: |
-          curl -H "Accept: application/vnd.github.v3+json" \
-          https://api.github.com/repos/Bahmni/default-config/actions/artifacts | \
-          jq -r '.artifacts[0].archive_download_url' | \
-          xargs curl -L -o default_config.zip -H "Authorization: token ${{secrets.BAHMNI_PAT}}" &&\
-          unzip -q -o default_config.zip
+        run: sh .github/download_artifact.sh default-config default_config ${{secrets.BAHMNI_PAT}}
       - name: Download bahmni-embedded-tomcat.zip
-        run: |
-          curl -H "Accept: application/vnd.github.v3+json" \
-          https://api.github.com/repos/Bahmni/bahmni-package/actions/artifacts | \
-          jq -r '.artifacts[0].archive_download_url' | \
-          xargs curl -L -o bahmni-embedded-tomcat.zip -H "Authorization: token ${{secrets.BAHMNI_PAT}}" &&\
-          unzip -q -o bahmni-embedded-tomcat.zip
-      - name: Build Docker Image
-        run: ./package/docker/openelis/docker_build.sh
-      - name: Push Docker Images
-        run: ./package/docker/docker_publish.sh bahmni/openelis
-        env:
-          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-          DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN}}
+        run: sh .github/download_artifact.sh bahmni-package bahmni-embedded-tomcat ${{secrets.BAHMNI_PAT}}
+      - name: Login to DockerHub
+        uses: docker/login-action@v1 
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+      - name: Docker Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: package/docker/openelis/Dockerfile
+          push: true
+          tags: bahmni/openelis:${{env.BAHMNI_VERSION}}-${{github.run_number}},bahmni/openelis:latest
