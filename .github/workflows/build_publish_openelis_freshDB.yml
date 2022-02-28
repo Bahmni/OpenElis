@@ -5,13 +5,11 @@ on:
       - master
 
     paths:
-      - ".github/workflows/build_publish_openelis_freshDB.yml"
-      - "package/docker/freshDB/**"
-      - "scripts/setupDB.sql"
-      - "scripts/setupExtensions.sql"
-      - "db_backup/openelis_schema.sql"
-      - "db_backup/openelis_fresh_db_data.sql"
-      - "package/docker/docker_publish.sh"
+      - '.github/workflows/build_publish_openelis_freshDB.yml'
+      - 'package/docker/freshDB/**'
+      - 'scripts/database/**'
+      - 'db_backup/*.sql'
+      - 'package/docker/docker_publish.sh'
 
 env:
   BAHMNI_VERSION: 0.94

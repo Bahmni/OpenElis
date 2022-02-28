@@ -5,14 +5,13 @@ on:
       - master
 
     paths:
-      - ".github/workflows/build_publish_openelis_demoDB.yml"
-      - "package/docker/demoDB/**"
-      - "scripts/setupDB.sql"
-      - "scripts/setupExtensions.sql"
-      - "package/docker/docker_publish.sh"
-  
+      - '.github/workflows/build_publish_openelis_demoDB.yml'
+      - 'package/docker/demoDB/**'
+      - 'scripts/database/**'
+      - 'package/docker/docker_publish.sh'
+
   repository_dispatch:
-    types: ["bahmni-scripts-trigger"]
+    types: ['bahmni-scripts-trigger']
 
 env:
   BAHMNI_VERSION: 0.94
