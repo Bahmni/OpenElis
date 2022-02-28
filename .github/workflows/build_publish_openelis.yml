@@ -68,7 +68,7 @@ jobs:
       - name: Build Docker Image
         run: ./package/docker/openelis/docker_build.sh
       - name: Push Docker Images
-        run: ./package/docker/scripts/docker_publish.sh bahmni/openelis
+        run: ./package/docker/docker_publish.sh bahmni/openelis
         env:
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN}}

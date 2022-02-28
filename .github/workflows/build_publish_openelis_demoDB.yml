@@ -9,7 +9,7 @@ on:
       - "package/docker/demoDB/**"
       - "scripts/setupDB.sql"
       - "scripts/setupExtensions.sql"
-      - "package/docker/scripts/docker_publish.sh"
+      - "package/docker/docker_publish.sh"
   
   repository_dispatch:
     types: ["bahmni-scripts-trigger"]
@@ -31,7 +31,7 @@ jobs:
       - name: Build Docker Image
         run: ./package/docker/demoDB/docker_build.sh
       - name: Push Docker Images
-        run: ./package/docker/scripts/docker_publish.sh bahmni/openelis-db
+        run: ./package/docker/docker_publish.sh bahmni/openelis-db
         env:
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN}}
