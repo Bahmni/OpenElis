@@ -3,17 +3,15 @@ on:
   push:
     branches:
       - master
-    paths-ignore:
-      - "**.md"
-      - "package/docker/Dockerfile"
-      - "package/docker/scripts/docker_build_openelis.sh"
-      - "package/docker/scripts/docker_publish_openelis.sh"
-      - 'package/docker/scripts/docker_build.sh'
-      - "package/docker/scripts/docker_build_openelis_demoDB.sh"
-      - "package/docker/scripts/docker_publish_openelis_demoDB.sh"
-      - "package/docker/scripts/configureDemoDB.sh"
-      - "package/docker/scripts/start.sh"
-      - "package/docker/scripts/run-implementation-openelis-implementation.sh"
+      - BAH-1414
+    paths:
+      - ".github/workflows/build_publish_openelis_freshDB.yml"
+      - "package/docker/freshDB/**"
+      - "scripts/setupDB.sql"
+      - "scripts/setupExtensions.sql"
+      - "db_backup/openelis_schema.sql"
+      - "db_backup/openelis_fresh_db_data.sql"
+      - "package/docker/scripts/docker_publish.sh"
 
 env:
   BAHMNI_VERSION: 0.94
@@ -25,9 +23,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build Docker Image
-        run: ./package/docker/scripts/docker_build_openelis_freshDB.sh
+        run: ./package/docker/freshDB/docker_build.sh
       - name: Push Docker Images
-        run: ./package/docker/scripts/docker_publish_openelis_freshDB.sh
+        run: ./package/docker/scripts/docker_publish.sh bahmni/openelis-db
         env:
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN}}

@@ -3,16 +3,11 @@ on:
   push:
     branches:
       - master
+      - BAH-1414
     paths-ignore:
       - '**.md'
-      - 'package/docker/demodb.Dockerfile'
-      - 'package/docker/db.Dockerfile'
-      - 'package/docker/scripts/configureDB.sh'
-      - 'package/docker/scripts/docker_build.sh'
-      - 'package/docker/scripts/configureDemoDB.sh'
-      - 'package/docker/scripts/docker_build_openelis_demoDB.sh'
-      - 'package/docker/scripts/docker_publish_openelis_demoDB.sh'
-      - 'package/docker/setupDBUser.sql'
+      - "package/docker/demoDB/**"
+      - "package/docker/freshDB/**"
 
   repository_dispatch:
     types: ["bahmni-embedded-tomcat-trigger","default-config-trigger"]
@@ -71,11 +66,9 @@ jobs:
           xargs curl -L -o bahmni-embedded-tomcat.zip -H "Authorization: token ${{secrets.BAHMNI_PAT}}" &&\
           unzip -q -o bahmni-embedded-tomcat.zip 
       - name: Build Docker Image
-        run: ./package/docker/scripts/docker_build_openelis.sh
-      - name: List Docker Images
-        run: docker images
+        run: ./package/docker/openelis/docker_build.sh
       - name: Push Docker Images
-        run: ./package/docker/scripts/docker_publish_openelis.sh
+        run: ./package/docker/scripts/docker_publish.sh bahmni/openelis
         env:
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN}}

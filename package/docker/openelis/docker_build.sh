@@ -21,4 +21,4 @@ unzip -q -u -d build/default_config resources/default_config.zip
 
 #Building Docker images
 OPENELIS_IMAGE_TAG=${BAHMNI_VERSION}-${GITHUB_RUN_NUMBER}
-docker build -t bahmni/openelis:${OPENELIS_IMAGE_TAG} -f docker/Dockerfile . --no-cache
+docker build -t bahmni/openelis:${OPENELIS_IMAGE_TAG} -t bahmni/openelis:latest -f docker/openelis/Dockerfile . --no-cache

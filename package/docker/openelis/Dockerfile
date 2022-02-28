@@ -18,8 +18,8 @@ RUN cd ${WAR_DIRECTORY} && jar xvf /etc/bahmni-lab/openelis.war
 # Used by envsubst command for replacing environment values at runtime
 RUN apk add gettext
 
-COPY docker/templates/hibernate.cfg.xml.template /etc/bahmni-lab/
-COPY docker/templates/atomfeed.properties.template /etc/bahmni-lab/
+COPY docker/openelis/templates/hibernate.cfg.xml.template /etc/bahmni-lab/
+COPY docker/openelis/templates/atomfeed.properties.template /etc/bahmni-lab/
 COPY resources/log4j2.xml ${WAR_DIRECTORY}/WEB-INF/classes/
 
 COPY build/migrations/OpenElis/db_backup/ /opt/bahmni-lab/migrations/db_backup/
@@ -27,9 +27,9 @@ COPY build/migrations/OpenElis/liquibase/ /opt/bahmni-lab/migrations/liquibase/
 COPY build/migrations/OpenElis/scripts/ /opt/bahmni-lab/migrations/scripts/
 COPY resources/migrateDb.sh /opt/bahmni-lab/migrations/scripts/
 RUN chmod +x /opt/bahmni-lab/migrations/scripts/migrateDb.sh
-COPY docker/scripts/run-implementation-openelis-implementation.sh /opt/bahmni-lab/migrations/scripts/
+COPY docker/openelis/run-implementation-openelis-implementation.sh /opt/bahmni-lab/migrations/scripts/
 RUN chmod +x /opt/bahmni-lab/migrations/scripts/run-implementation-openelis-implementation.sh
 
-COPY docker/scripts/start.sh start.sh
+COPY docker/openelis/start.sh start.sh
 RUN chmod +x start.sh
 CMD [ "./start.sh" ]

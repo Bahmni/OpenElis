@@ -7,4 +7,4 @@ cp bahmni-scripts/demo/db-backups/v0.92/openelis_backup.sql package/resources/op
 
 #Building Docker image
 OPENELIS_IMAGE_TAG=${BAHMNI_VERSION}-${GITHUB_RUN_NUMBER}
-docker build -t bahmni/openelis-db:demo-${OPENELIS_IMAGE_TAG} -f package/docker/demodb.Dockerfile . --no-cache
+docker build -t bahmni/openelis-db:demo-${OPENELIS_IMAGE_TAG} -t bahmni/openelis-db:demo-latest -f package/docker/demoDB/Dockerfile . --no-cache
