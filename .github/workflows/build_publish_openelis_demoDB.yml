@@ -1,0 +1,36 @@
+name: Build and Publish OpenELIS Demo DB
+on:
+  push:
+    branches:
+      - master
+
+    paths:
+      - '.github/workflows/build_publish_openelis_demoDB.yml'
+      - 'package/docker/demoDB/**'
+      - 'scripts/database/**'
+      - 'package/docker/docker_publish.sh'
+
+  repository_dispatch:
+    types: ['bahmni-scripts-trigger']
+
+env:
+  BAHMNI_VERSION: 0.94
+
+jobs:
+  docker-build-publish:
+    name: Build & Publish OpenELIS Demo DB Docker Image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Fetching Database Backup Data in build scripts
+        uses: actions/checkout@v2
+        with:
+          repository: Bahmni/bahmni-scripts
+          path: bahmni-scripts
+      - name: Build Docker Image
+        run: ./package/docker/demoDB/docker_build.sh
+      - name: Push Docker Images
+        run: ./package/docker/docker_publish.sh bahmni/openelis-db
+        env:
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN}}

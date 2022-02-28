@@ -1,0 +1,74 @@
+name: Build and Publish OpenELIS
+on:
+  push:
+    branches:
+      - master
+
+    paths-ignore:
+      - '**.md'
+      - 'package/docker/demoDB/**'
+      - 'package/docker/freshDB/**'
+
+  repository_dispatch:
+    types: ['bahmni-embedded-tomcat-trigger', 'default-config-trigger']
+
+env:
+  BAHMNI_VERSION: 0.94
+
+jobs:
+  docker-build-publish:
+    name: Build & Publish OpenELIS Docker Image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Java 7 for ant
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '7'
+      - name: Setup Ruby 2.3
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.3
+      - name: Install Compass
+        run: gem install compass
+      - name: Install Ant 1.9
+        run: |
+          mkdir /tmp/ant
+          cd /tmp/ant
+          wget https://dlcdn.apache.org//ant/binaries/apache-ant-1.9.16-bin.tar.gz
+          tar -zxf apache-ant-1.9.16-bin.tar.gz
+          echo "ANT_HOME=/tmp/ant/apache-ant-1.9.16" >> $GITHUB_ENV
+          echo "/tmp/ant/apache-ant-1.9.16/bin" >> $GITHUB_PATH
+      - name: Package
+        run: ant dist
+      - name: Copy Artifacts
+        run: |
+          cp openelis/dist/openelis.war package/resources &&\
+          cp OpenElis.zip package/resources
+      - name: Setup Java 8 for bahmni-package/core
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '8'
+      - name: Download default_config.zip
+        run: |
+          curl -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/Bahmni/default-config/actions/artifacts | \
+          jq -r '.artifacts[0].archive_download_url' | \
+          xargs curl -L -o default_config.zip -H "Authorization: token ${{secrets.BAHMNI_PAT}}" &&\
+          unzip -q -o default_config.zip
+      - name: Download bahmni-embedded-tomcat.zip
+        run: |
+          curl -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/Bahmni/bahmni-package/actions/artifacts | \
+          jq -r '.artifacts[0].archive_download_url' | \
+          xargs curl -L -o bahmni-embedded-tomcat.zip -H "Authorization: token ${{secrets.BAHMNI_PAT}}" &&\
+          unzip -q -o bahmni-embedded-tomcat.zip
+      - name: Build Docker Image
+        run: ./package/docker/openelis/docker_build.sh
+      - name: Push Docker Images
+        run: ./package/docker/docker_publish.sh bahmni/openelis
+        env:
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN}}

@@ -1,0 +1,29 @@
+name: Build and Publish OpenELIS Fresh DB
+on:
+  push:
+    branches:
+      - master
+
+    paths:
+      - '.github/workflows/build_publish_openelis_freshDB.yml'
+      - 'package/docker/freshDB/**'
+      - 'scripts/database/**'
+      - 'db_backup/*.sql'
+      - 'package/docker/docker_publish.sh'
+
+env:
+  BAHMNI_VERSION: 0.94
+
+jobs:
+  docker-build-publish:
+    name: Build & Publish OpenELIS Fresh DB Docker Image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build Docker Image
+        run: ./package/docker/freshDB/docker_build.sh
+      - name: Push Docker Images
+        run: ./package/docker/docker_publish.sh bahmni/openelis-db
+        env:
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN}}
