@@ -1,2 +1,0 @@
-CREATE USER clinlims WITH PASSWORD 'clinlims';
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";

@@ -19,46 +19,20 @@ on:
 
 env:
   BAHMNI_VERSION: 0.94
-  BRANCH_NAME: master
+
 jobs:
   docker-build-publish:
     name: Build & Publish OpenELIS Demo DB Docker Image
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Setup Java 7 for ant
-        uses: actions/setup-java@v2
-        with:
-          distribution: "zulu"
-          java-version: "7"
-      - name: Setup Ruby 2.3
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 2.3
-      - name: Install Compass
-        run: gem install compass
-      - name: Install Ant 1.9
-        run: |
-          mkdir /tmp/ant
-          cd /tmp/ant
-          wget https://dlcdn.apache.org//ant/binaries/apache-ant-1.9.16-bin.tar.gz
-          tar -zxf apache-ant-1.9.16-bin.tar.gz
-          echo "ANT_HOME=/tmp/ant/apache-ant-1.9.16" >> $GITHUB_ENV
-          echo "/tmp/ant/apache-ant-1.9.16/bin" >> $GITHUB_PATH
-      - name: Package
-        run: ant dist
-      - name: Copy Artifacts
-        run: cp OpenElis.zip package/resources
       - name: Fetching Database Backup Data in build scripts
         uses: actions/checkout@v2
         with:
           repository: Bahmni/bahmni-scripts
-          ref: ${{ env.BRANCH_NAME }}
           path: bahmni-scripts
       - name: Build Docker Image
         run: ./package/docker/scripts/docker_build_openelis_demoDB.sh
-      - name: List Docker Images
-        run: docker images
       - name: Push Docker Images
         run: ./package/docker/scripts/docker_publish_openelis_demoDB.sh
         env:
