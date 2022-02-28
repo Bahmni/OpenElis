@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - master
-      - BAH-1414
+
     paths-ignore:
       - '**.md'
       - "package/docker/demoDB/**"
@@ -14,7 +14,7 @@ on:
     
 env:
   BAHMNI_VERSION: 0.94
-  BRANCH_NAME: master
+
 jobs:
   docker-build-publish:
     name: Build & Publish OpenELIS Docker Image

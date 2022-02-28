@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - master
-      - BAH-1414
+
     paths:
       - ".github/workflows/build_publish_openelis_demoDB.yml"
       - "package/docker/demoDB/**"
