@@ -16,7 +16,8 @@
 
 package org.bahmni.feed.openelis.feed.event;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.bahmni.feed.openelis.ObjectMapperRepository;
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.daoimpl.ExternalReferenceDaoImpl;
@@ -79,7 +80,7 @@ public class EncounterFeedWorker extends OpenElisEventWorker {
     private ProviderDAO providerDAO;
     private SampleSourceService sampleSourceService;
 
-    private static Logger logger = Logger.getLogger(EncounterFeedWorker.class);
+    private static Logger logger = LogManager.getLogger(EncounterFeedWorker.class);
 
     public static final String ACCESSION_STRATEGY = "accessionStrategy";
     private static final String GROUP_BY_SAMPLE = "groupBySample";

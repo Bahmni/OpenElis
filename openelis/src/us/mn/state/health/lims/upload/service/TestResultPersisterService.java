@@ -18,7 +18,8 @@ package us.mn.state.health.lims.upload.service;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.bahmni.csv.RowResult;
 import org.bahmni.feed.openelis.feed.service.EventPublishers;
 import org.bahmni.feed.openelis.feed.service.impl.OpenElisUrlPublisher;
@@ -56,7 +57,7 @@ public class TestResultPersisterService {
     private SampleItemPersisterService sampleItemPersisterService;
     private ResultPersisterService resultPersisterService;
     private TestDAO testDAO;
-    private static Logger logger = Logger.getLogger(TestResultPersisterService.class);
+    private static Logger logger = LogManager.getLogger(TestResultPersisterService.class);
 
     public TestResultPersisterService(String contextPath) {
         this(contextPath, new SamplePersisterService(), new SampleHumanPersisterService(), new AnalysisPersisterService(), new SampleItemPersisterService(), new ResultPersisterService(),

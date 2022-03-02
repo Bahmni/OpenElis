@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+<Appenders>
+    <RollingFile name="file"
+                 fileName="${sys:catalina.base}/bahmni-lab.log"
+                 filePattern="${sys:catalina.base}/bahmni-lab.log.%i">
+        <PatternLayout pattern="%d %-5p [ELIS][%c{1}] %m%n"/>
+        <Policies>
+            <SizeBasedTriggeringPolicy size="5000KB"/>
+        </Policies>
+        <DefaultRolloverStrategy max="10"/>
+    </RollingFile>
+</Appenders>
+<Loggers>
+    <Root level="INFO">
+        <AppenderRef ref="file"/>
+    </Root>
+</Loggers>
+</Configuration>

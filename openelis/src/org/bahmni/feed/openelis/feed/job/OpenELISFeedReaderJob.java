@@ -17,7 +17,8 @@
 package org.bahmni.feed.openelis.feed.job;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.bahmni.feed.openelis.AtomFeedProperties;
 import org.bahmni.feed.openelis.feed.client.AtomFeedClientFactory;
 import org.bahmni.webclients.Authenticator;
@@ -40,7 +41,7 @@ import java.util.Map;
 public abstract class OpenELISFeedReaderJob implements Job {
 
     protected static Map<Class, FeedClient> atomFeedClients = new HashMap<>();
-    private final Logger logger = Logger.getLogger(this.getClass());
+    private final Logger logger = LogManager.getLogger(this.getClass());
 
     protected abstract EventWorker createWorker(HttpClient authenticatedWebClient, String urlPrefix);
     

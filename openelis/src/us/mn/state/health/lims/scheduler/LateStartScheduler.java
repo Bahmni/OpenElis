@@ -16,7 +16,8 @@
  */
 package us.mn.state.health.lims.scheduler;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.bahmni.feed.openelis.feed.job.event.EventRecordsNumberOffsetMarkerTask;
 import org.bahmni.feed.openelis.feed.job.event.EventRecordsPublisherTask;
 import org.bahmni.feed.openelis.feed.job.openmrs.*;
@@ -44,7 +45,7 @@ import static org.quartz.impl.matchers.EverythingMatcher.allJobs;
 public class LateStartScheduler {
     private static final String NEVER = "never";
     private static Map<String, Class<? extends Job>> scheduleJobMap;
-    private static Logger logger = Logger.getLogger(LateStartScheduler.class);
+    private static Logger logger = LogManager.getLogger(LateStartScheduler.class);
     private CronSchedulerDAOImpl cronSchedulerDAO = new CronSchedulerDAOImpl();
 
     private Scheduler scheduler;
