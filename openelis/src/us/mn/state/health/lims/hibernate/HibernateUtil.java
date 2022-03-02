@@ -19,7 +19,8 @@ import java.util.Properties;
 import java.io.File;
 import java.io.FileInputStream;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.hibernate.HibernateException;
 import org.hibernate.Interceptor;
 import org.hibernate.Session;
@@ -51,7 +52,7 @@ public class HibernateUtil {
     private static final ThreadLocal threadInterceptor = new ThreadLocal();
     private static String CONFIG_FILE_LOCATION = "/us/mn/state/health/lims/hibernate/hibernate.cfg.xml";
     private static String CUSTOM_FILE_PROPERTY = System.getProperty("HIBERNATE_PROPERTIES_FILE");
-    private static Logger logger = Logger.getLogger(HibernateUtil.class);
+    private static Logger logger = LogManager.getLogger(HibernateUtil.class);
 
     private static String configFile = CONFIG_FILE_LOCATION;
 

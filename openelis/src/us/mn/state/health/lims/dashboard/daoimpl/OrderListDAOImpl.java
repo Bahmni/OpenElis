@@ -17,8 +17,8 @@
 package us.mn.state.health.lims.dashboard.daoimpl;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.dashboard.dao.OrderListDAO;

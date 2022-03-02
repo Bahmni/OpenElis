@@ -16,7 +16,8 @@
 
 package us.mn.state.health.lims.upload.patient;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.bahmni.csv.EntityPersister;
 import org.bahmni.csv.RowResult;
 import org.bahmni.feed.openelis.feed.service.impl.BahmniPatientService;
@@ -72,7 +73,7 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
     private static PatientIdentityTypes patientIdentityTypes;
     private static AddressParts addressParts;
 
-    private static Logger logger = Logger.getLogger(PatientPersister.class);
+    private static Logger logger = LogManager.getLogger(PatientPersister.class);
     private List<Gender> allGenders;
     private String contextPath;
 
