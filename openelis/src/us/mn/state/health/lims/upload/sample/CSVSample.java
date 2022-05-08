@@ -17,8 +17,8 @@
 package us.mn.state.health.lims.upload.sample;
 
 import org.bahmni.csv.CSVEntity;
-import org.bahmni.csv.CSVHeader;
-import org.bahmni.csv.CSVRepeatingHeaders;
+import org.bahmni.csv.annotation.CSVHeader;
+import org.bahmni.csv.annotation.CSVRepeatingHeaders;
 
 import java.util.List;
 

@@ -17,7 +17,7 @@
 package us.mn.state.health.lims.upload.patient;
 
 import org.bahmni.csv.CSVEntity;
-import org.bahmni.csv.CSVHeader;
+import org.bahmni.csv.annotation.CSVHeader;
 
 public class CSVPatient extends CSVEntity {
     @CSVHeader(name="Registration No")
