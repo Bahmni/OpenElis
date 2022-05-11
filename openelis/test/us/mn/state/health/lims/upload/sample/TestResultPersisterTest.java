@@ -1,22 +1,22 @@
 /*
-* The contents of this file are subject to the Mozilla Public License
-* Version 1.1 (the "License"); you may not use this file except in
-* compliance with the License. You may obtain a copy of the License at
-* http://www.mozilla.org/MPL/ 
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations under
-* the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* Copyright (C) The Minnesota Department of Health.  All Rights Reserved.
-*/
+ * The contents of this file are subject to the Mozilla Public License
+ * Version 1.1 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations under
+ * the License.
+ *
+ * The Original Code is OpenELIS code.
+ *
+ * Copyright (C) The Minnesota Department of Health.  All Rights Reserved.
+ */
 
 package us.mn.state.health.lims.upload.sample;
 
-import org.bahmni.csv.RowResult;
+import org.bahmni.csv.Messages;
 import org.junit.Before;
 import org.mockito.Mock;
 import us.mn.state.health.lims.samplesource.dao.SampleSourceDAO;
@@ -28,8 +28,7 @@ import us.mn.state.health.lims.upload.service.TestResultPersisterService;
 import java.util.Arrays;
 import java.util.List;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -69,13 +68,9 @@ public class TestResultPersisterTest{
         List<CSVTestResult> invalidTestResults = Arrays.asList(new CSVTestResult("invalidTestName1", "valueForInvalidTest"),
                 new CSVTestResult("invalidTestName2", "valueForInvalidTest"), validTestResults.get(0));
         CSVSample csvSample_InvalidTestName = new CSVSample("123", validAccessionNumber, "25-02-2012", "sub center", invalidTestResults);
-        RowResult<CSVSample> sampleRowResult = testResultPersister.validate(csvSample_InvalidTestName);
+        Messages errorMessage = testResultPersister.validate(csvSample_InvalidTestName);
 
-        assertFalse("validation should fail because of invalid test name", sampleRowResult.isSuccessful());
-
-        String[] rowWithErrorColumn = sampleRowResult.getRowWithErrorColumn();
-        String erroMessage = rowWithErrorColumn[rowWithErrorColumn.length - 1];
-        assertTrue("Error message incorrect", erroMessage.contains("Invalid test names: invalidTestName1,invalidTestName2"));
+        assertTrue("Error message incorrect", errorMessage.toString().contains("Invalid test names: invalidTestName1,invalidTestName2"));
     }
 
     @org.junit.Test
@@ -83,9 +78,8 @@ public class TestResultPersisterTest{
         CSVTestResult emptyTestResult = new CSVTestResult("", "");
         List<CSVTestResult> testResultsWithOneEmptyTestResult = Arrays.asList(validTestResults.get(0), emptyTestResult, validTestResults.get(1));
         CSVSample csvSample_InvalidTestName = new CSVSample("123", validAccessionNumber, "25-02-2012", "sub center", testResultsWithOneEmptyTestResult);
-        RowResult<CSVSample> sampleRowResult = testResultPersister.validate(csvSample_InvalidTestName);
-
-        assertTrue(sampleRowResult.isSuccessful());
+        Messages errorMessage = testResultPersister.validate(csvSample_InvalidTestName);
+        assertTrue("Error message is empty", errorMessage.toString().contains("[]"));
     }
 
     @org.junit.Test
@@ -93,9 +87,9 @@ public class TestResultPersisterTest{
         CSVTestResult emptyTestResult = new CSVTestResult("", "");
         List<CSVTestResult> testResultsWithAllEmptyTestResult = Arrays.asList(emptyTestResult);
         CSVSample csvSample_InvalidTestName = new CSVSample("123", validAccessionNumber, "25-02-2012", "sub center", testResultsWithAllEmptyTestResult);
-        RowResult<CSVSample> sampleRowResult = testResultPersister.validate(csvSample_InvalidTestName);
+        Messages errorMessage = testResultPersister.validate(csvSample_InvalidTestName);
 
-        assertTrue("empty test result rows are ok", sampleRowResult.isSuccessful());
+        assertTrue("empty test result rows are ok", errorMessage.toString().contains("[]"));
     }
 
     @org.junit.Test
@@ -103,53 +97,39 @@ public class TestResultPersisterTest{
         CSVTestResult invalidTestResult = new CSVTestResult(validTestResults.get(0).test, "");
         List<CSVTestResult> testResultsWithOneInvalidTestResult = Arrays.asList(invalidTestResult, validTestResults.get(1));
         CSVSample csvSample_InvalidTestName = new CSVSample("123", validAccessionNumber, "25-02-2012", "sub center", testResultsWithOneInvalidTestResult);
-        RowResult<CSVSample> sampleRowResult = testResultPersister.validate(csvSample_InvalidTestName);
+        Messages errorMessage = testResultPersister.validate(csvSample_InvalidTestName);
 
-        assertTrue("tests need not have results", sampleRowResult.isSuccessful());
+        assertTrue("tests need not have results", errorMessage.toString().contains("[]"));
     }
 
     @org.junit.Test
     public void accessionNumberShouldNotBeBlank() throws Exception {
         CSVSample csvSample_blankAccessionNumber = new CSVSample("123", "", "25-02-2012", "sub center", validTestResults);
-        RowResult<CSVSample> sampleRowResult = testResultPersister.validate(csvSample_blankAccessionNumber);
-
-        assertFalse("validation should fail because of blank accession number", sampleRowResult.isSuccessful());
-
-        String[] rowWithErrorColumn = sampleRowResult.getRowWithErrorColumn();
-        String erroMessage = rowWithErrorColumn[rowWithErrorColumn.length - 1];
-        assertTrue("Error message incorrect", erroMessage.contains("AccessionNumber should not be blank"));
+        Messages errorMessage = testResultPersister.validate(csvSample_blankAccessionNumber);
+        assertTrue("Error message incorrect", errorMessage.toString().contains("AccessionNumber should not be blank"));
     }
 
     @org.junit.Test
     public void accessionNumberShouldBeInAValidFormat() throws Exception {
         CSVSample csvSample_blankAccessionNumber = new CSVSample("123", "invalidAccessionNumber", "25-02-2012", "sub center", validTestResults);
-        RowResult<CSVSample> sampleRowResult = testResultPersister.validate(csvSample_blankAccessionNumber);
+        Messages errorMessage = testResultPersister.validate(csvSample_blankAccessionNumber);
 
-        assertFalse("validation should fail because of invalid accession number", sampleRowResult.isSuccessful());
-
-        String[] rowWithErrorColumn = sampleRowResult.getRowWithErrorColumn();
-        String erroMessage = rowWithErrorColumn[rowWithErrorColumn.length - 1];
-        assertTrue("Error message incorrect", erroMessage.contains("AccessionNumber format is invalid"));
+        assertTrue("Error message incorrect", errorMessage.toString().contains("AccessionNumber format is invalid"));
     }
 
     @org.junit.Test
     public void sampleDateShouldBeOfValidFormatOf_dd_mm_yyyy() throws Exception {
         CSVSample csvSample_invalidDate = new CSVSample("123", "invalidAccessionNumber", "02-25-2012", "sub center", validTestResults);
-        RowResult<CSVSample> sampleRowResult = testResultPersister.validate(csvSample_invalidDate);
-
-        assertFalse("validation should fail because of invalid date format", sampleRowResult.isSuccessful());
-
-        String[] rowWithErrorColumn = sampleRowResult.getRowWithErrorColumn();
-        String erroMessage = rowWithErrorColumn[rowWithErrorColumn.length - 1];
-        assertTrue("Error message incorrect", erroMessage.contains("Date should be in dd-mm-yyyy format"));
+        Messages errorMessage = testResultPersister.validate(csvSample_invalidDate);
+        assertTrue("Error message incorrect", errorMessage.toString().contains("Date should be in dd-mm-yyyy format"));
     }
 
     @org.junit.Test
     public void shouldBeValid() throws Exception {
         CSVSample validCsvSample = new CSVSample("123", validAccessionNumber, "25-02-2012", "sub center", validTestResults);
-        RowResult<CSVSample> sampleRowResult = testResultPersister.validate(validCsvSample);
+        Messages errorMessage = testResultPersister.validate(validCsvSample);
 
-        assertTrue("validation should pass", sampleRowResult.isSuccessful());
+        assertTrue("validation should pass", errorMessage.toString().contains("[]"));
     }
 
     @org.junit.Test
@@ -162,22 +142,14 @@ public class TestResultPersisterTest{
     @org.junit.Test
     public void shouldBeInvalid_when_sampleSourceIsBlank() {
         CSVSample invalidCsvSample = new CSVSample("123", validAccessionNumber, "25-02-2012", "", validTestResults);
-        RowResult<CSVSample> rowResult = testResultPersister.validate(invalidCsvSample);
-
-        assertFalse(rowResult.isSuccessful());
-        String[] rowWithErrorColumn = rowResult.getRowWithErrorColumn();
-        String errorMessage = rowWithErrorColumn[rowWithErrorColumn.length - 1];
+        Messages errorMessage = testResultPersister.validate(invalidCsvSample);
         assertTrue(errorMessage.contains("Invalid Sample source.\n"));
     }
 
     @org.junit.Test
     public void shouldBeInvalid_when_sampleSourceIsNotFromDB() {
         CSVSample invalidCsvSample = new CSVSample("123", validAccessionNumber, "25-02-2012", "not from db", validTestResults);
-        RowResult<CSVSample> rowResult = testResultPersister.validate(invalidCsvSample);
-
-        assertFalse(rowResult.isSuccessful());
-        String[] rowWithErrorColumn = rowResult.getRowWithErrorColumn();
-        String errorMessage = rowWithErrorColumn[rowWithErrorColumn.length - 1];
+        Messages errorMessage = testResultPersister.validate(invalidCsvSample);
         assertTrue(errorMessage.contains("Invalid Sample source.\n"));
     }
 

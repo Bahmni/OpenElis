@@ -2,15 +2,15 @@
 * The contents of this file are subject to the Mozilla Public License
 * Version 1.1 (the "License"); you may not use this file except in
 * compliance with the License. You may obtain a copy of the License at
-* http://www.mozilla.org/MPL/ 
-* 
+* http://www.mozilla.org/MPL/
+*
 * Software distributed under the License is distributed on an "AS IS"
 * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
 * License for the specific language governing rights and limitations under
 * the License.
-* 
+*
 * The Original Code is OpenELIS code.
-* 
+*
 * Copyright (C) The Minnesota Department of Health.  All Rights Reserved.
 */
 
@@ -20,6 +20,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.bahmni.csv.Messages;
 import org.bahmni.csv.RowResult;
 import org.bahmni.feed.openelis.feed.service.EventPublishers;
 import org.bahmni.feed.openelis.feed.service.impl.OpenElisUrlPublisher;
@@ -80,10 +81,11 @@ public class TestResultPersisterService {
         this.sysUserId = null;
     }
 
-    public RowResult<CSVSample> persist(CSVSample csvSample) {
+    public Messages persist(CSVSample csvSample) {
         Transaction transaction = null;
         try {
             logger.debug("Persisting " + csvSample);
+
             transaction = HibernateUtil.getSession().beginTransaction();
             sysUserId = getSysUserId();
             Sample sample = samplePersisterService.save(csvSample, sysUserId);
@@ -111,7 +113,7 @@ public class TestResultPersisterService {
             }
             if (hasFailed) {
                 transaction.rollback();
-                return new RowResult<>(csvSample, StringUtils.join(errors, ", "));
+                return new Messages(StringUtils.join(errors, ", "));
             } else {
                 accessionPublisher.publish(sample.getUUID(), contextPath);
             }
@@ -121,9 +123,9 @@ public class TestResultPersisterService {
         } catch (Exception e) {
             logger.warn(e);
             if (transaction != null) transaction.rollback();
-            return new RowResult<>(csvSample, e);
+            return new Messages(e);
         }
-        return new RowResult<>(csvSample);
+        return new Messages();
     }
 
     private Test getTest(String testName) {
