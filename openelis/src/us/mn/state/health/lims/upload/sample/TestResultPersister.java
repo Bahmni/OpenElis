@@ -2,15 +2,15 @@
 * The contents of this file are subject to the Mozilla Public License
 * Version 1.1 (the "License"); you may not use this file except in
 * compliance with the License. You may obtain a copy of the License at
-* http://www.mozilla.org/MPL/ 
-* 
+* http://www.mozilla.org/MPL/
+*
 * Software distributed under the License is distributed on an "AS IS"
 * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
 * License for the specific language governing rights and limitations under
 * the License.
-* 
+*
 * The Original Code is OpenELIS code.
-* 
+*
 * Copyright (C) The Minnesota Department of Health.  All Rights Reserved.
 */
 
@@ -18,6 +18,7 @@ package us.mn.state.health.lims.upload.sample;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bahmni.csv.EntityPersister;
+import org.bahmni.csv.Messages;
 import org.bahmni.csv.RowResult;
 import us.mn.state.health.lims.common.util.ConfigurationProperties;
 import us.mn.state.health.lims.samplesource.dao.SampleSourceDAO;
@@ -31,6 +32,7 @@ import us.mn.state.health.lims.upload.service.TestResultPersisterService;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class TestResultPersister implements EntityPersister<CSVSample> {
@@ -53,12 +55,13 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
     }
 
     @Override
-    public RowResult<CSVSample> persist(CSVSample csvSample) {
+    public Messages persist(CSVSample csvSample) {
+
         return testResultPersisterService.persist(csvSample);
     }
 
     @Override
-    public RowResult<CSVSample> validate(CSVSample csvSample) {
+    public Messages validate(CSVSample csvSample) {
         String registrationNumberFormat = getStNumberFormat();
         registrationNumberFormat = registrationNumberFormat.substring(1, registrationNumberFormat.length()-1);
         String fullRegistrationNumber = csvSample.patientRegistrationNumber;
@@ -95,9 +98,9 @@ public class TestResultPersister implements EntityPersister<CSVSample> {
         }
 
         if (isEmpty(errorMessage.toString()))
-            return new RowResult<>(csvSample);
+            return new Messages();
 
-        return new RowResult<>(csvSample, errorMessage.toString());
+        return new Messages(errorMessage.toString());
     }
 
     protected String getStNumberFormat() {
