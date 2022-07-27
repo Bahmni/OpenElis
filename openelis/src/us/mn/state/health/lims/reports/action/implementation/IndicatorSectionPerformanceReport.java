@@ -107,8 +107,8 @@ public class IndicatorSectionPerformanceReport extends RetroCIReport implements 
 		return new JRBeanCollectionDataSource(reportItems);
 	}
 
-	public HashMap<String, ?> getReportParameters() throws IllegalStateException {
-		return new HashMap<String, String>();
+	public Map<String, Object> getReportParameters() throws IllegalStateException {
+		return Collections.emptyMap();
 	}
 
 	public void initializeReport(BaseActionForm dynaForm) {
@@ -226,7 +226,7 @@ public class IndicatorSectionPerformanceReport extends RetroCIReport implements 
 		List<ObservationHistory> initialRegisteredList = observationHistoryDAO.getObservationHistoryByDictonaryValues(initialRegisteredID);
 
 		fillDataForRecords(notRegisteredList, "Pas d'inscription initiale");
-		fillDataForRecords(initialRegisteredList, "Entrée non validé");
+		fillDataForRecords(initialRegisteredList, "Entrï¿½e non validï¿½");
 	}
 
 	private void fillDataForRecords(List<ObservationHistory> observationList, String category) throws LIMSInvalidConfigurationException {

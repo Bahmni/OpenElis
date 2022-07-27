@@ -17,7 +17,7 @@
 package us.mn.state.health.lims.reports.action.implementation;
 
 
-import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 
 import net.sf.jasperreports.engine.JRDataSource;
@@ -116,7 +116,7 @@ public class PatientIndeterminateByLocationReport extends PatientIndeterminateRe
         reportPatient = null;
     }
 
-    public HashMap<String, ?> getReportParameters() throws IllegalStateException {
+    public Map<String, Object> getReportParameters() throws IllegalStateException {
         return super.getReportParameters();
     }
     public JRDataSource getReportDataSource() throws IllegalStateException {

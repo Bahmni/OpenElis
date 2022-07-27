@@ -33,7 +33,7 @@ import us.mn.state.health.lims.reports.action.implementation.ReportImplementatio
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
+import java.util.Map;
 
 public class CommonReportPrintAction extends BaseAction {
 
@@ -58,7 +58,7 @@ public class CommonReportPrintAction extends BaseAction {
 			reportCreator.initializeReport(dynaForm);
 			reportCreator.setReportPath(getReportPath());
 
-			HashMap<String, String> parameterMap = (HashMap<String, String>) reportCreator.getReportParameters();
+			Map<String, Object> parameterMap = reportCreator.getReportParameters();
 			parameterMap.put("SUBREPORT_DIR", getReportPath());
 
 			try {
