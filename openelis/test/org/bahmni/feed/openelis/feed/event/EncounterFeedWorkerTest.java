@@ -1,7 +1,6 @@
 package org.bahmni.feed.openelis.feed.event;
 
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.bahmni.feed.openelis.feed.contract.openmrs.encounter.OpenMRSEncounter;
 import org.bahmni.feed.openelis.utils.AuditingService;
 import org.bahmni.webclients.HttpClient;
@@ -9,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import us.mn.state.health.lims.login.daoimpl.LoginDAOImpl;
@@ -24,16 +24,15 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Logger.class, EncounterFeedWorker.class})
-public class EncounterFeedWorkerTest {
+@PowerMockIgnore("javax.management.*")
+public class
+EncounterFeedWorkerTest {
 
     @Mock
     private HttpClient httpClient;
 
     @Mock
     private OpenMRSEncounter openMRSEncounter;
-
-    @Mock
-    private Logger logger;
 
     @Mock
     private LoginDAOImpl loginDAO;
@@ -60,9 +59,7 @@ public class EncounterFeedWorkerTest {
         whenNew(SiteInformationDAOImpl.class).withNoArguments().thenReturn(siteInformationDAO);
         whenNew(AuditingService.class).withArguments(loginDAO, siteInformationDAO).thenReturn(auditingService);
 
-        when(LogManager.getLogger(EncounterFeedWorker.class)).thenReturn(logger);
         when(openMRSEncounter.getEncounterUuid()).thenReturn("encounter uuid");
-        doNothing().when(logger).info("Processing encounter with ID='encounter uuid'");
         when(auditingService.getSysUserId()).thenReturn("1");
     }
 
