@@ -226,7 +226,8 @@ public class IndicatorSectionPerformanceReport extends RetroCIReport implements 
 		List<ObservationHistory> initialRegisteredList = observationHistoryDAO.getObservationHistoryByDictonaryValues(initialRegisteredID);
 
 		fillDataForRecords(notRegisteredList, "Pas d'inscription initiale");
-		fillDataForRecords(initialRegisteredList, "Entr�e non valid�");
+		fillDataForRecords(initialRegisteredList, "Entrée non validé");
+
 	}
 
 	private void fillDataForRecords(List<ObservationHistory> observationList, String category) throws LIMSInvalidConfigurationException {
