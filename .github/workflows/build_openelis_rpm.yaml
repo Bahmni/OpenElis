@@ -48,7 +48,7 @@ jobs:
       # - name: Build
       #   run: ant build -Dmaven.test.skip=true
       - name: Copying Artifacts to package/resources
-        run: cp openelis/dist/*.war package/resources && cp *.zip package/resources
+        run: cp openelis/dist/*.war package/resources && cp *.zip package/resources && ls -al package/resources
       - name: Generate bahmni_openelis_revision.json
         run: ./package/test/bahmni_openelis_revision.sh > bahmni_openelis_revision.json
       - name: Download openelis_backup.sql.gz file from emr-functional-tests/dbdump
@@ -62,8 +62,14 @@ jobs:
         env:
           rpm_version: 0.93
         run: ./gradlew -PbahmniRelease=${rpm_version} -PtomcatVersion=8.0.12 :package:clean :package:buildRpm
-      - name: Listing RPMS
-        run: ls -al package/build/bahmni-lab && echo "distributions" && ls -al package/build/distributions && echo "libs" && ls -al package/build/libs && echo "migrations" && ls -al package/build/migrations && echo "tmp" && ls -al package/build/tmp 
-      
+      - uses: actions/upload-artifact@v3
+        with:
+          name: bahmni-lab-rpm
+          path: package/build/distributions/*.rpm
+      - uses: actions/upload-artifact@v3
+        with:
+          name: OpenElis.zip
+          path: package/resources/OpenElis.zip
+
 
 
