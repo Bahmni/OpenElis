@@ -1,3 +1,4 @@
 rootProject.name = 'bahmni'
 
 include 'package'
+include 'core'
