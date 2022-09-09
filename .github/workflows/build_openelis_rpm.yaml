@@ -1,0 +1,50 @@
+name: Build and Generate OpenELIS RPM
+on:
+  push:
+    branches:
+      - master
+      - BAH-2276
+
+    # paths:
+    #   - '.github/workflows/build_openelis_rpm.yml'
+    #   - 'package/docker/demoDB/**'
+    #   - 'scripts/database/**'
+
+  # repository_dispatch:
+  #   types: ['bahmni-scripts-trigger']
+
+# env:
+#   BAHMNI_VERSION: 0.94
+
+jobs:
+  rpm-build:
+    name: Build OpenELIS RPM
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Java 7 for ant
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '7'
+      - name: Setup Ruby 2.3
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.3
+      - name: Install Compass
+        run: gem install compass
+      - name: Install Ant 1.9
+        run: |
+          mkdir /tmp/ant
+          cd /tmp/ant
+          wget https://dlcdn.apache.org//ant/binaries/apache-ant-1.9.16-bin.tar.gz
+          tar -zxf apache-ant-1.9.16-bin.tar.gz
+          echo "ANT_HOME=/tmp/ant/apache-ant-1.9.16" >> $GITHUB_ENV
+          echo "/tmp/ant/apache-ant-1.9.16/bin" >> $GITHUB_PATH
+      - name: Package
+        run: ant dist
+      # - name: Build
+      #   run: ant build -Dmaven.test.skip=true
+      - name: Listing Artifacts
+        run: ls openelis/dist/ && ls *.zip
+
