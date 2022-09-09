@@ -1,0 +1,20 @@
+[Unit]
+Description=Bahmni Lab Service
+After=network-online.target
+After=network.service
+
+[Service]
+Type=forking
+KillMode=none
+GuessMainPID=no
+RuntimeDirectory=bahmni-lab
+LogsDirectory=bahmni-lab
+User=bahmni
+Group=bahmni
+PIDFile=/var/run/bahmni-lab/bahmni-lab.pid
+ExecStart=/opt/bahmni-lab/bin/bahmni-lab start
+ExecStop=/opt/bahmni-lab/bin/bahmni-lab stop
+ExecReload=/opt/bahmni-lab/bin/bahmni-lab restart
+
+[Install]
+WantedBy=multi-user.target

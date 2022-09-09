@@ -45,6 +45,16 @@ jobs:
         run: ant dist
       # - name: Build
       #   run: ant build -Dmaven.test.skip=true
-      - name: Listing Artifacts
-        run: ls openelis/dist/ && ls *.zip
+      - name: Copying Artifacts to package/resources
+        run: cp openelis/dist/*.war package/resources && cp *.zip package/resources
+      - name: Generate bahmni_openelis_revision.json
+        run: ./package/test/bahmni_openelis_revision.sh > bahmni_openelis_revision.json
+      - name: Download openelis_backup.sql.gz file from emr-functional-tests/dbdump
+        run:  wget https://raw.githubusercontent.com/Bahmni/emr-functional-tests/master/dbdump/openelis_backup.sql.gz --output openelis_backup.sql.gz && gunzip -c openelis_backup.sql.gz > package/resources/openelis_backup.sql 
+      - name: Gradle Build
+        env:
+          rpm_version: 0.93
+        run: ./gradlew -PbahmniRelease=${rpm_version} -PtomcatVersion=8.0.12 :package:clean :package:buildRpm
+      
+
 

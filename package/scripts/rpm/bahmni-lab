@@ -1,0 +1,114 @@
+#!/bin/bash
+#
+# openelis        start/stop/status/debug/restart script
+#
+# chkconfig: - 64 36
+# processname: bahmni-lab
+# config: /etc/default/bahmni-lab
+# pidfile: /var/run/bahmni-lab/bahmni-lab.pid
+
+export BAHMNI_LAB_SERVER_USER=bahmni
+export BAHMNI_LAB_SERVER_RUN=/opt/bahmni-lab/bin/start.sh
+export BAHMNI_LAB_SERVER_DEBUG=/opt/bahmni-lab/bin/debug.sh
+export CUR_USER=`/usr/bin/whoami`
+
+. /etc/bahmni-lab/bahmni-lab.conf
+
+create_dirs() {
+    if [[ ! -e /var/run/bahmni-lab ]]; then
+        ln -s /opt/bahmni-lab/run /var/run/bahmni-lab
+    fi
+
+    if [[ ! -e /var/run/bahmni-lab/bahmni-lab ]]; then
+        ln -s /opt/bahmni-lab/bahmni-lab /var/run/bahmni-lab/bahmni-lab
+    fi
+
+    if [[ ! -e /var/log/bahmni-lab ]]; then
+        ln -s /opt/bahmni-lab/log /var/log/bahmni-lab
+    fi
+}
+
+bahmni_lab_pid() {
+        echo `ps -fe | grep 'bahmni-lab.jar' | grep -v grep | tr -s " "|cut -d" " -f2`
+}
+
+start(){
+    pid=$(bahmni_lab_pid)
+    if [ -n "$pid" ]
+    then
+        echo -e "\e[00;31mService bahmni-lab is already running (pid: $pid)\e[00m"
+    else
+        # Start bahmni-lab
+        create_dirs
+        echo -e "\e[00;32mStarting bahmni-lab\e[00m"
+        sh $BAHMNI_LAB_SERVER_RUN
+  fi
+  exit 0
+}
+
+debug(){
+    pid=$(bahmni_lab_pid)
+    if [ -n "$pid" ]
+    then
+        echo -e "\e[00;31mService bahmni-lab is already running (pid: $pid)\e[00m"
+    else
+        # Start bahmni-lab
+        create_dirs
+        echo -e "\e[00;32mStarting bahmni-lab\e[00m"
+        if [ `user_exists $BAHMNI_LAB_SERVER_USER` = "1" ]  && [ "$CUR_USER" != "$BAHMNI_LAB_SERVER_USER" ] ;
+        then
+                runuser -u $BAHMNI_LAB_SERVER_USER $BAHMNI_LAB_SERVER_DEBUG
+        else
+                sh $BAHMNI_LAB_SERVER_DEBUG
+        fi
+    fi
+  exit 0
+}
+
+status(){
+          pid=$(bahmni_lab_pid)
+          if [ -n "$pid" ]; then echo -e "\e[00;32mService bahmni-lab is running with pid: $pid\e[00m"
+          else echo -e "\e[00;31mService bahmni-lab is not running\e[00m"
+          exit 3
+          fi
+}
+
+stop() {
+	echo -e "\e[00;31mTerminating bahmni-lab\e[00m"
+	kill -9 $(bahmni_lab_pid)
+	rm -f /var/run/bahmni-lab/bahmni-lab.pid
+    return
+}
+user_exists(){
+        if id -u $1 >/dev/null 2>&1; then
+        echo "1"
+        else
+                echo "0"
+        fi
+}
+
+case $1 in
+	start)
+	  start
+	;;
+    debug)
+	  debug
+	;;
+	stop)
+	  stop
+	;;
+	restart)
+	  stop
+	  start
+	;;
+	status)
+		status
+	;;
+	kill)
+		stop
+	;;
+	*)
+
+	;;
+esac
+exit 0
