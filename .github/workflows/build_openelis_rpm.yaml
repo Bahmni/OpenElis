@@ -63,7 +63,7 @@ jobs:
           rpm_version: 0.93
         run: ./gradlew -PbahmniRelease=${rpm_version} -PtomcatVersion=8.0.12 :package:clean :package:buildRpm
       - name: Listing RPMS
-        run: ls -al && ls -al package
+        run: ls -al && ls -al package && ls -al package/build
       
 
 
