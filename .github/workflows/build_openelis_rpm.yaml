@@ -50,7 +50,7 @@ jobs:
       - name: Generate bahmni_openelis_revision.json
         run: ./package/test/bahmni_openelis_revision.sh > bahmni_openelis_revision.json
       - name: Download openelis_backup.sql.gz file from emr-functional-tests/dbdump
-        run:  wget https://raw.githubusercontent.com/Bahmni/emr-functional-tests/master/dbdump/openelis_backup.sql.gz --output openelis_backup.sql.gz && gunzip -c openelis_backup.sql.gz > package/resources/openelis_backup.sql 
+        run:  wget https://raw.githubusercontent.com/Bahmni/emr-functional-tests/master/dbdump/openelis_backup.sql.gz && gunzip -c openelis_backup.sql.gz > package/resources/openelis_backup.sql && ls -al package/resources | grep openelis_backup.sql
       - name: Gradle Build
         env:
           rpm_version: 0.93
