@@ -21,20 +21,20 @@ apply plugin: 'java'
 
 //The openelis.war & OpenElis.zip file will be copied by the CI server after the artifacts are built.
 task extractWar(type: Copy) {
-    from zipTree(file("${projectDir}/resources/openelis.war"))
+    from zipTree(file("${projectDir}/../resources/openelis.war"))
     into file("${buildDir}/bahmni-lab")
 }
 
 task extractMigrations(type: Copy) {
-    from zipTree(file("${projectDir}/resources/OpenElis.zip"))
+    from zipTree(file("${projectDir}/../resources/OpenElis.zip"))
     into file("${buildDir}/migrations")
 }
 
 task normalizeJarName(type: Copy) {
-    from "${buildDir}" + "/libs/"
+    from "${projectDir}/../resources/"
     into "${buildDir}" + "/libs/"
-    include(project.name + '-' + project.bahmniRelease + '.jar')
-    rename(project.name + '-' + project.bahmniRelease + '.jar', project.name + '.jar')
+    include('core-1.0-SNAPSHOT.jar')
+    rename('core-1.0-SNAPSHOT.jar', project.name + '.jar')
 }
 
 ospackage {
@@ -46,7 +46,7 @@ ospackage {
 
     into '/opt/bahmni-lab'
 
-    from("${projectDir}/resources/log4j2.xml") {
+    from("${projectDir}/../resources/log4j2.xml") {
         fileMode = 0644
         createDirectoryEntry = true
         into 'bahmni-lab/WEB-INF/classes'
@@ -58,7 +58,7 @@ ospackage {
         into 'lib/'
     }
 
-    from("${projectDir}/resources/") {
+    from("${projectDir}/../resources/") {
         fileMode = 0644
         createDirectoryEntry = true
         into 'etc'
@@ -80,12 +80,12 @@ ospackage {
         into '/usr/lib/systemd/system/'
     }
 
-    from("${projectDir}/resources/placeholder") {
+    from("${projectDir}/../resources/placeholder") {
         createDirectoryEntry = true
         into 'run'
     }
 
-    from("${projectDir}/resources/placeholder") {
+    from("${projectDir}/../resources/placeholder") {
         createDirectoryEntry = true
         into 'log'
     }
@@ -107,20 +107,20 @@ ospackage {
         include('scripts/*')
     }
 
-    from("${projectDir}/resources/migrateDb.sh") {
+    from("${projectDir}/../resources/migrateDb.sh") {
         fileMode = 0744
         createDirectoryEntry = true
         into 'migrations/scripts/'
     }
 
-    from("${projectDir}/resources/") {
+    from("${projectDir}/../resources/") {
         fileMode = 0644
         createDirectoryEntry = true
         into 'db-dump'
         include('openelis_demo_dump.sql')
     }
 
-    from("${projectDir}/resources/") {
+    from("${projectDir}/../resources/") {
         fileMode = 0755
         into 'etc'
         include('bahmnilab_ssl.conf')
@@ -135,10 +135,6 @@ buildRpm {
     preInstall file("${projectDir}/scripts/preinstall.sh")
     postInstall file("${projectDir}/scripts/postinstall.sh")
     preUninstall file("${projectDir}/scripts/preuninstall.sh")
-}
-
-dependencies {
-    compile project(":core")
 }
 
 jar {

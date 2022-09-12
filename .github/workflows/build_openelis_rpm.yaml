@@ -50,9 +50,11 @@ jobs:
       - name: Copying Artifacts to package/resources
         run: cp openelis/dist/*.war package/resources && cp *.zip package/resources && ls -al package/resources
       - name: Generate bahmni_openelis_revision.json
-        run: ./package/test/bahmni_openelis_revision.sh > bahmni_openelis_revision.json
+        run: ./package/rpm/test/bahmni_openelis_revision.sh > bahmni_openelis_revision.json
       - name: Download openelis_backup.sql.gz file from emr-functional-tests/dbdump
         run:  wget https://raw.githubusercontent.com/Bahmni/emr-functional-tests/master/dbdump/openelis_backup.sql.gz && gunzip -c openelis_backup.sql.gz > package/resources/openelis_backup.sql && ls -al package/resources | grep openelis_backup.sql
+      - name: Download bahmni-embedded-tomcat.zip
+        run: sh .github/download_artifact.sh bahmni-package bahmni-embedded-tomcat ${{secrets.BAHMNI_PAT}}
       - name: Setup Java 8 for Gradle
         uses: actions/setup-java@v3
         with:
@@ -61,11 +63,11 @@ jobs:
       - name: Gradle Build
         env:
           rpm_version: 0.93
-        run: ./gradlew -PbahmniRelease=${rpm_version} -PtomcatVersion=8.0.12 :package:clean :package:buildRpm
+        run: cd package && ./gradlew -PbahmniRelease=${rpm_version} -PtomcatVersion=8.0.12 :rpm:clean :rpm:buildRpm && ls -al && ls -al rpm && cd
       - uses: actions/upload-artifact@v3
         with:
           name: bahmni-lab-rpm
-          path: package/build/distributions/*.rpm
+          path: package/rpm/build/distributions/*.rpm
       - uses: actions/upload-artifact@v3
         with:
           name: OpenElis.zip

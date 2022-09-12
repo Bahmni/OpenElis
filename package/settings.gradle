@@ -1,4 +1,4 @@
 rootProject.name = 'bahmni'
 
-include 'package'
+include 'rpm'
 include 'core'
