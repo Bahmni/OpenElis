@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+      - BAH-2276
 
     paths-ignore:
       - '**.md'
@@ -16,8 +17,8 @@ env:
   BAHMNI_VERSION: 0.94
 
 jobs:
-  docker-build-publish:
-    name: Build & Publish OpenELIS Docker Image
+  build-publish:
+    name: Build & Publish OpenELIS
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -46,6 +47,10 @@ jobs:
         run: sh .github/download_artifact.sh default-config default_config ${{secrets.BAHMNI_PAT}}
       - name: Download bahmni-embedded-tomcat.zip
         run: sh .github/download_artifact.sh bahmni-package bahmni-embedded-tomcat ${{secrets.BAHMNI_PAT}}
+      - name: Download openelis_backup.sql.gz file from emr-functional-tests/dbdump
+        run:  |
+              wget https://raw.githubusercontent.com/Bahmni/emr-functional-tests/master/dbdump/openelis_backup.sql.gz 
+              gunzip -c openelis_backup.sql.gz > package/resources/openelis_backup.sql
       - name: Login to DockerHub
         uses: docker/login-action@v1 
         with:
@@ -58,3 +63,28 @@ jobs:
           file: package/docker/openelis/Dockerfile
           push: true
           tags: bahmni/openelis:${{env.BAHMNI_VERSION}}-${{github.run_number}},bahmni/openelis:latest
+      - name: Copying Artifacts to package/resources
+        run: |
+             cp openelis/dist/openelis.war package/resources
+             cp OpenElis.zip package/resources
+      - name: Generate bahmni_openelis_revision.json
+        run: ./package/rpm/test/bahmni_openelis_revision.sh > bahmni_openelis_revision.json
+      - name: Setup Java 8 for Gradle
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt-openj9'
+          java-version: '8'      
+      - name: Gradle Build
+        env:
+          rpm_version: 0.94
+        run: |
+            cd package 
+            ./gradlew -PbahmniRelease=${rpm_version} -PtomcatVersion=8.0.12 :rpm:clean :rpm:buildRpm
+      - uses: actions/upload-artifact@v3
+        with:
+          name: bahmni-lab rpm
+          path: package/rpm/build/distributions/*.rpm
+      - uses: actions/upload-artifact@v3
+        with:
+          name: OpenElis Revision
+          path: bahmni_openelis_revision.json
