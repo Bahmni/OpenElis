@@ -101,8 +101,6 @@ jobs:
           wget -q https://raw.githubusercontent.com/Bahmni/bahmni-infra-utils/BAH-2198/setArtifactVersion.sh && chmod +x setArtifactVersion.sh
           ./setArtifactVersion.sh
           rm setArtifactVersion.sh
-          export ARTIFACT_VERSION=echo ${{env.ARTIFACT_VERSION}} | sed -r 's/[-]+/_/g'
-
       - uses: actions/download-artifact@v3
         with:
           name: openelis war
@@ -130,13 +128,9 @@ jobs:
           java-version: '8'      
       - name: Gradle Build
         run: |
-            export VERSION=$(echo ${{env.ARTIFACT_VERSION}} | sed -r 's/[-]+/_/g')
-            echo $VERSION
             cd package 
-            ./gradlew -PbahmniRelease=$VERSION -PtomcatVersion=8.0.12 :rpm:clean :rpm:buildRpm
-            export VERSION=$(echo $VERSION | sed -r 's/[_]+/-/g')
-            echo $VERSION
-            mv rpm/build/distributions/bahmni-lab-*.rpm rpm/build/distributions/bahmni-lab-$VERSION.noarch.rpm
+            ./gradlew -PbahmniRelease="" -PtomcatVersion=8.0.12 :rpm:clean :rpm:buildRpm
+            mv rpm/build/distributions/bahmni-lab*.rpm rpm/build/distributions/bahmni-lab-${{env.ARTIFACT_VERSION}}.noarch.rpm
       - uses: actions/upload-artifact@v3
         with:
           name: bahmni-lab rpm
