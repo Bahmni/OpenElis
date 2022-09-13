@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - master
-      - BAH-2276
 
     # paths:
     #   - '.github/workflows/build_openelis_rpm.yml'

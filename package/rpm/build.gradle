@@ -39,7 +39,7 @@ task normalizeJarName(type: Copy) {
 
 ospackage {
     packageName = 'bahmni-lab'
-    release = System.getenv('GO_PIPELINE_COUNTER') ?: project.buildNumber
+    // release = System.getenv('GO_PIPELINE_COUNTER') ?: project.buildNumber
     arch = NOARCH
     os = LINUX
     user = 'bahmni'
