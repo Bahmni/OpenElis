@@ -15,9 +15,6 @@ on:
   repository_dispatch:
     types: ['bahmni-embedded-tomcat-trigger', 'default-config-trigger']
 
-env:
-  BAHMNI_VERSION: 0.94
-
 jobs:
   build:
     name: Build OpenELIS
@@ -128,10 +125,10 @@ jobs:
           java-version: '8'      
       - name: Gradle Build
         run: |
-            cd package 
+            cd package/rpm
             export version=$(awk -F- '{print $1}' <<< ${{env.ARTIFACT_VERSION}})
             export release=$(awk -F- '{print $2}' <<< ${{env.ARTIFACT_VERSION}})
-            ./gradlew -Pversion=$version -Prelease=$release :rpm:clean :rpm:buildRpm
+            ./gradlew -Pversion=$version -Prelease=$release :clean :buildRpm
       - uses: actions/upload-artifact@v3
         with:
           name: bahmni-lab-rpm
