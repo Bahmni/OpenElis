@@ -121,14 +121,14 @@ jobs:
       - name: Setup Java 8 for Gradle
         uses: actions/setup-java@v3
         with:
-          distribution: 'adopt-openj9'
+          distribution: 'zulu'
           java-version: '8'      
       - name: Gradle Build
         run: |
             cd package/rpm
             export version=$(awk -F- '{print $1}' <<< ${{env.ARTIFACT_VERSION}})
             export release=$(awk -F- '{print $2}' <<< ${{env.ARTIFACT_VERSION}})
-            ./gradlew -Pversion=$version -Prelease=$release :clean :buildRpm
+            ./gradlew -Pversion=$version -Prelease=$release clean buildRpm
       - uses: actions/upload-artifact@v3
         with:
           name: bahmni-lab-rpm
