@@ -15,7 +15,7 @@ repositories {
 }
 
 group 'org.bahmni.lab'
-version project.bahmniRelease
+version project.version
 
 apply plugin: 'java'
 
@@ -39,7 +39,8 @@ task normalizeJarName(type: Copy) {
 
 ospackage {
     packageName = 'bahmni-lab'
-    // release = System.getenv('GO_PIPELINE_COUNTER') ?: project.buildNumber
+    version = project.version
+    release = project.hasProperty('release') ? project.release : ""
     arch = NOARCH
     os = LINUX
     user = 'bahmni'
