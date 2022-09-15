@@ -101,21 +101,17 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: openelis.war
-          path: openelis/dist/
+          path: package/resources/
       - uses: actions/download-artifact@v3
         with:
           name: openelis.zip
-          path: .
+          path: package/resources/
       - name: Download bahmni-embedded-tomcat.zip
         run: sh .github/download_artifact.sh bahmni-package bahmni-embedded-tomcat ${{secrets.BAHMNI_PAT}}
       - name: Download openelis_backup.sql.gz file from emr-functional-tests/dbdump
         run:  |
               wget https://raw.githubusercontent.com/Bahmni/emr-functional-tests/master/dbdump/openelis_backup.sql.gz 
               gunzip -c openelis_backup.sql.gz > package/resources/openelis_backup.sql
-      - name: Copying Artifacts to package/resources
-        run: |
-             cp openelis/dist/openelis.war package/resources/
-             cp OpenElis.zip package/resources/
       - name: Generate bahmni_openelis_revision.json
         run: ./package/rpm/test/bahmni_openelis_revision.sh > bahmni_openelis_revision.json
       - name: Setup Java 8 for Gradle
