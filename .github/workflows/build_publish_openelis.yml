@@ -111,7 +111,7 @@ jobs:
       - name: Download openelis_backup.sql.gz file from emr-functional-tests/dbdump
         run:  |
               wget https://raw.githubusercontent.com/Bahmni/emr-functional-tests/master/dbdump/openelis_backup.sql.gz 
-              gunzip -c openelis_backup.sql.gz > package/resources/openelis_backup.sql
+              gunzip -c openelis_backup.sql.gz > package/resources/openelis_demo_dump.sql
       - name: Generate bahmni_openelis_revision.json
         run: ./package/rpm/test/bahmni_openelis_revision.sh > bahmni_openelis_revision.json
       - name: Setup Java 8 for Gradle
