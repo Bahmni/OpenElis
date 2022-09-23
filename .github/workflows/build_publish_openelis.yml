@@ -12,7 +12,7 @@ on:
       - '**.md'
 
   repository_dispatch:
-    types: ['bahmni-embedded-tomcat-trigger', 'default-config-trigger']
+    types: ['default-config-trigger']
 
 jobs:
   docker-build-publish:
@@ -48,8 +48,6 @@ jobs:
         run: ant dist
       - name: Download default_config.zip
         run: sh .github/download_artifact.sh default-config default_config ${{secrets.BAHMNI_PAT}}
-      - name: Download bahmni-embedded-tomcat.zip
-        run: sh .github/download_artifact.sh bahmni-package bahmni-embedded-tomcat ${{secrets.BAHMNI_PAT}}
       - name: Login to DockerHub
         uses: docker/login-action@v1 
         with:
