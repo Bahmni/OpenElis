@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - master
+      - 'release-*'
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
 
     paths:
       - '.github/workflows/build_publish_openelis_freshDB.yml'
@@ -10,14 +13,17 @@ on:
       - 'scripts/database/**'
       - 'db_backup/*.sql'
 
-env:
-  BAHMNI_VERSION: 0.94
-
 jobs:
   docker-build-publish:
     name: Build & Publish OpenELIS Fresh DB Docker Image
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+      - name: Set artifact version
+        run: |
+          wget -q https://raw.githubusercontent.com/Bahmni/bahmni-infra-utils/main/setArtifactVersion.sh && chmod +x setArtifactVersion.sh
+          ./setArtifactVersion.sh
+          rm setArtifactVersion.sh
       - name: Login to DockerHub
         uses: docker/login-action@v1 
         with:
@@ -26,6 +32,7 @@ jobs:
       - name: Docker Build and push
         uses: docker/build-push-action@v2
         with:
+          context: .
           file: package/docker/freshDB/Dockerfile
           push: true
-          tags: bahmni/openelis-db:fresh-${{env.BAHMNI_VERSION}}-${{github.run_number}},bahmni/openelis-db:fresh-latest
+          tags: bahmni/openelis-db:fresh-${{env.ARTIFACT_VERSION}},bahmni/openelis-db:fresh-latest
