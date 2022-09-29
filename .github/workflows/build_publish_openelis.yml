@@ -10,9 +10,6 @@ on:
     paths-ignore:
       - '**.md'
 
-  repository_dispatch:
-    types: ['default-config-trigger']
-
 jobs:
   docker-build-publish:
     name: Build & Publish OpenELIS Docker Image
@@ -45,8 +42,6 @@ jobs:
           rm setArtifactVersion.sh
       - name: Package
         run: ant dist
-      - name: Download default_config.zip
-        run: sh .github/download_artifact.sh default-config default_config ${{secrets.BAHMNI_PAT}}
       - name: Login to DockerHub
         uses: docker/login-action@v1 
         with:
