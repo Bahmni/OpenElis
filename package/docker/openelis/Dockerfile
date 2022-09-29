@@ -16,7 +16,7 @@ RUN mkdir -p /opt/bahmni-lab/migrations/db_backup/
 RUN mkdir -p /opt/bahmni-lab/migrations/liquibase/
 RUN mkdir -p /opt/bahmni-lab/migrations/scripts/
 
-COPY package/resources/core-1.0-SNAPSHOT.jar /opt/bahmni-lab/lib/bahmni-lab.jar
+ADD https://repo.mybahmni.org/packages/build/bahmni-embedded-tomcat-8.0.42.jar /opt/bahmni-lab/lib/bahmni-lab.jar
 COPY openelis/dist/openelis.war /etc/bahmni-lab/openelis.war
 ADD package/resources/default_config.zip /tmp/artifacts/
 RUN unzip -d /tmp/artifacts/default_config/ /tmp/artifacts/default_config.zip 

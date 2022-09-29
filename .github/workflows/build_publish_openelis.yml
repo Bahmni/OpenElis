@@ -3,17 +3,15 @@ on:
   push:
     branches:
       - master
+      - 'release-*'
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
 
     paths-ignore:
       - '**.md'
-      - 'package/docker/demoDB/**'
-      - 'package/docker/freshDB/**'
 
   repository_dispatch:
-    types: ['bahmni-embedded-tomcat-trigger', 'default-config-trigger']
-
-env:
-  BAHMNI_VERSION: 0.94
+    types: ['default-config-trigger']
 
 jobs:
   docker-build-publish:
@@ -40,12 +38,15 @@ jobs:
           tar -zxf apache-ant-1.9.16-bin.tar.gz
           echo "ANT_HOME=/tmp/ant/apache-ant-1.9.16" >> $GITHUB_ENV
           echo "/tmp/ant/apache-ant-1.9.16/bin" >> $GITHUB_PATH
+      - name: Set env.ARTIFACT_VERSION
+        run: |
+          wget -q https://raw.githubusercontent.com/Bahmni/bahmni-infra-utils/main/setArtifactVersion.sh && chmod +x setArtifactVersion.sh
+          ./setArtifactVersion.sh
+          rm setArtifactVersion.sh
       - name: Package
         run: ant dist
       - name: Download default_config.zip
         run: sh .github/download_artifact.sh default-config default_config ${{secrets.BAHMNI_PAT}}
-      - name: Download bahmni-embedded-tomcat.zip
-        run: sh .github/download_artifact.sh bahmni-package bahmni-embedded-tomcat ${{secrets.BAHMNI_PAT}}
       - name: Login to DockerHub
         uses: docker/login-action@v1 
         with:
@@ -57,4 +58,4 @@ jobs:
           context: .
           file: package/docker/openelis/Dockerfile
           push: true
-          tags: bahmni/openelis:${{env.BAHMNI_VERSION}}-${{github.run_number}},bahmni/openelis:latest
+          tags: bahmni/openelis:${{env.ARTIFACT_VERSION}},bahmni/openelis:latest

@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - master
+      - 'release-*'
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
 
     paths:
       - '.github/workflows/build_publish_openelis_demoDB.yml'
@@ -12,14 +15,17 @@ on:
   repository_dispatch:
     types: ['bahmni-scripts-trigger']
 
-env:
-  BAHMNI_VERSION: 0.94
-
 jobs:
   docker-build-publish:
     name: Build & Publish OpenELIS Demo DB Docker Image
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+      - name: Set env.ARTIFACT_VERSION
+        run: |
+          wget -q https://raw.githubusercontent.com/Bahmni/bahmni-infra-utils/main/setArtifactVersion.sh && chmod +x setArtifactVersion.sh
+          ./setArtifactVersion.sh
+          rm setArtifactVersion.sh
       - name: Login to DockerHub
         uses: docker/login-action@v1 
         with:
@@ -28,6 +34,7 @@ jobs:
       - name: Docker Build and push
         uses: docker/build-push-action@v2
         with:
+          context: .        
           file: package/docker/demoDB/Dockerfile
           push: true
-          tags: bahmni/openelis-db:demo-${{env.BAHMNI_VERSION}}-${{github.run_number}},bahmni/openelis-db:demo-latest
+          tags: bahmni/openelis-db:demo-${{env.ARTIFACT_VERSION}},bahmni/openelis-db:demo-latest
