@@ -1,4 +1,4 @@
-FROM openjdk:8-alpine
+FROM amazoncorretto:8
 
 ENV SERVER_PORT=8052
 ENV BASE_DIR=/var/run/bahmni-lab
@@ -13,6 +13,7 @@ RUN mkdir -p ${WAR_DIRECTORY}
 RUN mkdir -p /opt/bahmni-lab/migrations/db_backup/
 RUN mkdir -p /opt/bahmni-lab/migrations/liquibase/
 RUN mkdir -p /opt/bahmni-lab/migrations/scripts/
+RUN yum install -y unzip
 
 ADD https://repo.mybahmni.org/packages/build/bahmni-embedded-tomcat-8.0.42.jar /opt/bahmni-lab/lib/bahmni-lab.jar
 COPY openelis/dist/openelis.war /etc/bahmni-lab/openelis.war
@@ -21,7 +22,7 @@ COPY openelis/dist/openelis.war /etc/bahmni-lab/openelis.war
 RUN cd ${WAR_DIRECTORY} && jar xvf /etc/bahmni-lab/openelis.war
 
 # Used by envsubst command for replacing environment values at runtime
-RUN apk add gettext
+RUN yum install -y gettext
 
 COPY package/docker/openelis/templates/hibernate.cfg.xml.template /etc/bahmni-lab/
 COPY package/docker/openelis/templates/atomfeed.properties.template /etc/bahmni-lab/
