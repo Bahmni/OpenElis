@@ -28,4 +28,3 @@ jobs:
             cat trigger_response.txt
             exit 1
           fi
-	
