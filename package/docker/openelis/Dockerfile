@@ -13,6 +13,9 @@ RUN mkdir -p ${WAR_DIRECTORY}
 RUN mkdir -p /opt/bahmni-lab/migrations/db_backup/
 RUN mkdir -p /opt/bahmni-lab/migrations/liquibase/
 RUN mkdir -p /opt/bahmni-lab/migrations/scripts/
+RUN mkdir -p /home/bahmni/uploaded_results/
+RUN mkdir -p /home/bahmni/uploaded-files/elis/
+
 RUN yum install -y unzip
 
 ADD https://repo.mybahmni.org/packages/build/bahmni-embedded-tomcat-8.0.42.jar /opt/bahmni-lab/lib/bahmni-lab.jar
