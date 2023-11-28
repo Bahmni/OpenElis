@@ -1,9 +1,11 @@
 [main]
 host = https://www.transifex.com
-minimum_perc = 40
 
-[bahmni.openelis]
-file_filter = openelis/src/MessageResources_<lang>.properties
-source_file = openelis/src/MessageResources.properties
-source_lang = en
-type = UNICODEPROPERTIES
+[o:openmrs:p:bahmni:r:openelis]
+file_filter            = openelis/src/MessageResources_<lang>.properties
+source_file            = openelis/src/MessageResources.properties
+source_lang            = en
+type                   = UNICODEPROPERTIES
+replace_edited_strings = false
+keep_translations      = false
+

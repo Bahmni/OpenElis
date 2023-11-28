@@ -1,10 +1,16 @@
 package us.mn.state.health.lims.common.util;
 
+
 import java.util.regex.Pattern;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 public class SafeRequest extends HttpServletRequestWrapper {
+
+    private final Logger logger = LogManager.getLogger(SafeRequest.class);
+    private List<String> ignoreEncodingForParams = Arrays.asList("sampleXML");
 
     private static Pattern[] patterns = new Pattern[]{
             // Script fragments

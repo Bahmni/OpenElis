@@ -1,7 +1,8 @@
 package org.bahmni.feed.openelis.feed.event;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.bahmni.feed.openelis.externalreference.dao.ExternalReferenceDao;
 import org.bahmni.feed.openelis.externalreference.valueholder.ExternalReference;
 import org.bahmni.feed.openelis.feed.contract.openmrs.encounter.OpenMRSEncounter;
@@ -48,7 +49,7 @@ public class GroupBySampleTypeFeedProcessor extends EncounterFeedProcessor{
     private SampleItemDAO sampleItemDAO;
     private ProviderDAO providerDAO;
     private SampleSourceService sampleSourceService;
-    private static Logger logger = Logger.getLogger(GroupBySampleTypeFeedProcessor.class);
+    private static Logger logger = LogManager.getLogger(GroupBySampleTypeFeedProcessor.class);
 
     public GroupBySampleTypeFeedProcessor(SampleDAO sampleDAO, ExternalReferenceDao externalReferenceDao,
                                           PanelItemDAO panelItemDAO, TypeOfSampleTestDAO typeOfSampleTestDAO,

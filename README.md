@@ -5,7 +5,11 @@ This is forked repo from Bahmni/OpenElis, to fix the security vulnerbilities fou
 OpenElis
 ========
 
-[![Build v0.94](https://github.com/Bahmni/OpenElis/actions/workflows/ci-v0.94.yml/badge.svg)](https://github.com/Bahmni/OpenElis/actions)
+[![Build and Publish OpenELIS](https://github.com/Bahmni/OpenElis/actions/workflows/build_publish_openelis.yml/badge.svg)](https://github.com/Bahmni/OpenElis/actions/workflows/build_publish_openelis.yml)
+
+[![Build and Publish OpenELIS Demo DB](https://github.com/Bahmni/OpenElis/actions/workflows/build_publish_openelis_demoDB.yml/badge.svg)](https://github.com/Bahmni/OpenElis/actions/workflows/build_publish_openelis_demoDB.yml)
+
+[![Build and Publish OpenELIS Fresh DB](https://github.com/Bahmni/OpenElis/actions/workflows/build_publish_openelis_freshDB.yml/badge.svg)](https://github.com/Bahmni/OpenElis/actions/workflows/build_publish_openelis_freshDB.yml)
 
 forked from OpenElis_v3.1_r2013_02_21 branch in svn
 
@@ -19,6 +23,14 @@ forked from OpenElis_v3.1_r2013_02_21 branch in svn
 * `ant setupDB test test-only dist`  Creates clinlims database in postgres, runs tests, and then creates OpenELIS War
 * `./scripts/vagrant-deploy.sh` Create OpenELIS War and deploys it to your vagrant's tomcat
 * `./scripts/vagrant-database.sh` Runs Liquibase migration script in your vagrant 
+
+## Bahmni OpenELIS (bahmni-lab) docker image
+Docker images for [OpenELIS](https://hub.docker.com/r/bahmni/openelis/tags) and it's [database](https://hub.docker.com/r/bahmni/openelis-db/tags) are built using [Github Actions](/.github/workflows). 
+
+Resources to build the following docker images can be found in the [package](/package) directory.
+1. bahmni/openelis
+2. bahmni/openelis-db:fresh
+3. bahmni/openelis-db:demo
 
 Transifex Configuration
 ===========================

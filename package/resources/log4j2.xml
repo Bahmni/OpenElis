@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration xmlns="https://logging.apache.org/log4j/2.x/">
+    <Appenders>
+        <RollingFile name="file" fileName="/var/log/bahmni-lab/bahmni-lab.log">
+            <PatternLayout>
+                <Pattern>%d %-5p [ELIS][%c{1}] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+        <SMTP name="EMAIL" subject="OpenELIS Error : " to="TO_BE_REPLACED_WITH_IMPLEMENTATION_SPECIFIC_DATA" smtpPort="25" bufferSize="512"
+              from="TO_BE_REPLACED_WITH_IMPLEMENTATION_SPECIFIC_DATA" smtpHost="TO_BE_REPLACED_WITH_IMPLEMENTATION_SPECIFIC_DATA">
+            <PatternLayout>
+                <Pattern>[%t] - %d %p [%c] - %m%n</Pattern>
+            </PatternLayout>
+            <LevelRangeFilter minLevel="ERROR" maxLevel="FATAL" />
+        </SMTP>
+    </Appenders>
+    <Root level="WARN">
+        <AppenderRef ref="file"/>
+        <AppenderRef ref="EMAIL"/>
+    </Root>
+</Configuration>

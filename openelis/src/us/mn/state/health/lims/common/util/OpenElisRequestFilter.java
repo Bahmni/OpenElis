@@ -17,7 +17,8 @@
 */
 package us.mn.state.health.lims.common.util;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.hibernate.Transaction;
 import us.mn.state.health.lims.common.action.IActionConstants;
 import us.mn.state.health.lims.hibernate.HibernateUtil;
@@ -26,7 +27,7 @@ import javax.servlet.*;
 import java.io.IOException;
 
 public class OpenElisRequestFilter implements Filter {
-    private Logger logger = Logger.getLogger(this.getClass());
+    private Logger logger = LogManager.getLogger(this.getClass());
 
 	public void destroy() {
 	}

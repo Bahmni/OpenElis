@@ -1,23 +1,23 @@
 /*
-* The contents of this file are subject to the Mozilla Public License
-* Version 1.1 (the "License"); you may not use this file except in
-* compliance with the License. You may obtain a copy of the License at
-* http://www.mozilla.org/MPL/ 
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations under
-* the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* Copyright (C) The Minnesota Department of Health.  All Rights Reserved.
-*/
+ * The contents of this file are subject to the Mozilla Public License
+ * Version 1.1 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations under
+ * the License.
+ *
+ * The Original Code is OpenELIS code.
+ *
+ * Copyright (C) The Minnesota Department of Health.  All Rights Reserved.
+ */
 
 package us.mn.state.health.lims.upload.patient;
 
 import junit.framework.Assert;
-import org.bahmni.csv.RowResult;
+import org.bahmni.csv.Messages;
 import org.bahmni.feed.openelis.utils.AuditingService;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +31,7 @@ import us.mn.state.health.lims.person.dao.PersonDAO;
 
 import java.util.Arrays;
 
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -60,9 +61,9 @@ public class PatientPersisterTest {
         csvPatient.registrationNumber = "12345";
         csvPatient.gender = VALID_GENDER_TYPE;
 
-        RowResult<CSVPatient> rowResultForValidPatient = patientPersister.validate(csvPatient);
+        Messages errorMessage = patientPersister.validate(csvPatient);
 
-        Assert.assertEquals(new RowResult(csvPatient), rowResultForValidPatient);
+        assertTrue("Error message is empty", errorMessage.toString().contains("[]"));
     }
 
     @Test
@@ -87,12 +88,12 @@ public class PatientPersisterTest {
         csvPatient.cityVillage = "ganiyari";
         csvPatient.district = "ganiyari";
         csvPatient.firstName = "firstName";
+        csvPatient.lastName = "lastName";
         csvPatient.registrationNumber = "12345";
         csvPatient.gender = VALID_GENDER_TYPE;
 
-        RowResult<CSVPatient> rowResultForValidPatient = patientPersister.validate(csvPatient);
-
-        Assert.assertFalse("Gender is invalid", rowResultForValidPatient.isSuccessful());
+        Messages errorMessage = patientPersister.validate(csvPatient);
+        Assert.assertFalse("Gender is invalid", errorMessage.contains("Gender is invalid"));
     }
 
     @Test
@@ -102,53 +103,45 @@ public class PatientPersisterTest {
         csvPatient.cityVillage = "ganiyari";
         csvPatient.district = "ganiyari";
         csvPatient.firstName = "firstName";
+        csvPatient.lastName = "lastName";
         csvPatient.registrationNumber = "12345";
         csvPatient.gender = VALID_GENDER_TYPE;
 
-        RowResult<CSVPatient> rowResultForValidPatient = patientPersister.validate(csvPatient);
+        Messages errorMessage = patientPersister.validate(csvPatient);
 
-        Assert.assertFalse("DOB is invalid", rowResultForValidPatient.isSuccessful());
-
-        String[] rowWithErrorColumn = rowResultForValidPatient.getRowWithErrorColumn();
-        String errorMessage = rowWithErrorColumn[rowWithErrorColumn.length - 1];
-        Assert.assertTrue("DOB should be dd-mm-yyyy", errorMessage.contains("DOB should be dd-mm-yyyy"));
+        Assert.assertTrue("DOB should be dd-mm-yyyy", errorMessage.toString().contains("DOB should be dd-mm-yyyy and should be a valid date"));
     }
 
     @Test
     public void valid_registrationNumber_for_validation() {
         CSVPatient csvPatient = new CSVPatient();
-        csvPatient.dob = "85";
+        csvPatient.dob = "01-01-1985";
         csvPatient.cityVillage = "ganiyari";
         csvPatient.district = "ganiyari";
         csvPatient.firstName = "firstName";
+        csvPatient.lastName = "lastName";
         csvPatient.registrationNumber = "abcd";
         csvPatient.gender = VALID_GENDER_TYPE;
 
-        RowResult<CSVPatient> rowResultForValidPatient = patientPersister.validate(csvPatient);
+        Messages errorMessage = patientPersister.validate(csvPatient);
 
-        Assert.assertFalse("Registration Number is invalid", rowResultForValidPatient.isSuccessful());
-
-        String[] rowWithErrorColumn = rowResultForValidPatient.getRowWithErrorColumn();
-        String errorMessage = rowWithErrorColumn[rowWithErrorColumn.length - 1];
-        Assert.assertTrue(errorMessage.contains("PatientID does not conform to the allowed format."));
+        Assert.assertFalse("Registration Number is invalid", errorMessage.toString().contains("Registration Number is invalid"));
+        Assert.assertTrue(errorMessage.toString().contains("PatientID does not conform to the allowed format"));
     }
 
     @Test
     public void all_mandatory_fields_for_validation() {
-        RowResult<CSVPatient> rowResultForValidPatient = patientPersister.validate(new CSVPatient());
+        Messages errorMessage = patientPersister.validate(new CSVPatient());
 
-        Assert.assertFalse("Mandatory fields need to be populated", rowResultForValidPatient.isSuccessful());
-
-        String[] rowWithErrorColumn = rowResultForValidPatient.getRowWithErrorColumn();
-        String errorMessage = rowWithErrorColumn[rowWithErrorColumn.length - 1];
-        Assert.assertTrue("Mandatory fields need to be populated", errorMessage.contains("Registration Number is mandatory."));
-        Assert.assertTrue("Mandatory fields need to be populated", errorMessage.contains("First Name is mandatory"));
-        Assert.assertTrue("Mandatory fields need to be populated", errorMessage.contains("Last Name is mandatory"));
-        Assert.assertTrue("Mandatory fields need to be populated", errorMessage.contains("Gender is mandatory"));
-        Assert.assertTrue("Mandatory fields need to be populated", errorMessage.contains("Village is mandatory"));
-        Assert.assertTrue("Mandatory fields need to be populated", errorMessage.contains("Either Age or DOB is mandatory"));
+        Assert.assertFalse("Mandatory fields need to be populated", errorMessage.toString().contains("Mandatory fields need to be populated"));
+        Assert.assertTrue("Mandatory fields need to be populated", errorMessage.toString().contains("Registration Number is mandatory."));
+        Assert.assertTrue("Mandatory fields need to be populated", errorMessage.toString().contains("First Name is mandatory"));
+        Assert.assertTrue("Mandatory fields need to be populated", errorMessage.toString().contains("Last Name is mandatory"));
+        Assert.assertTrue("Mandatory fields need to be populated", errorMessage.toString().contains("Gender is mandatory"));
+        Assert.assertTrue("Mandatory fields need to be populated", errorMessage.toString().contains("Village is mandatory"));
+        Assert.assertTrue("Mandatory fields need to be populated", errorMessage.toString().contains("Either Age or DOB is mandatory"));
     }
-    
+
     @Test
     public void shouldValidatePatientIdentifierAgainstConfiguration() {
         CSVPatient csvPatient = new CSVPatient();
@@ -160,12 +153,10 @@ public class PatientPersisterTest {
         csvPatient.gender = VALID_GENDER_TYPE;
         patientPersister.setStNumberFormat("/([a-zA-Z]*)(\\d+\\/\\d+)/");
 
-        RowResult<CSVPatient> rowResultForValidPatient = patientPersister.validate(csvPatient);
+        Messages message = patientPersister.validate(csvPatient);
+        String errorMessage = message.toString();
 
-        Assert.assertFalse("Registration Number is invalid", rowResultForValidPatient.isSuccessful());
-
-        String[] rowWithErrorColumn = rowResultForValidPatient.getRowWithErrorColumn();
-        String errorMessage = rowWithErrorColumn[rowWithErrorColumn.length - 1];
+        Assert.assertFalse("Registration Number is invalid", errorMessage.contains("Registration Number is invalid"));
         Assert.assertTrue(errorMessage.contains("PatientID does not conform to the allowed format."));
 
     }
@@ -180,17 +171,14 @@ public class PatientPersisterTest {
         csvPatient.registrationNumber = "12345";
         csvPatient.gender = VALID_GENDER_TYPE;
 
-        RowResult<CSVPatient> rowResultForValidPatient = patientPersister.validate(csvPatient);
+        Messages errorMessage = patientPersister.validate(csvPatient);
 
         if (isValid) {
-            Assert.assertTrue("Is valid date", rowResultForValidPatient.isSuccessful());
+            Assert.assertTrue("Is valid date", errorMessage.toString().contains("[]"));
             return;
         }
-        Assert.assertFalse("Should be invalid date", rowResultForValidPatient.isSuccessful());
-
-        String[] rowWithErrorColumn = rowResultForValidPatient.getRowWithErrorColumn();
-        String errorMessage = rowWithErrorColumn[rowWithErrorColumn.length - 1];
-        Assert.assertTrue("DOB should be dd-mm-yyyy", errorMessage.contains("DOB should be dd-mm-yyyy and should be a valid date"));
+        Assert.assertFalse("Should be invalid date", errorMessage.toString().contains("Should be invalid date"));
+        Assert.assertTrue("DOB should be dd-mm-yyyy", errorMessage.toString().contains("DOB should be dd-mm-yyyy and should be a valid date"));
     }
 
     public class TestablePatientPersister extends PatientPersister{

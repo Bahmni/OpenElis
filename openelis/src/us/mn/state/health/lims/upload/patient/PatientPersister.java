@@ -2,23 +2,24 @@
 * The contents of this file are subject to the Mozilla Public License
 * Version 1.1 (the "License"); you may not use this file except in
 * compliance with the License. You may obtain a copy of the License at
-* http://www.mozilla.org/MPL/ 
-* 
+* http://www.mozilla.org/MPL/
+*
 * Software distributed under the License is distributed on an "AS IS"
 * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
 * License for the specific language governing rights and limitations under
 * the License.
-* 
+*
 * The Original Code is OpenELIS code.
-* 
+*
 * Copyright (C) The Minnesota Department of Health.  All Rights Reserved.
 */
 
 package us.mn.state.health.lims.upload.patient;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.bahmni.csv.EntityPersister;
-import org.bahmni.csv.RowResult;
+import org.bahmni.csv.Messages;
 import org.bahmni.feed.openelis.feed.service.impl.BahmniPatientService;
 import org.bahmni.feed.openelis.utils.AuditingService;
 import org.hibernate.Transaction;
@@ -54,10 +55,7 @@ import us.mn.state.health.lims.siteinformation.daoimpl.SiteInformationDAOImpl;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class PatientPersister implements EntityPersister<CSVPatient> {
     private AuditingService auditingService;
@@ -72,7 +70,7 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
     private static PatientIdentityTypes patientIdentityTypes;
     private static AddressParts addressParts;
 
-    private static Logger logger = Logger.getLogger(PatientPersister.class);
+    private static Logger logger = LogManager.getLogger(PatientPersister.class);
     private List<Gender> allGenders;
     private String contextPath;
 
@@ -98,7 +96,7 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
     }
 
     @Override
-    public RowResult<CSVPatient> persist(CSVPatient csvPatient) {
+    public Messages persist(CSVPatient csvPatient) {
         Transaction transaction = null;
         try {
             logger.debug("Persisting " + csvPatient);
@@ -124,17 +122,17 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
             }
         } catch (Exception e) {
             logger.warn(e);
-            if (transaction != null && transaction.isActive()) { 
+            if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
 
-            return new RowResult<>(csvPatient, e);
+            return new Messages(e);
         }
-        return new RowResult(csvPatient);
+        return new Messages();
     }
 
     @Override
-    public RowResult<CSVPatient> validate(CSVPatient csvPatient) {
+    public Messages validate(CSVPatient csvPatient) {
         logger.debug("Validating " + csvPatient);
 
         String registrationNumberFormat = getStNumberFormat();
@@ -178,9 +176,9 @@ public class PatientPersister implements EntityPersister<CSVPatient> {
         }
 
         if (isEmpty(errorMessage.toString()))
-            return new RowResult<>(csvPatient);
+            return new Messages();
 
-        return new RowResult<>(csvPatient, errorMessage.toString());
+        return new Messages(errorMessage.toString());
     }
 
     protected String getStNumberFormat() {
