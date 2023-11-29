@@ -6,5 +6,5 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 public interface ResultFileUploadDao {
-    String upload(FormFile file) throws IOException, URISyntaxException;
+    String upload(FormFile file) throws IOException, URISyntaxException, Exception;
 }
