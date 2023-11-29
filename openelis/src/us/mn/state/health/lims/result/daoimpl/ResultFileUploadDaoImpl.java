@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ResultFileUploadDaoImpl implements ResultFileUploadDao {
     public static final String SEPARATOR = "_";
@@ -18,9 +20,12 @@ public class ResultFileUploadDaoImpl implements ResultFileUploadDao {
 
 
     @Override
-    public String upload(FormFile file) throws IOException, URISyntaxException {
+    public String upload(FormFile file) throws Exception {
         String encodedFileName = null;
         if(file != null && file.getFileName() != ""){
+            if(!validateFile(file.getFileName())) {
+                throw new Exception("file format not matching");
+            }
             String uuid = UUID.randomUUID().toString();
             String fileName = uuid + SEPARATOR + file.getFileName();
             encodedFileName = new URI(null, null, fileName, null).toString();
@@ -28,6 +33,15 @@ public class ResultFileUploadDaoImpl implements ResultFileUploadDao {
             writeToFileSystem(file, downloadedFile);
         }
         return encodedFileName;
+    }
+
+    private boolean validateFile(String fileName){
+        Pattern fileExtnPtrn = Pattern.compile("(^.((?!exe).)*\\.(jpg|JPG|jpeg|JPEG|doc|DOC|docx|DOCX|pdf|PDF|png|PNG)$)");
+        Matcher matcher = fileExtnPtrn.matcher(fileName);
+        if(matcher.matches()){
+            return true;
+        }
+        return false;
     }
 
     private File getFile(String fileName) {
