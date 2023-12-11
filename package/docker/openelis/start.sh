@@ -8,12 +8,15 @@ replaceConfigFiles(){
     envsubst < /etc/bahmni-lab/hibernate.cfg.xml.template > ${HIBERNATE_CONFIG_FILE}
 }
 
+echo "Waiting for ${OPENELIS_DB_SERVER}:5432 for 3600 seconds"
+sh wait-for.sh --timeout=3600 ${OPENELIS_DB_SERVER}:5432
 # Linking bahmni config
 rm -rf /var/www/bahmni_config/
 mkdir -p /var/www/bahmni_config/
 ln -s /etc/bahmni_config/openelis /var/www/bahmni_config/openelis
 
 replaceConfigFiles
+./update_openmrs_host_port.sh
 echo "[INFO] Running Default Liquibase migrations"
 cd /opt/bahmni-lab/migrations/liquibase/ && sh /opt/bahmni-lab/migrations/scripts/migrateDb.sh
 echo "[INFO] Running User Defined Liquibase migrations"
