@@ -24,7 +24,7 @@ jobs:
       - name: Setup Ruby 2.5
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.3
+          ruby-version: 2.5
       - name: Install Compass
         run: gem install compass
       - name: Install Ant 1.9
