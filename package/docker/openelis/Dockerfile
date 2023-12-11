@@ -17,7 +17,10 @@ RUN mkdir -p /home/bahmni/uploaded_results/
 RUN mkdir -p /home/bahmni/uploaded-files/elis/
 
 RUN yum install -y unzip
+RUN yum install -y nc
+RUN yum install -y postgresql
 
+ADD https://raw.githubusercontent.com/eficode/wait-for/v2.2.3/wait-for wait-for.sh
 ADD https://repo.mybahmni.org/packages/build/bahmni-embedded-tomcat-8.0.42.jar /opt/bahmni-lab/lib/bahmni-lab.jar
 COPY openelis/dist/openelis.war /etc/bahmni-lab/openelis.war
 
@@ -30,6 +33,9 @@ RUN yum install -y gettext
 COPY package/docker/openelis/templates/hibernate.cfg.xml.template /etc/bahmni-lab/
 COPY package/docker/openelis/templates/atomfeed.properties.template /etc/bahmni-lab/
 COPY package/resources/log4j2.xml ${WAR_DIRECTORY}/WEB-INF/classes/
+COPY package/docker/openelis/update_openmrs_host_port.sh update_openmrs_host_port.sh
+RUN chmod +x update_openmrs_host_port.sh
+RUN chmod +x wait-for.sh
 
 COPY OpenElis.zip /tmp/artifacts/
 RUN unzip -d /tmp/artifacts/ /tmp/artifacts/OpenElis.zip
