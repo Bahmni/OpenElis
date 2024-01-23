@@ -157,7 +157,7 @@ public class AccessionService {
         return accessionNotesToPublish;
     }
 
-    private String toISODateFormat(Timestamp timestamp){
+    String toISODateFormat(Timestamp timestamp){
         return DateFormatUtils.format(timestamp.getTime(), DateFormatUtils.ISO_DATETIME_FORMAT.getPattern());
     }
 

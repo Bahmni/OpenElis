@@ -47,8 +47,12 @@ import us.mn.state.health.lims.siteinformation.valueholder.SiteInformation;
 import us.mn.state.health.lims.systemuser.dao.SystemUserDAO;
 import us.mn.state.health.lims.testresult.valueholder.TestResult;
 
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -224,6 +228,19 @@ public class AccessionServiceTest {
 
         assertNull(testDetail.getResultUuid());
         assertEquals("10", testDetail.getResult());
+    }
+
+    @Test
+    public void shouldReturnISODateFormat() throws ParseException {
+        AccessionService accessionService = new TestableAccessionService(sampleDao, sampleHumanDAO, externalReferenceDao, noteDao, dictionaryDao, patientIdentityDAO, patientIdentityTypeDAO, siteInformationDAO);
+        String dateString = "2024-01-22T12:34:56";
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        Date date = dateFormat.parse(dateString);
+        Timestamp timestamp = new Timestamp(date.getTime());
+
+        String result = accessionService.toISODateFormat(timestamp);
+
+        assertEquals(dateString, result);
     }
 
     private class TestableAccessionService extends AccessionService {
