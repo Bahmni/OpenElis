@@ -245,7 +245,7 @@ public class OrderListDAOHelper {
                 accessionResultSet.getBoolean("is_printed"),
                 accessionResultSet.getInt("pending_tests_count"),
                 accessionResultSet.getInt("pending_validation_count"),
-                accessionResultSet.getInt("referred_test_count"),
+                accessionResultSet.getInt("referred_tests_count"),
                 accessionResultSet.getInt("total_test_count"),
                 accessionResultSet.getDate("collection_date"),
                 accessionResultSet.getDate("entered_date"),
