@@ -1808,5 +1808,18 @@
             <column name="lastupdated" valueDate=" now() "/>
         </insert>
     </changeSet>
+    <changeSet id="BAH4572802241425" context="bahmni" author="bahmni" >
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                select count(*) from clinlims.site_information where name = 'accessionStrategy' and value='';
+            </sqlCheck>
+        </preConditions>
+        <comment>set the accession strategy to groupbySample to show the priority column on ui</comment>
+        <sql >
+            UPDATE site_information
+            SET value = 'groupBySample'
+            WHERE name = 'accessionStrategy';
+        </sql>
+    </changeSet>
 </databaseChangeLog>
 
