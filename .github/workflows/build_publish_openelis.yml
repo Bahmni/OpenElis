@@ -61,6 +61,6 @@ jobs:
           tags: bahmni/openelis:${{env.ARTIFACT_VERSION}},bahmni/openelis:latest
       - name: Push Translations to Transifex
         run: |
-          bash .github/scripts/transifex.sh
+          bash .github/scripts/transifex.sh push
         env:
           TX_TOKEN: ${{ secrets.TX_TOKEN }}
