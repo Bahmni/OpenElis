@@ -6,9 +6,14 @@ on:
       - 'release-*'
     tags:
       - '[0-9]+.[0-9]+.[0-9]+'
-
     paths-ignore:
       - '**.md'
+  workflow_run:
+    workflows: [Pull Translations from Transifex]
+    types: [completed]
+    branches:
+      - master
+      - 'release-*'
 
 jobs:
   docker-build-publish:
