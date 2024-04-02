@@ -47,14 +47,14 @@
     </target>
 
 
-    <target name="compile" depends="init, java.compile,jasper.compile, compass.compile"
+    <target name="compile" depends="init, java.compile, jasper.compile, compass.compile"
         description="compile the source ">
     </target>
 
     <target name="java.compile"
             description="compile the source ">
         <mkdir dir="${target}"/>
-        <javac srcdir="${src}" destdir="${target}" encoding="iso-8859-1" classpathref="lib" source="1.7" target="1.7" debug="on"/>
+        <javac srcdir="${src}" destdir="${target}" encoding="iso-8859-1" classpathref="lib" source="1.8" target="1.8" debug="on"/>
         <copy todir="${target}">
             <fileset dir="${src}" includes="**/*.xml"/>
             <fileset dir="${src}" includes="**/*.properties"/>

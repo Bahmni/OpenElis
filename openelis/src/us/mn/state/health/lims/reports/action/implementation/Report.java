@@ -118,7 +118,7 @@ public abstract class Report implements IReportCreator {
      */
     public abstract JRDataSource getReportDataSource() throws IllegalStateException;
 
-    public HashMap<String, ?> getReportParameters() throws IllegalStateException {
+    public Map<String, Object> getReportParameters() throws IllegalStateException {
         if (!initialized) {
             throw new IllegalStateException("initializeReport not called first");
         }
