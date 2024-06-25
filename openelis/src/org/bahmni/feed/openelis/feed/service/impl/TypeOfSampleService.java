@@ -61,7 +61,12 @@ public class TypeOfSampleService {
             TypeOfSample typeOfSample = typeOfSampleDAO.getTypeOfSampleByUUID(sample.getId());
 
             if (typeOfSample == null) {
-                create(sample, sysUserId);
+                if(sample.getIsActive()){
+                    create(sample, sysUserId);
+                }
+                else{
+                    return;
+                }
             } else {
                 update(typeOfSample, sample, sysUserId);
             }
