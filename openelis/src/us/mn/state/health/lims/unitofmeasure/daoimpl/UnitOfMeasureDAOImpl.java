@@ -242,9 +242,9 @@ public class UnitOfMeasureDAOImpl extends BaseDAOImpl implements
 
 	public UnitOfMeasure getUnitOfMeasureByName(UnitOfMeasure unitOfMeasure) throws LIMSRuntimeException {
 		try {
-			String sql = "from UnitOfMeasure u where u.unitOfMeasureName = :param";
+			String sql = "from UnitOfMeasure u where trim(lower(u.unitOfMeasureName)) = :param";
 			org.hibernate.Query query = HibernateUtil.getSession().createQuery(sql);
-			query.setParameter("param", unitOfMeasure.getUnitOfMeasureName());
+			query.setParameter("param", unitOfMeasure.getUnitOfMeasureName().trim().toLowerCase());
 
 			List list = query.list();
 			HibernateUtil.getSession().flush();
