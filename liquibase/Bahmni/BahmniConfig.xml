@@ -1821,5 +1821,29 @@
             WHERE name = 'accessionStrategy';
         </sql>
     </changeSet>
+
+    <changeSet id="BAH3908_test_table" context="bahmni" author="Mohankumar" >
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="test" columnName="name"/>
+            <columnExists tableName="test" columnName="description"/>
+        </preConditions>
+        <comment>Extend the size of name and description columns of Test table</comment>
+        <sql>
+            ALTER TABLE test ALTER COLUMN name TYPE varchar(256);
+            ALTER TABLE test ALTER COLUMN description TYPE varchar(256);
+        </sql>
+    </changeSet>
+    <changeSet id="BAH3908_panel_table" context="bahmni" author="Mohankumar" >
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="panel" columnName="name"/>
+            <columnExists tableName="panel" columnName="description"/>
+        </preConditions>
+        <comment>Extend the size of name and description columns of Panel table</comment>
+        <sql>
+            ALTER TABLE panel ALTER COLUMN name TYPE varchar(256);
+            ALTER TABLE panel ALTER COLUMN description TYPE varchar(256);
+        </sql>
+    </changeSet>
+    
 </databaseChangeLog>
 
