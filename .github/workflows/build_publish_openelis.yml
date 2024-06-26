@@ -32,7 +32,7 @@ jobs:
         with:
           ruby-version: 2.5
       - name: Install Compass
-        run: gem install compass
+        run: gem install ffi -v 1.17.0 && gem install compass
       - name: Install Ant 1.9
         run: |
           mkdir /tmp/ant
