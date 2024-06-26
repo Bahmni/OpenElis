@@ -68,11 +68,16 @@ public class PanelService {
             String sysUserId = auditingService.getSysUserId();
             ExternalReference data = externalReferenceDao.getData(referenceDataPanel.getId(), CATEGORY_PANEL);
             if (data == null) {
-                Panel panel = new Panel();
-                panel = populatePanel(panel, referenceDataPanel, sysUserId);
-                panelDAO.insertData(panel);
-                saveTestsForPanel(panel, referenceDataPanel, sysUserId);
-                saveExternalReference(referenceDataPanel, panel);
+                if (referenceDataPanel.getIsActive()) {
+                    Panel panel = new Panel();
+                    panel = populatePanel(panel, referenceDataPanel, sysUserId);
+                    panelDAO.insertData(panel);
+                    saveTestsForPanel(panel, referenceDataPanel, sysUserId);
+                    saveExternalReference(referenceDataPanel, panel);
+                } else {
+                    return;
+                }
+
             } else {
                 Panel panel = panelDAO.getPanelById(String.valueOf(data.getItemId()));
                 populatePanel(panel, referenceDataPanel, sysUserId);

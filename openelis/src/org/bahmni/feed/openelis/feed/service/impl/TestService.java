@@ -99,9 +99,14 @@ public class TestService {
             Test test = new Test();
 
             if (data == null) {
-                test = populateTest(test, referenceDataTest, sysUserId, null);
-                testDAO.insertData(test);
-                saveExternalReference(referenceDataTest, test);
+                if (referenceDataTest.getIsActive()) {
+                    test = populateTest(test, referenceDataTest, sysUserId, null);
+                    testDAO.insertData(test);
+                    saveExternalReference(referenceDataTest, test);
+                }
+                else {
+                    return;
+                }
             } else {
                 test = testDAO.getTestById(String.valueOf(data.getItemId()));
                 String uuid = test.getTestSection() != null ? test.getTestSection().getUUID() : null;
