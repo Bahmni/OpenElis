@@ -32,7 +32,7 @@
         <pathelement location="${projectroot}/WebContent/WEB-INF/lib/commons-validator-1.3.1.jar"/>
         <pathelement location="${projectroot}/WebContent/WEB-INF/lib/commons-validator.jar"/>
         <pathelement location="${projectroot}/WebContent/WEB-INF/lib/crypto.jar"/>
-        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/dom4j-1.6.1.jar"/>
+        <pathelement location="${projectroot}/WebContent/WEB-INF/lib/dom4j-2.1.3.jar"/>
         <pathelement location="${projectroot}/WebContent/WEB-INF/lib/ehcache-1.1.jar"/>
         <pathelement location="${projectroot}/WebContent/WEB-INF/lib/hamcrest-core-1.1.jar"/>
         <pathelement location="${projectroot}/WebContent/WEB-INF/lib/hamcrest-library-1.1.jar"/>
