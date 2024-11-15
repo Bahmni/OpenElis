@@ -1,5 +1,4 @@
-OpenElis
-========
+## OpenElis
 
 [![Build and Publish OpenELIS](https://github.com/Bahmni/OpenElis/actions/workflows/build_publish_openelis.yml/badge.svg)](https://github.com/Bahmni/OpenElis/actions/workflows/build_publish_openelis.yml)
 
@@ -7,54 +6,77 @@ OpenElis
 
 [![Build and Publish OpenELIS Fresh DB](https://github.com/Bahmni/OpenElis/actions/workflows/build_publish_openelis_freshDB.yml/badge.svg)](https://github.com/Bahmni/OpenElis/actions/workflows/build_publish_openelis_freshDB.yml)
 
-forked from OpenElis_v3.1_r2013_02_21 branch in svn
+Forked from the `OpenElis_v3.1_r2013_02_21` branch in SVN.
 
-*Requirements to build OpeneLIS*
-* `java` version <= "1.7"
-* `ant` version <= "1.9.1"
-* `ruby` version == "3.1" and `gem install compass`
+### Prerequisites
 
-*To build OpenElis run*
-* `ant dist`  Creates OpenELIS War
-* `ant setupDB test test-only dist`  Creates clinlims database in postgres, runs tests, and then creates OpenELIS War
-* `./scripts/vagrant-deploy.sh` Create OpenELIS War and deploys it to your vagrant's tomcat
-* `./scripts/vagrant-database.sh` Runs Liquibase migration script in your vagrant 
+This project requires specific versions of tools to build and run OpenElis:
 
-## Bahmni OpenELIS (bahmni-lab) docker image
-Docker images for [OpenELIS](https://hub.docker.com/r/bahmni/openelis/tags) and it's [database](https://hub.docker.com/r/bahmni/openelis-db/tags) are built using [Github Actions](/.github/workflows). 
+- **Java**: Version ≤ 1.7  
+- **Ant**: Version ≤ 1.9.1  
+- **Ruby**: Version = 3.1 (also requires `gem install compass`)
 
-Resources to build the following docker images can be found in the [package](/package) directory.
-1. bahmni/openelis
-2. bahmni/openelis-db:fresh
-3. bahmni/openelis-db:demo
+### Installation Steps
 
-Transifex Configuration
-===========================
-Transifex is a web based translation platform where one can do the translations and can be pulled into the codebase.
-[Link](http://docs.transifex.com/client/config/#transifexrc) to setup the Transifex Client 
+#### Option 1: Manual Installation
 
-* `tx pull -a` downloads the property files
+Run the following commands to build OpenElis:
 
-For more information please refer this [link](https://bahmni.atlassian.net/wiki/display/BAH/Translating+Bahmni) 
+1. To create the OpenELIS WAR file:
+   ```bash
+   ant dist
+   ```
+2. To set up the database, run tests, and create the WAR file:
+   ```bash
+   ant setupDB test test-only dist
+   ```
+3. To create and deploy to Vagrant's Tomcat:
+   ```bash
+   ./scripts/vagrant-deploy.sh
+   ```
+4. To run Liquibase migration script in Vagrant:
+   ```bash
+   ./scripts/vagrant-database.sh
+   ```
 
-Technical issues with the codebase
-======================================
+### Docker Images
 
-- Transaction and Hibernate session management
-- Pagination handled via HttpSession
-- Code duplication in various places (need examples here)
-	- ResultValidationPaging, ResultsPaging and AnalyzerResultsPaging. Same copy-pasted code with very minor difference.
+Docker images for OpenElis and its database are built using GitHub Actions.
 
-Functional changes made by us
-=============================
-- The order should contain the panel along with the tests. Hence making panel more than convenience tool for selecting multiple tests.
-- AtomFeed based integration with OpenMRS and OpenERP
-- REST endpoint for Patient, LabResults
+- [bahmni/openelis](https://hub.docker.com/r/bahmni/openelis/tags)
+- [bahmni/openelis-db:fresh](https://hub.docker.com/r/bahmni/openelis-db/tags)
+- [bahmni/openelis-db:demo](https://hub.docker.com/r/bahmni/openelis-db/tags)
 
-- Added functionality to validate test results by a particular accession number. Also you can see items to be validated across all test sections.
+Resources for building these images can be found in the [package directory](/package).
 
-Technical improvements
-======================
-- Added ant buld
-- Shortcircuited all calls to Session.clear
+### Transifex Configuration
+
+Transifex is a web-based translation platform for managing translations. To set up the Transifex Client, follow the [documentation](http://docs.transifex.com/client/config/#transifexrc).
+
+- To pull property files:
+  ```bash
+  tx pull -a
+  ```
+Refer to the [Bahmni Translating Guide](https://bahmni.atlassian.net/wiki/display/BAH/Translating+Bahmni) for more details.
+
+### Functional Changes
+
+The following functional improvements have been made:
+
+- Orders now contain panels along with tests, making the panel more than a convenience tool for selecting multiple tests.
+- Integration with OpenMRS and OpenERP using AtomFeed.
+- Added REST endpoints for Patient and LabResults.
+- Introduced functionality to validate test results by accession number, along with a view for items needing validation across sections.
+
+### Technical Improvements
+
+- Added Ant build support.
+- Optimized calls to `Session.clear`.
+
+### Known Issues
+
+- Transaction and Hibernate session management challenges.
+- Pagination handled via `HttpSession`.
+- Code duplication in the following areas:
+  - ResultValidationPaging, ResultsPaging, and AnalyzerResultsPaging (same copy-pasted code with minor differences).
 
