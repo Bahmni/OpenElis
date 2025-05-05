@@ -3,7 +3,7 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping package="us.mn.state.health.lims.systemusermodule.valueholder">
-    <class name="SystemUserModule" table="SYSTEM_USER_MODULE" optimistic-lock="version" dynamic-update="true">
+    <class name="SystemUserModule" table="`SYSTEM_USER_MODULE`" optimistic-lock="version" dynamic-update="true">
         <id name="id" type="us.mn.state.health.lims.hibernate.resources.usertype.LIMSStringNumberUserType">
             <column name="ID" precision="10" scale="0" />
             <generator class="sequence">
