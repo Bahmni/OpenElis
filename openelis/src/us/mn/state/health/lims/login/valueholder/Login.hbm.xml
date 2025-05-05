@@ -51,8 +51,8 @@
        	</sql-query>
 		<sql-query name="login.getSystemUserId">
 			<return-scalar column="id" type="integer"/>   
-           <![CDATA[         
-            	 SELECT id from System_User su Where su.login_name = :loginName and su.is_active='Y'
-			]]>
+           <![CDATA[
+            	 SELECT id from "system_user" su Where su.login_name = :loginName and su.is_active='Y'
+  ]]>
        	</sql-query>                   
 </hibernate-mapping>
