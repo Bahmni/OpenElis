@@ -14,7 +14,6 @@
     <property name="hibernate.connection.username">clinlims</property>
     <property name="hibernate.connection.password">clinlims</property>
     <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/clinlims</property>
-	<property name="hibernate.globally_quoted_identifiers">true</property>
 
     <!--<property name="hibernate.c3p0.acquire_increment">1</property>-->
     <property name="hibernate.c3p0.min_size">2</property>
