@@ -20,10 +20,8 @@ RUN yum install -y unzip
 RUN yum install -y nc
 
 # Install the latest PostgreSQL client
-# First, install the PostgreSQL repository
-RUN yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-# Then install the latest PostgreSQL client (currently PostgreSQL 16)
-RUN yum install -y postgresql16
+# Amazon Linux 2 has PostgreSQL 13 available in amazon-linux-extras
+RUN amazon-linux-extras install -y postgresql16
 
 ADD https://raw.githubusercontent.com/eficode/wait-for/v2.2.3/wait-for wait-for.sh
 ADD https://repo.mybahmni.org/packages/build/bahmni-embedded-tomcat-8.0.42.jar /opt/bahmni-lab/lib/bahmni-lab.jar
