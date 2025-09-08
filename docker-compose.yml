@@ -13,7 +13,7 @@ services:
       - openelis_db_data:/var/lib/postgresql/data
 
   openelis:
-    image: bahmni/openelis:latest
+    image: labbridge/openelis:local
     environment:
       - OPENELIS_DB_SERVER=openelisdb
     ports:

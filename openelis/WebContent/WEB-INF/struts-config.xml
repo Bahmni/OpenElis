@@ -2111,6 +2111,11 @@
           <action path="/TestManagement" name="mainForm" type="us.mn.state.health.lims.menu.action.TestManagementPageAction" validate="false">
             <forward name="success" path="testManagementPageDefinition"/>
           </action>
+          
+          <!-- LabBridge endpoints -->
+          <action path="/pendingtests" type="us.mn.state.health.lims.labbridge.action.PendingTestsAction" validate="false"/>
+          <action path="/test" type="us.mn.state.health.lims.labbridge.action.HealthCheckAction" validate="false"/>
+          <action path="/updatetestresult" type="us.mn.state.health.lims.labbridge.action.UpdateTestResultAction" validate="false"/>
         
 
     <!-- sample input and input submit actions

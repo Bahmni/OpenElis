@@ -40,7 +40,7 @@
 
     <taskdef name="propertyMerge" classname="org.jugbb.ant.propertymerge.PropertyMergeTask" classpathref="build.lib"/>
 
-    <target name="compass.compile" description="compile sass files">
+    <target name="compass.compile" description="compile sass files" unless="skip.compass">
         <exec dir="${web}" executable="compass">
             <arg line="compile"/>
         </exec>
@@ -65,7 +65,7 @@
         <classpath refid="build.lib"/>
     </taskdef>
 
-    <target name="jasper.compile" depends="java.compile">
+    <target name="jasper.compile" depends="java.compile" unless="skip.jasper">
         <jrc 
                 srcdir="${web}/WEB-INF/reports"
                 destdir="${web}/WEB-INF/reports"
