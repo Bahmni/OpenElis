@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  openelisdb:
+    image: bahmni/openelis-db:demo-latest
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres  
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "5432:5432"
+    volumes:
+      - openelis_db_data:/var/lib/postgresql/data
+
+  openelis:
+    image: bahmni/openelis:latest
+    environment:
+      - OPENELIS_DB_SERVER=openelisdb
+    ports:
+      - "8052:8052"
+    depends_on:
+      - openelisdb
+    volumes:
+      - openelis_uploads:/home/bahmni/uploaded_results/
+      - openelis_files:/home/bahmni/uploaded-files/
+
+volumes:
+  openelis_db_data:
+  openelis_uploads:
+  openelis_files:
