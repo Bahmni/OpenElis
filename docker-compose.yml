@@ -14,6 +14,7 @@ services:
 
   openelis:
     image: labbridge/openelis:local
+    #image: prabin12/openelis:latest         ##--Uncomment this line to use the custom image from docker hub
     environment:
       - OPENELIS_DB_SERVER=openelisdb
     ports:
