@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-config
+data:
+  OPENMRS_HOST: "{{ .Values.config.OPENMRS_HOST }}"
+  OPENMRS_PORT: "{{ .Values.config.OPENMRS_PORT }}"
+  OPENMRS_ATOMFEED_USER: "{{ .Values.config.OPENMRS_ATOMFEED_USER }}"
+  OPENMRS_ATOMFEED_PASSWORD: "{{ .Values.config.OPENMRS_ATOMFEED_PASSWORD }}"
+  OPENELIS_DB_SERVER: "{{ .Values.config.OPENELIS_DB_SERVER }}" 
+  TZ: "{{ .Values.global.TZ }}"
+  POSTGRES_USER: "{{ .Values.config.OPENELIS_DB_USER }}" 
+  POSTGRES_PASSWORD: "{{ .Values.config.OPENELIS_DB_PASSWORD }}" 
+  POSTGRES_DB: "{{ .Values.config.OPENELIS_DB_NAME }}"
+  OPENELIS_DB_IMAGE_NAME: "{{ .Values.config.OPENELIS_DB_IMAGE_NAME}}"
+  OPENELIS_IMAGE_TAG: "{{ .Values.config.OPENELIS_IMAGE_TAG}}"
+  OPENELIS_DB_DUMP_PATH: "{{ .Values.config.OPENELIS_DB_DUMP_PATH}}"

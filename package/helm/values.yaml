@@ -1,0 +1,51 @@
+global:
+  nodeSelector: {}
+  affinity: {}
+  tolerations: {}
+
+replicaCount: 1
+
+metadata:
+  labels:
+    environment: dev
+
+image:
+  repository: bahmni
+  name: OpenElis
+  tag: latest
+
+config:
+    OPENELIS_IMAGE_TAG: latest
+    OPENELIS_DB_DUMP_PATH: ./openelis-db-dump
+    OPENELIS_DB_IMAGE_NAME: bahmni/openelis-db:1.0.0-standard
+    OPENELIS_DB_SERVER: ""
+    OPENELIS_DB_NAME: ""
+    OPENMRS_ATOMFEED_USER: ""
+    OPENMRS_ATOMFEED_PASSWORD: ""
+    OPENELIS_DB_USER: ""
+    OPENMRS_HOST: ""
+    OPENMRS_PORT: ""
+    
+secrets:
+  enabled: true
+  backend: ""   # options: azure | aws
+  secretStoreName: ""
+
+  data:
+    POSTGRES_PASSWORD:
+      key: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+autoscaling:
+  enabled: false
+  #  minReplicas: 1
+  #  maxReplicas: 5
+  #  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+affinity: {}
+tolerations: {}
