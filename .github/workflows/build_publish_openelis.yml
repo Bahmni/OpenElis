@@ -46,7 +46,7 @@ jobs:
       - name: Set env.ARTIFACT_VERSION
         run: |
           wget -q https://raw.githubusercontent.com/Bahmni/bahmni-infra-utils/main/setArtifactVersion.sh && chmod +x setArtifactVersion.sh
-          ./setArtifactVersion.sh .appversion
+          ./setArtifactVersion.sh
           rm setArtifactVersion.sh
       - name: Package
         run: ant dist
