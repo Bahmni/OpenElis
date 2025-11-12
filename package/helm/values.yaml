@@ -15,25 +15,24 @@ image:
   tag: latest
 
 config:
-    OPENELIS_IMAGE_TAG: latest
-    OPENELIS_DB_DUMP_PATH: ./openelis-db-dump
-    OPENELIS_DB_IMAGE_NAME: bahmni/openelis-db:1.0.0-standard
-    OPENELIS_DB_SERVER: ""
-    OPENELIS_DB_NAME: ""
-    OPENMRS_ATOMFEED_USER: ""
-    OPENMRS_ATOMFEED_PASSWORD: ""
-    OPENELIS_DB_USER: ""
-    OPENMRS_HOST: ""
-    OPENMRS_PORT: ""
+  OPENELIS_IMAGE_TAG: latest
+  OPENELIS_DB_DUMP_PATH: ./openelis-db-dump
+  OPENELIS_DB_IMAGE_NAME: bahmni/openelis-db:1.0.0-standard
+  OPENELIS_DB_SERVER: ""
+  OPENELIS_DB_NAME: ""
+  OPENMRS_ATOMFEED_USER: ""
+  OPENMRS_ATOMFEED_PASSWORD: ""
+  OPENELIS_DB_USER: ""
+  OPENMRS_HOST: ""
+  OPENMRS_PORT: ""
     
 secrets:
-  enabled: true
-  backend: ""   # options: azure | aws
-  secretStoreName: ""
+  OPENELIS_DB_USER: ""
+  OPENELIS_DB_PASSWORD: ""
+  OPENMRS_HOST: ""
+  OPENMRS_ATOMFEED_USER: ""
+  OPENMRS_ATOMFEED_PASSWORD: ""
 
-  data:
-    POSTGRES_PASSWORD:
-      key: ""
 
 service:
   type: ClusterIP

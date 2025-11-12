@@ -95,7 +95,7 @@ jobs:
           persist-credentials: false
 
       - name: Copy Helm Archive
-        run: cp openelis-${{ env.ARTIFACT_VERSION }}.tgz helm-charts/openelis/
+        run: mkdir -p helm-charts/openelis/ && cp openelis-${{ env.ARTIFACT_VERSION }}.tgz helm-charts/openelis/
 
       - name: Helm Index
         working-directory: helm-charts/
