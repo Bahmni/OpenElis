@@ -7,8 +7,5 @@ data:
   OPENMRS_PORT: "{{ .Values.config.OPENMRS_PORT }}"
   OPENELIS_DB_SERVER: "{{ .Values.config.OPENELIS_DB_SERVER }}" 
   TZ: "{{ .Values.global.TZ }}"
-  OPENELIS_DB_DUMP_PATH: "{{ .Values.config.OPENELIS_DB_DUMP_PATH}}"
   POSTGRES_DB: "{{ .Values.config.OPENELIS_DB_NAME}}"
-  OPENELIS_DB_IMAGE_NAME: "{{ .Values.config.OPENELIS_DB_IMAGE_NAME}}"
-  OPENELIS_IMAGE_TAG: "{{ .Values.config.OPENELIS_IMAGE_TAG}}"
   

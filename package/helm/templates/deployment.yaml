@@ -51,6 +51,39 @@ spec:
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          resources: {}          
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ .Chart.Name }}-config
+                optional: false
+            - secretRef:
+                 name: {{.Chart.Name }}-secrets
+                 optional: false
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+{{/*           - mountPath: "{{ .Values.OPENELIS_APPLICATION_DATA_DIRECTORY }}/modules"*/}}
+{{/*             name: openelis-data*/}}
+            - mountPath: /etc/bahmni_config
+              name: bahmni-config
+            - mountPath: /home/bahmni/uploaded_results
+              name: bahmni-uploaded-results
+            - mountPath: /home/bahmni/uploaded-files
+              name: bahmni-uploaded-files
       restartPolicy: Always
+      volumes:
+      #   - name: openmrs-data
+      #     persistentVolumeClaim:
+      #       claimName: openmrs-data-pvc
+        - name: bahmni-config
+          persistentVolumeClaim:
+            claimName: bahmni-config-pvc
+        - name: bahmni-uploaded-results
+          persistentVolumeClaim:
+            claimName: bahmni-uploaded-results-pvc
+        - name: bahmni-uploaded-files
+          persistentVolumeClaim:
+            claimName: bahmni-uploaded-files-pvc
 

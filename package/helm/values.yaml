@@ -3,6 +3,8 @@ global:
   affinity: {}
   tolerations: {}
 
+OPENELIS_APPLICATION_DATA_DIRECTORY: /openmrs/data
+
 replicaCount: 1
 
 metadata:
@@ -16,8 +18,6 @@ image:
 
 config:
   OPENELIS_IMAGE_TAG: latest
-  OPENELIS_DB_DUMP_PATH: ./openelis-db-dump
-  OPENELIS_DB_IMAGE_NAME: bahmni/openelis-db:1.0.0-standard
   OPENELIS_DB_SERVER: ""
   OPENELIS_DB_NAME: ""
   OPENMRS_ATOMFEED_USER: ""
@@ -44,6 +44,22 @@ autoscaling:
   #  maxReplicas: 5
   #  targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
+
+volumes:
+  patientDocuments:
+    capacity: "2Gi"
+    claimName: openmrs-document-images-pvc
+  patientImages:
+    capacity: "2Gi"
+    claimName: openmrs-patient-images-pvc
+  initializerChecksums:
+    capacity: "1Gi"
+  clinicalForms:
+    capacity: "1Gi"
+  uploadedResults:
+    capacity: "2Gi"
+  uploadedFiles:
+    capacity: "2Gi"  
 
 nodeSelector: {}
 affinity: {}
