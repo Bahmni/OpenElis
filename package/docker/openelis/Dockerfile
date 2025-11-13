@@ -18,7 +18,7 @@ RUN mkdir -p /home/bahmni/uploaded-files/elis/
 
 RUN yum install -y unzip
 RUN yum install -y nc
-RUN yum install -y postgresql
+RUN amazon-linux-extras install -y postgresql14
 
 ADD https://raw.githubusercontent.com/eficode/wait-for/v2.2.3/wait-for wait-for.sh
 ADD https://repo.mybahmni.org/packages/build/bahmni-embedded-tomcat-8.0.42.jar /opt/bahmni-lab/lib/bahmni-lab.jar
