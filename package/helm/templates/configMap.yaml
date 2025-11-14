@@ -7,5 +7,4 @@ data:
   OPENMRS_PORT: "{{ .Values.config.OPENMRS_PORT }}"
   OPENELIS_DB_SERVER: "{{ .Values.config.OPENELIS_DB_SERVER }}" 
   TZ: "{{ .Values.global.TZ }}"
-  POSTGRES_DB: "{{ .Values.config.OPENELIS_DB_NAME}}"
   
