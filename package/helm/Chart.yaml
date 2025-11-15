@@ -1,5 +1,5 @@
 apiVersion: v2
-name: OpenElis
+name: openelis
 description: Helm chart for OpenElis
 type: application
 version: 1.0.0
