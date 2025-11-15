@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-config
+data:
+  OPENMRS_HOST: "{{ .Values.config.OPENMRS_HOST }}"
+  OPENMRS_PORT: "{{ .Values.config.OPENMRS_PORT }}"
+  OPENELIS_DB_SERVER: "{{ .Values.config.OPENELIS_DB_SERVER }}" 
+  TZ: "{{ .Values.global.TZ }}"
+  

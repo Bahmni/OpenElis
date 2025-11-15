@@ -1,0 +1,38 @@
+global:
+  nodeSelector: {}
+  affinity: {}
+  tolerations: {}
+
+replicaCount: 1
+
+metadata:
+  labels:
+    environment: dev
+
+image:
+  repository: bahmni
+  name: OpenElis
+  tag: latest
+
+config:
+  OPENMRS_HOST: ""
+  OPENMRS_PORT: ""
+  OPENELIS_DB_SERVER: ""
+  TZ: ""
+    
+secrets:
+  OPENMRS_ATOMFEED_USER: ""
+  OPENMRS_ATOMFEED_PASSWORD: ""
+
+
+service:
+  type: ClusterIP
+  port: 8052
+
+autoscaling:
+  enabled: false
+
+
+nodeSelector: {}
+affinity: {}
+tolerations: {}
