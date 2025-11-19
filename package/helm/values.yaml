@@ -18,6 +18,7 @@ config:
   OPENMRS_HOST: ""
   OPENMRS_PORT: ""
   OPENELIS_DB_SERVER: ""
+  OPENELIS_DB_NAME: ""
   TZ: ""
     
 secrets:
