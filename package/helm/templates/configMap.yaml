@@ -9,4 +9,3 @@ data:
   OPENELIS_DB_PORT: "{{ .Values.config.OPENELIS_DB_PORT }}"
   OPENELIS_DB_NAME: "{{ .Values.config.OPENELIS_DB_NAME }}" 
   TZ: "{{ .Values.global.TZ }}"
-  
