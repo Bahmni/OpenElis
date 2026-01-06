@@ -2,7 +2,6 @@
 set +e
 
 run_sql() {
-  #TODO: Remove hardcoded password and use env variable --> BAH-3394
   PGPASSWORD=${OPENELIS_DB_PASSWORD} psql --host="${OPENELIS_DB_SERVER}" -U ${OPENELIS_DB_USERNAME} -d ${OPENELIS_DB_NAME} -t -c "$1"
 }
 

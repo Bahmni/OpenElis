@@ -13,7 +13,7 @@
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
         <property name="hibernate.connection.username">${OPENELIS_DB_USERNAME}</property> <!-- templatize this -->
         <property name="hibernate.connection.password">${OPENELIS_DB_PASSWORD}</property> <!-- templatize this -->
-        <property name="hibernate.connection.url">jdbc:postgresql://${OPENELIS_DB_SERVER}:${OPENELIS_DB_PORT}/${OPENELIS_DB_NAME}</property> <!-- templatize this -->
+        <property name="hibernate.connection.url">jdbc:postgresql://${OPENELIS_DB_SERVER}:${OPENELIS_DB_PORT}/${OPENELIS_DB_NAME}</property>
 
         <!--<property name="hibernate.c3p0.acquire_increment">1</property>-->
         <property name="hibernate.c3p0.min_size">2</property>
