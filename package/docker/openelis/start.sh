@@ -8,8 +8,15 @@ replaceConfigFiles(){
     envsubst < /etc/bahmni-lab/hibernate.cfg.xml.template > ${HIBERNATE_CONFIG_FILE}
 }
 
-echo "Waiting for ${OPENELIS_DB_SERVER}:5432 for 3600 seconds"
-sh wait-for.sh --timeout=3600 ${OPENELIS_DB_SERVER}:5432
+# Setting default environment variables
+export OPENELIS_DB_SERVER=${OPENELIS_DB_SERVER:-'openelisdb'}
+export OPENELIS_DB_PORT=${OPENELIS_DB_PORT:-5432}
+export OPENELIS_DB_USERNAME=${OPENELIS_DB_USERNAME:-'clinlims'}
+export OPENELIS_DB_PASSWORD=${OPENELIS_DB_PASSWORD:-'clinlims'}
+export OPENELIS_DB_NAME=${OPENELIS_DB_NAME:-'clinlims'}
+
+echo "Waiting for ${OPENELIS_DB_SERVER}:${OPENELIS_DB_PORT} for 3600 seconds"
+sh wait-for.sh --timeout=3600 ${OPENELIS_DB_SERVER}:${OPENELIS_DB_PORT}
 # Linking bahmni config
 rm -rf /var/www/bahmni_config/
 mkdir -p /var/www/bahmni_config/

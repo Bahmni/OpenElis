@@ -6,7 +6,6 @@ ENV CONTEXT_PATH=/openelis
 ENV WAR_DIRECTORY=/var/run/bahmni-lab/bahmni-lab
 ENV SERVER_OPTS="-Xms512m -Xmx1024m -XX:PermSize=256m -XX:MaxPermSize=512m"
 ENV DEBUG_OPTS="-agentlib:jdwp=transport=dt_socket,address=8001,server=y,suspend=n"
-ENV OPENELIS_DB_SERVER='openelisdb'
 
 
 RUN mkdir -p ${WAR_DIRECTORY}
