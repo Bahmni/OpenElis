@@ -6,6 +6,7 @@ data:
   OPENMRS_HOST: "{{ .Values.config.OPENMRS_HOST }}"
   OPENMRS_PORT: "{{ .Values.config.OPENMRS_PORT }}"
   OPENELIS_DB_SERVER: "{{ .Values.config.OPENELIS_DB_SERVER }}" 
+  OPENELIS_DB_PORT: "{{ .Values.config.OPENELIS_DB_PORT }}"
   OPENELIS_DB_NAME: "{{ .Values.config.OPENELIS_DB_NAME }}" 
   TZ: "{{ .Values.global.TZ }}"
   
