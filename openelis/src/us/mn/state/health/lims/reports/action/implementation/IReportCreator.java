@@ -16,7 +16,7 @@
 */
 package us.mn.state.health.lims.reports.action.implementation;
 
-import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 
 import us.mn.state.health.lims.common.action.BaseActionForm;
@@ -31,7 +31,7 @@ public interface IReportCreator {
 	public String getContentType();
 	public String getResponseHeaderName();
 	public String getResponseHeaderContent();
-	public HashMap<String, ?> getReportParameters() throws IllegalStateException;
+	public Map<String, Object> getReportParameters() throws IllegalStateException;
 	public byte[] runReport( ) throws Exception;
 	public void setReportPath( String path);
 	public List<String> getReportedOrders();
