@@ -1844,6 +1844,18 @@
             ALTER TABLE panel ALTER COLUMN description TYPE varchar(256);
         </sql>
     </changeSet>
-    
+
+    <changeSet id="fix-uploaded-files-parent-directory" context="bahmni" author="bahmni">
+        <comment>Fix parentOfUploadedFilesDirectory to match Docker volume mount path.
+            Files were being saved to /home/jss/uploaded_results/ which is not volume-mounted,
+            causing uploaded PDFs to disappear. The correct path is /home/bahmni to match
+            the Docker volume mounts for bahmni-lab-results and bahmni-uploaded-files.
+        </comment>
+        <update schemaName="clinlims" tableName="site_information">
+            <column name="value" value="/home/bahmni"/>
+            <where>name='parentOfUploadedFilesDirectory'</where>
+        </update>
+    </changeSet>
+
 </databaseChangeLog>
 
