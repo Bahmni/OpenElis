@@ -18,7 +18,7 @@
 
 package us.mn.state.health.lims.workplan.reports;
 
-import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 
 import us.mn.state.health.lims.common.action.BaseActionForm;
@@ -26,7 +26,7 @@ import us.mn.state.health.lims.test.beanItems.TestResultItem;
 
 public interface IWorkplanReport {
 			
-    public HashMap<String, ?> getParameters();
+    public Map<String, Object> getParameters();
     
     public String getFileName();
 
