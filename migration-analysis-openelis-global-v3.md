@@ -2,7 +2,7 @@
 
 **Date:** 2026-02-17
 **Prepared by:** Engineering Team
-**Status:** Discovery / Assessment Phase
+**Status:** Discovery / Assessment Phase (SME Answers Incorporated — 2026-02-17)
 
 ---
 
@@ -16,7 +16,9 @@ This document assesses the feasibility and effort required to migrate from the B
 
 The `org.bahmni` integration layer is well-bounded and replaceable by FHIR. The `us.mn.state.health.lims` modifications are more diffuse and require feature-by-feature assessment against OE-Global-2's native capabilities.
 
-**Recommendation:** Adopt OpenELIS-Global-2 as the base platform and reimplement Bahmni-specific integration using its native FHIR-based mechanisms, supplemented by its existing Odoo integration module. Feature additions in `us.mn.state.health.lims` (dashboard, upload, etc.) need individual assessment to determine if OE-Global-2 already covers them.
+**Recommendation:** Adopt OpenELIS-Global-2 as the base platform and reimplement Bahmni-specific integration using its native FHIR-based mechanisms (SME confirmed FHIR-first approach). Odoo does not connect to OpenELIS directly — billing integration stays on the OpenMRS ↔ Odoo pathway. Feature additions in `us.mn.state.health.lims` (dashboard, upload, etc.) need individual assessment to determine if OE-Global-2 already covers them.
+
+**Key SME findings (2026-02-17):** FHIR2 module exists in Bahmni but integration is more complex than configuration (needs Angshuman Sarkar's input). Reference data (tests, panels, sample types) is mastered in OpenMRS and synced to OpenELIS — this is a **confirmed gap** in OE-Global-2. Data migration must be **productized** for multiple installations. Migration will follow a **phased approach**.
 
 ---
 
@@ -425,15 +427,16 @@ This section compares each Bahmni feature area (the 132 new files) against OE-Gl
 
 ### 4.2 Covered But Different Mechanism (Configuration/adaptation needed)
 
-| Bahmni Feature | OE-Global-2 Equivalent | Migration Effort |
-|---|---|---|
-| AtomFeed patient sync | FHIR Patient resource exchange | Configuration |
-| AtomFeed lab order sync | FHIR ServiceRequest + Task workflow | Configuration |
-| AtomFeed result publishing | FHIR DiagnosticReport + Observation | Configuration |
-| External reference tracking | Native FHIR resource identifiers | None (built-in) |
-| Quartz-scheduled feed polling | Spring `@Scheduled` annotations | None (built-in) |
-| OpenERP/Odoo integration | Built-in `org.openelisglobal.odoo` package | Configuration |
-| Feed retry mechanism | Built-in error handling in FHIR workflow | None (built-in) |
+| Bahmni Feature | OE-Global-2 Equivalent | Migration Effort | SME Update |
+|---|---|---|---|
+| AtomFeed patient sync | FHIR Patient resource exchange | More than configuration (per SME) | FHIR2 module exists; validate in PoC with Angshuman Sarkar |
+| AtomFeed lab order sync | FHIR ServiceRequest + Task workflow | More than configuration (per SME) | Currently triggered by AtomFeed from ServiceRequest in Bahmni |
+| AtomFeed result publishing | FHIR DiagnosticReport + Observation | More than configuration (per SME) | Only OpenMRS consumes results — single consumer simplifies migration |
+| External reference tracking | Native FHIR resource identifiers | None (built-in) | — |
+| Quartz-scheduled feed polling | Spring `@Scheduled` annotations | None (built-in) | — |
+| OpenERP/Odoo integration | Built-in `org.openelisglobal.odoo` package | Configuration | **No direct Odoo-ELIS connection** — Odoo handles billing via OpenMRS only |
+| Feed retry mechanism | Built-in error handling in FHIR workflow | None (built-in) | — |
+| **Reference data sync** (tests, panels, sample types) | **Gap — no inbound sync in OE-Global-2** | **Medium-High — new development** | **Confirmed:** OpenMRS is master; sync mechanism must be built |
 
 **Detailed FHIR mapping:**
 
@@ -451,12 +454,14 @@ This section compares each Bahmni feature area (the 132 new files) against OE-Gl
 
 Based on the detailed feature triage in Section 3.9:
 
-| Gap | Description | OE-Global-2 Status | Estimated Effort |
-|---|---|---|---|
-| **CSV/Bulk Upload** | Upload of patients, samples, and test results via CSV (23 files). Used for bulk data entry or migration from external labs | **Not covered** -- OE-Global-2 only has CSV import for analyzer results | Medium -- rebuild as Spring REST controller + React UI, or handle via FHIR resource import |
-| **REST API compatibility** | `PatientHandler` and `AccessionHandler` JSON endpoints with specific response format consumed by Bahmni Apps | **Data available, format different** -- OE-Global-2 has REST/FHIR endpoints but different API contracts | Medium if Bahmni Apps stays; None if Bahmni Apps is updated |
-| **Custom test status types** | User-configurable test status types beyond standard lifecycle (13 files, 2 tables) | **Partial** -- standard statuses only, no user-configurable types | Low-Medium -- only if custom statuses are actively used (ask SME) |
-| Reference data sync | Bulk sync of tests, panels, sample types from external reference-data service | **Not assessed** -- OE-Global-2 manages test config locally | Medium -- depends on whether reference data is mastered externally |
+| Gap | Description | OE-Global-2 Status | Estimated Effort | SME Status |
+|---|---|---|---|---|
+| **CSV/Bulk Upload** | Upload of patients, samples, and test results via CSV (23 files). Used for bulk data entry or migration from external labs | **Not covered** -- OE-Global-2 only has CSV import for analyzer results | Medium -- rebuild as Spring REST controller + React UI, or handle via FHIR resource import | Needs SME confirmation on whether this feature is actively used |
+| **~~REST API compatibility~~** | ~~`PatientHandler` and `AccessionHandler` JSON endpoints with specific response format consumed by Bahmni Apps~~ | ~~**Data available, format different**~~ | ~~Medium if Bahmni Apps stays; None if Bahmni Apps is updated~~ | **Resolved — SME directed FHIR-first approach.** Bahmni EMR will consume FHIR endpoints; backward-compatible REST adapters are not needed as a general approach |
+| **Custom test status types** | User-configurable test status types beyond standard lifecycle (13 files, 2 tables) | **Partial** -- standard statuses only, no user-configurable types | Low-Medium -- only if custom statuses are actively used | Needs SME confirmation |
+| **Reference data sync** | Bulk sync of tests, panels, sample types from OpenMRS to OpenELIS | **Confirmed gap** -- OE-Global-2 manages test config locally, no inbound sync from external master | **Medium-High** -- needs FHIR-based sync mechanism (ActivityDefinition/PlanDefinition) or change in mastering model | **Confirmed by SME:** tests, panels, sample types mastered in OpenMRS, sync is required |
+| **Data migration tooling** | Reusable tool to migrate data from Bahmni OpenELIS to OE-Global-2 for existing installations | **Not covered** -- no migration tooling exists | Medium-High -- must be productized, not a one-off script | **Confirmed by SME:** needed as a product feature for multiple installations |
+| **Bahmni default configuration** | Default OE-Global-2 configuration harmonized with OpenMRS config and data | **Not covered** -- OE-Global-2 has country-specific configs but no Bahmni default | Low-Medium -- define standard config package | **Confirmed by SME:** no legacy config; new default needed |
 
 **Previously listed as gaps but now confirmed as covered by OE-Global-2:**
 
@@ -464,10 +469,11 @@ Based on the detailed feature triage in Section 3.9:
 |---|---|---|
 | Sample Source | `SampleNature` field in forms + `DisplayListService.SAMPLE_NATURE` | Configuration only (populate values) |
 | Health Center | `Organization` module with `OrganizationType` categorization | Data migration only |
-| Lab Dashboard | `PatientDashBoardProvider` with `DashBoardMetrics`, `OrderDisplayBean`, turnaround time tracking | None (richer than Bahmni's) |
+| Lab Dashboard | `PatientDashBoardProvider` with `DashBoardMetrics`, `OrderDisplayBean`, turnaround time tracking | None (richer than Bahmni's) — **SME confirms probably required; OE-Global-2 dashboard should suffice** |
 | Accession-based validation | `AccessionValidationController`, `AccessionValidationRestController`, `AccessionValidationRangeController` | None (native first-class feature) |
-| Provider list | FHIR Practitioner support + `ProviderImportService` | Configuration only |
+| Provider list | FHIR Practitioner support + `ProviderImportService` | Configuration only — **SME confirms provider tracking is required** |
 | External Reference mapping | Native FHIR identifiers and references | None (except data migration) |
+| REST API compatibility | OE-Global-2 FHIR endpoints | **SME directed FHIR-first approach** — Bahmni EMR will consume FHIR directly; no backward-compatible REST adapters needed |
 
 ### 4.4 Database Migration
 
@@ -490,15 +496,23 @@ These questions need answers before a migration plan can be finalized:
 
 1. **What version of OpenMRS does Bahmni currently use?** (OpenMRS 2.x or 3.x/O3?)
    - *Why it matters:* OE-Global-2 integrates via FHIR. OpenMRS 3.x has native FHIR2 module support. If Bahmni uses OpenMRS 2.x, the FHIR2 module may need to be installed/configured, which is a prerequisite for the migration.
+   - **SME Answer:** Bahmni released version uses OpenMRS core **2.5.12**. The trunk has **2.6.x**.
+   - *Implication:* OpenMRS 2.x does not have native FHIR support, but the FHIR2 module is available (see Q2). No OpenMRS core upgrade is strictly required for the migration, though 2.6.x trunk should be evaluated for FHIR compatibility improvements.
 
 2. **Does the Bahmni OpenMRS deployment already have the FHIR2 module installed?**
    - *Why it matters:* This is the single biggest determinant of migration complexity. If FHIR2 is available, the OpenMRS <-> OpenELIS integration is primarily configuration. If not, it needs to be added first.
+   - **SME Answer:** Yes, FHIR2 exists — [openmrs-module-fhir2Extension](https://github.com/Bahmni/openmrs-module-fhir2Extension). However, the migration is **not just configuration** — further input from Angshuman Sarkar is needed on the integration complexity.
+   - *Implication:* The FHIR prerequisite is met, which is positive. However, the SME caution that integration is more than configuration means Phase 2 (PoC) should specifically validate the FHIR workflow end-to-end with Angshuman's guidance. The Bahmni FHIR2 extension may need enhancements to support the full lab order/result exchange that OE-Global-2 expects.
 
 3. **What specific REST APIs does Bahmni EMR call on OpenELIS?**
    - *Why it matters:* We identified `PatientHandler` and `AccessionHandler` JSON endpoints. We need a complete list of API contracts that Bahmni EMR depends on, to determine if OE-Global-2's existing REST/FHIR endpoints can serve them or if adapters are needed.
+   - **SME Answer:** *Not yet answered.* Needs follow-up — API contract catalog is still required.
+   - *Action:* Schedule follow-up to enumerate all REST API calls from Bahmni EMR to OpenELIS. This can be done via code analysis of Bahmni Apps + network traffic capture from a running instance.
 
 4. **Is the Bahmni EMR frontend being updated concurrently?**
    - *Why it matters:* If Bahmni EMR is also moving to a newer stack, it may be possible to consume FHIR endpoints directly instead of building backward-compatible REST APIs.
+   - **SME Answer:** We should **assume FHIR endpoints for the integration**. Only use REST APIs where it's not possible to use FHIR.
+   - *Implication:* This is a strong architectural direction — FHIR-first integration. This means: (a) backward-compatible REST API adapters (Section 4.3) are **not needed** as a general approach, (b) the Bahmni EMR side will also be updated to consume FHIR, and (c) the integration effort focuses on ensuring OE-Global-2's FHIR endpoints provide all the data Bahmni needs. Any REST APIs should be exceptions, not the rule.
 
 ### 5.2 Integration & Data Flow
 
@@ -507,35 +521,59 @@ These questions need answers before a migration plan can be finalized:
      - What triggers a lab order flow from OpenMRS to OpenELIS?
      - What data is sent back when results are validated?
      - What role does OpenERP/Odoo play? Is it just for billing/inventory, or does it drive lab workflows?
+   - **SME Answers:**
+     - **Lab order trigger:** A ServiceRequest raised in Bahmni raises an AtomFeed event, which is consumed by OpenELIS.
+     - **Results sent back:** *Not yet answered.* Needs follow-up.
+     - **Odoo role:** Lab orders are also synced to Odoo. Odoo holds the **pricing for lab tests** so that lab services can be billed. **No direct connection between Odoo and OpenELIS.**
+   - *Implication:* The integration picture is simpler than expected — Odoo does not interact with OpenELIS directly, only with OpenMRS. The migration only needs to handle the **OpenMRS ↔ OpenELIS** integration (lab orders in, results out). The Odoo billing integration is independent and can remain on its existing OpenMRS ↔ Odoo pathway. The lab order trigger needs to migrate from AtomFeed to FHIR ServiceRequest/Task.
 
 6. **Is reference data (tests, panels, sample types) managed in OpenELIS or synced from an external source?**
    - *Why it matters:* The Bahmni fork has reference data sync services. If this data is managed directly in OpenELIS, those services are unnecessary. If it's mastered elsewhere, we need an equivalent sync mechanism.
+   - **SME Answer:** Lab tests, panels, and sample types are **managed in OpenMRS and synced to OpenELIS**. Reference ranges are **possibly managed only in OpenELIS**. **Sync is needed.**
+   - *Implication:* This is a **confirmed gap**. OE-Global-2 manages test configuration locally and does not have a mechanism to sync test/panel/sample type definitions from an external master (OpenMRS). Options: (a) build a FHIR-based sync that reads ActivityDefinition/PlanDefinition from OpenMRS and creates corresponding test config in OE-Global-2, (b) use OE-Global-2's import capabilities to periodically sync, or (c) change the mastering model so test config is managed directly in OE-Global-2 and synced to OpenMRS instead. **This needs architectural discussion.**
 
 7. **Are there any other systems consuming the AtomFeed events published by OpenELIS?**
    - *Why it matters:* If downstream systems depend on OpenELIS event feeds, they also need to be migrated to consume FHIR resources or alternative mechanisms.
+   - **SME Answer:** Only **OpenMRS** consumes OpenELIS events (lab results only).
+   - *Implication:* This simplifies the migration significantly — only one consumer to migrate. OE-Global-2's FHIR DiagnosticReport/Observation publishing replaces the AtomFeed result events, and OpenMRS (with FHIR2 module) can consume these.
 
 ### 5.3 Deployment & Operations
 
 8. **What is the current deployment environment?** (Docker Compose? Kubernetes? Bare metal?)
    - *Why it matters:* OE-Global-2 has a more complex deployment (5 containers vs 2). The infrastructure needs to support this.
+   - **SME Answer:** **Docker Compose.**
+   - *Implication:* Good — Docker Compose is the primary deployment method for OE-Global-2 as well. The transition from 2 containers to 5 is manageable within the existing Docker Compose infrastructure. The Bahmni Docker Compose setup will need to be updated to include the additional OE-Global-2 containers (FHIR server, frontend, proxy).
 
 9. **Is there existing production data that needs to be migrated?**
    - *Why it matters:* If this is a fresh deployment for a new client project, database migration complexity drops significantly. If migrating existing production data, custom migration scripts are needed.
+   - **SME Answer:** **Not for IOM** (initial deployment), but **many other installations will need data migration**. This should be treated as a **product feature**, not a one-off.
+   - *Implication:* Data migration tooling needs to be built as a **reusable, productized capability** — not a throwaway script. This increases the scope but adds long-term value. The migration tool should handle: (a) core data (patients, samples, tests, results) from Bahmni OpenELIS schema to OE-Global-2 schema, (b) Bahmni-specific table data (health centers → organizations, sample sources → sample natures, etc.), and (c) validation/rollback capabilities. For IOM, the initial deployment can start fresh on OE-Global-2.
 
 10. **What is the timeline expectation for this migration?**
     - *Why it matters:* Determines whether a phased approach (run both systems in parallel) or a cutover approach is feasible.
+    - **SME Answer:** **Phased approach.**
+    - *Implication:* A phased approach means both systems may run in parallel during transition. This requires: (a) clear phase definitions (which capabilities move when), (b) potentially running both Bahmni OpenELIS and OE-Global-2 simultaneously during transition, and (c) data consistency strategy if both systems are active. The phased approach reduces risk but increases the total migration timeline.
 
 ### 5.4 Functional Requirements
 
 11. **Are all the Bahmni-specific features (sample source, dashboard, provider tracking) required in the target system?**
     - *Why it matters:* Some features may be deprecated or superseded by OE-Global-2's native capabilities (e.g., OE-Global-2 has its own React dashboards).
+    - **SME Answer:**
+      - **Sample source:** Not sure — needs further assessment.
+      - **Provider tracking:** **Yes — required.**
+      - **Dashboard:** **Probably required.**
+    - *Implication:* Provider tracking is confirmed required — OE-Global-2 has FHIR Practitioner support and `ProviderImportService`, so this should be covered natively. Dashboard is likely needed — OE-Global-2's native dashboard (Section 3.9, Feature 1) is richer and should suffice, but needs validation with lab users. Sample source needs clarification — if used, OE-Global-2's `SampleNature` field covers it (Section 3.9, Feature 6).
 
 12. **Which of the 132 new files and 1,522 modifications in `us.mn.state.health.lims` are functionally important?**
     - *What we know:* Git history confirms that Bahmni added 132 new Java files and modified 1,522 of the original 1,447 files in the `us.mn.state.health.lims` package. Key new feature areas include: dashboard (11 files), CSV upload (23 files), health center management (9 files), REST handlers (11 files), and provider query/autocomplete (12 files).
     - *Why it matters:* We need the SME to identify which of these features are actively used and required in the target system. Some may be superseded by OE-Global-2 native capabilities; others may be must-haves that need porting or rebuilding.
+    - **SME Answer:** *Not yet answered.* Still requires detailed SME walkthrough.
+    - *Action:* Schedule focused session to review each feature area with SME, using the triage table in Section 3.9 as the agenda.
 
 13. **What client-specific configurations exist?** (Haiti context in Liquibase, analyzer configurations, etc.)
     - *Why it matters:* OE-Global-2 has its own country-specific configurations. We need to know which apply to the target deployment.
+    - **SME Answer:** **None.** A default configuration that ships with the product needs to be identified. This **must be harmonized with the OpenMRS config and data**.
+    - *Implication:* No legacy client-specific config to carry forward — this simplifies the migration. However, a new task is created: define a **"Bahmni default" configuration** for OE-Global-2 that is consistent with the OpenMRS test/panel/sample type definitions (see Q6 — reference data is mastered in OpenMRS). This config should become the standard Bahmni distribution of OE-Global-2.
 
 ---
 
@@ -543,12 +581,25 @@ These questions need answers before a migration plan can be finalized:
 
 ### Phase 1: Answer Critical Questions (2-3 weeks)
 
-- [ ] Schedule SME sessions to answer the 13 questions above
-- [ ] Document the complete integration data flow diagram
-- [ ] Verify Bahmni OpenMRS FHIR2 module availability
-- [ ] Catalog all REST API contracts between Bahmni EMR and OpenELIS
-- [ ] **Feature triage of `us.mn.state.health.lims` additions** — review the 132 new files (dashboard, upload, health center, REST handlers, etc.) with SME to classify each as: (a) required and not in OE-Global-2, (b) already covered by OE-Global-2, or (c) can be dropped
+**Completed (from SME answers):**
+- [x] ~~Verify Bahmni OpenMRS FHIR2 module availability~~ — **Confirmed:** FHIR2 module exists
+- [x] ~~Determine integration approach (REST vs FHIR)~~ — **Decided:** FHIR-first, REST only where FHIR not possible
+- [x] ~~Assess Odoo/OpenERP integration scope~~ — **Confirmed:** No direct Odoo-OpenELIS connection; Odoo handles billing via OpenMRS
+- [x] ~~Identify downstream consumers of OpenELIS events~~ — **Confirmed:** Only OpenMRS
+- [x] ~~Determine deployment environment~~ — **Confirmed:** Docker Compose
+- [x] ~~Assess data migration needs~~ — **Confirmed:** Productized tooling needed for multiple installations; IOM starts fresh
+- [x] ~~Determine migration approach~~ — **Decided:** Phased rollout
+- [x] ~~Assess reference data mastering~~ — **Confirmed:** OpenMRS is master for tests/panels/sample types; sync required
+- [x] ~~Assess client-specific configurations~~ — **Confirmed:** None; new Bahmni default config needed
+
+**Still pending:**
+- [ ] Catalog all REST API contracts between Bahmni EMR and OpenELIS (Q3)
+- [ ] Document result publishing data flow from OpenELIS back to OpenMRS (Q5 partial)
+- [ ] Confirm sample source feature requirement (Q11 partial)
+- [ ] **Feature triage of `us.mn.state.health.lims` additions** (Q12) — review the 132 new files (dashboard, upload, health center, REST handlers, etc.) with SME to classify each as: (a) required and not in OE-Global-2, (b) already covered by OE-Global-2, or (c) can be dropped
 - [ ] **Assess the 1,522 modified original files** — sample the most heavily modified files (OrderListDAOImpl, ResultsLogbookUpdateAction, SamplePatientEntrySaveAction, etc.) to understand whether changes are bug fixes, Bahmni-specific features, or integration glue
+- [ ] **Architectural decision on reference data sync** — choose between FHIR-based inbound sync, OE-Global-2 import capabilities, or changing the mastering model. Involves Angshuman Sarkar.
+- [ ] **Validate FHIR integration complexity with Angshuman Sarkar** — SME flagged this is not just configuration; need detailed assessment of what's involved
 
 ### Phase 2: Proof of Concept (2-4 weeks)
 
@@ -584,14 +635,17 @@ These questions need answers before a migration plan can be finalized:
 
 ## 7. Risk Assessment
 
-| Risk | Likelihood | Impact | Mitigation |
-|---|---|---|---|
-| Bahmni OpenMRS lacks FHIR2 module | Medium | High | Assess early in Phase 1; may require OpenMRS upgrade work first |
-| Database schema divergence causes data loss during migration | Medium | High | Extensive testing with production data copy in Phase 4 |
-| Extensive customizations in stock OpenELIS code | **Confirmed** | **High** | Git history shows 132 new files + 1,522 modified files in `us.mn.state.health.lims`. Requires feature-by-feature triage with SME in Phase 1 to determine which are required |
-| OE-Global-2's heavier deployment impacts performance | Low | Medium | Performance testing in Phase 4; infrastructure sizing |
-| Bahmni EMR depends on specific REST API response formats | Medium | Medium | API contract catalog in Phase 1; adapter development in Phase 3 |
-| OE-Global-2 is on develop branch (beta 3.2.1.2) | Medium | Medium | Evaluate stability; consider using latest stable release tag instead |
+| Risk | Likelihood | Impact | Mitigation | SME Update |
+|---|---|---|---|---|
+| ~~Bahmni OpenMRS lacks FHIR2 module~~ | ~~Medium~~ | ~~High~~ | ~~Assess early in Phase 1~~ | **Risk mitigated.** FHIR2 module exists ([openmrs-module-fhir2Extension](https://github.com/Bahmni/openmrs-module-fhir2Extension)). However, SME notes integration is "not just configuration" — validate in PoC phase with Angshuman Sarkar |
+| FHIR integration complexity underestimated | **Medium** | **High** | End-to-end PoC validation in Phase 2; involve Angshuman Sarkar early | **New risk** based on SME feedback that FHIR integration is not just configuration |
+| Reference data sync gap | **High** | **High** | Architectural decision needed: FHIR-based sync vs change mastering model | **Confirmed by SME.** Tests/panels/sample types mastered in OpenMRS; sync to OpenELIS is required and OE-Global-2 has no inbound sync mechanism |
+| Database schema divergence causes data loss during migration | Medium | High | Build productized migration tooling; extensive testing with production data | **Updated:** SME confirms data migration needed as product feature for multiple installations, not just one-off |
+| Extensive customizations in stock OpenELIS code | **Confirmed** | **High** | Git history shows 132 new files + 1,522 modified files in `us.mn.state.health.lims`. Requires feature-by-feature triage with SME in Phase 1 to determine which are required | Partially addressed — SME confirmed provider tracking required, dashboard probably required, sample source unclear. Full triage still needed |
+| OE-Global-2's heavier deployment impacts performance | Low | Medium | Performance testing in Phase 4; infrastructure sizing | Docker Compose deployment confirmed — compatible with OE-Global-2 |
+| ~~Bahmni EMR depends on specific REST API response formats~~ | ~~Medium~~ | ~~Medium~~ | ~~API contract catalog in Phase 1~~ | **Risk mitigated.** SME directed FHIR-first approach — no backward-compatible REST adapters needed |
+| OE-Global-2 is on develop branch (beta 3.2.1.2) | Medium | Medium | Evaluate stability; consider using latest stable release tag instead | No update |
+| Bahmni default configuration undefined | Low | Medium | Define standard "Bahmni default" config harmonized with OpenMRS | **New risk** based on SME answer — no legacy config exists, new default must be created |
 
 ---
 
@@ -605,7 +659,28 @@ The migration from Bahmni OpenELIS to OpenELIS-Global-2 is **feasible and strate
 4. **The database shares the same foundation** (`clinlims` schema)
 5. **The tech stack is modern and maintainable** (Java 21, Spring 6, React vs Java 7/8, Struts 1.x, JSP)
 
-The primary risks are: (1) the **FHIR integration dependency on Bahmni's OpenMRS** — this must be assessed first, and (2) the **scope of `us.mn.state.health.lims` modifications** — the 132 new files and 1,522 modified original files represent significantly more customization than the `org.bahmni` package alone suggests, and need SME-driven feature triage before effort can be accurately estimated. The estimated total effort, assuming favorable answers to the critical questions, is **12-20 weeks** depending on how many `us.mn.state.health.lims` features need to be carried forward and whether production data migration is required.
+### Updated Assessment Based on SME Answers
+
+**Risks reduced:**
+- **FHIR prerequisite is met** — Bahmni has the FHIR2 module ([openmrs-module-fhir2Extension](https://github.com/Bahmni/openmrs-module-fhir2Extension)), though SME cautions the integration is more complex than configuration alone
+- **REST API backward compatibility is not needed** — SME directed a FHIR-first approach, eliminating the need for adapter APIs
+- **Odoo integration is independent** — no direct Odoo-OpenELIS connection, simplifying the migration scope
+- **Only one event consumer (OpenMRS)** — simplifies the AtomFeed → FHIR migration
+- **Docker Compose deployment** — compatible with OE-Global-2's multi-container architecture
+
+**New/confirmed risks:**
+- **Reference data sync is a confirmed gap** — tests, panels, and sample types are mastered in OpenMRS and must be synced to OpenELIS. OE-Global-2 has no inbound sync mechanism. This is the **most significant new finding** and requires an architectural decision
+- **Data migration must be productized** — not just for IOM but for all existing Bahmni installations. This adds scope but provides long-term product value
+- **FHIR integration complexity** — SME explicitly cautioned this is not just configuration; Angshuman Sarkar's input is needed for accurate estimation
+- **Bahmni default configuration** — no legacy config exists; a new default harmonized with OpenMRS must be defined
+
+**Still pending:**
+- Full triage of 132 new files / 1,522 modifications in `us.mn.state.health.lims` (Q12)
+- Complete REST API contract catalog from Bahmni EMR to OpenELIS (Q3)
+- Result publishing data flow details (Q5 partial)
+- Sample source feature requirement confirmation (Q11 partial)
+
+The estimated total effort remains **12-20 weeks** for the IOM deployment (which starts fresh without data migration). For the productized migration tooling that supports existing installations, add an additional **4-6 weeks**. The reference data sync mechanism is the key new work item that was not previously accounted for and could add **2-4 weeks** depending on the architectural approach chosen. **A phased rollout** (per SME direction) allows incremental delivery and risk reduction.
 
 ---
 
