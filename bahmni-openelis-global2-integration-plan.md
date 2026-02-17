@@ -4,271 +4,344 @@
 **Status:** Draft
 **Objective:** Replace Bahmni's OpenELIS fork with OpenELIS-Global-2 (OE-Global-2), integrated via FHIR.
 
-> Supporting analysis (archived): [migration-analysis-openelis-global-v3.md](archive/migration-analysis-openelis-global-v3.md), [openelis-global-2-integration-approach.md](archive/openelis-global-2-integration-approach.md)
-
 ---
 
 ## 1. Context
 
-Bahmni currently ships a fork of OpenELIS (v3.1, circa 2013) as its LIS. This fork is integrated with OpenMRS via AtomFeed — a custom, polling-based event mechanism. The fork is on a dead-end tech stack (Java 7, Struts 1.x, JSP) and receives no upstream updates.
+Bahmni currently ships a fork of OpenELIS (v3.1, circa 2013) integrated with OpenMRS via AtomFeed. OpenELIS-Global-2 is the actively maintained successor with native FHIR R4 support. We are adopting it as-is — no code porting, no forking.
 
-OpenELIS-Global-2 (OE-Global-2) is the actively maintained successor — a modern, full-featured LIS with native FHIR R4 support. **We are adopting it as-is**, not porting Bahmni customizations into it.
-
-**The work is integration:** making OE-Global-2 and Bahmni's OpenMRS talk to each other via FHIR so that the clinical lab workflow functions end-to-end.
+**The work is integration:** making OE-Global-2 and Bahmni's OpenMRS exchange lab orders, results, and reference data via FHIR.
 
 ---
 
-## 2. Integration Overview
+## 2. Four Questions to Solve
 
-### 2.1 What Crosses the Boundary
+### Q1: How do I send a lab order to OE-Global-2?
 
-Only **four data flows** cross the OpenMRS ↔ OpenELIS boundary:
+**Short answer:** OE-Global-2 polls a FHIR endpoint for `Task` resources. It can poll OpenMRS's FHIR2 module directly — but it also needs a local FHIR store (HAPI) for its own resources.
+
+**How it works in OE-Global-2:**
+
+OE-Global-2 has a scheduled poller (`FhirApiWorkFlowServiceImpl`) that periodically queries a remote FHIR endpoint for new Tasks:
 
 ```
-                        OpenMRS (Bahmni)                    OpenELIS-Global-2
-                       ┌──────────────────┐                ┌──────────────────┐
-                       │                  │  1. Lab Orders  │                  │
-                       │  Clinician places │───────────────▶│  Lab receives    │
-                       │  lab order        │  (FHIR Task +  │  order, creates  │
-                       │                  │  ServiceRequest)│  sample          │
-                       │                  │                 │                  │
-                       │                  │  2. Results     │  Lab processes   │
-                       │  Clinician views │◀───────────────│  sample,         │
-                       │  lab results     │ (FHIR Diagnostic│  validates       │
-                       │                  │  Report +       │  results         │
-                       │                  │  Observation)   │                  │
-                       │                  │                 │                  │
-                       │                  │  3. Patient     │                  │
-                       │  Patient         │───────────────▶│  Patient record  │
-                       │  registered      │  (FHIR Patient) │  created/updated │
-                       │                  │                 │                  │
-                       │  Test catalog    │  4. Ref Data    │  Test catalog    │
-                       │  (master)        │───────────────▶│  (consumer)      │
-                       │                  │  (mechanism TBD)│                  │
-                       └──────────────────┘                └──────────────────┘
+OpenMRS FHIR2 endpoint                    OE-Global-2
+┌─────────────────────┐                   ┌──────────────────┐
+│ Task (REQUESTED)    │◀── polls every ───│ FhirApiWorkFlow  │
+│ + ServiceRequest    │    2 minutes      │ ServiceImpl      │
+│ + Patient           │                   │                  │
+└─────────────────────┘                   └──────────────────┘
 ```
 
-**What does NOT cross the boundary:**
-- Odoo/billing — Odoo connects to OpenMRS, not to OpenELIS. No change needed.
-- Lab UI/workflows — lab users work entirely within OE-Global-2's React UI.
-- Reporting — OE-Global-2 has its own reporting (JasperReports).
+Configuration (`application.properties`):
+```properties
+# OE-Global-2 polls THIS endpoint for lab order Tasks
+org.openelisglobal.remote.source.uri=http://openmrs:8080/openmrs/ws/fhir2/R4
 
-### 2.2 Current vs Target
+# How often to poll (default: 120 seconds)
+org.openelisglobal.remote.poll.frequency=120000
 
-| Data Flow | Current (AtomFeed) | Target (FHIR) |
+# Practitioner ID that "owns" the tasks (filters which tasks to pick up)
+org.openelisglobal.remote.source.identifier=<practitioner-id>
+```
+
+The poller searches for `Task` resources with status `REQUESTED`, fetches the linked `ServiceRequest` and `Patient`, and creates an electronic order in OE-Global-2.
+
+**Can I skip the separate HAPI FHIR server?**
+
+Not entirely. OE-Global-2 uses **two FHIR endpoints**:
+
+| Endpoint | Purpose | Can it be OpenMRS? |
 |---|---|---|
-| **Lab orders** | OpenMRS publishes AtomFeed event on ServiceRequest → OpenELIS polls feed, creates sample/analysis | OpenMRS creates FHIR Task + ServiceRequest → OE-Global-2 polls FHIR Tasks via `FhirApiWorkFlowServiceImpl`, creates electronic order |
-| **Results** | OpenELIS publishes AtomFeed event on result validation → OpenMRS polls feed | OE-Global-2 publishes FHIR DiagnosticReport + Observation via `FhirTransformService` → OpenMRS FHIR2 module consumes them |
-| **Patient sync** | OpenMRS publishes patient AtomFeed → OpenELIS syncs demographics | Patient data flows as part of the FHIR Task context (Patient resource reference) |
-| **Reference data** | OpenMRS AtomFeed → OpenELIS syncs tests, panels, sample types | **TBD — see Section 4** |
+| **Remote source** (`remote.source.uri`) | Poll for incoming Tasks/orders | **Yes** — can point directly at OpenMRS FHIR2 |
+| **Local FHIR store** (`fhirstore.uri`) | Store OE-Global-2's own FHIR resources (DiagnosticReport, Observation, Task status updates) | **No** — needs a dedicated HAPI FHIR server. OE-Global-2 writes transaction bundles here that OpenMRS's FHIR2 module may not support as a general-purpose FHIR store |
+
+**Verdict:** You need the HAPI FHIR container, but it can be lightweight. OE-Global-2 reads from OpenMRS directly, writes to its own HAPI FHIR store.
+
+**What Bahmni/OpenMRS needs to do:**
+
+When a clinician places a lab order, OpenMRS must create:
+1. A FHIR `ServiceRequest` with LOINC-coded test (see Q3)
+2. A FHIR `Task` referencing the ServiceRequest + Patient, with status `REQUESTED`
+
+The Bahmni FHIR2 module ([openmrs-module-fhir2Extension](https://github.com/Bahmni/openmrs-module-fhir2Extension)) needs to produce these resources. **This is the key OpenMRS-side work — needs Angshuman Sarkar's assessment.**
+
+**Open:** Does the Bahmni FHIR2 module already create Task resources on lab order, or only ServiceRequest?
 
 ---
 
-## 3. FHIR Integration Detail
+### Q2: How does the EMR know results are ready? How do I get results back?
 
-### 3.1 Flow 1: Lab Orders (OpenMRS → OE-Global-2)
+**Short answer:** OE-Global-2 pushes FHIR `DiagnosticReport` + `Observation` to its local FHIR store when results are validated, and updates the Task status to `COMPLETED`. A data export service can then push these to OpenMRS.
 
-**Trigger:** Clinician places a lab order in Bahmni.
+**What happens when a lab tech validates results:**
 
-**Current behavior:**
-1. OpenMRS creates a ServiceRequest
-2. An AtomFeed event is published
-3. Bahmni OpenELIS polls the feed, fetches the order via REST, creates sample + analysis
+1. Lab tech validates results in OE-Global-2's React UI
+2. `FhirTransformService` creates:
+   - `DiagnosticReport` (status = `FINAL`)
+   - `Observation` resources for each result (status = `FINAL`)
+   - Updates the `Task` status to `COMPLETED` with DiagnosticReport references in `Task.output`
+3. All resources are pushed to OE-Global-2's local HAPI FHIR store as a transaction bundle
 
-**Target behavior:**
-1. OpenMRS creates a FHIR `ServiceRequest` resource
-2. OpenMRS creates a FHIR `Task` resource referencing the ServiceRequest (+ Patient)
-3. OE-Global-2's `FhirApiWorkFlowServiceImpl` polls for new Tasks
-4. `TaskWorker` + `TaskInterpreter` process the Task → creates an `ElectronicOrder` in OE-Global-2
-5. Lab technician sees the order in OE-Global-2's React UI
+**Task status lifecycle** (maps to sample processing stages):
 
-**What OE-Global-2 already has:** The polling, Task interpretation, and ElectronicOrder creation are built in.
+| Lab stage | Task status |
+|---|---|
+| Order received | `ACCEPTED` |
+| Sample entered | `READY` |
+| Testing started | `IN_PROGRESS` |
+| Results finalized | `COMPLETED` (DiagnosticReport ref in output) |
+| Rejected | `REJECTED` |
 
-**What needs work on the OpenMRS/Bahmni side:**
-- The Bahmni FHIR2 module ([openmrs-module-fhir2Extension](https://github.com/Bahmni/openmrs-module-fhir2Extension)) must create FHIR Task + ServiceRequest resources in the format OE-Global-2 expects
-- Currently, Bahmni raises AtomFeed events — this needs to change to FHIR resource creation
-- **This is the key area where Angshuman Sarkar's input is needed** — the SME flagged this is "not just configuration"
+**How OpenMRS gets the results — two options:**
 
-**Open questions:**
-- Does the Bahmni FHIR2 module already create Task resources, or only ServiceRequest?
-- What FHIR profile does OE-Global-2 expect for the Task (what fields, what references)?
-- How does OE-Global-2 discover the FHIR server to poll? (Configuration: `FhirConfig.java`)
+**Option A: Data Export Service (built-in)**
 
-### 3.2 Flow 2: Results (OE-Global-2 → OpenMRS)
+OE-Global-2 has a `DataExportService` that pushes FHIR resources from its local store to a remote FHIR endpoint:
 
-**Trigger:** Lab technician validates results in OE-Global-2.
+```properties
+# OE-Global-2 pushes results to THIS endpoint
+org.openelisglobal.fhir.subscriber=http://openmrs:8080/openmrs/ws/fhir2/R4
+org.openelisglobal.fhir.subscriber.resources=Task,DiagnosticReport,Observation
+```
 
-**Current behavior:**
-1. Results are validated in Bahmni OpenELIS
-2. An AtomFeed event is published with result data
-3. OpenMRS polls the feed, stores the lab result
+This pushes transaction bundles containing finalized DiagnosticReports and Observations to OpenMRS.
 
-**Target behavior:**
-1. Results are validated in OE-Global-2
-2. `FhirTransformService` creates FHIR `DiagnosticReport` + `Observation` resources
-3. Resources are published to the FHIR server (OE-Global-2's external HAPI FHIR container)
-4. OpenMRS FHIR2 module consumes the DiagnosticReport/Observation
-5. Clinician sees lab results in Bahmni
+**Option B: Task status update back to remote**
 
-**What OE-Global-2 already has:** The FHIR transform and publishing logic is built in.
+OE-Global-2 can optionally update the Task status directly on the remote source (OpenMRS):
 
-**What needs work on the OpenMRS/Bahmni side:**
-- OpenMRS FHIR2 module must be able to consume/subscribe to DiagnosticReport + Observation
-- Bahmni's clinical display must render results from FHIR resources
+```properties
+org.openelisglobal.remote.source.updateStatus=true
+```
 
-**Open questions:**
-- What is the subscription/polling mechanism? Does OpenMRS poll OE-Global-2's FHIR server, or does OE-Global-2 push to OpenMRS's FHIR endpoint?
-- What fields from DiagnosticReport/Observation does Bahmni need to display results?
-- How are result statuses (preliminary, final, corrected, amended) handled?
+When enabled, OE-Global-2 updates the original Task on OpenMRS to `COMPLETED` with result references. OpenMRS can then resolve the DiagnosticReport references.
 
-### 3.3 Flow 3: Patient Sync (OpenMRS → OE-Global-2)
+**Option C: OpenMRS polls OE-Global-2's FHIR store**
 
-**Trigger:** Patient registered or updated in Bahmni.
+OpenMRS FHIR2 module polls OE-Global-2's HAPI FHIR endpoint for completed DiagnosticReports.
 
-**Target behavior:** Patient data flows as part of the FHIR Task context — when a lab order Task is created, it references the Patient resource. OE-Global-2 resolves the Patient reference and creates/updates the patient in its registry.
+**Recommendation:** Option A (data export) or Option B (task status update) — both are push-based and already built into OE-Global-2. Needs PoC validation to confirm which works best with OpenMRS FHIR2 module.
 
-**What OE-Global-2 already has:** Patient extraction from Task context is part of the existing FHIR workflow.
+**What Bahmni/OpenMRS needs to do:**
 
-**Open question:** Is standalone patient sync needed (patient created but no lab order yet), or is patient-on-demand (synced when first lab order arrives) sufficient?
+- Accept incoming FHIR DiagnosticReport + Observation resources (via FHIR2 module)
+- Display lab results in the clinical UI from these FHIR resources
+- **Open:** Can OpenMRS FHIR2 module accept pushed DiagnosticReports, or does it only serve them?
 
-### 3.4 FHIR Server Topology
+---
 
-OE-Global-2 deploys its own HAPI FHIR server as a separate container. The integration architecture needs to decide:
+### Q3: How does OE-Global-2 know what test to run? LOINC only, or custom codes?
 
-| Option | Description | Implication |
+**Short answer:** OE-Global-2 matches incoming orders to tests using **LOINC codes only** in the FHIR workflow. Custom codes can exist internally but are not used for order matching.
+
+**How order-to-test matching works:**
+
+When OE-Global-2 receives a FHIR `ServiceRequest`, the `TaskInterpreter` extracts the test code:
+
+```
+ServiceRequest.code.coding[] → look for system = "http://loinc.org" → match LOINC code to Test or Panel
+```
+
+Specifically:
+1. Loop through `ServiceRequest.code.coding` entries
+2. Find the one with system `http://loinc.org`
+3. Look up the LOINC code in OE-Global-2's test catalog (`testService.getTestsByLoincCode()`)
+4. If no test found, try panel lookup (`panelService.getPanelByLoincCode()`)
+5. If neither found → order rejected as `UNSUPPORTED_TESTS`
+
+**There is no fallback** to custom codes, test names, or other coding systems in the FHIR path.
+
+**Test entity structure:**
+
+| Field | Max Length | Used for FHIR matching? | Required? |
+|---|---|---|---|
+| `loinc` | 240 chars | **Yes — the only field used** | Required for FHIR orders |
+| `local_code` | 10 chars (unique) | No | Optional, internal use |
+| `description` | 60 chars (unique) | No | Required, human-readable |
+| `name` | varies | No | Localized display name |
+
+**Can a CBC panel have different component tests?**
+
+Yes. Panels are composed via `PanelItem` entities that link a panel to its component tests. You can define a CBC panel with whatever component tests you need. Both the panel and each component test need LOINC codes for FHIR matching.
+
+**Implication for Bahmni:**
+
+- Every test and panel in Bahmni/OpenMRS that will be ordered as a lab test **must have a LOINC code**
+- The same LOINC code must be configured in both OpenMRS (for order creation) and OE-Global-2 (for order interpretation)
+- If Bahmni currently uses custom/local codes for lab tests, LOINC codes need to be added
+
+**Open:** Does the current Bahmni test catalog have LOINC codes, or only custom codes? If custom only, LOINC mapping is a prerequisite.
+
+---
+
+### Q4: How do I set up master data (centers, users, tests, panels, ranges)?
+
+**Short answer:** OE-Global-2 has an admin UI, REST APIs, CSV bulk import on startup, and FHIR-based import for organizations and providers.
+
+**Summary of setup methods:**
+
+| Master Data | Admin UI | CSV Import (startup) | FHIR Import | REST API |
+|---|---|---|---|---|
+| **Tests** | TestAddController | `configuration/tests/*.csv` | No | TestAddRestController |
+| **Panels** | PanelCreateController | via tests CSV | No | PanelCreateRestController |
+| **Test Sections** | TestSectionCreateController | via tests CSV | No | REST API |
+| **Sample Types** | SampleTypeCreateController | `configuration/sampleTypes/*.csv` | No | REST API |
+| **Result Ranges** | resultLimitsMenu.jsp | No | No | REST API |
+| **Organizations/Centers** | OrganizationController | No | **Yes** (FHIR Organization) | OrganizationRestController |
+| **Users** | UnifiedSystemUserController | No | **Yes** (FHIR Practitioner) | UnifiedSystemUserRestController |
+| **Roles** | via UI | `configuration/roles/*.csv` | No | REST API |
+| **Dictionaries** | DictionaryController | `configuration/dictionaries/*.csv` | No | DictionaryRestController |
+
+**CSV bulk import (recommended for initial setup):**
+
+OE-Global-2 auto-loads CSV files on application startup from:
+- Classpath: `src/main/resources/configuration/`
+- Filesystem: `/var/lib/openelis-global/configuration/backend/` (Docker volume)
+
+Test CSV format:
+```
+testName,testSection,sampleType,loinc,isActive,isOrderable,sortOrder,unitOfMeasure,englishName,frenchName
+```
+
+Test results CSV format:
+```
+testName,resultType,resultValue,sortOrder,isQuantifiable,isActive,isNormal,significantDigits,flags
+```
+
+Files are checksum-tracked — only processed when changed. This is the cleanest way to set up the initial test catalog.
+
+**FHIR-based import for organizations and providers:**
+
+```properties
+# Import organizations/facilities from a FHIR server
+org.openelisglobal.facilitylist.fhirstore=http://openmrs:8080/openmrs/ws/fhir2/R4
+
+# Import practitioners from a FHIR server
+org.openelisglobal.providerlist.fhirstore=http://openmrs:8080/openmrs/ws/fhir2/R4
+```
+
+Both run on a schedule and can import from OpenMRS's FHIR2 endpoint directly.
+
+**Also supports:** OpenConceptLab (OCL) import for test catalogs:
+```properties
+org.openelisglobal.ocl.import.autocreate=true
+```
+
+**Recommended setup approach for Bahmni:**
+
+1. **Tests, panels, sample types, dictionaries** → CSV files in a Docker volume. Create a "Bahmni default" configuration set.
+2. **Result ranges** → Admin UI or REST API (no CSV import for ranges).
+3. **Organizations/centers** → FHIR import from OpenMRS (automatic).
+4. **Users/providers** → FHIR import from OpenMRS (automatic) + local user creation for lab-specific accounts.
+
+---
+
+## 3. Additional Integration Concerns
+
+Beyond the SME's four questions, these items need attention:
+
+### 3.1 Reference Data Sync (Tests/Panels from OpenMRS)
+
+Tests and panels are currently mastered in OpenMRS and synced to OpenELIS. OE-Global-2 manages its test catalog locally. Three options:
+
+| Option | Description | Effort |
 |---|---|---|
-| **Shared FHIR server** | OpenMRS and OE-Global-2 both read/write to the same FHIR server | Simpler; both systems see the same resources. Requires network access and access control. |
-| **Separate FHIR servers** | Each system has its own FHIR server; resources are exchanged between them | More isolated; requires a sync/push mechanism between servers |
-| **OpenMRS FHIR endpoint as source** | OE-Global-2 polls OpenMRS's FHIR2 module endpoint directly (no intermediate server for inbound flow) | Simplest for the order flow; OE-Global-2 already supports polling an external FHIR endpoint |
+| **A. OE-Global-2 owns the test catalog** | Configure tests in OE-Global-2 (via CSV or admin UI). Sync to OpenMRS for order entry dropdowns. | Low — but changes current workflow |
+| **B. Shared CSV config** | Maintain a single CSV file set that configures both systems | Low — operational process |
+| **C. FHIR-based sync from OpenMRS** | Build sync from OpenMRS to OE-Global-2 | High — FHIR test catalog representation is not well-established |
 
-**Recommendation:** Option 3 for the order flow (OE-Global-2 polls OpenMRS's FHIR endpoint for Tasks) + OE-Global-2's own FHIR server for result publishing (OpenMRS polls it for DiagnosticReports). This aligns with OE-Global-2's existing architecture. **Needs validation in PoC.**
+**Recommendation:** Option A or B. The LIS should own its test catalog. A shared CSV config set (checked into version control as the "Bahmni default") keeps both systems aligned without building custom sync.
+
+### 3.2 LOINC Code Requirement
+
+OE-Global-2 requires LOINC codes for FHIR order matching. If Bahmni's current test catalog uses only custom codes, **LOINC mapping is a prerequisite** before integration can work. This is potentially significant work depending on the size of the test catalog.
+
+**Action needed:** Audit the current Bahmni test catalog for LOINC coverage.
+
+### 3.3 Patient Sync
+
+Patient data flows as part of the FHIR Task context — when a lab order arrives, the Patient resource is included. OE-Global-2 creates/updates the patient in its registry automatically.
+
+**Open:** Is standalone patient sync needed (patient registered but no lab order yet), or is patient-on-demand sufficient?
+
+### 3.4 Authentication Between Systems
+
+OE-Global-2's FHIR client supports basic auth:
+```properties
+org.openelisglobal.fhirstore.username=<username>
+org.openelisglobal.fhirstore.password=<password>
+```
+
+OpenMRS FHIR2 endpoint authentication needs to be compatible. The facility list import also supports token-based auth.
+
+### 3.5 Deployment
+
+OE-Global-2 adds 5 containers to the Bahmni Docker Compose stack (webapp, database, HAPI FHIR, React frontend, nginx proxy), replacing the current 2 (openelis, openelis-db). Net +3 containers.
+
+```
+Current:   openmrs + openmrs-db + openelis + openelis-db + odoo + odoo-db
+Target:    openmrs + openmrs-db + oe-global-webapp + oe-global-db + hapi-fhir + oe-global-frontend + oe-global-proxy + odoo + odoo-db
+```
 
 ---
 
-## 4. Reference Data Sync (Key Decision)
+## 4. Integration Architecture
 
-### 4.1 The Problem
-
-Lab tests, panels, and sample types are **mastered in OpenMRS** and currently synced to OpenELIS via AtomFeed. OE-Global-2 manages its test catalog locally — it has no mechanism to receive test definitions from an external system.
-
-Reference ranges are **managed only in OpenELIS** (per SME).
-
-### 4.2 Options
-
-**Option A: Keep OpenMRS as master, build FHIR-based sync to OE-Global-2**
-- OpenMRS exposes test catalog as FHIR resources (e.g., `ActivityDefinition`, `PlanDefinition`, or `CatalogEntry`)
-- Build a sync consumer in OE-Global-2 that reads these and creates/updates test configuration
-- *Pros:* Preserves current workflow; standards-based
-- *Cons:* FHIR representation of lab test catalogs is not well-established; requires development on both sides
-- *Effort:* 3-4 weeks
-
-**Option B: Move mastering to OE-Global-2**
-- Test catalog (tests, panels, sample types) is managed directly in OE-Global-2's admin UI
-- Sync to OpenMRS if needed (e.g., for order entry dropdowns)
-- Reference ranges stay in OE-Global-2 (already the case)
-- *Pros:* OE-Global-2 is designed for this; eliminates the sync gap entirely; simpler architecture
-- *Cons:* Changes the Bahmni workflow for configuring lab tests; requires buy-in
-- *Effort:* 1-2 weeks (mostly configuration and process change)
-
-**Option C: Periodic batch import**
-- Export test catalog from OpenMRS as a file; import into OE-Global-2 via scripts or its import APIs
-- *Pros:* Simplest to implement
-- *Cons:* Not real-time; manual or batch; fragile; not a long-term solution
-- *Effort:* 1 week
-
-**Recommendation:** Discuss with team. Option B is architecturally cleanest — the LIS should own its test catalog. Option A preserves the current workflow but is more work. Option C is a stopgap.
+```
+┌─────────────────────────┐         ┌──────────────────────────────────┐
+│      OpenMRS (Bahmni)   │         │      OpenELIS-Global-2           │
+│                         │  polls  │                                  │
+│  FHIR2 Module ──────────│────────▶│  FhirApiWorkFlowServiceImpl      │
+│  (Task + ServiceRequest)│ Tasks   │  (creates ElectronicOrder)       │
+│                         │         │                                  │
+│                         │  push   │  FhirTransformService            │
+│  FHIR2 Module ◀─────────│────────│  (DiagnosticReport + Observation)│
+│  (DiagnosticReport)     │ results │                                  │
+│                         │         │         ┌──────────┐             │
+│  FHIR2 Module ──────────│────────▶│         │ HAPI FHIR│             │
+│  (Organization,         │  FHIR   │         │ (local)  │             │
+│   Practitioner)         │  import │         └──────────┘             │
+│                         │         │                                  │
+│                         │         │  React Frontend (lab users)      │
+└─────────────────────────┘         └──────────────────────────────────┘
+         │
+         │ (unchanged)
+         ▼
+┌─────────────────────────┐
+│      Odoo (billing)     │  ← no direct connection to OE-Global-2
+└─────────────────────────┘
+```
 
 ---
 
-## 5. Deployment
+## 5. Phases
 
-### 5.1 Current Bahmni Stack (Relevant Containers)
-
-```
-bahmni/openmrs          — OpenMRS backend
-bahmni/openmrs-db       — OpenMRS database
-bahmni/openelis         — OpenELIS WAR (Tomcat 8, port 8052)  ← REPLACED
-bahmni/openelis-db      — OpenELIS database                    ← REPLACED
-bahmni/odoo             — Odoo (billing)
-bahmni/odoo-db          — Odoo database
-```
-
-### 5.2 Target Stack
-
-```
-bahmni/openmrs          — OpenMRS backend (unchanged)
-bahmni/openmrs-db       — OpenMRS database (unchanged)
-openelisglobal-webapp   — OE-Global-2 Java backend             ← NEW
-openelisglobal-database — OE-Global-2 PostgreSQL               ← NEW
-external-fhir-api      — HAPI FHIR server                     ← NEW
-openelisglobal-frontend — React SPA                            ← NEW
-openelisglobal-proxy    — nginx reverse proxy                  ← NEW
-bahmni/odoo             — Odoo (unchanged)
-bahmni/odoo-db          — Odoo database (unchanged)
-```
-
-**Change:** 2 containers removed (old OpenELIS), 5 containers added (OE-Global-2). Net +3 containers.
-
-**Work needed:**
-- Integrate OE-Global-2's Docker Compose definitions into the Bahmni Docker Compose stack
-- Configure networking so OE-Global-2 can reach OpenMRS's FHIR endpoint (and vice versa)
-- SSL/proxy configuration for OE-Global-2's frontend
-- Environment variable configuration (DB credentials, FHIR server URLs)
-
----
-
-## 6. Data Migration (Future — Existing Installations)
-
-> **Current client starts fresh — no data migration needed.** This section is a placeholder for when OE-Global-2 is rolled into a future Bahmni release and existing installations need to upgrade.
-
-When OE-Global-2 becomes part of the standard Bahmni distribution, existing installations running the old OpenELIS fork will need a data migration path. This should be built as a **productized tool** (not a one-off script) since it will be needed by many installations.
-
-### 6.1 Scope (To Be Defined Later)
-
-**Data that will need to migrate:**
-- Patients and demographics
-- Samples, accessions, and analyses
-- Test results (historical and in-progress)
-- Test catalog (if mastering model changes — see Section 4)
-- Health centers → organizations
-
-**Data that does NOT migrate:**
-- AtomFeed infrastructure tables (`failed_events`, `markers`, `event_records`, etc.)
-- User sessions, login history
-
-### 6.2 Key Considerations
-
-- Both systems share the `clinlims` database/schema ancestry, but OE-Global-2 has evolved the schema significantly (dozens of Liquibase migration files from v2.0.x through v3.2.x)
-- Migration tooling must be repeatable, validated, and tested against production data
-- This work can be planned and executed independently from the current integration effort
-
----
-
-## 7. Phases
-
-| Phase | Scope | Duration | Outcome |
+| Phase | Scope | Duration | Key Question Answered |
 |---|---|---|---|
-| **1. PoC** | Deploy OE-Global-2 standalone. Connect to a test OpenMRS instance via FHIR. Validate: can a lab order placed in Bahmni flow to OE-Global-2? Can a result flow back? Involve Angshuman Sarkar. | 3-4 weeks | Go/no-go on FHIR integration feasibility; identify gaps in Bahmni FHIR2 module |
-| **2. Reference data** | Decide on mastering model (Section 4). Implement chosen approach. Configure Bahmni default test catalog. | 2-3 weeks | Test catalog available in OE-Global-2, synchronized with OpenMRS |
-| **3. Full integration** | End-to-end lab workflow: order → sample → result → validation → published back to OpenMRS. Docker Compose integration. | 3-5 weeks | Working Bahmni + OE-Global-2 stack for current client |
-| **4. Rollout** | Deploy to current client (fresh install, no data migration). | 1-2 weeks | Production deployment |
-| **Future: Data migration tooling** | When OE-Global-2 is rolled into the standard Bahmni release, build productized migration tool for existing installations. | TBD | Reusable migration tool for existing Bahmni installations upgrading to OE-Global-2 |
+| **1. PoC** | Deploy OE-Global-2 standalone. Point it at an OpenMRS FHIR2 endpoint. Place a lab order in Bahmni, see if OE-Global-2 picks it up. Validate a result, see if it reaches OpenMRS. | 3-4 weeks | Q1 + Q2 validated end-to-end |
+| **2. Test catalog** | Audit Bahmni test catalog for LOINC codes. Create CSV config files for OE-Global-2. Validate order matching. | 2-3 weeks | Q3 resolved |
+| **3. Master data + deployment** | Configure organizations, users, result ranges. Integrate into Bahmni Docker Compose stack. | 2-3 weeks | Q4 resolved |
+| **4. End-to-end testing** | Full lab workflow with real test scenarios. User acceptance testing with lab technicians. | 2-3 weeks | Production readiness |
+| **5. Go-live** | Deploy to current client (fresh install). | 1 week | |
 
-**Total for current client (Phases 1-4):** 8-14 weeks
-**Data migration tooling:** Planned separately when OE-Global-2 becomes part of standard Bahmni release
+**Total: 10-14 weeks**
+
+**Future (when OE-Global-2 becomes standard Bahmni release):**
+- Data migration tooling for existing installations (productized, reusable)
 
 ---
 
-## 8. Open Questions
+## 6. Open Questions
 
-| # | Question | Needed For | Owner |
+| # | Question | Blocks | Owner |
 |---|---|---|---|
-| 1 | What is the FHIR integration complexity on the OpenMRS/Bahmni side? Does the FHIR2 module already create Task resources for lab orders? | Phase 1 PoC scoping | Angshuman Sarkar |
-| 2 | Which reference data sync approach? (Section 4) | Phase 2 | Team decision |
-| 3 | What is the subscription/polling model for results? Does OpenMRS poll OE-Global-2's FHIR server, or does OE-Global-2 push? | Phase 1 PoC | Angshuman Sarkar |
-| 4 | Is standalone patient sync needed, or is patient-on-demand sufficient? | Phase 1 PoC | SME |
-| 5 | FHIR server topology — shared, separate, or poll-OpenMRS-directly? (Section 3.4) | Phase 1 PoC | Team decision |
+| 1 | Does the Bahmni FHIR2 module create `Task` resources on lab order, or only `ServiceRequest`? | Phase 1 | Angshuman Sarkar |
+| 2 | Can OpenMRS FHIR2 module accept pushed DiagnosticReports (write), or only serve them (read)? | Phase 1 | Angshuman Sarkar |
+| 3 | Does the current Bahmni test catalog have LOINC codes? How many tests need LOINC mapping? | Phase 2 | SME |
+| 4 | Where should the test catalog be mastered — OpenMRS or OE-Global-2? | Phase 2 | Team decision |
+| 5 | Is standalone patient sync needed, or is patient-on-demand (synced with first lab order) sufficient? | Phase 1 | SME |
 
 ---
 
-*Supporting detail on Bahmni customizations, code inventory, and feature-level analysis is available in [archive/migration-analysis-openelis-global-v3.md](archive/migration-analysis-openelis-global-v3.md) and [archive/openelis-global-2-integration-approach.md](archive/openelis-global-2-integration-approach.md) for reference.*
+*Archived analysis documents with detailed code inventory available in [archive/](archive/) for reference.*
