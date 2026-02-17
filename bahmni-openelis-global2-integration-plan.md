@@ -23,7 +23,7 @@ This is how the lab order lifecycle works today in Bahmni, step by step.
 ```mermaid
 sequenceDiagram
     participant UI as Bahmni UI<br/>(bahmniapps)
-    participant MRS as OpenMRS<br/>(bahmnicore + atomfeed)
+    participant MRS as OpenMRS<br/>(bahmni-core + atomfeed)
     participant ELIS as OpenELIS<br/>(Bahmni fork)
     participant LAB as Lab Technician
 
@@ -64,12 +64,12 @@ sequenceDiagram
 | Step | System | What Happens | Repository |
 |---|---|---|---|
 | **1. Create order** | Bahmni UI | Doctor opens consultation → Orders tab → selects lab tests → saves | `openmrs-module-bahmniapps` |
-| **2. Publish event** | OpenMRS | Creates encounter with orders; atomfeed publishes encounter event | `openmrs-module-atomfeed`, `openmrs-module-bahmnicore` |
+| **2. Publish event** | OpenMRS | Creates encounter with orders; atomfeed publishes encounter event | `openmrs/openmrs-module-atomfeed`, `bahmni-core` |
 | **3. Poll & fetch** | OpenELIS | Polls encounter feed (5s interval); fetches encounter via REST; creates patient + accession | `Bahmni/OpenElis` |
 | **4. Lab work** | OpenELIS | Sample collection → testing → result entry → validation → finalization | `Bahmni/OpenElis` |
 | **5. Publish results** | OpenELIS | Publishes atomfeed event with accession UUID | `Bahmni/OpenElis` |
-| **6. Poll & fetch** | OpenMRS | Polls OpenELIS patient feed (15s interval); fetches result details via REST | `openmrs-module-bahmni-elis-atomfeed-client` |
-| **7. Process results** | OpenMRS | Creates lab result encounter, observations, FHIR DiagnosticReport; updates order status | `openmrs-module-elisFhirResultSupport`, `bahmni-module-fhir2-addl-extension` |
+| **6. Poll & fetch** | OpenMRS | Polls OpenELIS patient feed (15s interval); fetches result details via REST | `bahmni-core (openmrs-elis-atomfeed-client-omod)` |
+| **7. Process results** | OpenMRS | Creates lab result encounter, observations, FHIR DiagnosticReport; updates order status | `elis-fhir-result-support`, `bahmni-module-fhir2-addl-extension` |
 | **8. View results** | Bahmni UI | Clinician sees results on patient dashboard with values, units, reference ranges | `openmrs-module-bahmniapps` |
 
 ### 2.3 Current Integration Feeds
