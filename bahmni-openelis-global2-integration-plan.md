@@ -4,7 +4,7 @@
 **Status:** Draft
 **Objective:** Replace Bahmni's OpenELIS fork with OpenELIS-Global-2 (OE-Global-2), integrated via FHIR.
 
-> Supporting analysis: [migration-analysis-openelis-global-v3.md](migration-analysis-openelis-global-v3.md), [openelis-global-2-integration-approach.md](openelis-global-2-integration-approach.md)
+> Supporting analysis (archived): [migration-analysis-openelis-global-v3.md](archive/migration-analysis-openelis-global-v3.md), [openelis-global-2-integration-approach.md](archive/openelis-global-2-integration-approach.md)
 
 ---
 
@@ -271,4 +271,4 @@ When OE-Global-2 becomes part of the standard Bahmni distribution, existing inst
 
 ---
 
-*Supporting detail on Bahmni customizations, code inventory, and feature-level analysis is available in [migration-analysis-openelis-global-v3.md](migration-analysis-openelis-global-v3.md) and [openelis-global-2-integration-approach.md](openelis-global-2-integration-approach.md) for reference.*
+*Supporting detail on Bahmni customizations, code inventory, and feature-level analysis is available in [archive/migration-analysis-openelis-global-v3.md](archive/migration-analysis-openelis-global-v3.md) and [archive/openelis-global-2-integration-approach.md](archive/openelis-global-2-integration-approach.md) for reference.*
