@@ -93,6 +93,9 @@ Source is organized by domain module under `us.mn.state.health.lims`:
 - Templates in `package/docker/openelis/templates/` are substituted at startup via `envsubst`
 - Helm chart in `package/helm/`
 
+## Documentation Preferences
+- All sequence diagrams and flowcharts must use **Mermaid.js** syntax (```mermaid blocks). No ASCII art diagrams.
+
 ## Known Technical Issues
 - Transaction and Hibernate session management is fragile
 - Pagination state stored in HttpSession (not URL-based)

@@ -45,20 +45,35 @@ Detail: [Current Flow](docs/current-flow-detail.md) | [Proposed Flow](docs/propo
 
 ## 3. How It Works (simplified)
 
-```
-DOCTOR (Bahmni)                    NOTICEBOARD (SHR)                LAB (OE-Global-2)
-      |                                    |                              |
-      |-- Lab on FHIR pushes Task -------->|                              |
-      |   (FHIR bundle: Task +            |                              |
-      |    ServiceRequest + Patient)       |<-- polls every 20s ---------|
-      |                                    |-- returns Task + Patient --->|
-      |                                    |                    (matches LOINC code,
-      |                                    |                     does lab work)
-      |                                    |<-- pushes DiagnosticReport --|
-      |<-- Lab on FHIR polls results ------|                              |
-      |                                    |                              |
-   (shows result                    OpenHIM guards                  OE-Global-2
-    in Bahmni UI)                    the door                        React UI
+```mermaid
+sequenceDiagram
+    participant B as Bahmni / OpenMRS
+    participant H as OpenHIM (proxy)
+    participant S as SHR (shared FHIR store)
+    participant O as OE-Global-2
+
+    B->>H: Lab on FHIR pushes Task + ServiceRequest + Patient
+    H->>S: Stores FHIR bundle
+
+    loop Every 20s–2min
+        O-->>H: Polls for Tasks (status: REQUESTED)
+        H-->>S: Routes query
+        S-->>O: Returns new Task + Patient
+    end
+
+    O->>O: Matches LOINC code → test catalog
+    Note over O: Lab tech does the work
+
+    O->>H: Pushes DiagnosticReport + Observations + Task (COMPLETED)
+    H->>S: Stores results
+
+    loop Lab on FHIR scheduled poll
+        B-->>H: FetchTaskUpdates checks for completed Tasks
+        H-->>S: Routes query
+        S-->>B: Returns DiagnosticReport + Observations
+    end
+
+    Note over B: Doctor sees results in Bahmni UI
 ```
 
 The critical module is **`openmrs-module-labonfhir`** — it's the active bridge between OpenMRS and the lab. The FHIR2 module is a passive API layer; Lab on FHIR is the one that **reacts** to new orders and **pushes** them out.
