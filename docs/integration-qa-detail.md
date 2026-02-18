@@ -62,19 +62,9 @@ When OE-Global-2 receives a FHIR ServiceRequest, the `TaskInterpreter` loops thr
 
 ## Q4: How do I set up master data?
 
-**Answer:** OE-Global-2 has an admin UI, CSV bulk import on startup, and FHIR-based import for organizations and providers.
+**Answer:** OE-Global-2 has an admin UI, CSV bulk import on startup, and FHIR-based import for organizations and providers. Tests, sample types, dictionaries, and roles load from CSV files dropped into configuration directories. Result ranges must be configured via the admin UI. Organizations and providers auto-sync from OpenMRS via FHIR.
 
-| Master Data | Recommended Setup Method | Details |
-|---|---|---|
-| **Tests + panels** | CSV files on startup | Drop CSV in `/var/lib/openelis-global/configuration/backend/tests/`. Format: `testName,testSection,sampleType,loinc,isActive,...` Auto-loaded, checksum-tracked. |
-| **Sample types** | CSV files on startup | `configuration/sampleTypes/*.csv` |
-| **Dictionaries** | CSV files on startup | `configuration/dictionaries/*.csv` |
-| **Result ranges** | Admin UI or REST API | No CSV import — must be configured per test via UI |
-| **Organizations/centers** | FHIR import from OpenMRS | Config: `org.openelisglobal.facilitylist.fhirstore=http://openmrs:8080/openmrs/ws/fhir2/R4`. Runs on schedule. |
-| **Users/providers** | FHIR import + local creation | Practitioners auto-imported from OpenMRS FHIR. Lab-specific accounts created locally via admin UI. |
-| **Roles** | CSV files on startup | `configuration/roles/*.csv` |
-
-**Recommended approach for Bahmni:** Create a "Bahmni default" CSV configuration set checked into version control. Mount as a Docker volume. Organizations and providers auto-sync from OpenMRS via FHIR.
+See the full master data setup table in [Architecture Detail](architecture-detail.md#master-data-setup).
 
 ---
 
