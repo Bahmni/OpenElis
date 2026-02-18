@@ -479,38 +479,58 @@ org.openelisglobal.fhirstore.password=admin
 
 ---
 
-## 7. Plan
+## 7. Community References
+
+| Source | Link | Key Insight |
+|---|---|---|
+| **FHIR integration discussion** | [talk.openelis-global.org/t/1702](https://talk.openelis-global.org/t/integration-with-openmrs-over-fhir/1702) | Lab on FHIR + FHIR2 modules needed; exchange is purely FHIR; OpenHIM for auth |
+| **Test method selection** | [talk.openelis-global.org/t/1691](https://talk.openelis-global.org/t/openelis-global-capability-for-selecting-a-specific-method-for-a-given-order/1691) | OE-Global-2 supports method selection at execution time; parent/child test pattern |
+| **Reference implementation** | [github.com/DIGI-UW/openelis-openmrs-hie](https://github.com/DIGI-UW/openelis-openmrs-hie) | Working Docker Compose with OpenMRS 3 + OE-Global-2 + OpenHIM + SHR |
+| **Lab on FHIR module** | [github.com/openmrs/openmrs-module-labonfhir](https://github.com/openmrs/openmrs-module-labonfhir) | Creates FHIR Task + ServiceRequest bundles; pushes to LIS |
+
+---
+
+## 8. Open Questions
+
+| # | Question | Blocks | Owner |
+|---|---|---|---|
+| 1 | Can `openmrs-module-labonfhir` (v1.5.3) be added to Bahmni's OpenMRS distribution? Any module conflicts or version incompatibilities? | **Critical — blocks everything** | Angshuman Sarkar |
+| 2 | Can the architecture be simplified for Bahmni? Can OE-Global-2 poll OpenMRS FHIR2 directly and push results back directly, skipping OpenHIM + SHR? The reference impl adds ~6 containers for this layer. | Phase 1 | Angshuman Sarkar + team |
+| 3 | How does OpenMRS/Lab on FHIR pick up completed results from the SHR? Does it poll, or rely on Task status updates? | Phase 1 | PoC validation |
+| 4 | Does the current Bahmni test catalog have LOINC codes? How many tests need mapping? | Phase 2 | SME |
+| 5 | Where should the test catalog be mastered — OpenMRS or OE-Global-2? | Phase 2 | Team decision |
+| 6 | Is standalone patient sync needed, or is patient-on-demand (via Task context) sufficient? | Phase 1 | SME |
+
+---
+
+## 9. Plan
 
 ### Phase 1: Proof of Concept (2-3 weeks)
 
-**Goal:** Validate that the FHIR integration works end-to-end using the reference implementation, then assess what's needed to make it work with Bahmni.
+**Goal:** Validate the FHIR integration end-to-end using the reference implementation, then assess Bahmni-specific gaps.
 
 **Step 1a: Run the reference implementation as-is**
 - [ ] Spin up [`DIGI-UW/openelis-openmrs-hie`](https://github.com/DIGI-UW/openelis-openmrs-hie) (`docker-compose up -d`)
 - [ ] Place a lab order in OpenMRS 3 → confirm it appears in OE-Global-2
 - [ ] Enter and validate a result in OE-Global-2 → confirm DiagnosticReport reaches OpenMRS
 - [ ] Observe the full Task lifecycle: REQUESTED → ACCEPTED → IN_PROGRESS → COMPLETED
-- [ ] Understand how OpenHIM routes FHIR traffic (inspect via OpenHIM console at `http://localhost:9000`)
+- [ ] Understand how OpenHIM routes FHIR traffic (OpenHIM console at `http://localhost:9000`)
 
-**Step 1b: Assess Bahmni-specific gaps**
-- [ ] Determine if `openmrs-module-labonfhir` (v1.5.3) can be added to Bahmni's OpenMRS distribution without conflicts
+**Step 1b: Assess Bahmni-specific gaps (answers open questions 1-3)**
+- [ ] Determine if `openmrs-module-labonfhir` (v1.5.3) can be added to Bahmni's OpenMRS without conflicts
 - [ ] Assess whether Bahmni's OpenMRS version supports the FHIR2 module features Lab on FHIR requires
 - [ ] Evaluate if OpenHIM + SHR are required, or if a simplified direct connection works for Bahmni
 - [ ] Involve **Angshuman Sarkar** for OpenMRS-side assessment
 
-**Answers Q1 + Q2. Key finding:** The FHIR2 module alone does not create Tasks — `openmrs-module-labonfhir` is required. A working reference implementation exists to validate against.
-
 ### Phase 2: Test Catalog + LOINC (2-3 weeks)
 
-**Goal:** Ensure OE-Global-2 can interpret every lab test Bahmni orders. Establish the "Bahmni default" test catalog.
+**Goal:** Ensure OE-Global-2 can interpret every lab test Bahmni orders. Establish the "Bahmni default" test catalog. *(Contingent on open questions 4 and 5.)*
 
 - [ ] Audit Bahmni test catalog for LOINC code coverage
-- [ ] Map tests without LOINC codes to LOINC (or decide on custom code support — may need OE-Global-2 community discussion)
+- [ ] Map tests without LOINC codes to LOINC
 - [ ] Create CSV configuration files for OE-Global-2 (tests, panels, sample types, dictionaries)
 - [ ] Validate order matching: place orders for every test → confirm OE-Global-2 matches correctly
 - [ ] Decide on test catalog mastering model (OE-Global-2 vs shared CSV vs sync)
-
-**Answers Q3.**
 
 ### Phase 3: Master Data + Deployment (2-3 weeks)
 
@@ -523,8 +543,6 @@ org.openelisglobal.fhirstore.password=admin
 - [ ] Integrate OE-Global-2 containers into Bahmni Docker Compose stack
 - [ ] Configure networking, proxy, SSL, environment variables
 - [ ] Configure authentication between OpenMRS and OE-Global-2
-
-**Answers Q4.**
 
 ### Phase 4: End-to-End Testing (2-3 weeks)
 
@@ -545,50 +563,11 @@ org.openelisglobal.fhirstore.password=admin
 - [ ] Verify end-to-end flow with production configuration
 - [ ] Monitor for issues during initial operation period
 
-**Total: 10-14 weeks**
+**Total: 10-14 weeks** *(pending resolution of open questions)*
 
 ### Future: Data Migration Tooling
 
 When OE-Global-2 becomes part of the standard Bahmni release, existing installations will need a data migration path. This should be built as a productized tool (not a one-off script) covering patients, samples, results, and test catalog. Can be planned independently from the current integration work.
-
----
-
-## 8. Community References
-
-| Source | Link | Key Insight |
-|---|---|---|
-| **FHIR integration discussion** | [talk.openelis-global.org/t/1702](https://talk.openelis-global.org/t/integration-with-openmrs-over-fhir/1702) | Lab on FHIR + FHIR2 modules needed; exchange is purely FHIR; OpenHIM for auth |
-| **Test method selection** | [talk.openelis-global.org/t/1691](https://talk.openelis-global.org/t/openelis-global-capability-for-selecting-a-specific-method-for-a-given-order/1691) | OE-Global-2 supports method selection at execution time; parent/child test pattern |
-| **Reference implementation** | [github.com/DIGI-UW/openelis-openmrs-hie](https://github.com/DIGI-UW/openelis-openmrs-hie) | Working Docker Compose with OpenMRS 3 + OE-Global-2 + OpenHIM + SHR |
-| **Lab on FHIR module** | [github.com/openmrs/openmrs-module-labonfhir](https://github.com/openmrs/openmrs-module-labonfhir) | Creates FHIR Task + ServiceRequest bundles; pushes to LIS |
-
----
-
-## 9. Open Questions
-
-### Answered
-
-| # | Question | Answer | Source |
-|---|---|---|---|
-| ~~1~~ | Does the Bahmni FHIR2 module create `Task` resources on lab order? | **No.** The FHIR2 module provides the FHIR API. The separate `openmrs-module-labonfhir` module creates Task + ServiceRequest bundles. This module is not currently in Bahmni. | [Talk thread](https://talk.openelis-global.org/t/integration-with-openmrs-over-fhir/1702/2) |
-| ~~2~~ | Can OpenMRS accept pushed DiagnosticReports directly? | **The reference impl doesn't do this.** Both systems write to/read from a shared HAPI FHIR store (SHR) via OpenHIM. OE-Global-2 pushes results to SHR; OpenMRS reads from SHR. | [Reference impl](https://github.com/DIGI-UW/openelis-openmrs-hie) |
-
-### Still Open
-
-| # | Question | Blocks | Owner |
-|---|---|---|---|
-| 3 | Does the current Bahmni test catalog have LOINC codes? How many tests need mapping? | Phase 2 | SME |
-| 4 | Where should the test catalog be mastered — OpenMRS or OE-Global-2? | Phase 2 | Team decision |
-| 5 | Is standalone patient sync needed, or is patient-on-demand sufficient? | Phase 1 | SME |
-
-### New Questions (from reference implementation analysis)
-
-| # | Question | Blocks | Owner |
-|---|---|---|---|
-| 6 | Can `openmrs-module-labonfhir` (v1.5.3) be added to Bahmni's OpenMRS distribution? Any module conflicts or version incompatibilities? | **Phase 1 — critical** | Angshuman Sarkar |
-| 7 | Can the architecture be simplified for Bahmni? Specifically: can OE-Global-2 poll OpenMRS FHIR2 directly and push results back directly, skipping OpenHIM + SHR? The reference impl uses the full OpenHIE pattern which adds ~6 containers. | Phase 1 | Angshuman Sarkar + team |
-| 8 | Has Angshuman already run the [`openelis-openmrs-hie`](https://github.com/DIGI-UW/openelis-openmrs-hie) demo? Any issues encountered? | Phase 1 | Angshuman Sarkar |
-| 9 | How does OpenMRS/Lab on FHIR pick up completed results from the SHR? Does it poll, or rely on Task status updates? | Phase 1 | PoC validation |
 
 ---
 
