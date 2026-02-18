@@ -73,7 +73,9 @@ Detail: [Full Q&A with technical depth](docs/integration-qa-detail.md)
 
 The reference implementation uses 6 extra containers (OpenHIM + SHR) as intermediaries. **We believe this can be simplified for Bahmni.**
 
-**The key insight:** Both Lab on FHIR and OE-Global-2 just need *a FHIR store* to read from and write to. OE-Global-2 already ships with its own HAPI FHIR server (`external-fhir-api`). We can use that as the shared store instead of deploying a separate SHR + OpenHIM.
+**Background — what is `external-fhir-api`?** A HAPI FHIR server is essentially a database that stores and retrieves healthcare data in FHIR format via REST API (e.g., `POST /fhir/Task` to create, `GET /fhir/Task?status=requested` to search). OE-Global-2 **already ships with its own** HAPI FHIR server as a standard container called `external-fhir-api`. The reference implementation then adds a **second** HAPI FHIR server (`shr-hapi-fhir`) as the Shared Health Record — the "noticeboard" that both OpenMRS and OE-Global-2 read from and write to, with OpenHIM as a gatekeeper in front.
+
+**The key insight:** Why have two FHIR servers when one will do? Both Lab on FHIR and OE-Global-2 just need *a FHIR store* to read from and write to. We can use OE-Global-2's existing `external-fhir-api` as that shared store instead of deploying a separate SHR + OpenHIM.
 
 ### Option A: Full OpenHIE Stack (Reference Implementation)
 
