@@ -26,16 +26,16 @@ Bahmni ships a fork of OpenELIS (v3.1, circa 2013) integrated with OpenMRS via A
 
 | Aspect | Current (AtomFeed) | Proposed (FHIR) |
 |---|---|---|
-| **Order creation** | AtomFeed event → REST fetch | Lab on FHIR module creates FHIR Task + ServiceRequest, pushes to SHR |
-| **Order pickup** | OpenELIS polls AtomFeed (5s) | OE-Global-2 polls SHR for FHIR Tasks (20s-2min) |
+| **Order creation** | AtomFeed event → REST fetch | Lab on FHIR module creates FHIR Task + ServiceRequest, pushes to FHIR store |
+| **Order pickup** | OpenELIS polls AtomFeed (5s) | OE-Global-2 polls FHIR store for Tasks (20s-2min) |
 | **Test matching** | Custom code mapping | LOINC code lookup |
-| **Result return** | AtomFeed event → REST fetch | FHIR DiagnosticReport pushed to SHR |
-| **Result pickup** | OpenMRS polls AtomFeed (15s) | Lab on FHIR polls SHR for completed Tasks |
-| **Routing/auth** | Direct HTTP | OpenHIM proxy (basic auth, routing, audit) |
+| **Result return** | AtomFeed event → REST fetch | FHIR DiagnosticReport pushed to FHIR store |
+| **Result pickup** | OpenMRS polls AtomFeed (15s) | Lab on FHIR polls FHIR store for completed Tasks |
+| **Routing/auth** | Direct HTTP | Docker network isolation (simplified) or OpenHIM proxy (full OpenHIE) |
 | **Lab UI** | Struts/JSP (2013 vintage) | React |
 | **Integration standard** | Atom RFC 4287 (custom) | HL7 FHIR R4 |
 | **Key OpenMRS modules** | `openmrs-module-atomfeed`, `bahmni-core` | **`openmrs-module-labonfhir`** (v1.5.3+), `openmrs-module-fhir2` |
-| **Containers** | 2 (app + db) | ~12 new (OE-Global-2 + OpenHIM + SHR) |
+| **Containers** | 2 (app + db) | 6 new (simplified) or 12 new (full OpenHIE) — see [Section 5](#5-architecture-decision-full-openhie-vs-simplified) |
 
 **What stays the same:** Bahmni UI order entry, lab work in LIS, Bahmni UI result display, Odoo billing.
 
@@ -69,38 +69,114 @@ Detail: [Full Q&A with technical depth](docs/integration-qa-detail.md)
 
 ---
 
-## 5. Open Questions
+## 5. Architecture Decision: Full OpenHIE vs Simplified
+
+The reference implementation uses 6 extra containers (OpenHIM + SHR) as intermediaries. **We believe this can be simplified for Bahmni.**
+
+**The key insight:** Both Lab on FHIR and OE-Global-2 just need *a FHIR store* to read from and write to. OE-Global-2 already ships with its own HAPI FHIR server (`external-fhir-api`). We can use that as the shared store instead of deploying a separate SHR + OpenHIM.
+
+### Option A: Full OpenHIE Stack (Reference Implementation)
+
+```mermaid
+flowchart LR
+    MRS[OpenMRS<br/>Lab on FHIR] -->|push orders| HIM[OpenHIM<br/>proxy + auth]
+    HIM <--> SHR[SHR<br/>HAPI FHIR]
+    OEG[OE-Global-2] -->|poll orders<br/>push results| HIM
+
+    style HIM fill:#fff3cd,stroke:#ffc107
+    style SHR fill:#fff3cd,stroke:#ffc107
+```
+
+**12 new containers** = 6 OE-Global-2 + 6 HIE (OpenHIM core/console/config/MongoDB + SHR HAPI FHIR/PostgreSQL)
+
+### Option B: Simplified — OE-Global-2's FHIR Store as Shared Store
+
+```mermaid
+flowchart LR
+    MRS[OpenMRS<br/>Lab on FHIR] -->|push orders<br/>poll results| FHIR[OE-Global-2's<br/>HAPI FHIR store<br/>external-fhir-api]
+    OEG[OE-Global-2] <-->|poll orders<br/>push results| FHIR
+
+    style FHIR fill:#f0f7e8,stroke:#28a745
+```
+
+**6 new containers** = OE-Global-2 only (webapp, database, external-fhir-api, frontend, proxy, certs). No HIE layer.
+
+**Config-only change** — no code changes to either system:
+```properties
+# OpenMRS Lab on FHIR — point to OE-Global-2's FHIR store instead of SHR
+labonfhir.lisUrl=http://external-fhir-api:8080/fhir/
+
+# OE-Global-2 — poll its own FHIR store instead of SHR
+org.openelisglobal.remote.source.uri=http://external-fhir-api:8080/fhir/
+org.openelisglobal.fhir.subscriber=http://external-fhir-api:8080/fhir/
+```
+
+### Comparison
+
+| Aspect | Option A: Full OpenHIE | Option B: Simplified |
+|---|---|---|
+| **New containers** | 12 | 6 |
+| **Proven/tested** | Yes (reference impl) | Needs PoC validation |
+| **Code changes** | None (config only) | None (config only) |
+| **Standards compliance** | OpenHIE-compliant | Not OpenHIE-compliant |
+| **Auth/audit** | OpenHIM provides auth + audit trail | No auth layer — rely on Docker network isolation |
+| **Maintenance burden** | High — 6 extra services to monitor | Low — just OE-Global-2 stack |
+| **Debugging** | Harder — more network hops, OpenHIM logs | Easier — fewer moving parts |
+| **Resilience** | SHR buffers orders if one side is down | If OE-Global-2 is down, FHIR store is also down |
+| **Extensibility** | Other systems can connect to SHR | Additional systems would need to access OE-Global-2's store |
+| **Path to Option A** | N/A | Can add OpenHIM + SHR later if needed (additive) |
+
+### Recommendation
+
+**Start Phase 1 PoC with Option B (simplified).** Rationale:
+1. Config-only change — no risk of code changes going wrong
+2. Halves the container count (6 vs 12)
+3. The path from B → A is additive (add OpenHIM + SHR later if auth/audit needs emerge)
+4. The path from A → B requires removing infrastructure (harder to justify after setup)
+5. For Bahmni deployments on internal networks, OpenHIM's auth layer adds complexity without clear benefit
+
+**Risk to validate in PoC:** Confirm that OE-Global-2's `external-fhir-api` accepts writes from external clients (Lab on FHIR pushing Task+ServiceRequest bundles). It's a standard HAPI FHIR server, so this should work.
+
+Detail: [Architecture Detail](docs/architecture-detail.md)
+
+---
+
+## 6. Open Questions
 
 | # | Question | Blocks | Owner |
 |---|---|---|---|
 | 1 | Can `openmrs-module-labonfhir` (v1.5.3) be added to Bahmni's OpenMRS distribution? Any module conflicts or version incompatibilities? | **Critical — blocks everything** | Angshuman Sarkar |
-| 2 | Can the architecture be simplified for Bahmni? Can we skip OpenHIM + SHR and have OE-Global-2 talk directly to OpenMRS FHIR2? The reference impl adds ~6 containers for this layer. | Phase 1 | Angshuman Sarkar + team |
-| 3 | Does the current Bahmni test catalog have LOINC codes? How many tests need mapping? | Phase 2 | SME |
-| 4 | Where should the test catalog be mastered — OpenMRS or OE-Global-2? | Phase 2 | Team decision |
-| 5 | Is standalone patient sync needed, or is patient-on-demand (via Task context) sufficient? | Phase 1 | SME |
+| 2 | Does the current Bahmni test catalog have LOINC codes? How many tests need mapping? | Phase 2 | SME |
+| 3 | Where should the test catalog be mastered — OpenMRS or OE-Global-2? | Phase 2 | Team decision |
+| 4 | Is standalone patient sync needed, or is patient-on-demand (via Task context) sufficient? | Phase 1 | SME |
 
 ---
 
-## 6. Plan
+## 7. Plan
 
 ### Phase 1: Proof of Concept (2-3 weeks)
 
 **Goal:** Validate the FHIR integration end-to-end, then assess Bahmni-specific gaps.
 
-**Step 1a: Run the reference implementation as-is**
+**Step 1a: Run the reference implementation as-is (validate the flow)**
 - [ ] Spin up [`DIGI-UW/openelis-openmrs-hie`](https://github.com/DIGI-UW/openelis-openmrs-hie) (`docker-compose up -d`)
 - [ ] Place a lab order in OpenMRS 3 → confirm it appears in OE-Global-2
 - [ ] Enter and validate a result in OE-Global-2 → confirm DiagnosticReport reaches OpenMRS
 - [ ] Observe the full Task lifecycle: REQUESTED → ACCEPTED → IN_PROGRESS → COMPLETED
 
-**Step 1b: Assess Bahmni-specific gaps (answers open questions 1-2)**
+**Step 1b: Test simplified architecture (Option B from [Section 5](#5-architecture-decision-full-openhie-vs-simplified))**
+- [ ] Reconfigure Lab on FHIR to push to OE-Global-2's `external-fhir-api` instead of SHR
+- [ ] Reconfigure OE-Global-2 to poll its own FHIR store instead of SHR
+- [ ] Stop OpenHIM + SHR containers, verify order→result flow still works
+- [ ] Confirm `external-fhir-api` accepts writes from Lab on FHIR (external client)
+
+**Step 1c: Assess Bahmni-specific gaps (answers open question 1)**
 - [ ] Determine if `openmrs-module-labonfhir` can be added to Bahmni's OpenMRS without conflicts
-- [ ] Evaluate if OpenHIM + SHR are required, or if a simplified direct connection works
 - [ ] Involve **Angshuman Sarkar** for OpenMRS-side assessment
 
 ### Phase 2: Test Catalog + LOINC (2-3 weeks)
 
-*(Contingent on open questions 3 and 4.)*
+*(Contingent on open questions 2 and 3.)*
 
 - [ ] Audit Bahmni test catalog for LOINC code coverage
 - [ ] Map tests without LOINC codes to LOINC
@@ -133,7 +209,7 @@ Existing Bahmni installations will need a data migration path when OE-Global-2 b
 
 ---
 
-## 7. Community References
+## 8. Community References
 
 | Source | Link | Key Insight |
 |---|---|---|
