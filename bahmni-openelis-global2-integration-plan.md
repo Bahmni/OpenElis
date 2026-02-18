@@ -10,7 +10,7 @@
 - [OE-Global-2 test method selection](https://talk.openelis-global.org/t/openelis-global-capability-for-selecting-a-specific-method-for-a-given-order/1691)
 - [`openmrs-module-labonfhir`](https://github.com/openmrs/openmrs-module-labonfhir) — the critical OpenMRS module that creates FHIR Tasks
 
-**Detail pages:** [Current Flow](docs/current-flow-detail.md) | [Proposed Flow](docs/proposed-flow-detail.md) | [Architecture](docs/architecture-detail.md) | [Q&A](docs/integration-qa-detail.md)
+**Detail pages:** [Current Flow](docs/current-flow-detail.md) | [Proposed Flow](docs/proposed-flow-detail.md) | [Architecture](docs/architecture-detail.md) | [Technical Reference](docs/technical-reference.md)
 
 ---
 
@@ -65,7 +65,7 @@ The critical module is **`openmrs-module-labonfhir`** — it's the active bridge
 | A **working reference implementation** exists with Docker Compose | [DIGI-UW/openelis-openmrs-hie](https://github.com/DIGI-UW/openelis-openmrs-hie) | Phase 1 starts from this, not from scratch |
 | Lab on FHIR detects orders via **JMS events** (instant), returns results via **polling** | Code analysis | Event-driven outbound, poll-based inbound |
 
-Detail: [Full Q&A with technical depth](docs/integration-qa-detail.md)
+Detail: [Technical Reference](docs/technical-reference.md) (LOINC matching, Task lifecycle, JMS detection, master data)
 
 ---
 
@@ -222,6 +222,6 @@ Existing Bahmni installations will need a data migration path when OE-Global-2 b
 
 ---
 
-*Detail pages: [Current Flow](docs/current-flow-detail.md) | [Proposed Flow](docs/proposed-flow-detail.md) | [Architecture](docs/architecture-detail.md) | [Q&A](docs/integration-qa-detail.md)*
+*Detail pages: [Current Flow](docs/current-flow-detail.md) | [Proposed Flow](docs/proposed-flow-detail.md) | [Architecture](docs/architecture-detail.md) | [Technical Reference](docs/technical-reference.md)*
 
 *Archived analysis documents with detailed code inventory available in [archive/](archive/) for reference.*
