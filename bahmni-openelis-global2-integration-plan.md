@@ -24,18 +24,18 @@ Bahmni ships a fork of OpenELIS (v3.1, circa 2013) integrated with OpenMRS via A
 
 ## 2. Current vs Proposed: At a Glance
 
-| Aspect | Current (AtomFeed) | Proposed (FHIR) |
-|---|---|---|
-| **Order creation** | AtomFeed event → REST fetch | Lab on FHIR module creates FHIR Task + ServiceRequest, pushes to FHIR store |
-| **Order pickup** | OpenELIS polls AtomFeed (5s) | OE-Global-2 polls FHIR store for Tasks (20s-2min) |
-| **Test matching** | Custom code mapping | LOINC code lookup |
-| **Result return** | AtomFeed event → REST fetch | FHIR DiagnosticReport pushed to FHIR store |
-| **Result pickup** | OpenMRS polls AtomFeed (15s) | Lab on FHIR polls FHIR store for completed Tasks |
-| **Routing/auth** | Direct HTTP | Docker network isolation (simplified) or OpenHIM proxy (full OpenHIE) |
-| **Lab UI** | Struts/JSP (2013 vintage) | React |
-| **Integration standard** | Atom RFC 4287 (custom) | HL7 FHIR R4 |
-| **Key OpenMRS modules** | `openmrs-module-atomfeed`, `bahmni-core` | **`openmrs-module-labonfhir`** (v1.5.3+), `openmrs-module-fhir2` |
-| **Containers** | 2 (app + db) | 6 new (simplified) or 12 new (full OpenHIE) — see [Section 5](#5-architecture-decision-full-openhie-vs-simplified) |
+| Aspect | Current (AtomFeed) | Proposed Option B: Simplified | Proposed Option A: Full OpenHIE |
+|---|---|---|---|
+| **Order creation** | AtomFeed event → REST fetch | Lab on FHIR pushes FHIR Task to OE-Global-2's FHIR store | Lab on FHIR pushes FHIR Task to SHR via OpenHIM |
+| **Order pickup** | OpenELIS polls AtomFeed (5s) | OE-Global-2 polls its own FHIR store (20s-2min) | OE-Global-2 polls SHR via OpenHIM (20s-2min) |
+| **Test matching** | Custom code mapping | LOINC code lookup | LOINC code lookup |
+| **Result return** | AtomFeed event → REST fetch | DiagnosticReport pushed to OE-Global-2's FHIR store | DiagnosticReport pushed to SHR via OpenHIM |
+| **Result pickup** | OpenMRS polls AtomFeed (15s) | Lab on FHIR polls OE-Global-2's FHIR store | Lab on FHIR polls SHR via OpenHIM |
+| **Routing/auth** | Direct HTTP | Docker network isolation | OpenHIM proxy (basic auth + audit) |
+| **Lab UI** | Struts/JSP (2013 vintage) | React | React |
+| **Integration standard** | Atom RFC 4287 (custom) | HL7 FHIR R4 | HL7 FHIR R4 |
+| **Key OpenMRS modules** | `openmrs-module-atomfeed`, `bahmni-core` | `openmrs-module-labonfhir`, `openmrs-module-fhir2` | `openmrs-module-labonfhir`, `openmrs-module-fhir2` |
+| **New containers** | — | 6 | 12 |
 
 **What stays the same:** Bahmni UI order entry, lab work in LIS, Bahmni UI result display, Odoo billing.
 
