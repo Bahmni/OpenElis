@@ -43,44 +43,13 @@ Detail: [Current Flow](docs/current-flow-detail.md) | [Proposed Flow](docs/propo
 
 ---
 
-## 3. How It Works (simplified)
+## 3. How It Works
 
-```mermaid
-sequenceDiagram
-    participant B as Bahmni / OpenMRS
-    participant H as OpenHIM (proxy)
-    participant S as SHR (shared FHIR store)
-    participant O as OE-Global-2
-
-    B->>H: Lab on FHIR pushes Task + ServiceRequest + Patient
-    H->>S: Stores FHIR bundle
-
-    loop Every 20s–2min
-        O-->>H: Polls for Tasks (status: REQUESTED)
-        H-->>S: Routes query
-        S-->>O: Returns new Task + Patient
-    end
-
-    O->>O: Matches LOINC code → test catalog
-    Note over O: Lab tech does the work
-
-    O->>H: Pushes DiagnosticReport + Observations + Task (COMPLETED)
-    H->>S: Stores results
-
-    loop Lab on FHIR scheduled poll
-        B-->>H: FetchTaskUpdates checks for completed Tasks
-        H-->>S: Routes query
-        S-->>B: Returns DiagnosticReport + Observations
-    end
-
-    Note over B: Doctor sees results in Bahmni UI
-```
+See [Proposed Flow Detail](docs/proposed-flow-detail.md) for the full sequence diagram, module roles, and configuration.
 
 The critical module is **`openmrs-module-labonfhir`** — it's the active bridge between OpenMRS and the lab. The FHIR2 module is a passive API layer; Lab on FHIR is the one that **reacts** to new orders and **pushes** them out.
 
 **Lab on FHIR is NOT currently in Bahmni's OpenMRS distribution.** Adding it is the first thing to validate.
-
-Detail: [Proposed Flow — module roles, config, technical detail](docs/proposed-flow-detail.md)
 
 ---
 
