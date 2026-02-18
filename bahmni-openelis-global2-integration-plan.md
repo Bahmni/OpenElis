@@ -58,7 +58,7 @@ The critical module is **`openmrs-module-labonfhir`** — it's the active bridge
 | Finding | Source | Impact |
 |---|---|---|
 | FHIR2 alone doesn't create Tasks — **Lab on FHIR module is required** | [Community discussion](https://talk.openelis-global.org/t/integration-with-openmrs-over-fhir/1702) | Must add `openmrs-module-labonfhir` to Bahmni |
-| Reference architecture uses **OpenHIM + SHR** as intermediaries (not direct connection) | [Reference impl](https://github.com/DIGI-UW/openelis-openmrs-hie) | Adds ~6 containers; may be simplifiable |
+| Reference architecture uses **OpenHIM + SHR** as intermediaries (not direct connection) | [Reference impl](https://github.com/DIGI-UW/openelis-openmrs-hie) | Simplified option proposed — see [Section 5](#5-architecture-decision-full-openhie-vs-simplified) |
 | Exchange is **purely FHIR** — no HL7v2 | [Moses Mutesasira](https://talk.openelis-global.org/t/integration-with-openmrs-over-fhir/1702/2) | Clean integration path |
 | OE-Global-2 matches tests by **LOINC codes only** | Code analysis | Bahmni test catalog needs LOINC codes |
 | Test methods (PCR, culture, etc.) selected at **execution time** by lab tech, not at order time | [Community discussion](https://talk.openelis-global.org/t/openelis-global-capability-for-selecting-a-specific-method-for-a-given-order/1691) | LOINC mapping is test-level, not method-level |

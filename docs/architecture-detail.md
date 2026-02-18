@@ -4,9 +4,52 @@
 
 ---
 
-## Architecture Diagram
+Two architecture options are under consideration. See [Architecture Decision](../bahmni-openelis-global2-integration-plan.md#5-architecture-decision-full-openhie-vs-simplified) in the main plan for the comparison table and recommendation.
 
-Based on the [reference implementation](https://github.com/DIGI-UW/openelis-openmrs-hie) (`docker-compose.yml`):
+## Option B: Simplified (recommended)
+
+```mermaid
+flowchart TB
+    subgraph bahmni["Bahmni"]
+        UI[Bahmni UI<br/>bahmniapps]
+        MRS[OpenMRS<br/>FHIR2 + Lab on FHIR]
+        MRS_GW[OpenMRS Gateway]
+        MRS_FE[OpenMRS Frontend]
+        MRS_DB[(MariaDB)]
+        ODOO[Odoo<br/>Billing]
+    end
+
+    subgraph oeg["OpenELIS-Global-2"]
+        OEG_APP[OE-Global-2<br/>Webapp v3.2.1.1]
+        OEG_FE[React Frontend]
+        OEG_FHIR[HAPI FHIR<br/>external-fhir-api<br/>shared FHIR store]
+        OEG_DB[(PostgreSQL)]
+        OEG_PROXY[nginx Proxy]
+        OEG_CERTS[Cert Generator]
+    end
+
+    UI <--> MRS_GW
+    MRS_GW <--> MRS_FE
+    MRS_GW <--> MRS
+    MRS <--> MRS_DB
+    MRS <-->|"Billing (unchanged)"| ODOO
+
+    MRS -->|"pushes Task+ServiceRequest<br/>+Patient (FHIR bundle)"| OEG_FHIR
+    MRS -.->|"polls for completed Tasks"| OEG_FHIR
+
+    OEG_APP -->|"polls Tasks<br/>(REQUESTED)"| OEG_FHIR
+    OEG_APP -->|"pushes DiagnosticReport<br/>+Observations+Task (COMPLETED)"| OEG_FHIR
+    OEG_APP <--> OEG_DB
+    OEG_PROXY --> OEG_FE
+    OEG_PROXY --> OEG_APP
+
+    style bahmni fill:#e8f4fd,stroke:#0d6efd
+    style oeg fill:#f0f7e8,stroke:#28a745
+```
+
+**6 new containers.** OE-Global-2's `external-fhir-api` doubles as the shared FHIR store. No HIE layer.
+
+## Option A: Full OpenHIE Stack (reference implementation)
 
 ```mermaid
 flowchart TB
@@ -60,6 +103,8 @@ flowchart TB
     style oeg fill:#f0f7e8,stroke:#28a745
 ```
 
+**12 new containers.** Adds a separate SHR and OpenHIM proxy layer between OpenMRS and OE-Global-2.
+
 ## Container Inventory
 
 ### Current (Bahmni OpenELIS — being replaced)
@@ -69,48 +114,40 @@ flowchart TB
 | `bahmni/openelis` | WAR on Tomcat, port 8052 | OpenELIS Bahmni fork |
 | `bahmni/openelis-db` | PostgreSQL | OpenELIS database |
 
-### Target: OE-Global-2 Containers (new)
+### OE-Global-2 Containers (both options)
 
 | Container Name | Purpose | Notes |
 |---|---|---|
 | `openelisglobal-webapp` | OE-Global-2 Java backend (v3.2.1.1) | Replaces `bahmni/openelis` |
 | `openelisglobal-database` | OE-Global-2 PostgreSQL database | Replaces `bahmni/openelis-db` |
-| `external-fhir-api` | OE-Global-2's internal HAPI FHIR store | New — shares DB with OEG |
+| `external-fhir-api` | OE-Global-2's HAPI FHIR store | In Option B, also serves as the shared FHIR store |
 | `openelisglobal-front-end` | React SPA frontend | New |
 | `openelisglobal-proxy` | nginx reverse proxy | New |
 | `oe-certs` | SSL certificate generator | New — init container |
 
-### Target: Health Information Exchange Containers (new)
+### HIE Containers (Option A only)
 
 | Container Name | Purpose | Notes |
 |---|---|---|
-| `openhim-core` | FHIR routing proxy + auth | New — API gateway |
-| `openhim-console` | OpenHIM admin UI | New — port 9000 |
-| `openhim-config` | Auto-configures OpenHIM channels/clients | New — init container |
-| `openhim-mongo` | MongoDB for OpenHIM state | New |
-| `shr-hapi-fhir` | Shared Health Record (HAPI FHIR server) | New — central FHIR store |
-| `hapi-fhir-db` | PostgreSQL for SHR | New |
+| `openhim-core` | FHIR routing proxy + auth | API gateway |
+| `openhim-console` | OpenHIM admin UI | Port 9000 |
+| `openhim-config` | Auto-configures OpenHIM channels/clients | Init container |
+| `openhim-mongo` | MongoDB for OpenHIM state | |
+| `shr-hapi-fhir` | Shared Health Record (HAPI FHIR server) | Central FHIR store |
+| `hapi-fhir-db` | PostgreSQL for SHR | |
 
-**Net change:** 2 containers removed, 12 added. Bahmni already has its own OpenMRS containers.
-
-> **Can this be simplified?** The reference implementation follows the OpenHIE architecture pattern. For Bahmni deployments on an internal network, it may be possible to skip OpenHIM and the SHR and have OE-Global-2 talk directly to OpenMRS FHIR2. This is an open question.
+**Net change:** 2 containers removed, **6 added (Option B)** or **12 added (Option A)**.
 
 ## Authentication
 
-Per the [community discussion](https://talk.openelis-global.org/t/integration-with-openmrs-over-fhir/1702/2):
-
-| Option | Description | When to use |
+| Option | Auth approach | Details |
 |---|---|---|
-| **No auth** | Services on internal network, not exposed externally | PoC / development |
-| **Basic auth via OpenHIM** | OpenHIM proxies FHIR endpoints, handles authentication | Reference implementation (recommended) |
-| **HTTPS certificates** | Mutual TLS between services | High-security deployments |
+| **Option B (simplified)** | Docker network isolation | Services communicate on an internal Docker network not exposed externally. No auth overhead for PoC. |
+| **Option A (full OpenHIE)** | Basic auth via OpenHIM | OpenHIM proxies FHIR endpoints; pre-configured clients: `OpenELIS` and `OpenMRS`. See config below. |
+| **Either (production)** | HTTPS certificates | Mutual TLS between services for high-security deployments. Can be added later. |
 
-The reference implementation pre-configures two OpenHIM clients:
-- **`OpenELIS`** — OE-Global-2 authenticates to OpenHIM
-- **`OpenMRS`** — OpenMRS authenticates to OpenHIM
-- OpenHIM routes all `/fhir/*` requests to the SHR
+### Option A auth configuration
 
-Auth configuration:
 ```properties
 # OpenMRS Lab on FHIR
 labonfhir.authType=BASIC
@@ -121,6 +158,8 @@ labonfhir.password=admin
 org.openelisglobal.fhirstore.username=OpenELIS
 org.openelisglobal.fhirstore.password=admin
 ```
+
+OpenHIM routes all `/fhir/*` requests to the SHR.
 
 ## Master Data Setup
 

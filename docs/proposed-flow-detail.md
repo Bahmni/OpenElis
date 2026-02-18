@@ -4,7 +4,12 @@
 
 ---
 
-Based on the [reference implementation](https://github.com/DIGI-UW/openelis-openmrs-hie) and [community discussion](https://talk.openelis-global.org/t/integration-with-openmrs-over-fhir/1702), the exchange is **purely FHIR-based**. Both systems communicate through a **Shared Health Record (SHR)** via **OpenHIM** as a routing/auth proxy — they do not talk directly to each other.
+The exchange is **purely FHIR-based**. Both OpenMRS and OE-Global-2 read from and write to a shared **FHIR Store**. The logical flow is the same regardless of which architecture option is chosen — the only difference is what serves as that FHIR Store.
+
+| | Option A: Full OpenHIE | Option B: Simplified (recommended) |
+|---|---|---|
+| **FHIR Store** | Separate SHR (`shr-hapi-fhir`), accessed via OpenHIM proxy | OE-Global-2's own HAPI FHIR (`external-fhir-api`) |
+| **Detail** | [Architecture Decision](../bahmni-openelis-global2-integration-plan.md#5-architecture-decision-full-openhie-vs-simplified) | [Architecture Decision](../bahmni-openelis-global2-integration-plan.md#5-architecture-decision-full-openhie-vs-simplified) |
 
 ## Sequence Diagram
 
@@ -12,25 +17,21 @@ Based on the [reference implementation](https://github.com/DIGI-UW/openelis-open
 sequenceDiagram
     participant UI as Bahmni UI<br/>(bahmniapps)
     participant MRS as OpenMRS<br/>(FHIR2 + Lab on FHIR)
-    participant HIM as OpenHIM<br/>(FHIR proxy)
-    participant SHR as SHR<br/>(HAPI FHIR)
+    participant FHIR as FHIR Store
     participant OEG as OE-Global-2
     participant LAB as Lab Technician
 
     Note over UI,LAB: Step 1-2: Order Creation (FHIR)
     UI->>MRS: Doctor saves consultation with lab orders
     MRS->>MRS: Lab on FHIR module creates FHIR Task<br/>+ ServiceRequest (LOINC-coded) + Patient
-    MRS->>HIM: Pushes FHIR bundle (Task + ServiceRequest + Patient)
-    HIM->>SHR: Routes to Shared Health Record
+    MRS->>FHIR: Pushes FHIR bundle (Task + ServiceRequest + Patient)
 
     Note over UI,LAB: Step 3: Order Pickup (FHIR polling)
-    OEG-->>HIM: Polls for Tasks with status REQUESTED (every 20s-2min)
-    HIM-->>SHR: Routes query to SHR
-    SHR-->>OEG: Returns Task + ServiceRequest + Patient
+    OEG-->>FHIR: Polls for Tasks with status REQUESTED (every 20s-2min)
+    FHIR-->>OEG: Returns Task + ServiceRequest + Patient
     OEG->>OEG: TaskInterpreter matches LOINC → test/panel
     OEG->>OEG: Creates ElectronicOrder + sample
-    OEG->>HIM: Updates Task (status: ACCEPTED)
-    HIM->>SHR: Stores updated Task
+    OEG->>FHIR: Updates Task (status: ACCEPTED)
 
     Note over UI,LAB: Step 4: Lab Work (unchanged)
     LAB->>OEG: Performs sample collection
@@ -40,9 +41,8 @@ sequenceDiagram
 
     Note over UI,LAB: Step 5-6: Result Return (FHIR push)
     OEG->>OEG: Creates DiagnosticReport (FINAL) + Observations
-    OEG->>HIM: Pushes DiagnosticReport + Observations + Task (COMPLETED)
-    HIM->>SHR: Stores results in SHR
-    Note over MRS,SHR: OpenMRS picks up results from SHR
+    OEG->>FHIR: Pushes DiagnosticReport + Observations + Task (COMPLETED)
+    Note over MRS,FHIR: Lab on FHIR polls FHIR Store for completed Tasks
     MRS->>MRS: Processes FHIR resources, updates order status
 
     Note over UI,LAB: Step 7: View Results (unchanged)
@@ -50,17 +50,17 @@ sequenceDiagram
     MRS-->>UI: Displays lab results with values, units, ranges
 ```
 
-> **Note:** A simplified architecture where OE-Global-2 talks directly to OpenMRS FHIR2 is theoretically possible but has not been validated.
+> **"FHIR Store" =** `external-fhir-api` in Option B (simplified) or `shr-hapi-fhir` via OpenHIM in Option A (full OpenHIE). See [Architecture Decision](../bahmni-openelis-global2-integration-plan.md#5-architecture-decision-full-openhie-vs-simplified).
 
 ## Which Module Does What
 
 | Module (GitHub Repo) | Role | Analogy |
 |---|---|---|
 | [`openmrs-module-fhir2`](https://github.com/openmrs/openmrs-module-fhir2) | Passive API layer — translates OpenMRS data to/from FHIR format | REST controller — responds when called |
-| [`openmrs-module-labonfhir`](https://github.com/openmrs/openmrs-module-labonfhir) | Active orchestrator — watches for lab orders (via JMS event), builds FHIR bundles, pushes them to SHR. Also polls SHR for completed results. | Event listener + HTTP client |
-| OpenHIM (`openhim-core`) | Routes all `/fhir/*` requests, handles auth, audit trail | API gateway (nginx/Kong) |
-| SHR (`shr-hapi-fhir`) | Shared FHIR database — both sides read from and write to it | Shared message queue / S3 bucket |
-| [OpenELIS-Global-2](https://github.com/DIGI-UW/OpenELIS-Global-2) | Lab system — polls SHR for orders, processes them, pushes results back to SHR | Independent microservice |
+| [`openmrs-module-labonfhir`](https://github.com/openmrs/openmrs-module-labonfhir) | Active orchestrator — watches for lab orders (via JMS event), builds FHIR bundles, pushes them to FHIR Store. Also polls FHIR Store for completed results. | Event listener + HTTP client |
+| FHIR Store | Shared FHIR database — both sides read from and write to it | Shared message queue / S3 bucket |
+| [OpenELIS-Global-2](https://github.com/DIGI-UW/OpenELIS-Global-2) | Lab system — polls FHIR Store for orders, processes them, pushes results back | Independent microservice |
+| OpenHIM (`openhim-core`) | *(Option A only)* Routes all `/fhir/*` requests, handles auth, audit trail | API gateway (nginx/Kong) |
 
 ### How Lab on FHIR detects new orders (technical detail)
 
@@ -70,14 +70,14 @@ OpenMRS has a built-in JMS event system (`openmrs-module-event`). When Hibernate
 Event.subscribe(Order.class, Event.Action.CREATED.toString(), orderListener);
 ```
 
-The listener checks if it's a `TestOrder`, builds a FHIR Task + ServiceRequest bundle, and pushes it to the SHR. This is **event-driven** (instant), not polling.
+The listener checks if it's a `TestOrder`, builds a FHIR Task + ServiceRequest bundle, and pushes it to the configured FHIR Store URL. This is **event-driven** (instant), not polling.
 
-For the **return path**, Lab on FHIR uses a **scheduled polling task** (`FetchTaskUpdates`) that periodically checks the SHR for Tasks that changed from REQUESTED to COMPLETED, then imports the DiagnosticReport + Observations.
+For the **return path**, Lab on FHIR uses a **scheduled polling task** (`FetchTaskUpdates`) that periodically checks the FHIR Store for Tasks that changed from REQUESTED to COMPLETED, then imports the DiagnosticReport + Observations.
 
 | Direction | Mechanism | Latency |
 |---|---|---|
-| Orders out (OpenMRS → SHR) | JMS event → instant push | Seconds |
-| Results back (SHR → OpenMRS) | Scheduled polling task | Configurable (seconds-minutes) |
+| Orders out (OpenMRS → FHIR Store) | JMS event → instant push | Seconds |
+| Results back (FHIR Store → OpenMRS) | Scheduled polling task | Configurable (seconds-minutes) |
 
 ## Task Status Lifecycle
 
@@ -113,38 +113,53 @@ flowchart TD
 
 ## Configuration Reference
 
-### OE-Global-2 (`common.properties`)
-
-From the [reference implementation](https://github.com/DIGI-UW/openelis-openmrs-hie/blob/main/configs/openelis/properties/common.properties):
+### Option B: Simplified (recommended)
 
 ```properties
-# Polls SHR (via OpenHIM) for lab order Tasks
+# OpenMRS Lab on FHIR — push directly to OE-Global-2's FHIR store
+labonfhir.lisUrl=http://external-fhir-api:8080/fhir/
+labonfhir.activateFhirPush=true
+labonfhir.authType=NONE
+labonfhir.labUpdateTriggerObject=Order
+
+# OE-Global-2 — poll its own FHIR store
+org.openelisglobal.remote.source.uri=http://external-fhir-api:8080/fhir/
+org.openelisglobal.remote.poll.frequency=20000
+org.openelisglobal.remote.source.identifier=Practitioner/*
+org.openelisglobal.remote.source.updateStatus=true
+org.openelisglobal.task.useBasedOn=true
+org.openelisglobal.fhir.subscriber=http://external-fhir-api:8080/fhir/
+org.openelisglobal.fhir.subscriber.resources=Task,Patient,ServiceRequest,DiagnosticReport,Observation,Specimen,Practitioner,Encounter
+```
+
+### Option A: Full OpenHIE (reference implementation)
+
+From the [reference implementation](https://github.com/DIGI-UW/openelis-openmrs-hie):
+
+```properties
+# OpenMRS Lab on FHIR — push to SHR via OpenHIM
+labonfhir.lisUrl=http://openhim-core:5001/fhir/
+labonfhir.activateFhirPush=true
+labonfhir.authType=BASIC
+labonfhir.username=OpenMRS
+labonfhir.password=admin
+labonfhir.labUpdateTriggerObject=Order
+
+# OE-Global-2 — poll SHR via OpenHIM
 org.openelisglobal.remote.source.uri=http://openhim-core:5001/fhir/
 org.openelisglobal.remote.poll.frequency=20000
 org.openelisglobal.remote.source.identifier=Practitioner/*
 org.openelisglobal.remote.source.updateStatus=true
 org.openelisglobal.task.useBasedOn=true
-
-# Pushes results to SHR via OpenHIM
 org.openelisglobal.fhir.subscriber=http://openhim-core:5001/fhir/
 org.openelisglobal.fhir.subscriber.resources=Task,Patient,ServiceRequest,DiagnosticReport,Observation,Specimen,Practitioner,Encounter
 ```
 
-### OpenMRS Lab on FHIR (`openelis-openmrs.xml`)
+### FHIR Endpoints
 
-From the [reference implementation](https://github.com/DIGI-UW/openelis-openmrs-hie/blob/main/configs/openmrs/distro/configuration/globalproperties/openelis-openmrs.xml):
-
-```properties
-labonfhir.lisUrl=http://openhim-core:5001/fhir/
-labonfhir.activateFhirPush=true
-labonfhir.authType=BASIC
-labonfhir.labUpdateTriggerObject=Order
-```
-
-### FHIR Endpoints in the Reference Implementation
-
-| Endpoint | Service | Purpose |
+| Endpoint | Present in | Purpose |
 |---|---|---|
-| **SHR** (`shr-hapi-fhir`) | Shared Health Record | Central FHIR store — OpenMRS pushes orders, OE-Global-2 pushes results |
-| **OE local FHIR** (`fhir.openelis.org`) | OE-Global-2's own HAPI FHIR | Internal FHIR store (shares DB with OE-Global-2) |
-| **OpenMRS FHIR2** | OpenMRS | OpenMRS's own FHIR API (provider/organization sync) |
+| **`external-fhir-api`** | Both options | OE-Global-2's HAPI FHIR store. In Option B, also serves as the shared store. |
+| **`shr-hapi-fhir`** | Option A only | Separate Shared Health Record (HAPI FHIR server) |
+| **OpenHIM** (`openhim-core:5001`) | Option A only | Routes `/fhir/*` requests to SHR, handles auth |
+| **OpenMRS FHIR2** | Both options | OpenMRS's own FHIR API (provider/organization sync) |

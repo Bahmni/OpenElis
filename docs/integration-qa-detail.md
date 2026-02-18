@@ -6,33 +6,35 @@
 
 These questions were investigated during the analysis phase and are now answered. They informed the integration plan.
 
+> **Note:** References to "FHIR Store" below apply to both architecture options — `external-fhir-api` (Option B, simplified) or `shr-hapi-fhir` via OpenHIM (Option A, full OpenHIE). See [Architecture Decision](../bahmni-openelis-global2-integration-plan.md#5-architecture-decision-full-openhie-vs-simplified).
+
 ## Q1: How do I send a lab order to OE-Global-2?
 
 **Answer:** The [`openmrs-module-labonfhir`](https://github.com/openmrs/openmrs-module-labonfhir) module (not the FHIR2 module alone) creates FHIR Task + ServiceRequest bundles and pushes them to a shared FHIR store. OE-Global-2 polls that store for new Tasks.
 
 This was confirmed by [Moses Mutesasira from the OE-Global-2 team](https://talk.openelis-global.org/t/integration-with-openmrs-over-fhir/1702/2): the exchange is "purely FHIR based" using "Lab On FHIR module and FHIR2 module" together. The Lab Integration module (IsantePlus-specific) is **not** for general OE-Global-2 integration.
 
-**How it works in the reference implementation:**
+**How it works:**
 
-1. **OpenMRS side:** Lab on FHIR module detects a new lab order (via JMS event from Hibernate), creates a FHIR transaction bundle (Task + ServiceRequest + Patient), and pushes it to the SHR via OpenHIM
-2. **OE-Global-2 side:** Poller (`FhirApiWorkFlowServiceImpl`) queries the SHR (via OpenHIM) for Tasks with status `REQUESTED`
+1. **OpenMRS side:** Lab on FHIR module detects a new lab order (via JMS event from Hibernate), creates a FHIR transaction bundle (Task + ServiceRequest + Patient), and pushes it to the FHIR Store
+2. **OE-Global-2 side:** Poller (`FhirApiWorkFlowServiceImpl`) queries the FHIR Store for Tasks with status `REQUESTED`
 
 **What Bahmni/OpenMRS must do:**
 - Install `openmrs-module-labonfhir` (v1.5.3+) — **this is not currently part of Bahmni's OpenMRS distribution**
-- Configure it to push FHIR bundles to the SHR
+- Configure it to push FHIR bundles to the FHIR Store
 - Ensure lab orders carry LOINC codes in the ServiceRequest
 
 ---
 
 ## Q2: How does the EMR know results are ready?
 
-**Answer:** OE-Global-2 pushes results to the **Shared Health Record (SHR)** via OpenHIM. The Task resource tracks status throughout the lifecycle. Lab on FHIR's `FetchTaskUpdates` scheduled task polls the SHR for completed Tasks and imports DiagnosticReport + Observations back into OpenMRS.
+**Answer:** OE-Global-2 pushes results to the **FHIR Store**. The Task resource tracks status throughout the lifecycle. Lab on FHIR's `FetchTaskUpdates` scheduled task polls the FHIR Store for completed Tasks and imports DiagnosticReport + Observations back into OpenMRS.
 
 Per the [community discussion](https://talk.openelis-global.org/t/integration-with-openmrs-over-fhir/1702/2): the Task serves as "a container Resource to track the status of the Order" and the exchange returns FHIR DiagnosticReport + Observation (not HL7v2).
 
 **How results flow:**
-- OE-Global-2 pushes DiagnosticReport + Observations + Task (COMPLETED) to the SHR
-- Lab on FHIR's `FetchTaskUpdates` polls the SHR for status changes and imports results
+- OE-Global-2 pushes DiagnosticReport + Observations + Task (COMPLETED) to the FHIR Store
+- Lab on FHIR's `FetchTaskUpdates` polls the FHIR Store for status changes and imports results
 
 ---
 
@@ -82,6 +84,6 @@ When a clinician saves a lab order, Hibernate persists the `Order`, the OpenMRS 
 1. Loads the Order by UUID
 2. Checks if it's a `TestOrder`
 3. Builds a FHIR Task + ServiceRequest + Patient bundle
-4. Pushes it to the configured LIS URL (SHR via OpenHIM)
+4. Pushes it to the configured FHIR Store URL
 
-For the return path, `FetchTaskUpdates` is a scheduled polling task that checks the SHR for completed Tasks.
+For the return path, `FetchTaskUpdates` is a scheduled polling task that checks the FHIR Store for completed Tasks.
