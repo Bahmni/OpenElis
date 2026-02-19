@@ -8,7 +8,7 @@
 
 **Supporting pages:** [Decisions Log](docs/decisions-log.md) | [Fallback: Full OpenHIE](docs/fallback-option-a.md) | [Mediator Service Design](docs/mediator-service-design.md)
 
-**Repository analysis:** [OpenELIS-Global-2](docs/repos/openelis-global-2.md) | [bahmni-core](docs/repos/bahmni-core.md) | [openmrs-module-fhir2](docs/repos/openmrs-module-fhir2.md) | [openmrs-module-labonfhir](docs/repos/openmrs-module-labonfhir.md) | [openmrs-module-atomfeed](docs/repos/openmrs-module-atomfeed.md) | [openmrs-module-bahmniapps](docs/repos/openmrs-module-bahmniapps.md) | [bahmni-frontend](docs/repos/bahmni-frontend.md) | [pacs-integration](docs/repos/pacs-integration.md)
+**Repository analysis:** [OpenELIS-Global-2](docs/repos/openelis-global-2.md) | [bahmni-core](docs/repos/bahmni-core.md) | [openmrs-module-fhir2](docs/repos/openmrs-module-fhir2.md) | [openmrs-module-labonfhir](docs/repos/openmrs-module-labonfhir.md) | [openmrs-module-atomfeed](docs/repos/openmrs-module-atomfeed.md) | [openmrs-module-bahmniapps](docs/repos/openmrs-module-bahmniapps.md) | [bahmni-frontend](docs/repos/bahmni-frontend.md) | [pacs-integration](docs/repos/pacs-integration.md) | [bahmni-reports](docs/repos/bahmni-reports.md) | [bahmni-metabase](docs/repos/bahmni-metabase.md) | [openmrs-distro-bahmni](docs/repos/openmrs-distro-bahmni.md)
 
 ---
 
@@ -39,10 +39,9 @@ Bahmni ships a fork of OpenELIS (v3.1, circa 2013) integrated with OpenMRS via A
 
 **What stays the same:** Bahmni UI order entry, lab work in LIS, Bahmni UI result display.
 
-**Three go-live blockers beyond the core integration:**
-- **Billing:** OpenELIS publishes lab test catalog events to Odoo via AtomFeed. OEG2 has no equivalent. See [Open Question 4](#5-open-questions).
-- **Reports:** `bahmni-reports` queries OpenELIS PostgreSQL directly. OEG2 has a different schema. All lab reports break. See [Open Question 7](#5-open-questions).
-- **Analytics:** `bahmni-metabase` queries OpenELIS PostgreSQL directly. All lab dashboards break. See [Open Question 8](#5-open-questions).
+**Two go-live blockers beyond the core integration:**
+- **Billing:** OpenELIS publishes lab test catalog events to Odoo via AtomFeed. OEG2 has no equivalent. See [Open Question 3](#5-open-questions).
+- **Reports:** `bahmni-reports` has two report types (`TestCount`, `ElisGeneric`) that query OpenELIS PostgreSQL directly and will break. Five other lab report types query OpenMRS and are unaffected. See [Open Question 6](#5-open-questions).
 
 Detail: [Current Flow](docs/current-flow-detail.md) | [Proposed Flow](docs/proposed-flow-detail.md) | [Architecture](docs/architecture-detail.md)
 
@@ -89,8 +88,8 @@ See [Architecture Detail](docs/architecture-detail.md) for the full container di
 | 3 | Billing: OpenELIS publishes explicit "test catalog events" via AtomFeed → Odoo Connect → syncs lab test products to Odoo (confirmed by billingFlow.png). OEG2 has no AtomFeed. How is the test catalog sync handled for OEG2 deployments? | Blocks Phase 4 / Go-Live | Team + Odoo owners |
 | 4 | `Task.owner` in the FHIR bundle must match OEG2's `remote.source.identifier` config. What identifier scheme and value to use? Needs alignment during Phase 1 PoC. | Phase 1 | Team |
 | 5 | `bahmni-core`'s `labOrderResults` endpoint: does it populate `minNormal`, `maxNormal`, `testUnitOfMeasurement`, `referredOut`, `uploadedFileName` from OpenMRS observation data written by the mediator, or from OpenMRS concept numeric limits? If from concept limits, OEG2-specific reference ranges will not appear in the Bahmni UI. Must be verified in Phase 1 PoC. | Phase 1 / Result Display | Team |
-| 6 | **`bahmni-reports` Direct DB gap:** `bahmni-reports` queries the OpenELIS PostgreSQL (`clinlims`) database directly for lab reports (pending orders, results, accession logs, workload). OEG2 has a completely different schema — all current lab Jasper/BIRT reports will break. Which reports query OpenELIS directly? Can they be repointed to OpenMRS (where results land via mediator), or must they be rewritten for OEG2's schema? Deep dive into `bahmni-reports` needed. | Blocks Phase 4 / Go-Live | Team |
-| 7 | **`bahmni-metabase` Direct DB gap:** Same as Q6 but for Metabase analytics dashboards. Metabase connects directly to OpenELIS PostgreSQL. All lab dashboards (TAT, test volumes, workload) break with OEG2's different schema. What lab dashboards exist and how should they be rerouted? | Blocks Phase 4 / Go-Live | Team |
+| 8 | **Docker Compose orchestration repo not yet identified.** `openmrs-distro-bahmni` only builds the OpenMRS Docker image — it is not the full stack orchestration repo. OEG2 containers (webapp, DB, FHIR store, frontend, proxy, certs) and the mediator must be added to whichever repo defines the full Bahmni container stack. What is that repo? (Likely `bahmni-docker` or `bahmni-devops` or similar.) | Blocks Phase 4 / Go-Live | Team |
+| 6 | **`bahmni-reports` TestCount gap:** Deep dive confirmed only 2 report types query OpenELIS: `TestCount` (queries `test_section`, `test`, `analysis`, `result`, `test_result` — shows result counts by department/test) and `ElisGeneric` (user-provided SQL against `clinlims`). Both will break with OEG2. The 5 lab report types that query OpenMRS (`GenericLabOrderReport`, `PatientsWithLabtestResults`, `GenericObservationReport`, `GenericObservationFormReport`, `OrderFulfillmentReport`) are **unaffected**. Decision needed: rewrite `TestCount` against OEG2 schema (new datasource) or against OpenMRS observations (preferred — keeps a single authoritative source). See [bahmni-reports.md](docs/repos/bahmni-reports.md). | Blocks Phase 4 / Go-Live | Team |
 
 ---
 
@@ -151,10 +150,11 @@ Standalone Spring Boot service modelled on `pacs-integration`. See [Mediator Ser
 
 - [ ] Configure master data (result ranges, organizations, providers, users)
 - [ ] Resolve Odoo test catalog sync (open question 4)
-- [ ] Integrate OE-Global-2 containers into Bahmni Docker Compose stack (`openmrs-distro-bahmni`)
+- [ ] Remove OpenELIS AtomFeed integration from `openmrs-distro-bahmni` (remove `openelis-atomfeed-client-omod`, `update_elis_host_port.sh`, OpenELIS Helm env vars). See [openmrs-distro-bahmni.md](docs/repos/openmrs-distro-bahmni.md)
+- [ ] Add OEG2 containers to the Bahmni Docker Compose orchestration stack (separate repo — not yet identified; **Open Question 9**)
 - [ ] Configure networking, proxy, SSL, authentication
-- [ ] Audit `bahmni-reports` for reports with Direct DB queries against OpenELIS — repoint to OpenMRS or rewrite for OEG2 (open question 7)
-- [ ] Audit `bahmni-metabase` for lab dashboards with Direct DB queries against OpenELIS — reroute or rebuild (open question 8)
+- [ ] Rewrite `TestCount` report (`bahmni-reports`) against OpenMRS observations; update any deployment-specific `ElisGeneric` SQL. See [bahmni-reports.md](docs/repos/bahmni-reports.md) (open question 6)
+- [ ] `bahmni-metabase` — no changes required; has no OpenELIS connection. See [bahmni-metabase.md](docs/repos/bahmni-metabase.md)
 
 ### Phase 5: End-to-End Testing (2-3 weeks)
 
@@ -202,9 +202,9 @@ Per-repo deep dives completed 2026-02-19. Three additional repos identified from
 | **bahmni-frontend** | None — new React micro-frontend has no lab UI yet | [bahmni-frontend.md](docs/repos/bahmni-frontend.md) |
 | **openmrs-module-labonfhir** | Not deployed — FHIR bundle patterns used as reference | [openmrs-module-labonfhir.md](docs/repos/openmrs-module-labonfhir.md) |
 | **pacs-integration** | Not modified — structural blueprint for mediator service | [pacs-integration.md](docs/repos/pacs-integration.md) |
-| **bahmni-reports** | TBD — deep dive required. Direct DB connection to OpenELIS PostgreSQL (confirmed by arch diagram). All lab reports that query `clinlims` schema will break with OEG2. See Open Question 7. | Pending |
-| **bahmni-metabase** | TBD — deep dive required. Direct DB connection to OpenELIS PostgreSQL (confirmed by arch diagram). All lab analytics dashboards will break with OEG2. See Open Question 8. | Pending |
-| **openmrs-distro-bahmni** | Changes needed — this is the Docker Compose packaging repo. Must add OEG2 containers and remove old OpenELIS containers. Straightforward but must be done in Phase 4. | Pending |
+| **bahmni-reports** | Changes needed — `TestCount` report type queries 5 clinlims tables (`test_section`, `test`, `analysis`, `result`, `test_result`) and must be rewritten against OpenMRS observations. `ElisGeneric` user SQL must be updated. Five OpenMRS-based lab report types are unaffected. | [bahmni-reports.md](docs/repos/bahmni-reports.md) |
+| **bahmni-metabase** | None — no OpenELIS connection exists. Only connects to OpenMRS MySQL and Mart PostgreSQL. No lab dashboards present. Zero impact from OEG2 migration. | [bahmni-metabase.md](docs/repos/bahmni-metabase.md) |
+| **openmrs-distro-bahmni** | Changes needed — this is the **OpenMRS image build repo** (Maven + Docker + Helm), not the full stack orchestration repo. Must remove: `openelis-atomfeed-client-omod`, OpenELIS properties from `bahmnicore.properties.template`, `update_elis_host_port.sh` startup script, and OpenELIS env vars from Helm chart. OEG2 container orchestration (full stack) is a separate task for the Docker Compose orchestration repo (not yet identified). | [openmrs-distro-bahmni.md](docs/repos/openmrs-distro-bahmni.md) |
 
 ---
 
