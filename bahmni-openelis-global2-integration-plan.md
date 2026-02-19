@@ -1,12 +1,14 @@
 # Bahmni + OpenELIS-Global-2: Integration Plan
 
 **Date:** 2026-02-17 (Updated: 2026-02-19)
-**Status:** Draft (SME-reviewed 2026-02-18)
+**Status:** Draft (SME-reviewed 2026-02-18; repo deep dive completed 2026-02-19)
 **Objective:** Replace Bahmni's OpenELIS fork with OpenELIS-Global-2 (OE-Global-2), integrated via FHIR.
 
 **Detail pages:** [Current Flow](docs/current-flow-detail.md) | [Proposed Flow](docs/proposed-flow-detail.md) | [Architecture](docs/architecture-detail.md) | [Technical Reference](docs/technical-reference.md)
 
-**Supporting pages:** [Decisions Log](docs/decisions-log.md) | [Fallback: Full OpenHIE](docs/fallback-option-a.md)
+**Supporting pages:** [Decisions Log](docs/decisions-log.md) | [Fallback: Full OpenHIE](docs/fallback-option-a.md) | [Mediator Service Design](docs/mediator-service-design.md)
+
+**Repository analysis:** [OpenELIS-Global-2](docs/repos/openelis-global-2.md) | [bahmni-core](docs/repos/bahmni-core.md) | [openmrs-module-fhir2](docs/repos/openmrs-module-fhir2.md) | [openmrs-module-labonfhir](docs/repos/openmrs-module-labonfhir.md) | [openmrs-module-atomfeed](docs/repos/openmrs-module-atomfeed.md) | [openmrs-module-bahmniapps](docs/repos/openmrs-module-bahmniapps.md) | [bahmni-frontend](docs/repos/bahmni-frontend.md) | [pacs-integration](docs/repos/pacs-integration.md)
 
 ---
 
@@ -22,20 +24,25 @@ Bahmni ships a fork of OpenELIS (v3.1, circa 2013) integrated with OpenMRS via A
 
 | Aspect | Current (AtomFeed) | Proposed (FHIR) |
 |---|---|---|
-| **Order creation** | AtomFeed event → REST fetch | Mediator service creates FHIR Task → pushes to OE-Global-2's FHIR store |
-| **Order pickup** | OpenELIS polls AtomFeed (5s) | OE-Global-2 polls its FHIR store (20s-2min) |
+| **Order detection** | OpenELIS polls OpenMRS AtomFeed encounter feed | Mediator subscribes to same AtomFeed encounter feed |
+| **Order push** | OpenELIS fetches order via REST | Mediator creates FHIR Task + ServiceRequest + Patient → pushes to OE-Global-2's FHIR store |
+| **Order pickup by LIS** | OpenELIS polls AtomFeed (5s) | OE-Global-2 polls its FHIR store (2 min) |
 | **Test matching** | Custom code mapping | LOINC code lookup |
-| **Result return** | AtomFeed event → REST fetch | DiagnosticReport pushed to OE-Global-2's FHIR store |
-| **Result pickup** | OpenMRS polls AtomFeed (15s) | Mediator service polls FHIR store → pushes results to OpenMRS |
-| **Patient sync** | AtomFeed (immediate) | Mediator service pushes Patient resource (immediate) |
-| **Routing/auth** | Direct HTTP | Docker network isolation |
+| **Result return** | OpenELIS publishes to own AtomFeed | OE-Global-2 pushes DiagnosticReport to its FHIR store |
+| **Result pickup** | OpenMRS polls OpenELIS AtomFeed | Mediator polls FHIR store → pushes results to OpenMRS |
+| **Patient sync** | AtomFeed (immediate) | Mediator pushes Patient resource (immediate) |
 | **Lab UI** | Struts/JSP (2013 vintage) | React |
 | **Integration standard** | Atom RFC 4287 (custom) | HL7 FHIR R4 |
 | **Key integration component** | `openmrs-module-atomfeed`, `bahmni-core` | Custom mediator service (standalone container) |
 | **Master data** | OpenMRS (tests + ranges) | OpenMRS (test definitions), OEG2 (reference ranges) |
 | **Containers** | 2 (app + db) | 7 (2 replaced + 5 new) |
 
-**What stays the same:** Bahmni UI order entry, lab work in LIS, Bahmni UI result display, Odoo billing.
+**What stays the same:** Bahmni UI order entry, lab work in LIS, Bahmni UI result display.
+
+**Three go-live blockers beyond the core integration:**
+- **Billing:** OpenELIS publishes lab test catalog events to Odoo via AtomFeed. OEG2 has no equivalent. See [Open Question 4](#5-open-questions).
+- **Reports:** `bahmni-reports` queries OpenELIS PostgreSQL directly. OEG2 has a different schema. All lab reports break. See [Open Question 7](#5-open-questions).
+- **Analytics:** `bahmni-metabase` queries OpenELIS PostgreSQL directly. All lab dashboards break. See [Open Question 8](#5-open-questions).
 
 Detail: [Current Flow](docs/current-flow-detail.md) | [Proposed Flow](docs/proposed-flow-detail.md) | [Architecture](docs/architecture-detail.md)
 
@@ -43,27 +50,27 @@ Detail: [Current Flow](docs/current-flow-detail.md) | [Proposed Flow](docs/propo
 
 ## 3. How It Works
 
-See [Proposed Flow Detail](docs/proposed-flow-detail.md) for the full sequence diagram, component roles, and configuration.
+See [Proposed Flow Detail](docs/proposed-flow-detail.md) for the full sequence diagram and [Mediator Service Design](docs/mediator-service-design.md) for the implementation design.
 
-A **custom mediator service** bridges OpenMRS and OE-Global-2 — detecting lab order events in OpenMRS, transforming them into FHIR bundles, and pushing them to OE-Global-2's FHIR store (`external-fhir-api`). Results flow back the same way: the mediator polls the FHIR store for completed Tasks and pushes results into OpenMRS.
+A **custom mediator service** bridges OpenMRS and OE-Global-2. It subscribes to OpenMRS's AtomFeed encounter feed, detects lab orders in new encounters, constructs FHIR bundles, and pushes them to OE-Global-2's FHIR store (`external-fhir-api`). Results flow back via a polling loop: the mediator polls `external-fhir-api` for completed Tasks and pushes results into OpenMRS via its FHIR API.
 
-This follows Bahmni's existing integration pattern used for ERP (Odoo) and PACS — a standalone microservice that listens to events and orchestrates communication, kept separate from the core EMR.
+This is the same pattern used by the PACS integration and the old OpenELIS — a standalone Spring Boot service consuming the OpenMRS encounter feed. The mediator is modelled directly on `pacs-integration`.
 
 ```mermaid
 flowchart LR
-    MRS[OpenMRS] --> MED[Mediator<br/>Service]
-    MED -->|push orders<br/>poll results| FHIR[OE-Global-2's<br/>FHIR store<br/>external-fhir-api]
+    MRS[OpenMRS\nAtomFeed] -->|encounter events| MED[Mediator<br/>Service]
+    MED -->|push FHIR bundle| FHIR[OE-Global-2's<br/>FHIR store<br/>external-fhir-api]
     MED -->|push results back| MRS
     OEG[OE-Global-2] <-->|poll orders<br/>push results| FHIR
 ```
 
-**Backward compatibility:** The mediator service only handles OEG2 integration. The existing AtomFeed-based OpenELIS integration continues to work independently. Both can coexist — deployments choose which LIS to use. A feature flag in the mediator controls whether it is active.
+**Backward compatibility:** The mediator only handles OEG2 integration. The existing AtomFeed-based OpenELIS integration continues to work independently. Both can coexist — deployments choose which LIS to use via a feature flag in the mediator.
 
 ---
 
 ## 4. Architecture
 
-OE-Global-2 ships with a HAPI FHIR server (`external-fhir-api`) as a standard container. The mediator service pushes FHIR bundles directly to this store — no intermediary infrastructure needed. OE-Global-2 polls the same store for new orders.
+OE-Global-2 ships with a HAPI FHIR server (`external-fhir-api`) as a standard container. The mediator pushes FHIR bundles directly to this store — no intermediary infrastructure needed. OE-Global-2 polls the same store for new orders.
 
 See [Architecture Detail](docs/architecture-detail.md) for the full container diagram, container list, and configuration.
 
@@ -77,9 +84,13 @@ See [Architecture Detail](docs/architecture-detail.md) for the full container di
 
 | # | Question | Blocks | Owner |
 |---|---|---|---|
-| 1 | What is the detailed design for the custom mediator service? Event detection mechanism (AtomFeed, JMS, or FHIR subscription), FHIR bundle construction, error handling, retry logic. | **Critical — blocks implementation** | Team |
-| 2 | How does the Bahmni data model map to OEG2's data model? Specific gaps: sample source (OPD/IPD — custom to Bahmni), requester (ordering doctor), location info in FHIR Task. | Phase 2 | Team |
-| 3 | What are ALL current AtomFeed interactions to/from Bahmni OpenELIS? (Beyond the main lab order flow — patient sync, metadata, etc.) Needed to understand full scope of what the mediator must replicate. | Phase 1 | Angshuman Sarkar (requested) |
+| 1 | What are ALL AtomFeed interactions between Bahmni OpenELIS and OpenMRS? Beyond lab orders and results — patient sync, test catalog, metadata. Needed to confirm nothing is missed. | Phase 1 | Angshuman Sarkar |
+| 2 | How does the Bahmni data model map to OEG2's data model? Specific gaps: sample source (OPD/IPD — custom to Bahmni), requester (ordering doctor), location in FHIR Task. | Phase 2 | Team |
+| 3 | Billing: OpenELIS publishes explicit "test catalog events" via AtomFeed → Odoo Connect → syncs lab test products to Odoo (confirmed by billingFlow.png). OEG2 has no AtomFeed. How is the test catalog sync handled for OEG2 deployments? | Blocks Phase 4 / Go-Live | Team + Odoo owners |
+| 4 | `Task.owner` in the FHIR bundle must match OEG2's `remote.source.identifier` config. What identifier scheme and value to use? Needs alignment during Phase 1 PoC. | Phase 1 | Team |
+| 5 | `bahmni-core`'s `labOrderResults` endpoint: does it populate `minNormal`, `maxNormal`, `testUnitOfMeasurement`, `referredOut`, `uploadedFileName` from OpenMRS observation data written by the mediator, or from OpenMRS concept numeric limits? If from concept limits, OEG2-specific reference ranges will not appear in the Bahmni UI. Must be verified in Phase 1 PoC. | Phase 1 / Result Display | Team |
+| 6 | **`bahmni-reports` Direct DB gap:** `bahmni-reports` queries the OpenELIS PostgreSQL (`clinlims`) database directly for lab reports (pending orders, results, accession logs, workload). OEG2 has a completely different schema — all current lab Jasper/BIRT reports will break. Which reports query OpenELIS directly? Can they be repointed to OpenMRS (where results land via mediator), or must they be rewritten for OEG2's schema? Deep dive into `bahmni-reports` needed. | Blocks Phase 4 / Go-Live | Team |
+| 7 | **`bahmni-metabase` Direct DB gap:** Same as Q6 but for Metabase analytics dashboards. Metabase connects directly to OpenELIS PostgreSQL. All lab dashboards (TAT, test volumes, workload) break with OEG2's different schema. What lab dashboards exist and how should they be rerouted? | Blocks Phase 4 / Go-Live | Team |
 
 ---
 
@@ -87,35 +98,35 @@ See [Architecture Detail](docs/architecture-detail.md) for the full container di
 
 ### Phase 1: Proof of Concept (2-3 weeks)
 
-**Goal:** Validate the simplified FHIR integration end-to-end with OE-Global-2.
+**Goal:** Validate the FHIR integration end-to-end with OE-Global-2.
 
-**Step 1a: Spin up OE-Global-2 with simplified architecture**
+**Step 1a: Spin up OE-Global-2**
 - [ ] Set up OE-Global-2 containers (webapp, database, external-fhir-api, frontend, proxy, certs)
-- [ ] Configure OE-Global-2 to poll its own `external-fhir-api` for orders
-- [ ] Confirm `external-fhir-api` accepts writes from external clients (mediator pushing FHIR bundles)
+- [ ] Configure OE-Global-2 to poll its `external-fhir-api` for orders
+- [ ] Confirm `external-fhir-api` accepts writes from external clients
 
 **Step 1b: Validate end-to-end FHIR flow**
 - [ ] Push a FHIR Task + ServiceRequest + Patient bundle to `external-fhir-api` (manually or via script)
 - [ ] Confirm OE-Global-2 picks up the order and creates a lab accession
 - [ ] Enter and validate a result in OE-Global-2 → confirm DiagnosticReport is pushed back to `external-fhir-api`
 - [ ] Observe the full Task lifecycle: REQUESTED → ACCEPTED → IN_PROGRESS → COMPLETED
+- [ ] Agree on `Task.owner` / OEG2 `remote.source.identifier` value (open question 5)
 
-**Step 1c: Catalog all AtomFeed interactions (open question 3)**
-- [ ] Get full list of AtomFeed interactions to/from Bahmni OpenELIS from **Angshuman Sarkar**
-- [ ] Identify which interactions the mediator service must replicate (beyond lab order flow)
-- [ ] Identify which interactions can remain on AtomFeed (if old OpenELIS coexists)
+**Step 1c: Confirm scope of AtomFeed interactions with Angshuman (open question 1)**
+- [ ] Get full list of AtomFeed interactions to/from Bahmni OpenELIS
+- [ ] Confirm nothing beyond lab orders, results, and test catalog sync is affected
 
-**Step 1d: Design custom mediator service**
-- [ ] Define event detection mechanism (AtomFeed, JMS, or FHIR subscription)
-- [ ] Define FHIR bundle construction (Task + ServiceRequest + Patient)
-- [ ] Define result polling and import flow
-- [ ] Assess whether feature flag is needed for mediator activation
+**Step 1d: Confirm mediator service design**
+- [ ] Review [Mediator Service Design](docs/mediator-service-design.md) — design is based on pacs-integration blueprint
+- [ ] Confirm LOINC code mapping approach (config file vs DB table)
+- [ ] Confirm patient sync approach (separate feed vs on-demand)
+- [ ] Begin investigation of Odoo test catalog sync gap (open question 4)
 
-*If the simplified architecture fails validation, fall back to the [Full OpenHIE approach](docs/fallback-option-a.md).*
+*If the FHIR integration fails validation, fall back to the [Full OpenHIE approach](docs/fallback-option-a.md).*
 
 ### Phase 2: Test Catalog + LOINC (2-3 weeks)
 
-Bahmni's test catalog will be updated with LOINC codes (OEG2 requires them for test matching).
+Bahmni's test catalog must be updated with LOINC codes — OEG2 requires them for test matching.
 
 - [ ] Audit Bahmni test catalog for LOINC code coverage
 - [ ] Add LOINC codes to tests that don't have them
@@ -124,32 +135,40 @@ Bahmni's test catalog will be updated with LOINC codes (OEG2 requires them for t
 
 ### Phase 3: Build Mediator Service (2-3 weeks)
 
-- [ ] Implement event detection (order creation, patient creation)
-- [ ] Implement FHIR bundle construction (Task + ServiceRequest + Patient)
-- [ ] Implement result polling and import flow
-- [ ] Implement patient sync (immediate on creation)
+Standalone Spring Boot service modelled on `pacs-integration`. See [Mediator Service Design](docs/mediator-service-design.md).
+
+- [ ] Subscribe to OpenMRS AtomFeed encounter feed; filter for lab order encounters
+- [ ] Implement FHIR bundle construction: Task (status=REQUESTED) + ServiceRequest + Patient
+- [ ] Implement push to `external-fhir-api` (HAPI FHIR Transaction Bundle)
+- [ ] Implement result polling: poll `external-fhir-api` for Tasks with `status=COMPLETED`
+- [ ] Implement result import: push DiagnosticReport/Observations to OpenMRS via `/ws/fhir2/`
+- [ ] Implement patient sync
+- [ ] Implement retry queue and cursor tracking (from pacs-integration pattern)
 - [ ] Add feature flag for mediator activation
 - [ ] Unit and integration tests
 
 ### Phase 4: Master Data + Deployment (2-3 weeks)
 
 - [ ] Configure master data (result ranges, organizations, providers, users)
-- [ ] Integrate OE-Global-2 containers into Bahmni Docker Compose stack
+- [ ] Resolve Odoo test catalog sync (open question 4)
+- [ ] Integrate OE-Global-2 containers into Bahmni Docker Compose stack (`openmrs-distro-bahmni`)
 - [ ] Configure networking, proxy, SSL, authentication
+- [ ] Audit `bahmni-reports` for reports with Direct DB queries against OpenELIS — repoint to OpenMRS or rewrite for OEG2 (open question 7)
+- [ ] Audit `bahmni-metabase` for lab dashboards with Direct DB queries against OpenELIS — reroute or rebuild (open question 8)
 
 ### Phase 5: End-to-End Testing (2-3 weeks)
 
 - [ ] Full lab workflow testing (order → sample → result → validation → report → display)
 - [ ] Edge cases: rejected samples, amended results, cancelled orders
 - [ ] User acceptance testing with lab technicians
-- [ ] Verify Odoo billing integration is unaffected
+- [ ] Verify Odoo billing integration end-to-end
 
 ### Phase 6: Go-Live (1 week)
 
 - [ ] Deploy to production (fresh install, no data migration)
 - [ ] Monitor for issues during initial operation period
 
-**Total: 12-17 weeks** *(pending resolution of open questions)*
+**Total: 12-17 weeks**
 
 ### Data Migration
 
@@ -157,7 +176,7 @@ No full data migration is required.
 
 - **Existing installations** continue using old OpenELIS — no forced migration.
 - **New installations** use OEG2 from the start.
-- **Patient migration** (when switching): replay patient creation events via a simple script to populate OEG2 with existing patients.
+- **Patient migration** (when switching): replay patient creation events via a simple script.
 - **Lab results:** Old results stay in old system — no result migration.
 
 ### Community Engagement
@@ -169,14 +188,34 @@ Once the high-level solution design is stable, present the plan to the Bahmni co
 
 ---
 
-## 7. References
+## 7. Repository Analysis
+
+Per-repo deep dives completed 2026-02-19. Three additional repos identified from architecture diagram review 2026-02-19 (`bahmni-reports`, `bahmni-metabase`, `openmrs-distro-bahmni`) — deep dives pending. Each completed file captures: role in the integration, verified findings, exact changes required, and key implementation files.
+
+| Repo | Changes Required | Analysis |
+|---|---|---|
+| **OpenELIS-Global-2** | None — configuration only | [openelis-global-2.md](docs/repos/openelis-global-2.md) |
+| **openmrs-module-fhir2** | None — all needed FHIR resources already exposed | [openmrs-module-fhir2.md](docs/repos/openmrs-module-fhir2.md) |
+| **openmrs-module-atomfeed** | None — mediator subscribes to existing encounter feed | [openmrs-module-atomfeed.md](docs/repos/openmrs-module-atomfeed.md) |
+| **bahmni-core** | None — mediator uses AtomFeed, not bahmni-core orders API | [bahmni-core.md](docs/repos/bahmni-core.md) |
+| **openmrs-module-bahmniapps** | None — UI is fully decoupled from OpenELIS; no hardcoded LIS URLs, no "Open in lab" links, all API calls go through OpenMRS/bahmni-core | [openmrs-module-bahmniapps.md](docs/repos/openmrs-module-bahmniapps.md) |
+| **bahmni-frontend** | None — new React micro-frontend has no lab UI yet | [bahmni-frontend.md](docs/repos/bahmni-frontend.md) |
+| **openmrs-module-labonfhir** | Not deployed — FHIR bundle patterns used as reference | [openmrs-module-labonfhir.md](docs/repos/openmrs-module-labonfhir.md) |
+| **pacs-integration** | Not modified — structural blueprint for mediator service | [pacs-integration.md](docs/repos/pacs-integration.md) |
+| **bahmni-reports** | TBD — deep dive required. Direct DB connection to OpenELIS PostgreSQL (confirmed by arch diagram). All lab reports that query `clinlims` schema will break with OEG2. See Open Question 7. | Pending |
+| **bahmni-metabase** | TBD — deep dive required. Direct DB connection to OpenELIS PostgreSQL (confirmed by arch diagram). All lab analytics dashboards will break with OEG2. See Open Question 8. | Pending |
+| **openmrs-distro-bahmni** | Changes needed — this is the Docker Compose packaging repo. Must add OEG2 containers and remove old OpenELIS containers. Straightforward but must be done in Phase 4. | Pending |
+
+---
+
+## 8. References
 
 | Source | Link | Relevance |
 |---|---|---|
-| **Reference implementation** | [github.com/DIGI-UW/openelis-openmrs-hie](https://github.com/DIGI-UW/openelis-openmrs-hie) | Working Docker Compose stack (OpenMRS 3 + OE-Global-2 + OpenHIM + SHR). Useful as reference for OEG2 container setup and FHIR configuration. |
+| **Reference implementation** | [github.com/DIGI-UW/openelis-openmrs-hie](https://github.com/DIGI-UW/openelis-openmrs-hie) | Working Docker Compose stack (OpenMRS 3 + OE-Global-2 + OpenHIM + SHR). Reference for OEG2 container setup and FHIR configuration. |
 | **FHIR integration discussion** | [talk.openelis-global.org/t/1702](https://talk.openelis-global.org/t/integration-with-openmrs-over-fhir/1702) | Community discussion (Angshuman + Moses Mutesasira). Confirmed purely FHIR exchange, active bridge required. |
 | **Test method selection** | [talk.openelis-global.org/t/1691](https://talk.openelis-global.org/t/openelis-global-capability-for-selecting-a-specific-method-for-a-given-order/1691) | Method selection at execution time; LOINC mapping is test-level, not method-level. |
-| **Lab on FHIR module** | [github.com/openmrs/openmrs-module-labonfhir](https://github.com/openmrs/openmrs-module-labonfhir) | Reference for FHIR Task + ServiceRequest creation. Our mediator service will replicate this role. |
+| **Lab on FHIR module** | [github.com/openmrs/openmrs-module-labonfhir](https://github.com/openmrs/openmrs-module-labonfhir) | Reference for FHIR Task + ServiceRequest bundle construction. |
 
 ---
 
