@@ -6,25 +6,43 @@
 
 This page covers OE-Global-2 internals that are **common to both architecture options**. For option-specific details, see [Proposed Flow](proposed-flow-detail.md) and [Architecture](architecture-detail.md).
 
-## How Lab on FHIR Detects New Orders
+## How the Mediator Service Works
 
-OpenMRS has a built-in JMS event system (`openmrs-module-event`). When Hibernate saves an `Order` entity, a JMS message is published. Lab on FHIR subscribes at startup:
+Bahmni will use a **custom mediator service** (standalone microservice) to bridge OpenMRS and OE-Global-2. This follows Bahmni's existing integration pattern (ERP/PACS) — a standalone container that listens to events and orchestrates FHIR communication.
+
+### Mediator Responsibilities
+
+**Outbound (orders):**
+1. Detect new lab order events in OpenMRS
+2. Fetch order + patient data from OpenMRS (via REST API)
+3. Build a FHIR Task + ServiceRequest + Patient bundle
+4. Push the bundle to OE-Global-2's FHIR store (`external-fhir-api`)
+
+**Inbound (results):**
+1. Poll `external-fhir-api` for Tasks with status COMPLETED
+2. Fetch the associated DiagnosticReport + Observations
+3. Push results back to OpenMRS (create lab result encounter + observations)
+
+**Patient sync:**
+1. Detect new patient creation events in OpenMRS
+2. Create corresponding Patient resource in `external-fhir-api`
+
+### Event Detection (design decision pending)
+
+The mediator needs to detect new orders in OpenMRS. Options:
+- **AtomFeed polling** — consistent with current OpenELIS integration; proven pattern
+- **JMS subscription** — instant detection (this is what `openmrs-module-labonfhir` uses internally via `Event.subscribe(Order.class, ...)`)
+- **FHIR subscription** — if OpenMRS supports it
+
+### Reference: How Lab on FHIR Does It (prior art)
+
+The reference implementation uses `openmrs-module-labonfhir`, which runs inside OpenMRS and uses JMS:
 
 ```java
 Event.subscribe(Order.class, Event.Action.CREATED.toString(), orderListener);
 ```
 
-When a clinician saves a lab order:
-1. Hibernate persists the `Order`
-2. OpenMRS Event module publishes a JMS message
-3. Lab on FHIR's `OrderCreationListener` receives it
-4. Listener loads the Order by UUID, checks if it's a `TestOrder`
-5. Builds a FHIR Task + ServiceRequest + Patient bundle
-6. Pushes it to the configured FHIR Store URL (`labonfhir.lisUrl`)
-
-This is **event-driven** (instant), not polling.
-
-For the **return path**, Lab on FHIR uses a **scheduled polling task** (`FetchTaskUpdates`) that periodically checks the FHIR Store for Tasks that changed from REQUESTED to COMPLETED, then imports the DiagnosticReport + Observations.
+Lab on FHIR's approach: Hibernate persists Order → JMS message → `OrderCreationListener` → builds FHIR bundle → pushes to configured FHIR Store URL. For results, it uses a scheduled polling task (`FetchTaskUpdates`).
 
 ## Task Status Lifecycle
 
@@ -65,14 +83,16 @@ flowchart TD
 
 ## Master Data Setup
 
-| Master Data | Recommended Setup Method | Details |
-|---|---|---|
-| **Tests + panels** | CSV files on startup | Drop CSV in `/var/lib/openelis-global/configuration/backend/tests/`. Format: `testName,testSection,sampleType,loinc,isActive,...` |
-| **Sample types** | CSV files on startup | `configuration/sampleTypes/*.csv` |
-| **Dictionaries** | CSV files on startup | `configuration/dictionaries/*.csv` |
-| **Result ranges** | Admin UI or REST API | No CSV import — must be configured per test via UI |
-| **Organizations/centers** | FHIR import from OpenMRS | `org.openelisglobal.facilitylist.fhirstore=http://openmrs:8080/openmrs/ws/fhir2/R4` |
-| **Users/providers** | FHIR import + local creation | Practitioners auto-imported from OpenMRS FHIR |
-| **Roles** | CSV files on startup | `configuration/roles/*.csv` |
+**Ownership (decided):** OpenMRS is the master for test definitions. OEG2 manages reference ranges (they vary by ethnicity, location, etc. — lab systems handle this better).
+
+| Master Data | Master System | Setup Method | Details |
+|---|---|---|---|
+| **Tests + panels** | OpenMRS | CSV files on OEG2 startup | Drop CSV in `/var/lib/openelis-global/configuration/backend/tests/`. Format: `testName,testSection,sampleType,loinc,isActive,...` |
+| **Sample types** | OpenMRS | CSV files on OEG2 startup | `configuration/sampleTypes/*.csv` |
+| **Dictionaries** | OpenMRS | CSV files on OEG2 startup | `configuration/dictionaries/*.csv` |
+| **Result ranges** | OEG2 | Admin UI or REST API | No CSV import — must be configured per test via OEG2 UI |
+| **Organizations/centers** | OpenMRS | FHIR import from OpenMRS | `org.openelisglobal.facilitylist.fhirstore=http://openmrs:8080/openmrs/ws/fhir2/R4` |
+| **Users/providers** | OpenMRS | FHIR import + local creation | Practitioners auto-imported from OpenMRS FHIR |
+| **Roles** | OEG2 | CSV files on startup | `configuration/roles/*.csv` |
 
 **Recommended approach for Bahmni:** Create a "Bahmni default" CSV configuration set checked into version control. Mount as a Docker volume.
