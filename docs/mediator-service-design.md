@@ -15,6 +15,17 @@ The lab order mediator is a **standalone Java/Spring Boot service** that bridges
 
 **FHIR bundle patterns borrowed from `openmrs-module-labonfhir`:** Task + ServiceRequest + Patient bundle construction, result polling, Task status → Order status mapping.
 
+### Pattern note (from SME input, 2026-02-20)
+
+Although Bahmni historically calls these services "mediators" (and `pacs-integration`, `odoo-connect-service` follow this naming), the EIP (Enterprise Integration Patterns) term that more precisely describes this component is **Process Manager** — a stateful orchestrator that routes messages based on the results of prior steps. The lab order lifecycle (REQUESTED → ACCEPTED → IN_PROGRESS → COMPLETED) is a multi-step stateful workflow, and the mediator's `lab_order` table is the state store. The name "mediator" is retained for consistency with existing Bahmni services.
+
+**Three event types this component handles** (generalised architecture per SME):
+- **Reference data** — test definitions/orderables. For OEG2: handled as a one-time LOINC CSV setup (Phase 2), not a live feed, because OEG2 does not consume AtomFeed.
+- **Patient** — sync patient demographics to OEG2 immediately on creation.
+- **Orders (ServiceRequests)** — the core lab order flow.
+
+**Future direction (not in current scope):** The SME envisions evolving from AtomFeed polling to a topic/message-broker model (e.g. Kafka), where downstream systems subscribe rather than poll. The mediator's component separation (feed worker, patient sync, result poller) is designed to accommodate this. CDS Hooks integration is also on the horizon. Phase 3 implementation should keep event-type processing cleanly separated.
+
 ---
 
 ## Architecture
