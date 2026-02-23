@@ -23,11 +23,11 @@ The integration plan is a **forward-looking action document**. It answers: "What
 
 ## Rules for the Plan
 
-### 1. No completed/resolved items
+### 1. No completed/resolved items (with one exception)
 
 - **Open Questions table**: Only active, unresolved questions. When resolved, remove the row and record the resolution in the decisions log.
-- **Phase checklists**: Only uncompleted items. When done, remove the step and record any decision/finding in the decisions log.
-- **No strikethrough text**: No `~~strikethrough~~` or "DONE" markers. If it's done, it doesn't belong in the plan.
+- **Phase checklists (Section 6)**: Keep completed steps with `[x]` checkboxes — the plan section shows the full picture of progress. Record any decision/finding in the decisions log as well.
+- **Elsewhere in the plan**: No completed items, no strikethrough text, no "DONE" markers. If it's done and it's not in the Section 6 phase checklists, it doesn't belong in the plan.
 
 ### 2. No justifications or evidence
 
@@ -76,7 +76,7 @@ For each finding, determine its effect:
 | Open question resolved | Remove the row from Open Questions table |
 | Open question partially clarified | Update the row in-place |
 | New risk or dependency discovered | Add a new row to Open Questions table |
-| Phase step completed | Remove the step |
+| Phase step completed | Mark with `[x]` in Section 6 checklists; also record in decisions log |
 | Phase step modified | Update the step text |
 | New work item discovered | Add a step to the appropriate phase |
 | Blocker removed | Remove the blocker mention |
@@ -100,7 +100,7 @@ After edits, scan for:
 
 | Don't | Do |
 |---|---|
-| Mark plan items as "DONE" with strikethrough | Remove the item entirely |
+| Mark plan items as "DONE" with strikethrough | Use `[x]` checkboxes in Section 6 phase checklists; remove elsewhere |
 | Inline code evidence in the plan | Put evidence in decisions log |
 | Keep resolved questions in the Open Questions table | Remove the row |
 | Add narrative paragraphs in the comparison section | Track risks as open questions |

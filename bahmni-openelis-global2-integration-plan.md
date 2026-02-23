@@ -1,7 +1,7 @@
 # Bahmni + OpenELIS-Global-2: Integration Plan
 
 **Date:** 2026-02-17 (Updated: 2026-02-23)
-**Status:** Draft
+**Status:** In progress — Phase 1
 **Objective:** Replace Bahmni's OpenELIS fork with OpenELIS-Global-2 (OE-Global-2), integrated via FHIR.
 
 **Detail pages:** [Current Flow](docs/current-flow-detail.md) | [Proposed Flow](docs/proposed-flow-detail.md) | [Architecture](docs/architecture-detail.md) | [Technical Reference](docs/technical-reference.md)
@@ -93,10 +93,10 @@ See [Architecture Detail](docs/architecture-detail.md) for the full container di
 
 **Goal:** Validate the FHIR integration end-to-end with OE-Global-2.
 
-**Step 1a: Spin up OE-Global-2**
-- [ ] Set up OE-Global-2 containers (webapp, database, external-fhir-api, frontend, proxy, certs)
-- [ ] Configure OE-Global-2 to poll its `external-fhir-api` for orders
-- [ ] Confirm `external-fhir-api` accepts writes from external clients
+**Step 1a: Spin up OE-Global-2** — [detailed step doc](docs/steps/phase1-step1a-spin-up-oeg2.md)
+- [x] Set up OE-Global-2 containers (webapp, database, external-fhir-api, frontend, proxy, certs)
+- [x] Configure OE-Global-2 to poll its `external-fhir-api` for orders
+- [x] Confirm `external-fhir-api` accepts writes from external clients
 
 **Step 1b: Validate end-to-end FHIR flow**
 - [ ] Push a FHIR Task + ServiceRequest + Patient bundle to `external-fhir-api` (manually or via script)
