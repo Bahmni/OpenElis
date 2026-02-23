@@ -93,7 +93,7 @@ See [Architecture Detail](docs/architecture-detail.md) for the full container di
 
 **Goal:** Validate the FHIR integration end-to-end with OE-Global-2.
 
-**Step 1a: Spin up OE-Global-2** — [detailed step doc](docs/steps/phase1-step1a-spin-up-oeg2.md)
+**Step 1a: Spin up OE-Global-2** ✅ — [detailed step doc](docs/steps/phase1-step1a-spin-up-oeg2.md)
 - [x] Set up OE-Global-2 containers (webapp, database, external-fhir-api, frontend, proxy, certs)
 - [x] Configure OE-Global-2 to poll its `external-fhir-api` for orders
 - [x] Confirm `external-fhir-api` accepts writes from external clients
