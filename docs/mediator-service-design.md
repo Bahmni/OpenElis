@@ -199,6 +199,17 @@ On patient creation events (separate AtomFeed feed or detected via encounter pro
 - Push `Patient` resource to `external-fhir-api` immediately
 - Ensures OEG2 has patient demographics before the first order arrives
 
+### 5. Walk-in Lab Back-Creation (Phase 3+ — not in initial scope)
+
+**Context (code-verified 2026-02-23):** The current system supports walk-in lab samples — a patient arrives at the lab without a prior doctor's order. OpenELIS creates an accession and publishes it via AtomFeed. bahmni-core's `OpenElisAccessionEventWorker` detects no matching encounter and calls `AccessionHelper.createOrders()` to back-create an encounter + lab orders in OpenMRS. This triggers billing via odoo-connect (which picks up the encounter from the OpenMRS feed).
+
+**For OEG2:** If OEG2 supports walk-in lab samples (accession created directly in OEG2 without a prior FHIR Task), the mediator would need a reverse flow:
+1. Poll OEG2's FHIR store for accessions/Tasks that were NOT created by the mediator
+2. For each: create an encounter + lab orders in OpenMRS via FHIR API
+3. This ensures billing (odoo-connect picks up the encounter) and result tracking
+
+**Status:** Deferred — needs investigation during Phase 1 PoC to determine if OEG2 supports this workflow natively. See [Open Question 9](../bahmni-openelis-global2-integration-plan.md#5-open-questions).
+
 ---
 
 ## Database Schema
@@ -309,8 +320,9 @@ ENV OEG2_FACILITY_IDENTIFIER=Organization/oeg2
 
 | # | Question |
 |---|---|
-| 1 | Confirm `org.openelisglobal.remote.source.identifier` in OEG2 config must match `Task.owner` in the bundle. What identifier scheme to use (Organization UUID, Practitioner reference)? |
+| 1 | ~~`org.openelisglobal.remote.source.identifier` identifier scheme~~ **PARTIALLY RESOLVED** (2026-02-23): Code-verified format is `ResourceType/ResourceId` (e.g., `Organization/{uuid}`). OEG2 filters Tasks via `Task.OWNER.hasAnyOfIds(...)`. For Bahmni single-clinic, use `Organization/{bahmni-org-uuid}`. **Remaining:** agree on the concrete UUID value during Phase 1 PoC. |
 | 2 | Does the OpenMRS encounter AtomFeed distinguish between "new order" and "updated encounter"? Need to handle deduplication correctly when the same encounter fires multiple events. |
 | 3 | LOINC code mapping: the mediator maps OpenMRS concept UUIDs → LOINC codes for `ServiceRequest.code`. Where is this mapping stored? Config file or DB table? |
 | 4 | Patient sync: separate AtomFeed feed for patient events, or detect via encounter processing (patient not yet in OEG2 = sync first)? |
 | 5 | `Order.fulfillerStatus` update: does the mediator PATCH this when results arrive, or does the fhir2 module handle it automatically when an Observation is posted? |
+| 6 | Walk-in lab back-creation: does OEG2 support creating accessions without a prior FHIR Task? If so, the mediator needs a reverse flow to back-create orders in OpenMRS. See section 5 above. |
