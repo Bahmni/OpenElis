@@ -1,0 +1,60 @@
+{
+  "__comment": "FHIR resources for Phase 1, Step 1b — Validate End-to-End FHIR Flow. Each resource is PUT individually with a pre-generated UUID (not POST, which gives integer IDs). OEG2 requires UUID-format IDs — FhirApiWorkFlowServiceImpl.java calls UUID.fromString() on Practitioner/Patient IDs. The Task must pre-include the OEG2 identifier to avoid a version conflict (OEG2 adds it in a separate update, causing a 409). Patient given names must not contain digits (firstNameCharset excludes digits).",
+
+  "practitioner": {
+    "resourceType": "Practitioner",
+    "id": "$PRACTITIONER_ID",
+    "name": [{"family": "BahmniMediatorPractitioner", "given": ["PoC"]}],
+    "active": true
+  },
+
+  "patient": {
+    "resourceType": "Patient",
+    "id": "$PATIENT_ID",
+    "identifier": [
+      {
+        "system": "http://openelis-global.org/pat_subjectNumber",
+        "value": "POC-PAT-001"
+      }
+    ],
+    "name": [{"family": "TestPatient", "given": ["Bahmni"]}],
+    "birthDate": "1990-06-15",
+    "gender": "male"
+  },
+
+  "serviceRequest": {
+    "resourceType": "ServiceRequest",
+    "id": "$SR_ID",
+    "status": "active",
+    "intent": "order",
+    "subject": {"reference": "Patient/$PATIENT_ID"},
+    "code": {
+      "coding": [
+        {
+          "system": "http://loinc.org",
+          "code": "736-9",
+          "display": "Lymphocytes [#/volume] in Blood by Manual count"
+        }
+      ]
+    },
+    "identifier": [{"value": "POC-LAB-ORDER-001"}]
+  },
+
+  "task": {
+    "resourceType": "Task",
+    "id": "$TASK_ID",
+    "identifier": [
+      {
+        "type": {"coding": [{"system": "http://openelis-global.org/genIdType", "code": "externalId"}]},
+        "system": "https://fhir.openelis.org:8443/fhir/",
+        "value": "$TASK_ID"
+      }
+    ],
+    "status": "requested",
+    "intent": "order",
+    "basedOn": [{"reference": "ServiceRequest/$SR_ID"}],
+    "for": {"reference": "Patient/$PATIENT_ID"},
+    "owner": {"reference": "Practitioner/$PRACTITIONER_ID"},
+    "authoredOn": "$AUTHORED_ON"
+  }
+}

@@ -98,11 +98,11 @@ See [Architecture Detail](docs/architecture-detail.md) for the full container di
 - [x] Configure OE-Global-2 to poll its `external-fhir-api` for orders
 - [x] Confirm `external-fhir-api` accepts writes from external clients
 
-**Step 1b: Validate end-to-end FHIR flow**
-- [ ] Push a FHIR Task + ServiceRequest + Patient bundle to `external-fhir-api` (manually or via script)
-- [ ] Confirm OE-Global-2 picks up the order and creates a lab accession
+**Step 1b: Validate end-to-end FHIR flow** — [detailed step doc](docs/steps/phase1-step1b-validate-fhir-flow.md)
+- [x] Push a FHIR Task + ServiceRequest + Patient bundle to `external-fhir-api` (manually or via script)
+- [x] Confirm OE-Global-2 picks up the order and creates a lab accession
 - [ ] Enter and validate a result in OE-Global-2 → confirm DiagnosticReport is pushed back to `external-fhir-api`
-- [ ] Observe the full Task lifecycle: REQUESTED → ACCEPTED → IN_PROGRESS → COMPLETED
+- [ ] Observe the full Task lifecycle: REQUESTED → ACCEPTED → COMPLETED
 - [ ] Agree on `Task.owner` / OEG2 `remote.source.identifier` value (open question 4)
 
 **Step 1c: Confirm mediator service design**
