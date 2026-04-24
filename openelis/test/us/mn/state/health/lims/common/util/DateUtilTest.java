@@ -133,27 +133,27 @@ public class DateUtilTest {
     public void testAgeInYears() {
         start.set(  2011, JANUARY, 1);
         end.set(    2011, JANUARY, 17);
-        assertEquals(0, DateUtil.getAgeInYears(start.getTime(), end.getTime()));                
-        
+        assertEquals(0.044, DateUtil.getAgeInYears(start.getTime(), end.getTime()), 0.01);
+
         start.set(  2011, JANUARY, 17);
         end.set(    2011, DECEMBER, 1);
-        assertEquals(0, DateUtil.getAgeInYears(start.getTime(), end.getTime()));                
+        assertEquals(0.870, DateUtil.getAgeInYears(start.getTime(), end.getTime()), 0.01);
 
         start.set(  2011, JANUARY, 17);
         end.set(    2012, JANUARY, 16);
-        assertEquals(0, DateUtil.getAgeInYears(start.getTime(), end.getTime()));
-        
+        assertEquals(0.997, DateUtil.getAgeInYears(start.getTime(), end.getTime()), 0.01);
+
         start.set(  2011, JANUARY, 17);
         end.set(    2012, JANUARY, 17);
-        assertEquals(1, DateUtil.getAgeInYears(start.getTime(), end.getTime()));
-        
+        assertEquals(1.0, DateUtil.getAgeInYears(start.getTime(), end.getTime()), 0.01);
+
         start.set(  2011, JANUARY, 17);
         end.set(    2012, JANUARY, 18);
-        assertEquals(1, DateUtil.getAgeInYears(start.getTime(), end.getTime()));                
+        assertEquals(1.003, DateUtil.getAgeInYears(start.getTime(), end.getTime()), 0.01);
 
         start.set(  2011, JANUARY, 17);
         end.set(    2021, JANUARY, 18);
-        assertEquals(10, DateUtil.getAgeInYears(start.getTime(), end.getTime()));                
+        assertEquals(10.003, DateUtil.getAgeInYears(start.getTime(), end.getTime()), 0.01);                
     }
 
     @Test

@@ -534,7 +534,7 @@ public class DateUtil {
 		return dMons;
 	}
 
-	public static int getAgeInYears(Date startDate, Date endDate) {
+	public static double getAgeInYears(Date startDate, Date endDate) {
 		Calendar start = new GregorianCalendar();
 		start.setTime(startDate);
 		Calendar end = new GregorianCalendar();
@@ -545,7 +545,9 @@ public class DateUtil {
 					start.get(Calendar.DAY_OF_MONTH) > end.get(Calendar.DAY_OF_MONTH))) {
 			--year;
 		}
-		return year;
+		start.add(Calendar.YEAR, year);
+		double fractionalYear = (end.getTimeInMillis() - start.getTimeInMillis()) / 31557600000.0;
+		return year + fractionalYear;
 	}
 
 	public static Timestamp getTimestampAtMidnightForDaysAgo(int days) {
