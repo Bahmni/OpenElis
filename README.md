@@ -10,7 +10,7 @@ OpenElis
 forked from OpenElis_v3.1_r2013_02_21 branch in svn
 
 *Requirements to build OpeneLIS*
-* `java` version <= "1.7"
+* `java` version <= "1.8"
 * `ant` version <= "1.9.1"
 * `ruby` version == "3.1" and `gem install compass`
 
