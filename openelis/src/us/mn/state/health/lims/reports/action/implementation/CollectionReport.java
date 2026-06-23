@@ -22,9 +22,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Collections;
 
 import net.sf.jasperreports.engine.JasperRunManager;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
@@ -68,15 +70,15 @@ public abstract class CollectionReport implements IReportCreator {
 	}
 
 	@Override
-	public HashMap<String, ?> getReportParameters() throws IllegalStateException {
-		return new HashMap<String, String>();
+	public Map<String, Object> getReportParameters() throws IllegalStateException {
+		return Collections.emptyMap();
 	}
 
 	@Override
 	public byte[] runReport() throws Exception {
 		List<byte[]> byteList = generateReports();
 		if (byteList.isEmpty()) {
-			HashMap<String, String> parameterMap = new HashMap<String, String>();
+			HashMap<String, Object> parameterMap = new HashMap<String, Object>();
 			parameterMap.put("SUBREPORT_DIR", reportPath);
 			parameterMap.put("directorName", ConfigurationProperties.getInstance().getPropertyValue(Property.labDirectorName));
 			List<ErrorMessages> errorMsgs = new ArrayList<ErrorMessages>();
@@ -150,7 +152,7 @@ public abstract class CollectionReport implements IReportCreator {
 			reportCreator.setReportPath(reportPath);
 
 			@SuppressWarnings("unchecked")
-			HashMap<String, String> parameterMap = (HashMap<String, String>) reportCreator.getReportParameters();
+			Map<String, Object> parameterMap = reportCreator.getReportParameters();
 			parameterMap.put("SUBREPORT_DIR", reportPath);
 			handledOrders.addAll(reportCreator.getReportedOrders());
 			try {

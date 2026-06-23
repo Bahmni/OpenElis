@@ -19,6 +19,7 @@ package us.mn.state.health.lims.workplan.action;
 
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 
 import javax.servlet.ServletOutputStream;
@@ -81,7 +82,7 @@ public class PrintWorkplanReportAction extends BaseAction {
 		workplanReport = getWorkplanReport(workplanType, workplanName);
 				
 		//set jasper report parameters
-		HashMap<String, ?> parameterMap = workplanReport.getParameters();
+		Map<String, Object> parameterMap = workplanReport.getParameters();
 						
 		//prepare report
 		List<?> workplanRows = workplanReport.prepareRows(dynaForm);

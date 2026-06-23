@@ -18,6 +18,7 @@
 package us.mn.state.health.lims.workplan.reports;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 
 import us.mn.state.health.lims.common.action.BaseActionForm;
@@ -41,7 +42,7 @@ public class ElisaWorkplanReport implements IWorkplanReport {
 		return fileName;
 	}
 	
-	public HashMap<String, Object> getParameters() {
+	public Map<String, Object> getParameters() {
 		parameterMap.put("testSection", testSection);
 		return parameterMap;	
 	

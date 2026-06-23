@@ -170,17 +170,17 @@ public class ResultsReportProvider extends BaseReportsProvider{
 
 			//turn subreport jasper files into JasperReport objects to pass in as parameters
 			JasperReport providerDetailsReport = (JasperReport) JRLoader
-					.loadObject(providerDetailsReportFile.getPath());
+					.loadObject(providerDetailsReportFile);
 			JasperReport projectDetailsReport = (JasperReport) JRLoader
-					.loadObject(projectDetailsReportFile.getPath());
+					.loadObject(projectDetailsReportFile);
 			JasperReport sourceTypeDetailsReport = (JasperReport) JRLoader
-					.loadObject(sourceTypeDetailsReportFile.getPath());
+					.loadObject(sourceTypeDetailsReportFile);
 			JasperReport patientDetailsReport = (JasperReport) JRLoader
-					.loadObject(patientDetailsReportFile.getPath());
+					.loadObject(patientDetailsReportFile);
 			JasperReport testResultsReport = (JasperReport) JRLoader
-					.loadObject(testResultsReportFile.getPath());
+					.loadObject(testResultsReportFile);
 			JasperReport resultValueReport = (JasperReport) JRLoader
-					.loadObject(resultValueReportFile.getPath());
+					.loadObject(resultValueReportFile);
 
 			parameters.put("Provider_Details", providerDetailsReport);
 			parameters.put("Project_Details", projectDetailsReport);
